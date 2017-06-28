@@ -1,0 +1,64 @@
+<template>
+<!--	<require from="./converters/percent"></require>
+	<require from="./converters/round"></require>-->
+	
+	<div class="star star_${star.color}">
+		<template if.bind="!star.explored && !app.options.see_all">
+			<h2>Unexplored</h2>
+			<p class="desc">${star.colorDesc}</p>
+		</template>
+		<template if.bind="star.explored || app.options.see_all">
+			<h2 if.bind="!editing_name" click.delegate="ToggleNameEdit()">${star.name}</h2>
+			<p if.bind="editing_name" >
+				<input type="text" value.bind="star.name" />
+				<a href="" click.delegate="ToggleNameEdit()">OK</a>
+			</p>
+			<div class="planet atm${p.atm} tmp${p.temp}" css.one-time="PlanetSizeCSS(p)" repeat.for="p of star.planets"  click.delegate="app.SwitchSideBar(p)">
+				<!-- NOTE: using one-time binding to avoid brief moment when the 
+				object is undefined and browser tries to ask server for 'undefined' -->
+				<img if.bind="p.owner" class="flag" src.one-time="p.owner.flag_img" />
+				<p class="env_label"><span class="env_label">${p.envDisplayName}</span></p>
+				<div class="env_box">
+					<div class="target"></div>
+				</div>	
+				<h3 css="color: ${p.ui_color};">${p.name}</h3>
+				<div class="phys">
+					<div class="size">
+						<span class="pop" if.bind="p.owner !== false">${p.total_pop|round}<br/><span class="pop">POP</span></span>
+						<span class="inf" if.bind="p.owner !== false">${p.inf|round}<br/><span class="inf">INFR</span></span>
+						<span class="size">${p.size}<br/><span class="size">SIZE</span></span>							
+						<span class="mine">${p.rich}x<br/><span class="mine">MINING</span></span>
+						<span class="en">${p.energy}x<br/><span class="en">ENERGY</span></span>
+
+						<div class="size" if.bind="p.owner !== false" css="width:${p.size / 200 | percent:3}%"></div>
+						<div class="inf" if.bind="p.owner !== false" css="width:${(p.inf / p.size) * (p.size / 200) | percent:3}%"></div>
+						<div class="pop" if.bind="p.owner !== false" css="width:${(p.total_pop / p.size) * (p.size / 200) | percent:3}%"></div>
+					</div>			
+				</div>
+					
+				<div class="spending" if.bind="p.owner">
+					<div class="spending_stackbar">
+						<div class="m" css="width:${p.act.mine.pct | percent:3}%">${p.act.mine.output | round:1}${p.act.mine.output > p.act.mine.need ? '+' : '-'}</div>
+						<div class="i" css="width:${p.act.inf.pct | percent:3}%">${p.act.inf.output | round:1}</div>
+						<div class="p" css="width:${p.act.prod.pct | percent:3}%">${p.act.prod.output | round:1}</div>
+						<div class="s" css="width:${p.act.sci.pct | percent:3}%">${p.act.sci.output | round:1}</div>
+					</div>
+				</div>
+				
+	<!--			<p class="physattr">
+					<span repeat.for="attr of p.physattr">${attr.name} </span>
+				</p>-->
+	<!-- 			<p class="bonus">[TODO:BONUSES]</p> -->
+			</div>
+			<p if.bind="star.Acct( app.game.iam )"><a href="#" click.delegate="ClickConstelLink()" class="button">Constellation</a></p>
+			<p if.bind="star.Acct( app.game.iam )">
+				<b>Resources:</b><br/>
+				&nbsp;&nbsp;<span>Collected: ${star.Acct( app.iam ).econ.collected|round:2}</span><br/>
+				&nbsp;&nbsp;<span class="${star.Acct( app.iam ).econ.export > 0 ? 'good' : ''}">Exported: ${ (star.Acct( app.iam ).econ.export > 0 ? star.Acct( app.iam ).econ.export : 0 ) |round:2}</span><br/>
+				&nbsp;&nbsp;<span class="${star.Acct( app.iam ).econ.imported > 0 ? 'alert' : ''}">Imported: ${star.Acct( app.iam ).econ.imported|round:2}</span><br/>
+				&nbsp;&nbsp;<span>Distributed: ${star.Acct( app.iam ).econ.redistrib|round:2}</span><br/>
+				&nbsp;&nbsp;<span class="${star.Acct( app.iam ).econ.need > 0 ? 'bad' : ''}">Unmet Need: ${star.Acct( app.iam ).econ.need|round:2}</span>
+			</p>
+		</template>
+	</div>
+</template>

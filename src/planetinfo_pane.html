@@ -1,0 +1,81 @@
+<template>
+<!--	<require from="./converters/percent"></require>
+	<require from="./converters/round"></require>-->
+
+	<div id="planetinfo_pane" class="pane">
+		<p style="float:right;"><a href="#"  click.delegate="ClosePanel()" class="button big">CLOSE</a></p>
+		<h1>${planet.name}</h1>
+					
+
+		
+		<div class="flexwrap" if.bind="planet.owner">
+			
+			<!-- Colony Data -->
+			<div class="content data">
+				<h2>Summary</h2>
+				<span>TAX Income: ${planet.tax|round:1}</span>
+				<span>EST-COST: ${planet.est_total_expense|round:1}</span>
+				<span>COST: ${planet.total_expense|round:1}</span>
+				<span>POP: ${planet.total_pop|round:1}</span>
+				<span>GDP: ${planet.econ.GDP|round:2}</span>
+				<span>PCI: ${planet.econ.PCI|round:2}</span>
+				<span>GF: ${planet.econ.GF|round:4}</span>
+				<span>MORALE: ${planet.morale|percent}%</span>
+				<span>UNEMP: ${planet.unempl|percent}%</span>
+				<span>WRHS: ${planet.warehouse|round:2}</span>
+				<span>BLD-FND: ${planet.building_fund|round}</span>
+			</div>
+			<div class="content resources">
+				<h2>Resources</h2>
+				<span>Needed: ${planet.act.mine.need|round:2}</span>
+				<span>Mined: ${planet.act.mine.output|round:2}</span>
+				<span class="${planet.econ.mine_export > 0 ? 'good' : ''}">Exported: ${ (planet.econ.mine_export > 0 ? planet.econ.mine_export : 0 ) |round:2}</span>
+				<span class="${planet.econ.mine_import > 0 ? 'alert' : ''}">Imported: ${planet.econ.mine_import|round:2}</span>
+				<span class="${planet.econ.mine_export < 0 ? 'bad' : ''}">Unmet Need: ${((planet.econ.mine_export < 0) ? -planet.econ.mine_export : 0) |round:2}</span>
+			</div>
+			<div class="content financial">
+				<h2>Financial</h2>
+				<span class="${(planet.tax - planet.total_expense) > 0 ? 'good' : ''}">Profit: ${(planet.tax - planet.total_expense)|round:1}</span>
+				<span class="good">Tax Income: ${(planet.tax)|round:1}</span>
+				<span class="bad">Total costs last turn: ${planet.total_expense|round:1}</span>
+				<span>&nbsp;&nbsp;Maintenance: ${(planet.inf * planet.INF_maint_cost)|round:1}</span>
+				<span>&nbsp;&nbsp;Administrative: ${planet.base_colony_fee|round:1}</span>
+				<span>&nbsp;&nbsp;Mining Activity: ${planet.act.mine.cost|round:1}</span>
+				<span>&nbsp;&nbsp;Infrastructure Development: ${planet.act.inf.cost|round:1}</span>
+				<span>&nbsp;&nbsp;Production: ${planet.act.prod.cost|round:1}</span>
+				<span>&nbsp;&nbsp;Science Research: ${planet.act.sci.cost|round:1}</span>
+				<span>Estimated costs next turn: ${planet.est_total_expense|round:1}</span>
+			</div>
+			<div class="content economy">
+				<h2>Economy</h2>
+				<span>GDP (Gross Domestic Product): ${planet.econ.GDP|round:2}</span>
+				<span>PCI (Per-Capita Income): ${planet.econ.PCI|round:2}</span>
+				<span>GF (Economic Growth Factor): ${planet.econ.GF|round:4}</span>
+			</div>
+			<div class="content production">
+				<h2>Production</h2>
+				<span>Mining Output: ${planet.act.mine.output|round:1}</span>
+				<span>Infrastructure Output: ${planet.act.inf.output|round:1}</span>
+				<span>Production Output: ${planet.act.prod.output|round:1}</span>
+				<span>Science Output: ${planet.act.sci.output|round:1}</span>
+				<span>Currently Building: TODO</span>
+				<span>Complete In: [TODO] turns</span>
+			</div>
+			<div class="content policies">
+				<h2>Policies</h2>
+				<span><input type="checkbox" /> Foreign Policy</span>
+				<span><input type="checkbox" checked /> Breakfast Policy</span>
+				<span><input type="checkbox" checked /> Education Policy</span>
+				<span><input type="checkbox" /> Allow Gambling?</span>
+				<span><input type="checkbox" checked /> Eat xenomorphs?</span>
+				<span><input type="checkbox" /> Enslave Tourists?</span>
+				<span><input type="checkbox" checked /> Create Toys?</span>
+			</div>
+			
+		</div>
+		
+	</div>
+
+
+
+</template>

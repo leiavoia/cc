@@ -1,0 +1,27 @@
+<template>
+<!--	<require from="./converters/percent"></require> -->
+<!-- 	<require from="./converters/round"></require> -->
+<!-- 	<require from="./converters/idealplanetsize"></require> -->
+	
+	<div id="colonize_pane" class="star_${planet.star.color} atm${planet.atm} tmp${planet.temp}">
+		<div class="planet atm${planet.atm} tmp${planet.temp}" css="background-size: ${planet.size * 0.85}% auto; "></div>
+		<div class="spaceship" style="top:40%; left: 20%;"></div>
+		<div class="content">
+			<h2>Welcome To</h2>
+			<p>
+				<input type="text" name="name" value.bind="planet.name" maxlength="20" /><br/>
+				<span style="color: #999; font-size: 65%">(Overtype to change name)</span>
+			</p>
+			<p>
+				<span class="env_label">${planet.envDisplayName}</span>, 
+				<span class="size">SIZE: ${planet.size}</span>, 
+				<span class="mine">MINING: ${planet.rich}x</span>, 
+				<span class="en">ENERGY: ${planet.energy}x</span>
+			</p>
+			<p>This beautiful planet holds great promise to your people who are eager to colonize the stars. With an abundance of natural resources and energy, it will surely provide wealth and prosperity to your civilization.</p>
+<!-- 			<p>The environment of ${planet.name} provides a sense of natural awe and wonder that should attract new citizens and tourists alike.</p> -->
+			<p><a href="#" class="button big" click.delegate="ClickDone()">Done</a></p>
+		</div>
+	</div>
+
+</template>

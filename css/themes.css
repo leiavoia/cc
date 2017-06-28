@@ -1,0 +1,214 @@
+	
+/* THEMES! */
+
+.theme_aliens h1 ,
+.theme_aliens h2 ,
+.theme_aliens h3 { color:#6CE; text-shadow: #6CE 0 0 0.3em; }
+.theme_aliens A,
+.theme_aliens P,
+.theme_aliens LI,
+.theme_aliens DIV,
+.theme_aliens TD,
+.theme_aliens DD  { color:#6CE; }
+.theme_aliens TD { border-color: #6CE; }
+.theme_aliens #layout_ui_nav { 
+/* 	background: #000; */
+	background: #000 linear-gradient(to right, #000000 0%,#3d3d3d 50%,#000000 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	}
+.theme_aliens #layout_ui_side { 
+	background: rgba(0,0,0,0.65);
+	color:#6CE;
+	}
+.theme_aliens #layout_ui_nav A {
+	color:#6CE; 
+	border: 1px solid #6CE;
+/* 	text-shadow: #6CE 0 0 0.3em; */
+	}
+/*.theme_aliens h1 {	
+	transform-origin: 50% 50%;
+	animation: blendInAliens 1.5s both ease-out;	
+	}*/
+	
+	
+
+
+
+	
+.theme_2001 h1 { color:#fcfff4; }
+.theme_2001 h2 { color:#fcfff4; }
+.theme_2001 h3 { color:#fcfff4; }
+.theme_2001 A,
+.theme_2001 P,
+.theme_2001 LI,
+.theme_2001 DIV,
+.theme_2001 TD,
+.theme_2001 DD  { color:#fcfff4; }
+.theme_2001 TD { border-color: #333; }
+.theme_2001 #layout_ui_nav { 
+/* 	background: #000; */
+	background: #000 linear-gradient(to right, #000000 0%,#3d3d3d 50%,#000000 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	}
+.theme_2001 #layout_ui_side { 
+	background: linear-gradient(0deg, #eef2de 0%,#d8ddbc 64%,#fcfff4 100%); 	
+	color:#333;
+	}
+.theme_2001 #layout_ui_side h1 { color:#333; }
+.theme_2001 #layout_ui_side h2 { color:#333; text-shadow: #FCE685 0.1em 0.1em 0.1em; }
+.theme_2001 #layout_ui_side h3 { color:#333; }
+.theme_2001 #layout_ui_side A,
+.theme_2001 #layout_ui_side P,
+.theme_2001 #layout_ui_side LI,
+.theme_2001 #layout_ui_side DIV,
+.theme_2001 #layout_ui_side TD,
+.theme_2001 #layout_ui_side DD  { color:#333; }
+.theme_2001 #layout_ui_side TD { border-color: #333; }
+
+.theme_2001 #layout_ui_nav A {
+	color:#333; 
+	border: 1px solid #333;
+	background: radial-gradient(ellipse at center, #eaab35 0%,#f4cd3d 0%,#fefcea 71%); 
+	}
+.theme_2001 #layout_ui_nav {
+	background:#FFF;
+	}
+.theme_2001 #layout_pagewrap {
+	background: #000 url(../img/map/bg/space_003.jpg) 50% 50% no-repeat;
+	}		
+
+	
+	
+	
+	
+.theme_ps #layout_pagewrap {
+	background: #000 url(../img/workshop/bumps.jpg) 50% 50% repeat;
+	}
+.theme_ps #layout_ui_side > .planet {
+	background-color: #333;
+	background-image: none;
+}
+.theme_ps #layout_ui_side > .planet > DIV {
+margin:1.0em 0;
+background-color: #555;
+border-radius: 0.5em;
+padding: 0.5em;
+box-shadow: rgba(0,0,0,0.65) 2px 2px 2px;
+}
+	
+	
+	
+/* 
+
+http://www.lcarscom.net/faq.htm 
+https://github.com/Garrett-/lcars/blob/master/app/css/lcars.css
+
+#F90 - primary heading orange
+#C9C - mid purple
+#C66 - dusty berry
+#FC9 - light tannish
+#F96 - faded orange 
+#C69 - dark purple
+#99C - mid blue
+#99F - similar to above
+
+*/
+.theme_lcars h1 { color:#F90; font-family: 'lcars_bold'; font-size: 350%; text-transform:uppercase; }
+.theme_lcars #layout_ui_side > .planet h2 { 
+	 text-transform:uppercase;
+	 color:#F90; 
+	font-family: 'lcars_bold'; 
+	font-size: 38px;
+/* 	letter-spacing: 1; */
+/* 	padding: 0.2em; */
+	margin-top: -55px;
+	
+	padding: 0;
+	line-height:39px;
+/* 	border-radius:1em; */
+/* 	border: 1em #99C solid; */
+/* 	box-sizing:content-box; */
+/* 	border-top-width: 0; */
+/* 	border-bottom-width:0; */
+/* 	background: #000 linear-gradient(to right, #ffcc99 0%,#ffcc99 76%,#000000 76%,#000000 78%,#9999ff 78%,#9999ff 100%); */
+/* 	display: inline-block; */
+/* 	max-width: 65%; */
+	}
+.theme_lcars #layout_ui_side > .planet h2 SPAN { padding: 0 0.25em; margin-left: -0.25em; display: inline-block; background:#000; line-height:39px; height: 39px;}
+
+.theme_lcars #layout_ui_side > .planet > IMG {
+margin-top: -55px;
+margin-right: -7px;
+border: #000 solid 7px;
+border-width: 0px 7px 0px 7px;
+height: 39px;
+}
+.theme_lcars h3 { color:#F90; font-family: 'lcars_bold'; font-size: 200%;  text-transform:uppercase;}
+.theme_lcars A,
+.theme_lcars P,
+.theme_lcars LI,
+.theme_lcars DIV,
+.theme_lcars TD,
+.theme_lcars DD  { color:#fcfff4; }
+.theme_lcars TD { border-color: #333; }
+.theme_lcars #layout_ui_nav { 
+/* 	background: #000; */
+	background: #000 /*linear-gradient(to right, #000000 0%,#3d3d3d 50%,#000000 100%)*/; /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	}
+.theme_lcars #layout_ui_side { 
+	background: #000;
+	color:#FC9;
+	margin: 1em 0 1em 1em;
+	border: 1em solid #FC9;
+	border-left-color: #FC9;
+	border-right-color: #C66;
+	border-top-color: #99F;
+	border-bottom-color: #C9C;
+	border-radius: 1em;
+	border-top-width: 39px;
+	border-bottom-width: 2em;
+/* 	border-image: url(img/layout/lcars1.png) 60 stretch; */
+	}
+.theme_lcars #layout_ui_side h1 { color:#F90; }
+.theme_lcars #layout_ui_side h2 { color:#F90; }
+.theme_lcars #layout_ui_side h3 { color:#F90; }
+.theme_lcars #layout_ui_side A,
+.theme_lcars #layout_ui_side P,
+.theme_lcars #layout_ui_side LI,
+.theme_lcars #layout_ui_side DIV,
+.theme_lcars #layout_ui_side TD,
+.theme_lcars #layout_ui_side DD  { color:#FC9; }
+.theme_lcars #layout_ui_side TD { border-color: #FC9; }
+
+.theme_lcars #layout_ui_nav A {
+	color:#F90; 
+	border: none;
+	background: none; 
+	padding:0 0.25em;
+	}
+.theme_lcars #layout_ui_nav {
+	background:#000;
+	border-radius:50%;
+	flex:1;
+	margin: 1em 0 1em 1em;
+	border: 1em solid #FC9;
+	border-left-color: #FC9;
+	border-right-color: #C66;
+	border-top-color: #99F;
+	border-bottom-color: #C9C;
+	border-radius: 1em;
+	border-top-width: 39px;
+	border-bottom-width: 2em;
+	border-right-width: 0;
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	}
+.theme_lcars #layout_ui_nav .icon {
+	font-size: 30px;
+	line-height: 30px;
+	}
+.theme_lcars #layout_pagewrap {
+	background: #000 url(../img/map/bg/space_002.jpg) 50% 50% no-repeat;
+	}	
+.theme_lcars #layout_ui_side > .planet .env_box { 
+background:#444;
+
+}	

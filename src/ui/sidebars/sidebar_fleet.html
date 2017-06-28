@@ -1,0 +1,58 @@
+<template>
+<!--	<require from="./converters/percent"></require>
+	<require from="./converters/round"></require>-->
+
+	<!-- FLEET DISPLAY MODE -->
+	<div class="fleet" if.bind="mode == 'fleet'">
+		<h2>${fleet.owner.name} Fleet #${fleet.id}</h2>
+		<p class="msg" if.bind="fleet.star">Stationed at <b>${fleet.star.name}</b></p>
+		<p class="msg" if.bind="fleet.dest">Heading to <b>${fleet.dest.name}</b></p>
+		<p class="button_rack">
+			<a href="#" click.delegate="ClickSend()" if.bind="!star_select_mode" class="${can_send ? '' : 'ghost'}">SEND</a>
+			<a href="#" click.delegate="ClickSendCancel()" class="bad" if.bind="star_select_mode">CANCEL</a>
+			<a href="#" click.delegate="ClickColonize()" class="${can_colonize ? 'alt' : 'ghost'}">COLONIZE</a>
+			<a href="#" click.delegate="SelectAll()" >ALL</a>
+			<a href="#" click.delegate="SelectNone()" >NONE</a>
+			<a href="#" click.delegate="SelectInvert()" >INVERT</a>
+<!-- 			<a href="#" click.delegate="ClickScrap()" >SCRAP</a> -->
+		</p>
+		<p style="font-weight:bold; color: #FAA;" if.bind="star_select_mode">Click a star to send fleet to.</p>
+		<div class="shiplist">
+			<div class="ship ${ship.selected ? 'selected' : ''}" click.delegate="SelectShip(ship)" repeat.for="ship of fleet.ships" >
+				<img src.one-time="ship.img" />
+				<progress max="100" value="${((ship.hp / ship.maxhp)*100)|round}" class="${GetHealthClass(ship)}"></progress>
+				<p class="name">${ship.name}</p>
+				<!--<p class="hp">325</p>
+				<p class="size">Big</p>
+				<p class="decor">F,D</p>
+				<p class="exp">***</p>-->
+			</div>
+		</div>
+	</div>
+
+	<!-- CHOOSE-COLONY MODE -->
+	<div class="star star_${fleet.star.color}" if.bind="mode == 'colonize'">
+		<h2>Colonize ${fleet.star.name}</h2>
+		<p style="font-weight:bold; color: #FAA;" >Choose a planet to colonize:</p>
+		<template repeat.for="p of fleet.star.planets" containerless>
+			<div class="planet atm${p.atm} tmp${p.temp}" css.one-time="PlanetSizeCSS(p)" if.bind="p.owner === false" click.delegate="ChoosePlanetToColonize(p)">
+				<p class="env_label"><span class="env_label">${p.envDisplayName}</span></p>
+				<div class="env_box">
+					<div class="target"></div>
+				</div>	
+				<h3 css="color: ${p.ui_color};">${p.name}</h3>
+				<div class="phys">
+					<div class="size">
+						<span class="size">${p.size}<br/><span class="size">SIZE</span></span>							
+						<span class="mine">${p.rich}x<br/><span class="mine">MINING</span></span>
+						<span class="en">${p.energy}x<br/><span class="en">ENERGY</span></span>
+					</div>			
+				</div>
+			</div>
+		</template>
+		<p class="button_rack">
+			<a href="#" click.delegate="ClickCancelChoosePlanet()" class="bad">CANCEL</a>
+		</p>		
+	</div>
+	
+</template>

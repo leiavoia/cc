@@ -1,0 +1,107 @@
+<template>
+<!-- <require from="../converters/SetupConverters"></require> -->
+
+<div id="layout_ui">
+	<div id="layout_ui_main" class="setup">
+		
+		<div id="setup_pane">
+			<h1>New Game</h2>
+			<p class="button_rack">
+				<a href="#" class="button ${show_pane == 'game' ? '' : 'cool'}" click.trigger="ChangePanel('game')">Game Setup</a>
+				<a href="#" class="button ${show_pane == 'galaxy' ? '' : 'cool'}" click.trigger="ChangePanel('galaxy')">Galaxy Setup</a>
+				<a href="#" class="button ${show_pane == 'race' ? '' : 'cool'} ghost" click.trigger="ChangePanel('race')">Race Setup</a>
+			</p>
+			<div id="game_setup_pane" class="pane" show.bind="show_pane == 'game'">
+				<div class="option">
+					<label for="diff">Difficulty</label>
+					<input id="diff" type="range" min="0.0" max="1.0" step="0.1" value.bind="settings.diff" /> 
+					<output>${settings.diff|difficultySetting}</output>
+				</div>
+				<div class="option">
+					<label for="events">Random Events</label>
+					<input id="events" type="range" min="0.0" max="1.0" step="0.1" value.bind="settings.events_freq" /> 
+					<output>${settings.events_freq|minMax}</output>
+				</div>
+				<div class="option">
+					<label for="num_civs">AI Empires</label>
+					<input id="num_civs" type="range" min="1" max="30" step="1" value.bind="settings.num_civs" /> 
+					<output>${settings.num_civs}</output>
+				</div>
+				<div class="option">
+					<label for="scenario">Scenario</label>
+					<select id="scenario">
+						<option selected>Post-Warp Sandbox</option>
+						<option>Pre-Warp Sandbox</option>
+						<option>Mice &amp; Giants</option>
+						<option>Turtle Fight</option>
+						<option>Team Play</option>
+					</select>
+				</div>
+				<div class="option">
+					<label for="Victory">Victory</label>
+					<div>
+						<p><input type="checkbox" name="victory" value="const_contr" /> Constellation Control</p>
+						<p><input type="checkbox" name="victory" value="ultimate_weapon" /> Ultimate Weapon</p>
+						<p class="disabled"><input type="checkbox" name="victory" value="evil_empire" /> Evil Empire</p>
+						<p class="disabled"><input type="checkbox" name="victory" value="baseball" /> Baseball</p>
+					</div>
+				</div>
+			</div>
+			<div id="galaxy_setup_pane" class="pane" show.bind="show_pane == 'galaxy'">
+				<div class="option">
+					<input type="checkbox" name="rand_size" />
+					<label for="size">Galaxy Size</label>
+					<input id="size" type="range" min="8" max="100" step="1" value.bind="settings.galaxy_size" /> 
+					<output>${settings.galaxy_size} Sectors</output>
+				</div>
+				<div class="option">
+					<input type="checkbox" name="rand_age" />
+					<label for="age">Galaxy Age</label>
+					<input id="age" type="range" min="0.0" max="1.0" step="0.1" value.bind="settings.galaxy_age" /> 
+					<output>${settings.galaxy_age|galaxyAge}</output>
+				</div>
+				<div class="option">
+					<input type="checkbox" name="rand_stars" />
+					<label for="stars">Star Density</label>
+					<input id="stars" type="range" min="0.0" max="1.0" step="0.1" value.bind="settings.num_stars" /> 
+					<output>${settings.num_stars|starDensity}</output>
+				</div>
+				<div class="option">
+					<input type="checkbox" name="rand_size" />
+					<label for="crazyness">Crazyness</label>
+					<input id="crazyness" type="range" min="0.0" max="1.0" step="0.1" value.bind="settings.crazyness" /> 
+					<output>${settings.crazyness|minMax}</output>
+				</div>
+							
+				
+			</div>
+			<div id="race_setup_pane" class="pane" show.bind="show_pane == 'race'">
+				<div class="option">
+					<h2>Organism</h2>
+				</div>
+				<div class="option">
+					<h2>Environment</h2>
+				</div>
+				<div class="option">
+					<h2>Domain</h2>
+				</div>
+				<div class="option">
+					<h2>Balance</h2>
+				</div>
+				<div class="option">
+					<h2>Attributes</h2>
+				</div>
+				<div class="option">
+					
+				</div>
+				
+			</div>
+			<p class="button_rack right">
+				<a href="" class="big" click.delegate="Confirm()">MAKE IT SO</a>
+				<a href="" class="big bad" click.delegate="Cancel()">CANCEL</a>
+			</p>
+		</div>
+		
+	</div>
+</div>
+</template>

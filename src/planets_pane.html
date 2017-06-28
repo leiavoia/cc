@@ -1,0 +1,29 @@
+<template>
+	<div id="planets_pane" class="pane">
+	
+		<h1>Planets</h1>
+		
+		<p>AVG RICH: ${app.avg_rich|round:3}x</p>
+		<p>AVG RARITY: ${app.avg_rarity|round:3}</p>
+		<p>RARITY COUNT: ${app.rare_count[0]} | ${app.rare_count[1]} | ${app.rare_count[2]} | ${rapp.are_count[3]} |  ${app.rare_count[4]}</p>
+
+		<table cellpadding="6">
+			<tr repeat.for="p of app.planets">
+				<td><a href="#"  click.delegate="app.SwitchSideBar(p)">${p.name}</a></td>
+				<td>${p.rich}x</td>
+				<td>${p.envDisplayName}</td>
+				<td>a:${p.atm}</td>
+				<td>t:${p.temp}</td>
+				<td class="i">POP: ${p.total_pop|round:1}</td>
+				<td class="i">INF: ${p.inf|round}</td>
+				<td class="i">${p.size}</td>
+				<td class="t">TX%: ${p.tax_rate|percent}</td>
+				<td class="t">INCOME: ${p.tax|round:1} / ${p.total_expense|round:1}</td>
+				<td class="f">GF: ${p.econ.GF|round:3}</td>
+				<td class="f">PCI: ${p.econ.PCI|round:1}</td>
+			</tr>
+		</table>
+		
+		<p><a href="#"  click.delegate="ClosePanel()" class="button big">CLOSE</a></p>
+	</div>
+</template>

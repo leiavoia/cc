@@ -1,0 +1,5 @@
+
+scripts/vendor-bundle.js
+scripts/app-bundle.js
+workshop/
+node_modules/

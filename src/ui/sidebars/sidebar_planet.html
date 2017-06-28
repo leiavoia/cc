@@ -1,0 +1,89 @@
+<template>
+<!--	<require from="./converters/percent"></require>
+	<require from="./converters/round"></require>
+	<require from="./converters/idealplanetsize"></require>-->
+	
+	<div class="planet atm${planet.atm} tmp${planet.temp}" css="min-height:${(planet.size)|idealplanetsize}px; background-size: auto ${(planet.size)|idealplanetsize}px; background-position: calc(100% + ${planet.size}px) -${planet.size}px ;">
+		
+		<nav>
+			<!-- add to constellation button when debugging is over: planet.owner.id == theapp.iam -->
+			<a href="#" class="button left" click.delegate="PressStarButton()"> STAR </a><a href="#" class="button center" click.delegate="PressConstelButton()" if.bind="planet.owner"> CONSTL </a><a href="#" class="button right" click.delegate="OpenDetailsPane()"> INFO </a>
+			<a href="#" class="button left" click.delegate="PressPrevPlanetButton()"> PREV </a><a href="#" class="button right" click.delegate="PressNextPlanetButton()"> NEXT </a>
+		</nav>
+		
+		<!-- NOTE: using one-time binding to avoid brief moment when the 
+		object is undefined and browser tries to ask server for 'undefined' -->
+		<img if.bind="planet.owner" class="flag" src.one-time="planet.owner.flag_img" />
+		<h2>${planet.name}</h2>
+		
+		<p class="alert" if.bind="planet.econ.mine_export < 0">Not enough resources</p>
+		
+		<!-- Physical attributes -->
+		<div class="phys" style="display:flex; flex-flow: row;">
+			<div class="" style="flex:2;"><!-- planet.owner.id == app.game.iam -->
+				<div class="size" >
+					<span class="pop" if.bind="planet.owner !== false">${planet.total_pop|round:1}<br/><span class="pop">POP</span></span>
+					<span class="inf" if.bind="planet.owner !== false">${planet.inf|round:1}<br/><span class="inf">INFR</span></span>
+					<span class="size">${planet.size}<br/><span class="size">SIZE</span></span>					
+					
+					<div class="size" if.bind="planet.owner !== false" css="width:${planet.size / 150 | percent:3}%"></div>
+					<div class="inf" if.bind="planet.owner !== false" css="width:${(planet.inf / planet.size) * (planet.size / 150) | percent:3}%"></div>
+					<div class="pop" if.bind="planet.owner !== false" css="width:${(planet.total_pop / planet.size) * (planet.size / 150) | percent:3}%"></div>
+
+					<span class="mine">${planet.rich}x<br/><span class="mine">MINING</span></span>
+					<span class="en">${planet.energy}x<br/><span class="en">ENERGY</span></span>
+				</div>
+				<p if.bind="planet.owner !== false">OWNER: ${planet.owner.name}</p>
+<!-- 				<p repeat.for="attr of planet.physattr" class="special">${attr.name}<br/><span style="font-size: 75%; color: #999;">${attr.note}</span></p> -->
+			</div>			
+			<div class="env">
+				<div class="env_box">
+					<div class="target"></div>
+				</div>
+				<p class="env_label">${planet.envDisplayName}</p>
+				<p class="env_stats">ATM: ${planet.atm}, TEMP: ${planet.temp}</p>
+			</div>	
+		</div>
+		<!-- Spending Levels -->
+		<div class="spending" if.bind="planet.owner">
+			<div class="spending_stackbar">
+				<div class="m" css="width:${planet.act.mine.pct | percent:3}%">${planet.act.mine.est_output | round:1}${planet.act.mine.est_output > planet.act.mine.need ? '+' : '-'}</div>
+				<div class="i" css="width:${planet.act.inf.pct | percent:3}%">${planet.act.inf.est_output | round:1} (${(planet.act.inf.est_output - planet.act.inf.maint) | round:1})</div>
+				<div class="p" css="width:${planet.act.prod.pct | percent:3}%">${planet.act.prod.est_output | round:1}</div>
+				<div class="s" css="width:${planet.act.sci.pct | percent:3}%">${planet.act.sci.est_output | round:1}</div>
+			</div>
+			<div class="m"><span>MINE</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_mine" /><span>${planet.act.mine.pct | percent}%</span></div> 
+			<div class="i"><span>INF</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_inf" /><span>${planet.act.inf.pct | percent}%</span></div> 
+			<div class="p"><span>PROD</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_prod" /><span>${planet.act.prod.pct | percent}%</span></div> 
+			<div class="s"><span>SCI</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_sci" /><span>${planet.act.sci.pct | percent}%</span></div> 
+			<br/>
+			<div class="t"><span>TAX</span><input type="range"  min="0" max="0.5" step="0.01" value.bind="planet.tax_rate" /><span>${planet.tax_rate | percent}%</span></div> 
+			<div class="th"><span>SPEND</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.spending" /><span>${planet.spending | percent}%</span></div> 
+			<div><span>MORALE</span><input type="range" min="0" max="2.0" step="0.01" value.bind="planet.morale" /><span>${planet.morale | percent}%</span></div> 
+		</div>
+		<!-- Colony Data -->
+		<div class="data" if.bind="planet.owner">
+			<h3>Now Building:</h3>
+			<table class="prod_queue">
+				<tr repeat.for="item of planet.prod_q">
+					<td>${item.turns_left}</td>
+					<td><progress max="100" value="${item.pct|round}"></progress><p>${item.obj.name}</p></td>
+					<td><a href="#" click.delegate="BuildQueueMoveItemUp($index)" if.bind="$index > 0">▲</a></td>
+					<td><a href="#" click.delegate="BuildQueueMoveItemDown($index)" if.bind="$index != (planet.prod_q.length-1)">▼</a></td>
+					<td>
+						<select value.bind="item.quantity">
+							<option repeat.for="option of prod_q_repeat_vals" model.bind="option.value">${option.name}</option>
+						</select>			
+					</td>
+					<td><a href="#" click.delegate="BuildQueueRemoveItem($index)" class="bad">X</a></td>
+				</tr>
+			</table>
+			<p>Built:</p>
+			<ul>
+				<li repeat.for="bdg of planet.buildings">${bdg.obj.name}</li>				
+			</ul>
+			
+		</div>
+
+	</div>
+</template>
