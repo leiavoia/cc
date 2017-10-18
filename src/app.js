@@ -40,34 +40,14 @@ export class App {
 	// can be a Star, Planet, Fleet, or an x/y pair: {x:100,y:100}
 	FocusMap( obj, snap = false ) { 
 		if ( this.state == 'play' ) { 
-			this.playstate.FocusMap( obj, snap );
+			this.state.FocusMap( obj, snap );
 			}
 		}
 	
 	// returns promise
 	ChangeState( state ) { 
-		return new Promise(
-			( resolve, reject ) => { 
-				switch ( state ) { 
-					case 'play': {
-						this.state = state;
-						break;
-						}
-					case 'title': {
-						this.state = state;
-						break;
-						}
-					default: { this.state = state; }
-					}
-				if (true) {
-					console.log(`changing to ${state}`);
-					resolve(`changing to ${state}`);
-					}
-				else {
-					reject(Error("State change did not work"));
-					}		
-				}
-			);
+		console.log(`changing to ${state}`);
+		this.state = state;
 		}
 		
 	RegisterStarClickCallback( callback ) {

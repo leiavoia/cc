@@ -4,8 +4,8 @@
 <require from="./states/title_screen"></require>
 <require from="./states/setup_new_game"></require>
 
-<play-state if.bind="state == 'play'" app.bind="theapp" view-model.ref="playstate" containerless ></play-state>
-<title-state if.bind="state == 'title'"  app.bind="theapp" containerless ></title-state>
-<setup-new-game-state if.bind="state == 'setup_new'"  app.bind="theapp" containerless ></setup-new-game-state>
+<play-state if.bind="state == 'play'" containerless ></play-state>
+<title-state if.bind="state == 'title'" containerless ></title-state>
+<setup-new-game-state if.bind="state == 'setup_new'" containerless ></setup-new-game-state>
 
 </template>

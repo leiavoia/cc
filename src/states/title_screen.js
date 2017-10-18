@@ -1,10 +1,10 @@
-import {bindable} from 'aurelia-framework';
+import {inject} from 'aurelia-framework';
+import {App} from '../app';
 
+@inject(App)
 export class TitleState {
-	@bindable app = null;
-	
-	constructor() {
-		
+	constructor( app ) {
+		this.app = app;
 		}
 
 	ClickNewGame() {

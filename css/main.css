@@ -317,7 +317,7 @@ body,html {
 	background: none; 
 	background: #000 url(../img/map/bg/setup.jpg) 0% 50% repeat-x;
 /* 	background-size: cover; */
-	animation: scrollbg 500s linear infinite;
+/* 	animation: scrollbg 500s linear infinite; */
 	}
 @keyframes scrollbg {
 	0% { background-position: 0% 50%; }

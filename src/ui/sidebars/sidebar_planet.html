@@ -47,15 +47,13 @@
 		<!-- Spending Levels -->
 		<div class="spending" if.bind="planet.owner">
 			<div class="spending_stackbar">
-				<div class="m" css="width:${planet.act.mine.pct | percent:3}%">${planet.act.mine.est_output | round:1}${planet.act.mine.est_output > planet.act.mine.need ? '+' : '-'}</div>
-				<div class="i" css="width:${planet.act.inf.pct | percent:3}%">${planet.act.inf.est_output | round:1} (${(planet.act.inf.est_output - planet.act.inf.maint) | round:1})</div>
-				<div class="p" css="width:${planet.act.prod.pct | percent:3}%">${planet.act.prod.est_output | round:1}</div>
-				<div class="s" css="width:${planet.act.sci.pct | percent:3}%">${planet.act.sci.est_output | round:1}</div>
+				<div class="m" css="width:${planet.sect.mine.pct | percent:3}%">${planet.sect.mine.est_output | round:1}${planet.sect.mine.est_output > planet.sect.mine.need ? '+' : '-'}</div>
+				<div class="p" css="width:${planet.sect.prod.pct | percent:3}%">${planet.sect.prod.est_output | round:1}</div>
+				<div class="s" css="width:${planet.sect.sci.pct | percent:3}%">${planet.sect.sci.est_output | round:1}</div>
 			</div>
-			<div class="m"><span>MINE</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_mine" /><span>${planet.act.mine.pct | percent}%</span></div> 
-			<div class="i"><span>INF</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_inf" /><span>${planet.act.inf.pct | percent}%</span></div> 
-			<div class="p"><span>PROD</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_prod" /><span>${planet.act.prod.pct | percent}%</span></div> 
-			<div class="s"><span>SCI</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_sci" /><span>${planet.act.sci.pct | percent}%</span></div> 
+			<div class="m"><span>MINE</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_mine" /><span>${planet.sect.mine.pct | percent}%</span></div> 
+			<div class="p"><span>PROD</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_prod" /><span>${planet.sect.prod.pct | percent}%</span></div> 
+			<div class="s"><span>SCI</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_sci" /><span>${planet.sect.sci.pct | percent}%</span></div> 
 			<br/>
 			<div class="t"><span>TAX</span><input type="range"  min="0" max="0.5" step="0.01" value.bind="planet.tax_rate" /><span>${planet.tax_rate | percent}%</span></div> 
 			<div class="th"><span>SPEND</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.spending" /><span>${planet.spending | percent}%</span></div> 

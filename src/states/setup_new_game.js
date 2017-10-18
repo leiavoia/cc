@@ -1,8 +1,9 @@
-import {bindable} from 'aurelia-framework';
+import {inject} from 'aurelia-framework';
 import * as utils from '../util/utils';
+import {App} from '../app';
 
+@inject(App)
 export class SetupNewGameState {
-	@bindable app = null;
 	show_pane = 'galaxy';
 	settings = {
 		galaxy_size: 15, // in "sectors" (1000px^2)
@@ -20,7 +21,8 @@ export class SetupNewGameState {
 			}
 		};
 	
-	constructor() {
+	constructor( app ) {
+		this.app = app;
 		}
 
 	ChangePanel(panel) {
@@ -46,10 +48,16 @@ export class SetupNewGameState {
 			this.settings.galaxy_age
 			);
 		let mystar = this.app.game.galaxy.AddExploreDemo();
-		this.app.ChangeState('play').then( () => {
-			this.app.hilite_star = mystar;
-			this.app.FocusMap(mystar);
-			} );
+		this.app.ChangeState('play');
+		this.app.hilite_star = mystar;
+		// at this point there is some fudge time until the PlayState
+		// widget actually gets created and placed into the layout.
+		// Trying to perform functions directly on the PlayState will
+		// fail because it doesn't exist yet. Let PlayState handle
+		// anything it needs by itself. Just give it the data it needs.
+		// [!]TODO - Consider adding an App::OnStateChange callback
+		// that States can call when they are done loading. Kinda like 
+		// an app-level event lifecycle.
 		}
 	Cancel() {
 		this.app.ChangeState('title');

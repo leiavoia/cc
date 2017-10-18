@@ -7,52 +7,41 @@ import * as utils from '../util/utils';
 
 export default class Planet {
 	
+	// UI and DATA ---------------------------------------
+	ui_color = 'inherit'; // this way you can set defaults in CSS and override inline
 	star = null;
+	explored = false;
+	owner = false; // false indicates unowned. zero can be an index
 	// constellations are groups of connected stars of the same civ. 
 	// it's easier to put a link to the constellation on the indv colonies
 	// than to link it to the star, because contellations of different
 	// civs in the same star systems may overlap
 // 	constel = null;
-	explored = false;
-	owner = false; // false indicates unowned. zero can be an index
-	physattr = [];
-	buildings = [];
-	building_fund = 0;
-	
-	tax_rate = 0.2;
-	throttle = 0.75; // AKA throttle
-	
-	// activities
-	act = {
-		mine: { pct: 0.5, rel_pct: 0.5, pow: 1.0, costmod: 1.0, output: 0.0, est_output: 0.0, cost: 0.0, est_cost: 0.0 },
-		inf: { pct: 0.5, rel_pct: 0.5, pow: 1.0, costmod: 1.0, output: 0.0, est_output: 0.0, cost: 0.0, est_cost: 0.0, maint: 0.0, maint_ratio: 0.1, growth: 0 },
-		prod: { pct: 0, rel_pct: 0, pow: 1.0, costmod: 1.0, output: 0, est_output: 0.0, cost: 0.0, est_cost: 0.0 },
-		sci: { pct: 0, rel_pct: 0, pow: 1.0, costmod: 1.0, output: 0, est_output: 0.0, cost: 0.0, est_cost: 0.0 },
-		};
-		
-	energy = 1.0; // represents production bonus
-	
-	base_colony_fee = 20;
-	total_expense = 20;
-	est_total_expense = 20;
-	
-	base_PCI = 10.0;
-	INF_maint_cost = 1.0; // per unit of INF
-	bonus_PCI = 0.0;
-	
-	ui_color = 'inherit'; // this way you can set defaults in CSS and override inline
-		
 	name = 'UNKNOWN';
-	rich = 0;
-	warehouse = 0;
-	size = 0;
-	atm = 0;
-	temp = 0;
 	inf = 0;
 	total_pop = 0;
 	pop = [];
-	morale = 1.0;
-	unempl = 0.05;
+	morale = 1.0;	
+	
+	
+	// PHYSICAL ATTRIBUTES -------------------------------
+	energy = 1.0; // represents production bonus
+	rich = 0;
+	size = 0;
+	atm = 0;
+	temp = 0;
+	physattr = [];
+	
+	
+	// ECONOMY -------------------------------------------
+	tax_rate = 0.2;
+	use_global_tax_rate = false;
+	spending = 0.75;
+	buildings = [];
+	building_fund = 0;
+	base_PCI = 10.0; // per capita income
+	bonus_PCI = 0.0;	
+	warehouse = 0;
 	econ = {
 		GDP: 0, // gross domestic product
 		PCI: 0, // per-capita income
@@ -60,9 +49,40 @@ export default class Planet {
 		mine_export: 0, // can be pos or neg, depending on if planet has a need or excess
 		mine_import: 0, // the actual amount being imported, if needed. number may differ from need above
 		};
-
-
+	
 		
+	// ACTIVITY SECTORS ----------------------------------
+	// 	vars:
+	//		pct: the percentage of the planetary spending allocated to this sector
+	//		relpct: the relative percent of spending, used to work with UI sliders.
+	//		pow: efficiency of sector at producing work.
+	//		work: raw work being produced (global spending * pct * pow)
+	//		inf: current level of developed infrastructure for this sector
+	//		output: product, after factoring in growth of infrastructure
+	//		growth: amount by which sector grew or shrank last turn.
+	//	
+	//	Production Formula: 
+	//		global spending = pop * amount per pop (i.e. tax)
+	//		sector spending = global spending * pct
+	//		work = sector spending * pow
+	//		output = min( inf, work )
+	//		growth = 0.2 * ( work - inf ) ^ 0.75
+	//		inf += growth
+	sect = {
+		mine:{ pct: 0.5, relpct: 0.5, pow: 1.0, work: 0, output: 0.0, inf: 0.0, growth: 0.0 },
+		prod:{ pct: 0.5, relpct: 0.5, pow: 1.0, work: 0, output: 0.0, inf: 0.0, growth: 0.0 },
+		sci:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0, output: 0.0, inf: 0.0, growth: 0.0 },
+		com:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0, output: 0.0, inf: 0.0, growth: 0.0 },
+		gov:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0, output: 0.0, inf: 0.0, growth: 0.0 },
+		spy:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0, output: 0.0, inf: 0.0, growth: 0.0 },
+		sup:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0, output: 0.0, inf: 0.0, growth: 0.0 },
+		civ:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0, output: 0.0, inf: 0.0, growth: 0.0 },
+		def:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0, output: 0.0, inf: 0.0, growth: 0.0 }	
+		};
+
+
+
+	// PRODUCTION --------------------------	
 	prod_q = [
 		{
 			type: 'building',
@@ -113,157 +133,120 @@ export default class Planet {
 			name: "Thing 3",
 			},
 		];
+			
 		
-	RecalcExpenses() { 
-		// recalc output
-		// note: INF and PROD use estimated output because their output is dependent on mining resources
-		this.act.mine.est_output = this.act.mine.pct * this.act.mine.pow * this.total_pop * this.throttle * this.rich;
-		this.act.inf.est_output = this.act.inf.pct * this.act.inf.pow * this.total_pop * this.throttle * this.energy;
-		this.act.prod.est_output = this.act.prod.pct * this.act.prod.pow * this.total_pop * this.throttle * this.energy;
-		this.act.sci.est_output = this.act.sci.pct * this.act.sci.pow * this.total_pop * this.throttle;
-		
-		// mining need
-		this.act.mine.need = this.act.prod.est_output + this.act.inf.est_output;
-		
-		// prod and inf output are limited by available mining resources.
-		// these can be produced locally or imported from elsewhere.
-		// we also shouldnt be charging costs for output not produced.
-		
-		// recalc costs
-		this.act.mine.est_cost = this.act.mine.pct * this.total_pop * this.act.mine.costmod * this.throttle;
-		this.act.inf.est_cost = this.act.inf.pct * this.total_pop * this.act.inf.costmod * this.throttle;
-		this.act.prod.est_cost = this.act.prod.pct * this.total_pop *  this.act.prod.costmod * this.throttle;
-		this.act.sci.est_cost = this.act.sci.pct * this.total_pop * this.act.sci.costmod * this.throttle;
-		this.est_total_expense = this.base_colony_fee
-			+ this.act.mine.est_cost
-			+ this.act.inf.est_cost
-			+ this.act.prod.est_cost
-			+ this.act.sci.est_cost
-			// + (this.inf * this.INF_maint_cost) // colony maintenance
-			;
-		this.total_expense = this.base_colony_fee
-			+ this.act.mine.cost
-			+ this.act.inf.cost
-			+ this.act.prod.cost
-			+ this.act.sci.cost
-			// + (this.inf * this.INF_maint_cost) // colony maintenance
-			;
-		}
-	
 	get tax() { 
-		return this.CollectTax();
+		return this.total_pop * this.tax_rate * this.econ.PCI;
 		}
-	get spending() { 
-		return this.throttle;
-		}
-	set spending(x) { 
-		this.throttle = x;
-		this.RecalcExpenses();
-		}
+// 	get spending() { 
+// 		return this.spending;
+// 		}
+// 	set spending(x) { 
+// 		this.spending = x.clamp(0,200);
+// 		this.RecalcSectors();
+// 		}
 	set slider_mine(x) { 
-		this.act.mine.rel_pct = parseFloat(x);
+		this.sect.mine.relpct = parseFloat(x);
 		this.RecalcSpendingSliders();
 		}
-	set slider_inf(x) { 
-		this.act.inf.rel_pct = parseFloat(x);
+	set slider_gov(x) { 
+		this.sect.gov.relpct = parseFloat(x);
 		this.RecalcSpendingSliders();
 		}
 	set slider_prod(x) { 
-		this.act.prod.rel_pct = parseFloat(x);
+		this.sect.prod.relpct = parseFloat(x);
 		this.RecalcSpendingSliders();
 		}
 	set slider_sci(x) { 
-		this.act.sci.rel_pct = parseFloat(x);
+		this.sect.sci.relpct = parseFloat(x);
+		this.RecalcSpendingSliders();
+		}
+	set slider_com(x) { 
+		this.sect.com.relpct = parseFloat(x);
+		this.RecalcSpendingSliders();
+		}
+	set slider_civ(x) { 
+		this.sect.civ.relpct = parseFloat(x);
+		this.RecalcSpendingSliders();
+		}
+	set slider_def(x) { 
+		this.sect.def.relpct = parseFloat(x);
+		this.RecalcSpendingSliders();
+		}
+	set slider_sup(x) { 
+		this.sect.sup.relpct = parseFloat(x);
+		this.RecalcSpendingSliders();
+		}
+	set slider_spy(x) { 
+		this.sect.spy.relpct = parseFloat(x);
 		this.RecalcSpendingSliders();
 		}
 	get slider_mine() { 
-		return this.act.mine.rel_pct;
+		return this.sect.mine.relpct;
 		}
-	get slider_inf() { 
-		return this.act.inf.rel_pct;
+	get slider_gov() { 
+		return this.sect.gov.relpct;
 		}
 	get slider_prod() { 
-		return this.act.prod.rel_pct;
+		return this.sect.prod.relpct;
 		}
 	get slider_sci() { 
-		return this.act.sci.rel_pct;
+		return this.sect.sci.relpct;
+		}
+	get slider_com() { 
+		return this.sect.com.relpct;
+		}
+	get slider_civ() { 
+		return this.sect.civ.relpct;
+		}
+	get slider_def() { 
+		return this.sect.def.relpct;
+		}
+	get slider_sup() { 
+		return this.sect.sup.relpct;
+		}
+	get slider_spy() { 
+		return this.sect.spy.relpct;
 		}
 	RecalcSpendingSliders() { 
-		let t = 
-			this.act.mine.rel_pct +
-			this.act.inf.rel_pct +
-			this.act.prod.rel_pct +
-			this.act.sci.rel_pct 
-			;
-		// if everything is zero, set everything to 25%
-		if ( !t ) { 
-			this.act.mine.pct = 0.25;	
-			this.act.inf.pct = 0.25;
-			this.act.prod.pct = 0.25;
-			this.act.sci.pct = 0.25;
+		// get some stats
+		let t = 0; // sum of all sliders
+		let n = 0; // number of sectors
+		for ( let s of this.sect ) { 
+			t += s.relpct; 
+			n++;
 			}
+		if ( t ) { 
+			for ( let s of this.sect ) { 
+				s.pct = s.relpct / t; 
+				}	
+			}
+		// if everything is zero, divide evenly
 		else {
-			this.act.mine.pct = this.act.mine.rel_pct / t;	
-			this.act.inf.pct = this.act.inf.rel_pct / t;	
-			this.act.prod.pct = this.act.prod.rel_pct / t;	
-			this.act.sci.pct = this.act.sci.rel_pct / t;	
+			for ( let s of this.sect ) { 
+				s.pct = 1.0 / n; 
+				}
 			}
 		// recalc expenses
-		this.RecalcExpenses();
+		this.RecalcSectors();
 		}
-
+		
+	// ????
 	CollectTax() { 
 		return this.total_pop * this.tax_rate * this.econ.PCI;
 		}
 	DoMining() { 
-		this.act.mine.output = this.act.mine.est_output;
-		this.warehouse += this.act.mine.output;
-		this.act.mine.cost = this.act.mine.est_cost;
-		}
-	DoINF() { 
-		let hit_max = false;
-		// we need to both maintain existing inf and then build more on top of that. 
-		this.act.inf.growth = 0;
-		this.act.inf.maint = this.act.inf.maint_ratio * this.inf;
-		// actual infrastructure output depends on available mining resources.
-		// we also have to split it with production output.
-		let comb_output = this.act.inf.est_output + this.act.prod.est_output;
-		this.act.inf.output = this.act.inf.est_output;
-		if ( comb_output > this.warehouse ) { 
-			this.act.inf.output = ( this.act.inf.est_output / comb_output ) * this.warehouse;
-			}
-		// if the requested output would put us over the size, clamp it
-		if ( this.inf + ( this.act.inf.output - this.act.inf.maint ) > this.size ) { 
-			this.act.inf.output = ((this.inf + (this.act.inf.output - this.act.inf.maint)) - this.size) + this.act.inf.maint;
-			hit_max = true;
-			}
-		this.act.inf.growth = this.act.inf.output - this.act.inf.maint; // this can be negative
-		this.inf += this.act.inf.growth; // this can be negative
-		this.warehouse -= this.act.inf.output;
-		if ( this.inf > this.size ) { this.inf = this.size; } // sanity check
-		else if ( this.inf < 0 ) { this.inf = 0; } // sanity check
-		// record the actual cost for what was actually produced (and dont divide by zero)
-		let pct = this.act.inf.est_output > 0 ? (this.act.inf.output / this.act.inf.est_output) : 1.0;
-		this.act.inf.cost = this.act.inf.est_cost * pct;
-		// set the INF slider to maintenance mode
-		if ( hit_max ) {
-			this.act.inf.rel_pct = Math.ceil( (this.act.inf.rel_pct * (this.act.inf.maint / this.act.inf.est_output))*100 ) / 100;
-			this.RecalcSpendingSliders();
-			}
+		this.sect.mine.output = this.sect.mine.est_output;
+		this.warehouse += this.sect.mine.output;
+		this.sect.mine.cost = this.sect.mine.est_cost;
 		}
 	DoProduction() { 
-		// actual infrastructure output depends on available mining resources.
-		// we also have to split it with production output.
-		let comb_output = this.act.inf.est_output + this.act.prod.est_output;
-		this.act.prod.output = this.act.prod.est_output;
-		if ( comb_output > this.warehouse ) { 
-			this.act.prod.output = ( this.act.prod.est_output / comb_output ) * this.warehouse;
-			}
-		this.building_fund += this.act.prod.output;
-		this.warehouse -= this.act.prod.output;
+		// actual output depends on available mining resources.
+		this.building_fund += this.sect.prod.output;
+		this.warehouse -= this.sect.prod.output;
 		// record the actual cost for what was actually produced (and dont divide by zero)
-		let pct = this.act.prod.est_output > 0 ? (this.act.prod.output / this.act.prod.est_output) : 1.0;
-		this.act.prod.cost = this.act.prod.est_cost * pct;
+		let pct = this.sect.prod.est_output > 0 ? (this.sect.prod.output / this.sect.prod.est_output) : 1.0;
+		this.sect.prod.cost = this.sect.prod.est_cost * pct;
 		// apply the production to the elements in the build queue
 		while ( this.building_fund > 0 && this.prod_q.length ) {
 			let amount = Math.min( this.building_fund, (this.prod_q[0].cost - this.prod_q[0].spent) );
@@ -277,7 +260,7 @@ export default class Planet {
 				// reset
 				this.prod_q[0].spent = 0;
 				this.prod_q[0].pct = 0;
-				this.prod_q[0].turns_left = Math.ceil( this.prod_q[0].cost / this.act.prod.output ) ;
+				this.prod_q[0].turns_left = Math.ceil( this.prod_q[0].cost / this.sect.prod.output ) ;
 				// decrement if they wanted more than one
 				if ( this.prod_q[0].quantity > 0 ) {
 					this.prod_q[0].quantity -= 1;
@@ -290,16 +273,30 @@ export default class Planet {
 			// update the stats
 			else {
 				let remaining = this.prod_q[0].cost - this.prod_q[0].spent;
-				this.prod_q[0].turns_left = Math.ceil( remaining / this.act.prod.output ) ;
+				this.prod_q[0].turns_left = Math.ceil( remaining / this.sect.prod.output ) ;
 				this.prod_q[0].pct = ( this.prod_q[0].spent / this.prod_q[0].cost) * 100;
 				}
 			}
+
 		}
-	CollectScience() { 
-		this.act.sci.cost = this.act.sci.est_cost;
-		this.act.sci.output = this.act.sci.est_output;
-		return this.act.sci.output;
+		
+	ProcessSectors() { 
+		this.RecalcSectors();
+		for ( let s of this.sect ) {
+			s.inf += s.growth;
+			}
 		}
+	RecalcSectors() { 
+		let taxes = this.tax;
+		for ( let k in this.sect ) {
+			let s = this.sect[k];
+			let spending = taxes * this.spending * s.pct;
+			s.work = spending * s.pow;
+			s.output = Math.min(s.inf,s.work);
+			s.growth = 0.2 * ( s.work - s.inf ) ^ 0.75;
+			}
+		}
+		
 	GrowEconomy() { 
 		// morale and taxes affect the growth rate
 		let min_PCI = 1.0 + this.bonus_PCI;
@@ -316,7 +313,7 @@ export default class Planet {
 	GrowPop() { 
 		// growth rate is square root of difference between max pop and current pop, divided by 50.
 		// max pop is actually the current infrastructure number, up to the planet size.
-		let diff = this.inf - this.total_pop;
+		let diff = this.inf - this.total_pop; // <----- OOOO BAD INF!
 		let divisor = 60.0;
 		let maxpop = false;
 		if ( diff > 0 ) { // pop growth
@@ -500,15 +497,16 @@ export default class Planet {
 		this.settled = true;
 		this.explored = true;
 		this.owner = owner;
-		this.act.mine.pct = 0.5;
-		this.act.inf.pct = 0.5;
-		this.act.mine.rel_pct = 0.5;
-		this.act.inf.rel_pct = 0.5;
 		this.total_pop = 0.5;
-		this.inf = 1.0;
+// 		this.sect.mine.pct = 0.5;
+// 		this.sect.prod.pct = 0.5;
+// 		this.sect.mine.relpct = 0.5;
+// 		this.sect.prod.relpct = 0.5;
+		
 		this.econ.GDP = 0;
 		this.econ.PCI = this.base_PCI + this.bonus_PCI;
 		this.econ.GF = 1.0;
+		
 		this.ui_color = `rgb( ${owner.color_rgb[0]}, ${owner.color_rgb[1]}, ${owner.color_rgb[2]} )` ;
 		
 		this.owner.planets.push( this );
@@ -521,7 +519,7 @@ export default class Planet {
 			Constellation.Refactor( this.owner ); 
 			}
 			
-		this.RecalcExpenses();
+		this.RecalcSectors();
 		} // end Settle
 		
 	}

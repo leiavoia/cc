@@ -5,10 +5,12 @@ import Hyperlane from '../classes/Hyperlane';
 import Constellation from '../classes/Constellation';
 import Fleet from '../classes/Fleet';
 import * as utils from '../util/utils';
-import {bindable} from 'aurelia-framework';
+import {inject} from 'aurelia-framework';
+import {App} from '../app';
 
+@inject(App)
 export class PlayState {
-	@bindable app = null;
+
 
 	// map stuff
 	current_scale = 1.0;
@@ -16,8 +18,8 @@ export class PlayState {
 	min_scale = 0.05;
 	scaling_step = 0.125;
 		
-	constructor() {
-		
+	constructor( app ) {
+		this.app = app;
 		}
 
 	
@@ -245,6 +247,11 @@ export class PlayState {
 			return false;
 			});		
 
+		// focus on the home system if there is one
+		// [!]FUTURE-TODO - This is where the dramatic intro would go in the future.
+		if ( this.app.hilite_star ) { 
+			this.FocusMap( this.app.hilite_star );
+			}
 		}
 		
 		

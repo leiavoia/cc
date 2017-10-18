@@ -101,13 +101,10 @@ export default class Game {
 			for ( let s of this.galaxy.stars ) { 
 				for ( let p of s.planets ) {
 					if ( p.settled ) {  
-					
+	
 						// collect taxes
 						p.owner.treasury += p.CollectTax();
-						
-						// calculate expenses
-						p.RecalcExpenses();
-						
+												
 						}
 					}
 				}
@@ -235,12 +232,7 @@ export default class Game {
 					if ( p.settled ) {  
 					
 						// production
-						p.DoINF(); // infrastructure
 						p.DoProduction(); // production
-						p.owner.research += p.CollectScience(); // research
-						
-						// calculate expenses one more time
-						p.RecalcExpenses();
 						
 						// grow/shrink economy
 						p.GrowEconomy();
