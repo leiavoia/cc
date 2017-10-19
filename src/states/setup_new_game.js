@@ -48,6 +48,7 @@ export class SetupNewGameState {
 			this.settings.galaxy_age
 			);
 		let mystar = this.app.game.galaxy.AddExploreDemo();
+		this.app.game.SetMyCiv( 0 ); // could switch using debug stuff
 		this.app.ChangeState('play');
 		this.app.hilite_star = mystar;
 		// at this point there is some fudge time until the PlayState

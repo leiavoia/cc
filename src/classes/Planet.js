@@ -18,7 +18,6 @@ export default class Planet {
 	// civs in the same star systems may overlap
 // 	constel = null;
 	name = 'UNKNOWN';
-	inf = 0;
 	total_pop = 0;
 	pop = [];
 	morale = 1.0;	
@@ -35,17 +34,20 @@ export default class Planet {
 	
 	// ECONOMY -------------------------------------------
 	tax_rate = 0.2;
+// 	treasury = 0.0;
+	treasury_contrib = 0; // contributions or allowances from the global treasury last turn.
 	use_global_tax_rate = false;
 	spending = 0.75;
+	max_spending = 2.0 // may be modable with technology improvements
 	buildings = [];
 	building_fund = 0;
 	base_PCI = 10.0; // per capita income
 	bonus_PCI = 0.0;	
 	warehouse = 0;
 	econ = {
-		GDP: 0, // gross domestic product
-		PCI: 0, // per-capita income
-		GF: 0, // growth factor
+		GDP: 1.0, // gross domestic product
+		PCI: 1.0, // per-capita income
+		GF: 1.0, // growth factor
 		mine_export: 0, // can be pos or neg, depending on if planet has a need or excess
 		mine_import: 0, // the actual amount being imported, if needed. number may differ from need above
 		};
@@ -69,15 +71,15 @@ export default class Planet {
 	//		growth = 0.2 * ( work - inf ) ^ 0.75
 	//		inf += growth
 	sect = {
-		mine:{ pct: 0.5, relpct: 0.5, pow: 1.0, work: 0, output: 0.0, inf: 0.0, growth: 0.0 },
-		prod:{ pct: 0.5, relpct: 0.5, pow: 1.0, work: 0, output: 0.0, inf: 0.0, growth: 0.0 },
-		sci:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0, output: 0.0, inf: 0.0, growth: 0.0 },
-		com:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0, output: 0.0, inf: 0.0, growth: 0.0 },
-		gov:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0, output: 0.0, inf: 0.0, growth: 0.0 },
-		spy:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0, output: 0.0, inf: 0.0, growth: 0.0 },
-		sup:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0, output: 0.0, inf: 0.0, growth: 0.0 },
-		civ:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0, output: 0.0, inf: 0.0, growth: 0.0 },
-		def:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0, output: 0.0, inf: 0.0, growth: 0.0 }	
+		mine:{ pct: 0.5, relpct: 0.5, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 },
+		prod:{ pct: 0.5, relpct: 0.5, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 },
+		sci:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 },
+		com:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 },
+		gov:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 },
+		spy:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 },
+		sup:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 },
+		civ:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 },
+		def:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 }	
 		};
 
 
@@ -138,13 +140,13 @@ export default class Planet {
 	get tax() { 
 		return this.total_pop * this.tax_rate * this.econ.PCI;
 		}
-// 	get spending() { 
-// 		return this.spending;
-// 		}
-// 	set spending(x) { 
-// 		this.spending = x.clamp(0,200);
-// 		this.RecalcSectors();
-// 		}
+	get slider_spending() { 
+		return this.spending;
+		}
+	set slider_spending(x) { 
+		this.spending = parseFloat(x).clamp(0,this.max_spending);
+		this.RecalcSectors();
+		}
 	set slider_mine(x) { 
 		this.sect.mine.relpct = parseFloat(x);
 		this.RecalcSpendingSliders();
@@ -181,6 +183,10 @@ export default class Planet {
 		this.sect.spy.relpct = parseFloat(x);
 		this.RecalcSpendingSliders();
 		}
+	set slider_taxrate(x) { 
+		this.tax_rate = parseFloat(x);
+		this.RecalcSpendingSliders();
+		}
 	get slider_mine() { 
 		return this.sect.mine.relpct;
 		}
@@ -208,45 +214,67 @@ export default class Planet {
 	get slider_spy() { 
 		return this.sect.spy.relpct;
 		}
+	get slider_taxrate() { 
+		return this.tax_rate;
+		}
 	RecalcSpendingSliders() { 
 		// get some stats
 		let t = 0; // sum of all sliders
 		let n = 0; // number of sectors
-		for ( let s of this.sect ) { 
-			t += s.relpct; 
+		for ( let s in this.sect ) { 
+			t += this.sect[s].relpct; 
 			n++;
 			}
 		if ( t ) { 
-			for ( let s of this.sect ) { 
-				s.pct = s.relpct / t; 
+			for ( let s in this.sect ) { 
+				this.sect[s].pct = this.sect[s].relpct / t; 
 				}	
 			}
 		// if everything is zero, divide evenly
 		else {
-			for ( let s of this.sect ) { 
-				s.pct = 1.0 / n; 
+			for ( let s in this.sect ) { 
+				this.sect[s].pct = 1.0 / n; 
 				}
 			}
 		// recalc expenses
 		this.RecalcSectors();
 		}
-		
-	// ????
-	CollectTax() { 
-		return this.total_pop * this.tax_rate * this.econ.PCI;
+	ProcessSectors() { 
+		this.RecalcSectors();
+		// if our spending is not 1.0, we give or borrow money out of the global treasury
+		this.owner.treasury += this.treasury_contrib;
+		// grow or shrink the infrastructure of each sector
+		for ( let k in this.sect ) {
+			let s = this.sect[k];
+			s.inf += s.growth;
+			}
+		// Update this again because infrastructure levels changed
+		this.RecalcSectors();
+		}
+	RecalcSectors() { 
+		let taxes = this.tax;
+		let cost = 0;
+		for ( let k in this.sect ) {
+			let s = this.sect[k];
+			s.work = this.total_pop * this.spending * s.pct * s.pow;
+			cost += s.work * s.cost; // we dont work for free. 
+			s.output = Math.min(s.inf,s.work);
+			let diff = s.work - s.inf;
+			s.growth = diff ? (0.2 * Math.pow( Math.abs(diff), 0.75 ) ) : 0;
+			if ( diff < 0 ) {  s.growth = -s.growth; } // invert if needed
+			}
+		this.treasury_contrib = taxes - cost;	
 		}
 	DoMining() { 
-		this.sect.mine.output = this.sect.mine.est_output;
 		this.warehouse += this.sect.mine.output;
-		this.sect.mine.cost = this.sect.mine.est_cost;
 		}
 	DoProduction() { 
 		// actual output depends on available mining resources.
 		this.building_fund += this.sect.prod.output;
 		this.warehouse -= this.sect.prod.output;
 		// record the actual cost for what was actually produced (and dont divide by zero)
-		let pct = this.sect.prod.est_output > 0 ? (this.sect.prod.output / this.sect.prod.est_output) : 1.0;
-		this.sect.prod.cost = this.sect.prod.est_cost * pct;
+// 		let pct = this.sect.prod.est_output > 0 ? (this.sect.prod.output / this.sect.prod.est_output) : 1.0;
+// 		this.sect.prod.cost = this.sect.prod.est_cost * pct;
 		// apply the production to the elements in the build queue
 		while ( this.building_fund > 0 && this.prod_q.length ) {
 			let amount = Math.min( this.building_fund, (this.prod_q[0].cost - this.prod_q[0].spent) );
@@ -280,23 +308,6 @@ export default class Planet {
 
 		}
 		
-	ProcessSectors() { 
-		this.RecalcSectors();
-		for ( let s of this.sect ) {
-			s.inf += s.growth;
-			}
-		}
-	RecalcSectors() { 
-		let taxes = this.tax;
-		for ( let k in this.sect ) {
-			let s = this.sect[k];
-			let spending = taxes * this.spending * s.pct;
-			s.work = spending * s.pow;
-			s.output = Math.min(s.inf,s.work);
-			s.growth = 0.2 * ( s.work - s.inf ) ^ 0.75;
-			}
-		}
-		
 	GrowEconomy() { 
 		// morale and taxes affect the growth rate
 		let min_PCI = 1.0 + this.bonus_PCI;
@@ -312,8 +323,8 @@ export default class Planet {
 		}
 	GrowPop() { 
 		// growth rate is square root of difference between max pop and current pop, divided by 50.
-		// max pop is actually the current infrastructure number, up to the planet size.
-		let diff = this.inf - this.total_pop; // <----- OOOO BAD INF!
+		// max pop is current jimmied as the planet size.
+		let diff = this.size - this.total_pop; // <----- OOOO BAD INF!
 		let divisor = 60.0;
 		let maxpop = false;
 		if ( diff > 0 ) { // pop growth
@@ -498,10 +509,6 @@ export default class Planet {
 		this.explored = true;
 		this.owner = owner;
 		this.total_pop = 0.5;
-// 		this.sect.mine.pct = 0.5;
-// 		this.sect.prod.pct = 0.5;
-// 		this.sect.mine.relpct = 0.5;
-// 		this.sect.prod.relpct = 0.5;
 		
 		this.econ.GDP = 0;
 		this.econ.PCI = this.base_PCI + this.bonus_PCI;

@@ -1554,7 +1554,7 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	
 /* PLANETINFO PANE */
 #planetinfo_pane {
-	background: url(../img/bg/scene_planet001.jpg) 50% 50% no-repeat;
+	background: url(../img/bg/scene-planet001.jpg) 50% 50% no-repeat;
 	background-size: cover;
 	background-attachment:fixed;
 	height: 100%;

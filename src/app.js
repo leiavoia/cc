@@ -31,6 +31,13 @@ export class App {
 		// create initial state
 		this.game.InitGalaxy();
 // 		this.ChangeState('title');
+
+		// --------\/-- [!]DEBUG SHORTCUT --\/---------------------
+		this.game.galaxy.Make( 3000, 3000, 20, 0.5 );
+		let mystar = this.game.galaxy.AddExploreDemo();
+		this.game.SetMyCiv( 0 ); // could switch using debug stuff
+		this.ChangeState('play');
+		this.hilite_star = mystar;
 		}
 		
 	ToggleOption( o ) { 

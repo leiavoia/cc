@@ -11,6 +11,32 @@
 		<div class="flexwrap" if.bind="planet.owner">
 			
 			<!-- Colony Data -->
+		
+			<div class="content data">
+				<h2>Sector&nbsp;Activity</h2>
+				<table style="width:100%;">
+					<tr>
+						<th></th>
+						<th>%</th>
+<!-- 						<th>relpct</th> -->
+						<th>Power</th>
+						<th>Work</th>
+						<th>Output</th>
+						<th>Infr.</th>
+						<th>Growth</th>
+					</tr>
+					<tr repeat.for="k of planet.sect|props">
+						<td>${k}</td>
+						<td>${planet.sect[k].pct|percent}%</td>
+<!-- 						<td>${planet.sect[k].relpct|round:1}</td> -->
+						<td>${planet.sect[k].pow|round:1}</td>
+						<td>${planet.sect[k].work|round:2}</td>
+						<td>${planet.sect[k].output|round:2}</td>
+						<td>${planet.sect[k].inf|round:2}</td>
+						<td>${planet.sect[k].growth|round:3}</td>
+					</tr>
+				</table>		
+			</div>
 			<div class="content data">
 				<h2>Summary</h2>
 				<span>TAX Income: ${planet.tax|round:1}</span>

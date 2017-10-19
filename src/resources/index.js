@@ -8,5 +8,6 @@ export function configure(config) {
   	'./value-converters/percent',
   	'./value-converters/round',
   	'./value-converters/sqrt',
+  	'./value-converters/objprops',
   	]);
 }
