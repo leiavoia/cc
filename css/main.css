@@ -194,7 +194,7 @@ body,html {
 /* 	background: #000 url(../img/map/bg/space_001c.jpg) 50% 50% no-repeat; */
 	background: #000 url(../img/map/bg/space_007b.jpg) 50% 50% no-repeat;
 /* 	background: #000 url(../img/map/bg/orion_2500px_dark_16x9.jpg) 50% 50% no-repeat; */
-	background-size: 125% auto;
+	background-size: cover;
 	background-position: 50% 50%;
 	z-index: 100;
 	overflow:hidden;
@@ -1771,16 +1771,16 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	width: 90%;
 	margin: 0;
 	}
-
+/*  */
 #colonize_pane.star_red 		{ background-image: url(../img/map/air_collect_sparkle_red.png), url(../img/map/bg/space_003.jpg); }
-#colonize_pane.star_orange 	{ background-image: url(../img/map/air_collect_sparkle_orange.png), url(../img/map/bg/space_003.jpg); }
-#colonize_pane.star_yellow 	{ background-image: url(../img/map/air_collect_sparkle_yellow.png), url(../img/map/bg/space_003.jpg); }
+#colonize_pane.star_orange 	{ background-image: url(../img/map/air_collect_sparkle_orange.png), url(../img/map/bg/space_006b.jpg); }
+#colonize_pane.star_yellow 	{ background-image: url(../img/map/air_collect_sparkle_yellow.png), url(../img/map/bg/tarantula_dark.jpg); }
 #colonize_pane.star_green 	{ background-image: url(../img/map/air_collect_sparkle_green.png), url(../img/map/bg/space_003.jpg); }
-#colonize_pane.star_blue 	{ background-image: url(../img/map/air_collect_sparkle_blue_dark.png), url(../img/map/bg/space_003.jpg); }
-#colonize_pane.star_cyan 	{ background-image: url(../img/map/air_collect_sparkle_cyan.png), url(../img/map/bg/space_003.jpg); }
+#colonize_pane.star_blue 	{ background-image: url(../img/map/air_collect_sparkle_blue_dark.png), url(../img/map/bg/space_006b.jpg); }
+#colonize_pane.star_cyan 	{ background-image: url(../img/map/air_collect_sparkle_cyan.png), url(../img/map/bg/tarantula_dark.jpg); }
 #colonize_pane.star_purple 	{ background-image: url(../img/map/air_collect_sparkle_purple.png), url(../img/map/bg/space_003.jpg); }
-#colonize_pane.star_white 	{ background-image: url(../img/map/air_collect_sparkle_white.png), url(../img/map/bg/space_003.jpg); }
-#colonize_pane.star_black 	{ background-image: url(../img/map/air_collect_sparkle_black.png), url(../img/map/bg/space_003.jpg); }
+#colonize_pane.star_white 	{ background-image: url(../img/map/air_collect_sparkle_white.png), url(../img/map/bg/space_006b.jpg); }
+#colonize_pane.star_black 	{ background-image: url(../img/map/air_collect_sparkle_black.png), url(../img/map/bg/tarantula_dark.jpg); }
 
 
 
