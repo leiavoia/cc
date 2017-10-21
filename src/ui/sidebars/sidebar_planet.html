@@ -3,7 +3,7 @@
 	<require from="./converters/round"></require>
 	<require from="./converters/idealplanetsize"></require>-->
 	
-	<div class="planet atm${planet.atm} tmp${planet.temp}" css="min-height:${(planet.size)|idealplanetsize}px; background-size: auto ${(planet.size)|idealplanetsize}px; background-position: calc(100% + ${planet.size}px) -${planet.size}px ;">
+	<div class="planet atm${planet.atm} tmp${planet.temp} grav${planet.grav}" css="min-height:${(planet.size)|idealplanetsize}px; background-size: auto ${(planet.size)|idealplanetsize}px; background-position: calc(100% + ${planet.size}px) -${planet.size}px ;">
 		
 		<nav>
 			<!-- add to constellation button when debugging is over: planet.owner.id == theapp.iam -->
@@ -35,7 +35,7 @@
 					<div class="target"></div>
 				</div>
 				<p class="env_label">${planet.envDisplayName}</p>
-				<p class="env_stats">ATM: ${planet.atm}, TEMP: ${planet.temp}</p>
+				<p class="env_stats">ATM:${planet.atm} TMP:${planet.temp} GRAV:${planet.grav}</p>
 			</div>	
 		</div> 
 		<!-- Spending Levels -->
@@ -81,7 +81,7 @@
 				<div class="p" css="width:${planet.sect.gov.pct | percent:3}%"><!--${planet.sect.gov.output | round:1}--></div>
 				<div class="s" css="width:${planet.sect.spy.pct | percent:3}%"><!--${planet.sect.spy.output | round:1}--></div>
 				<div class="m" css="width:${planet.sect.sup.pct | percent:3}%"><!--${planet.sect.sup.output | round:1}--></div>
-				<div class="p" css="width:${planet.sect.civ.pct | percent:3}%"><!--${planet.sect.civ.output | round:1}--></div>
+<!-- 				<div class="p" css="width:${planet.sect.civ.pct | percent:3}%"></div> -->
 				<div class="s" css="width:${planet.sect.def.pct | percent:3}%"><!--${planet.sect.def.output | round:1}--></div>
 			</div>
 			<div class="m"><span>MINE</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_mine" /><span>${planet.sect.mine.output|round:1}➞${planet.sect.mine.work|round:1}&nbsp;${planet.sect.mine.growth > 0.01 ? '▲' : (planet.sect.mine.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
@@ -91,7 +91,7 @@
 			<div class="g"><span>GOV</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_gov" /><span>${planet.sect.gov.output|round:1}➞${planet.sect.gov.work|round:1}&nbsp;${planet.sect.gov.growth > 0.01 ? '▲' : (planet.sect.gov.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
 			<div class="e"><span>SPY</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_spy" /><span>${planet.sect.spy.output|round:1}➞${planet.sect.spy.work|round:1}&nbsp;${planet.sect.spy.growth > 0.01 ? '▲' : (planet.sect.spy.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
 			<div class="s"><span>SUP</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_sup" /><span>${planet.sect.sup.output|round:1}➞${planet.sect.sup.work|round:1}&nbsp;${planet.sect.sup.growth > 0.01 ? '▲' : (planet.sect.sup.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
-			<div class="c"><span>CIV</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_civ" /><span>${planet.sect.civ.output|round:1}➞${planet.sect.civ.work|round:1}&nbsp;${planet.sect.civ.growth > 0.01 ? '▲' : (planet.sect.civ.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
+<!-- 			<div class="c"><span>CIV</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_civ" /><span>${planet.sect.civ.output|round:1}➞${planet.sect.civ.work|round:1}&nbsp;${planet.sect.civ.growth > 0.01 ? '▲' : (planet.sect.civ.growth < -0.01 ? '▼' : '\u2003')}</span></div>  -->
 			<div class="d"><span>DEF</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_def" /><span>${planet.sect.def.output|round:1}➞${planet.sect.def.work|round:1}&nbsp;${planet.sect.def.growth > 0.01 ? '▲' : (planet.sect.def.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
 			<br/>
 			<div class="t"><span>TAX</span><input type="range"  min="0" max="0.5" step="0.01" value.bind="planet.slider_taxrate" /><span>${planet.tax_rate | percent}%</span></div> 

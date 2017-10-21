@@ -1,6 +1,6 @@
 <template>
 
-<!-- <require from="../planets_pane"></require> -->
+<require from="../planets_pane"></require>
 <require from="../planetinfo_pane"></require>
 <require from="../gov_pane"></require>
 <require from="../econ_pane"></require>
@@ -80,7 +80,7 @@
 	
 	<div id="layout_ui_main" class="visible ${app.main_panel_mode ? 'trekIn' : 'trekOut'}">
 		<spy-pane if.bind="app.main_panel_mode == 'spy'"  app.bind="app" containerless ></spy-pane>
-		<planets-pane if.bind="app.main_panel_mode == 'planets'"  app.bind="app" containerless ></planets-pane>
+		<planets-pane if.bind="app.main_panel_mode == 'planets'" containerless ></planets-pane>
 		<econ-pane if.bind="app.main_panel_mode == 'econ'"  app.bind="app" containerless ></econ-pane>
 		<gov-pane if.bind="app.main_panel_mode == 'gov'"  app.bind="app" containerless ></gov-pane>
 		<tech-pane if.bind="app.main_panel_mode == 'tech'"  app.bind="app" containerless ></tech-pane>

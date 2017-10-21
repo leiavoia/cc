@@ -29,6 +29,7 @@ export default class Planet {
 	size = 0;
 	atm = 0;
 	temp = 0;
+	grav = 0;
 	physattr = [];
 	
 	
@@ -78,7 +79,7 @@ export default class Planet {
 		gov:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 },
 		spy:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 },
 		sup:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 },
-		civ:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 },
+// 		civ:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 },
 		def:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 }	
 		};
 
@@ -442,6 +443,7 @@ export default class Planet {
 		if ( star.color == 'black' || star.color == 'purple' || star.color == 'green' ) { 
 			planet.atm = utils.RandomInt(0,4);
 			planet.temp = utils.RandomInt(0,4);
+			planet.grav = utils.RandomInt(0,4);
 			}
 		else {
 			let star_age_mod = star_age + 1.0;
@@ -479,6 +481,14 @@ export default class Planet {
 		else if ( star.color == 'black' ) { planet.size += 40; }
 		else if ( star.color == 'green' ) { planet.size += 60; }
 		
+		// gravity generally coralates with size, except for weird stars
+		if ( star.color == 'black' || star.color == 'purple' || star.color == 'green' ) { 
+			planet.grav = utils.RandomInt(0,4);
+			}
+		else {
+			planet.grav = utils.BiasedRandInt(0, 4, ((planet.size-30)/100)*4.0, 0.75);
+			}
+			
 		// special attributes
 		let selector = Planet.AttributeSelector();
 		let attr_randnum = Math.random();

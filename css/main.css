@@ -943,8 +943,8 @@ DIV.hyperlane {
 	}
 
 #layout_ui_side .planet .env_box {
-	width: 85px;
-	height: 85px;
+	width: 92px;
+	height: 92px;
 	background: rgba(0,0,0,0.55);
 	border: 1px solid #999;
 	border-radius: 0.5em;
@@ -954,35 +954,42 @@ DIV.hyperlane {
 #layout_ui_side .planet .env_box .target {
 	width: 20%;
 	height: 20%;
-	background: #FFF;
+	border: 1px solid #FFF;
 	margin-left: 0;
 	margin-top: 0;
+	box-sizing: border-box; 
+	border-radius: 2px;
 	}
-#layout_ui_side .planet.atm0.tmp0 .env_box .target { background: #444444; margin-left: 0%; margin-top: 0%; }
-#layout_ui_side .planet.atm1.tmp0 .env_box .target { background: #888888; margin-left: 20%; margin-top: 0%; }
-#layout_ui_side .planet.atm2.tmp0 .env_box .target { background: #DDDDDD; margin-left: 40%; margin-top: 0%; }
-#layout_ui_side .planet.atm3.tmp0 .env_box .target { background: #90C8F5; margin-left: 60%; margin-top: 0%; }
-#layout_ui_side .planet.atm4.tmp0 .env_box .target { background: #3976A8; margin-left: 80%; margin-top: 0%; }
-#layout_ui_side .planet.atm0.tmp1 .env_box .target { background: #CCA9A9; margin-left: 0%; margin-top: 20%; }
-#layout_ui_side .planet.atm1.tmp1 .env_box .target { background: #E9A8FF; margin-left: 20%; margin-top: 20%; }
-#layout_ui_side .planet.atm2.tmp1 .env_box .target { background: #9E6F3E; margin-left: 40%; margin-top: 20%; }
-#layout_ui_side .planet.atm3.tmp1 .env_box .target { background: #9FE5FC; margin-left: 60%; margin-top: 20%; }
-#layout_ui_side .planet.atm4.tmp1 .env_box .target { background: #BAD9DB; margin-left: 80%; margin-top: 20%; }
-#layout_ui_side .planet.atm0.tmp2 .env_box .target { background: #F5B3B3; margin-left: 0%; margin-top: 40%; }
-#layout_ui_side .planet.atm1.tmp2 .env_box .target { background: #B0B870; margin-left: 20%; margin-top: 40%; }
-#layout_ui_side .planet.atm2.tmp2 .env_box .target { background: #2CA10B; margin-left: 40%; margin-top: 40%; }
-#layout_ui_side .planet.atm3.tmp2 .env_box .target { background: #79D938; margin-left: 60%; margin-top: 40%; }
-#layout_ui_side .planet.atm4.tmp2 .env_box .target { background: #57BCFA; margin-left: 80%; margin-top: 40%; }
-#layout_ui_side .planet.atm0.tmp3 .env_box .target { background: #CF4242; margin-left: 0%; margin-top: 60%; }
-#layout_ui_side .planet.atm1.tmp3 .env_box .target { background: #E8DD97; margin-left: 20%; margin-top: 60%; }
-#layout_ui_side .planet.atm2.tmp3 .env_box .target { background: #F0D871; margin-left: 40%; margin-top: 60%; }
-#layout_ui_side .planet.atm3.tmp3 .env_box .target { background: #95DE47; margin-left: 60%; margin-top: 60%; }
-#layout_ui_side .planet.atm4.tmp3 .env_box .target { background: #E4F2B1; margin-left: 80%; margin-top: 60%; }
-#layout_ui_side .planet.atm0.tmp4 .env_box .target { background: #DD0000; margin-left: 0%; margin-top: 80%; }
-#layout_ui_side .planet.atm1.tmp4 .env_box .target { background: #DD4444; margin-left: 20%; margin-top: 80%; }
-#layout_ui_side .planet.atm2.tmp4 .env_box .target { background: #EE8888; margin-left: 40%; margin-top: 80%; }
-#layout_ui_side .planet.atm3.tmp4 .env_box .target { background: #FFBBBB; margin-left: 60%; margin-top: 80%; }
-#layout_ui_side .planet.atm4.tmp4 .env_box .target { background: #FFFF00; margin-left: 80%; margin-top: 80%; }
+#layout_ui_side .planet.grav1 .env_box .target { border-width: 3px; }
+#layout_ui_side .planet.grav2 .env_box .target { border-width: 5px; }
+#layout_ui_side .planet.grav3 .env_box .target { border-width: 7px; }
+#layout_ui_side .planet.grav4 .env_box .target { border-width: 10px; }
+	
+#layout_ui_side .planet.atm0.tmp0 .env_box .target { border-color: #444444; margin-left: 0%; margin-top: 0%; }
+#layout_ui_side .planet.atm1.tmp0 .env_box .target { border-color: #888888; margin-left: 20%; margin-top: 0%; }
+#layout_ui_side .planet.atm2.tmp0 .env_box .target { border-color: #DDDDDD; margin-left: 40%; margin-top: 0%; }
+#layout_ui_side .planet.atm3.tmp0 .env_box .target { border-color: #90C8F5; margin-left: 60%; margin-top: 0%; }
+#layout_ui_side .planet.atm4.tmp0 .env_box .target { border-color: #3976A8; margin-left: 80%; margin-top: 0%; }
+#layout_ui_side .planet.atm0.tmp1 .env_box .target { border-color: #CCA9A9; margin-left: 0%; margin-top: 20%; }
+#layout_ui_side .planet.atm1.tmp1 .env_box .target { border-color: #E9A8FF; margin-left: 20%; margin-top: 20%; }
+#layout_ui_side .planet.atm2.tmp1 .env_box .target { border-color: #9E6F3E; margin-left: 40%; margin-top: 20%; }
+#layout_ui_side .planet.atm3.tmp1 .env_box .target { border-color: #9FE5FC; margin-left: 60%; margin-top: 20%; }
+#layout_ui_side .planet.atm4.tmp1 .env_box .target { border-color: #BAD9DB; margin-left: 80%; margin-top: 20%; }
+#layout_ui_side .planet.atm0.tmp2 .env_box .target { border-color: #F5B3B3; margin-left: 0%; margin-top: 40%; }
+#layout_ui_side .planet.atm1.tmp2 .env_box .target { border-color: #B0B870; margin-left: 20%; margin-top: 40%; }
+#layout_ui_side .planet.atm2.tmp2 .env_box .target { border-color: #2CA10B; margin-left: 40%; margin-top: 40%; }
+#layout_ui_side .planet.atm3.tmp2 .env_box .target { border-color: #79D938; margin-left: 60%; margin-top: 40%; }
+#layout_ui_side .planet.atm4.tmp2 .env_box .target { border-color: #57BCFA; margin-left: 80%; margin-top: 40%; }
+#layout_ui_side .planet.atm0.tmp3 .env_box .target { border-color: #CF4242; margin-left: 0%; margin-top: 60%; }
+#layout_ui_side .planet.atm1.tmp3 .env_box .target { border-color: #E8DD97; margin-left: 20%; margin-top: 60%; }
+#layout_ui_side .planet.atm2.tmp3 .env_box .target { border-color: #F0D871; margin-left: 40%; margin-top: 60%; }
+#layout_ui_side .planet.atm3.tmp3 .env_box .target { border-color: #95DE47; margin-left: 60%; margin-top: 60%; }
+#layout_ui_side .planet.atm4.tmp3 .env_box .target { border-color: #E4F2B1; margin-left: 80%; margin-top: 60%; }
+#layout_ui_side .planet.atm0.tmp4 .env_box .target { border-color: #DD0000; margin-left: 0%; margin-top: 80%; }
+#layout_ui_side .planet.atm1.tmp4 .env_box .target { border-color: #DD4444; margin-left: 20%; margin-top: 80%; }
+#layout_ui_side .planet.atm2.tmp4 .env_box .target { border-color: #EE8888; margin-left: 40%; margin-top: 80%; }
+#layout_ui_side .planet.atm3.tmp4 .env_box .target { border-color: #FFBBBB; margin-left: 60%; margin-top: 80%; }
+#layout_ui_side .planet.atm4.tmp4 .env_box .target { border-color: #FFFF00; margin-left: 80%; margin-top: 80%; }
 
 .atm0.tmp0 .env_label { color: #444444; }
 .atm1.tmp0 .env_label { color: #888888; }
@@ -1534,10 +1541,13 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	
 	
 /* PLANETS PANE */
-#planets_pane TABLE TD {
+#planets_pane TABLE TD, #planets_pane TABLE TH {
 	padding: 0.5em;
+	text-align:left;
 	}
-
+#planets_pane TABLE TH {
+	font-weight:bold;
+	}
 #planets_pane TABLE TD.m { color: #E68200; }
 #planets_pane TABLE TD.i { color: #FCF742; }
 #planets_pane TABLE TD.p { color: #C40000; }

@@ -3,25 +3,49 @@
 	
 		<h1>Planets</h1>
 		
-		<p>AVG RICH: ${app.avg_rich|round:3}x</p>
+<!--		<p>AVG RICH: ${app.avg_rich|round:3}x</p>
 		<p>AVG RARITY: ${app.avg_rarity|round:3}</p>
-		<p>RARITY COUNT: ${app.rare_count[0]} | ${app.rare_count[1]} | ${app.rare_count[2]} | ${rapp.are_count[3]} |  ${app.rare_count[4]}</p>
+		<p>RARITY COUNT: ${app.rare_count[0]} | ${app.rare_count[1]} | ${app.rare_count[2]} | ${rapp.are_count[3]} |  ${app.rare_count[4]}</p>-->
 
-		<table cellpadding="6">
-			<tr repeat.for="p of app.planets">
-				<td><a href="#"  click.delegate="app.SwitchSideBar(p)">${p.name}</a></td>
-				<td>${p.rich}x</td>
-				<td>${p.envDisplayName}</td>
-				<td>a:${p.atm}</td>
-				<td>t:${p.temp}</td>
-				<td class="i">POP: ${p.total_pop|round:1}</td>
-				<td class="i">INF: ${p.inf|round}</td>
-				<td class="i">${p.size}</td>
-				<td class="t">TX%: ${p.tax_rate|percent}</td>
-				<td class="t">INCOME: ${p.tax|round:1} / ${p.total_expense|round:1}</td>
-				<td class="f">GF: ${p.econ.GF|round:3}</td>
-				<td class="f">PCI: ${p.econ.PCI|round:1}</td>
+		<p>
+			<a href="#" class="button ${show_mine?'':'cool'}" click.delegate="show_mine=!show_mine">My Planets</a>
+			<a href="#" class="button ${show_foreign?'':'cool'}" click.delegate="show_foreign=!show_foreign">Foreign Planets</a>
+			<a href="#" class="button ${show_unclaimed?'':'cool'}" click.delegate="show_unclaimed=!show_unclaimed">Unclaimed Planets</a>
+		</p>
+		
+		<table cellpadding="6" if.bind="planets.length">
+			<tr>
+				<th>Planet</th>
+				<th>Size</th>
+				<th>Environment</th>
+				<th>ATM</th>
+				<th>TEMP</th>
+				<th>GRAV</th>
+				<th>Resource</th>
+				<th>Energy</th>
+				<th>Pop</th>
+				<th>TaxRate</th>
+				<th>Spend</th>
+				<th>Income</th>
+				<th repeat.for="k of planets[0].sect|props">${k|uppercaseFirst}</th>
 			</tr>
+			<template repeat.for="p of planets" containerless>
+				<tr if.bind="(show_mine && p.owner == myciv) || (show_unclaimed && !p.owner) || (show_foreign && p.owner != myciv && p.owner)">
+					<td><a href="#"  click.delegate="app.SwitchSideBar(p)">${p.name}</a></td>
+					<td class="i">${p.size}</td>
+					<td>${p.envDisplayName}</td>
+					<td>${p.atm}</td>
+					<td>${p.temp}</td>
+					<td>${p.grav}</td>
+					<td>${p.rich}x</td>
+					<td>${p.energy}x</td>
+					<td class="i">${p.total_pop|round:1}</td>
+					<td class="t">${p.tax_rate|percent}</td>
+					<td class="t">${p.spending|percent}</td>
+					<td class="${p.treasury_contrib >= 0 ? 'good' : 'bad'}">${p.treasury_contrib >= 0 ? '+' : ''}${p.treasury_contrib|round}</td>
+					<td repeat.for="k of p.sect|props">${p.sect[k].output|round}</td>
+				</tr>
+			</template>
 		</table>
 		
 		<p><a href="#"  click.delegate="ClosePanel()" class="button big">CLOSE</a></p>

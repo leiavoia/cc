@@ -13,7 +13,7 @@
 				<input type="text" value.bind="star.name" />
 				<a href="" click.delegate="ToggleNameEdit()">OK</a>
 			</p>
-			<div class="planet atm${p.atm} tmp${p.temp}" css.one-time="PlanetSizeCSS(p)" repeat.for="p of star.planets"  click.delegate="app.SwitchSideBar(p)">
+			<div class="planet atm${p.atm} tmp${p.temp} grav${p.grav}" css.one-time="PlanetSizeCSS(p)" repeat.for="p of star.planets"  click.delegate="app.SwitchSideBar(p)">
 				<!-- NOTE: using one-time binding to avoid brief moment when the 
 				object is undefined and browser tries to ask server for 'undefined' -->
 				<img if.bind="p.owner" class="flag" src.one-time="p.owner.flag_img" />

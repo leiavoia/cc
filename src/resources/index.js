@@ -9,5 +9,7 @@ export function configure(config) {
   	'./value-converters/round',
   	'./value-converters/sqrt',
   	'./value-converters/objprops',
+  	'./value-converters/uppercase',
+  	'./value-converters/uppercaseFirst',
   	]);
 }
