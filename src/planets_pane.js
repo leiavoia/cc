@@ -5,6 +5,7 @@ import {App} from 'app';
 @inject(App)
 export class PlanetsPane {
 	app = null;
+	myciv = null;
 	planets = [];
 	
 	show_mine = true;
@@ -13,8 +14,8 @@ export class PlanetsPane {
 
 	constructor( app ) {
 		this.app = app;
-		this.myciv = app.game.myciv;
 		// build planet list
+		this.myciv = this.app.game.myciv;
 		for ( let star of this.app.game.galaxy.stars ) { 
 			for ( let planet of star.planets ) { 
 				this.planets.push( planet );
@@ -25,5 +26,4 @@ export class PlanetsPane {
 		this.app.CloseSideBar();
 		this.app.CloseMainPanel();
 		}
-		
 	}

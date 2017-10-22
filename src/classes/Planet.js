@@ -35,8 +35,7 @@ export default class Planet {
 	
 	// ECONOMY -------------------------------------------
 	tax_rate = 0.2;
-// 	treasury = 0.0;
-	treasury_contrib = 0; // contributions or allowances from the global treasury last turn.
+	treasury_contrib = 0; // contributions or allowances from the global treasury
 	use_global_tax_rate = false;
 	spending = 0.75;
 	max_spending = 2.0 // may be modable with technology improvements
@@ -45,7 +44,14 @@ export default class Planet {
 	base_PCI = 10.0; // per capita income
 	bonus_PCI = 0.0;	
 	warehouse = 0;
+	min_warehouse = 100; // minimum amount to keep in store before exporting
+	mp_need = 0;
+	mp_import = 0;
 	econ = {
+		expenses: {
+			total: 0,
+			sectors: 0
+			},
 		GDP: 1.0, // gross domestic product
 		PCI: 1.0, // per-capita income
 		GF: 1.0, // growth factor
@@ -72,15 +78,15 @@ export default class Planet {
 	//		growth = 0.2 * ( work - inf ) ^ 0.75
 	//		inf += growth
 	sect = {
-		mine:{ pct: 0.5, relpct: 0.5, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 },
-		prod:{ pct: 0.5, relpct: 0.5, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 },
-		sci:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 },
-		com:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 },
-		gov:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 },
-		spy:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 },
-		sup:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 },
-// 		civ:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 },
-		def:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 0.0, growth: 0.0, cost: 2.50 }	
+		mine:{ pct: 0.5, relpct: 0.5, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
+		prod:{ pct: 0.5, relpct: 0.5, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
+		sci:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
+		com:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
+		gov:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
+		def:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 }
+// 		spy:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
+// 		sup:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
+// 		civ:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 		};
 
 
@@ -93,11 +99,12 @@ export default class Planet {
 				name: 'Orbital Defense Platform',
 				unique: true,
 				},
-			cost: 50,
-			spent: 12,
+			labor: 60, // "cost" in hammers
+			mp: 10, // material points
+			spent: 0,
 			quantity: 1,
 			turns_left: 4,
-			pct: (12.0/50.0)*100
+			pct: 0
 			},
 		{
 			type: 'ship',
@@ -105,7 +112,8 @@ export default class Planet {
 				name: 'Defender mkIII',
 				unique: false,
 				},
-			cost: 40,
+			labor: 200, // "cost" in hammers
+			mp: 20, // material points
 			spent: 0,
 			quantity: 3,
 			turns_left: 3,
@@ -117,14 +125,15 @@ export default class Planet {
 				name: 'Breakfast',
 				unique: true,
 				},
-			cost: 30,
-			spent: 8,
+			labor: 30, // "cost" in hammers
+			mp: 5, // material points
+			spent: 2,
 			quantity: 1,
 			turns_left: 2,
-			pct: (8.0/30.0)*100
+			pct: (2.0/5.0)*100
 			}
 		];
-	
+
 	build_opts = [
 		{
 			name: "Thing 1",
@@ -218,6 +227,7 @@ export default class Planet {
 	get slider_taxrate() { 
 		return this.tax_rate;
 		}
+		
 	RecalcSpendingSliders() { 
 		// get some stats
 		let t = 0; // sum of all sliders
@@ -248,6 +258,9 @@ export default class Planet {
 		for ( let k in this.sect ) {
 			let s = this.sect[k];
 			s.inf += s.growth;
+			// !IMPORTANT! 1.0 is the minimum infrastructure.
+			// This avoids not being to bootstrap a colony when mining goes to zero.
+			if ( s.inf < 1.0 ) { s.inf = 1.0 } 
 			}
 		// Update this again because infrastructure levels changed
 		this.RecalcSectors();
@@ -255,6 +268,7 @@ export default class Planet {
 	RecalcSectors() { 
 		let taxes = this.tax;
 		let cost = 0;
+		this.mp_need = 0; // materials points (MP)
 		for ( let k in this.sect ) {
 			let s = this.sect[k];
 			s.work = this.total_pop * this.spending * s.pct * s.pow;
@@ -263,50 +277,111 @@ export default class Planet {
 			let diff = s.work - s.inf;
 			s.growth = diff ? (0.2 * Math.pow( Math.abs(diff), 0.75 ) ) : 0;
 			if ( diff < 0 ) {  s.growth = -s.growth; } // invert if needed
+			if ( s.growth > 0 ) { this.mp_need += s.growth; } // growing infrastructure takes material
 			}
+		// how much money we are making or losing
 		this.treasury_contrib = taxes - cost;	
+		// add production queue item MP requirements
+		if ( this.sect.prod.output ) { 
+			let labor_available = this.sect.prod.output;
+			outerloop:
+			for ( let item of this.prod_q ) {
+				// each queue item also has a quantity
+				let quantity = (item.quantity > 0) ? item.quantity : 10000; // account for infinite quantity "-1"
+				for ( let n = 0; n < quantity; n++ ) { 
+					// how much can i build next turn?
+					let labor_per_mp = item.labor / item.mp;
+					let mp_remaining = item.mp - item.spent;
+					let labor_needed = mp_remaining * labor_per_mp;
+					// can i build the whole thing?
+					if ( labor_needed < labor_available ) { 
+						labor_available -= labor_needed;
+						this.mp_need += mp_remaining;
+						}
+					// can only build a portion.
+					// how many MP can i buy with this many hammers?
+					else {
+						this.mp_need += labor_available / labor_per_mp;
+						labor_available = 0; // pedantic
+						break outerloop;
+						}
+					}
+				}
+			}
+		// do we need to import stuff?
+		if ( this.mp_need > this.sect.mine.output + this.warehouse ) { 
+			this.mp_import = -this.mp_need + (this.sect.mine.output + this.warehouse);
+			}
 		}
 	DoMining() { 
 		this.warehouse += this.sect.mine.output;
 		}
-	DoProduction() { 
-		// actual output depends on available mining resources.
-		this.building_fund += this.sect.prod.output;
-		this.warehouse -= this.sect.prod.output;
-		// record the actual cost for what was actually produced (and dont divide by zero)
-// 		let pct = this.sect.prod.est_output > 0 ? (this.sect.prod.output / this.sect.prod.est_output) : 1.0;
-// 		this.sect.prod.cost = this.sect.prod.est_cost * pct;
-		// apply the production to the elements in the build queue
-		while ( this.building_fund > 0 && this.prod_q.length ) {
-			let amount = Math.min( this.building_fund, (this.prod_q[0].cost - this.prod_q[0].spent) );
-			this.prod_q[0].spent += amount;
-			this.building_fund -= amount;
-			// item complete, remove from queue
-			if ( this.prod_q[0].spent >= this.prod_q[0].cost ) { 
-				// 
-				// TODO: produce the item
-				//
-				// reset
-				this.prod_q[0].spent = 0;
-				this.prod_q[0].pct = 0;
-				this.prod_q[0].turns_left = Math.ceil( this.prod_q[0].cost / this.sect.prod.output ) ;
-				// decrement if they wanted more than one
-				if ( this.prod_q[0].quantity > 0 ) {
-					this.prod_q[0].quantity -= 1;
+	DoProduction( ) { 
+		//
+		// TODO:
+		// Mining resources are required for building infrastructure and production
+		// (and possibly robots), so these functions need to coordinate any
+		// potential MP deficiencies so that one function does not steal everything.
+		//
+		if ( this.sect.prod.output && this.prod_q.length && this.warehouse ) { 
+			// produce as many items in the queue as we can 
+			let labor_available = this.sect.prod.output;
+			let ok = true;
+			while ( ok ) { 
+				let item = this.prod_q[0];
+				console.log(item);
+				// each queue item also has a quantity
+				if ( item.quantity ) { 
+					// how much can i build next turn?
+					let labor_per_mp = item.labor / item.mp;
+					let mp_remaining = item.mp - item.spent;
+					let mp_committed = Math.min( mp_remaining, this.warehouse ); // can't use resources we dont have
+					let labor_needed = mp_committed * labor_per_mp;
+					console.log(`${item.labor}H / ${item.mp}MP, labor_per_mp = ${labor_per_mp}, mp_remaining = ${mp_remaining}, mp_committed = ${mp_committed}, labor_needed = ${labor_needed}, `);
+					// can't use labor we dont have either
+					if ( labor_needed > labor_available ) { 
+						console.log(`don't have enough labor to finish project (${labor_available}H), so only comitting ${mp_committed} MP  (${labor_needed}H)`);
+						mp_committed = labor_available / labor_per_mp;
+						}
+					// do some work
+					labor_available -= labor_needed;
+					this.warehouse -= mp_committed;	
+					item.spent += mp_committed;
+					// did something get built?
+					if ( item.spent >= (item.mp - 0.0001) ) { // slop room
+						console.log(`item completed.`);
+						// 
+						// TODO: produce the item
+						//
+						// reset
+						item.spent = 0;
+						item.pct = 0;
+						item.turns_left = 0; // Math.ceil( item.cost / this.sect.prod.output ) ;
+						// decrement if they wanted more than one
+						if ( item.quantity > 0 ) {
+							item.quantity -= 1;
+							}
+						// pop from list if we reached zero
+						if ( item.quantity == 0 ) {
+							console.log(`popped from list`);
+							this.buildings.push( this.prod_q.shift() );
+							}
+						}
+					// update the stats
+					else {
+						console.log(`item unfinished. item.turns_left = ${item.turns_left}, item.pct = ${item.pct}`);
+						item.turns_left = Math.ceil( ((item.mp - item.spent) * labor_per_mp) / this.sect.prod.output ) ;
+						item.pct = ( item.spent / item.mp) * 100;
+						}
+					// exhausted?
+					if ( this.warehouse <= 0 || labor_available <= 0 || !this.prod_q.length ) {
+						console.log(`labor exhausted. done building for this turn.`);
+						ok = false;
+						}
 					}
-				// pop from list if we reached zero
-				if ( this.prod_q[0].quantity == 0 ) {
-					this.buildings.push( this.prod_q.shift() );
-					}
+				else { ok = false; }
 				}
-			// update the stats
-			else {
-				let remaining = this.prod_q[0].cost - this.prod_q[0].spent;
-				this.prod_q[0].turns_left = Math.ceil( remaining / this.sect.prod.output ) ;
-				this.prod_q[0].pct = ( this.prod_q[0].spent / this.prod_q[0].cost) * 100;
-				}
-			}
-
+			}	
 		}
 		
 	GrowEconomy() { 
@@ -325,7 +400,7 @@ export default class Planet {
 	GrowPop() { 
 		// growth rate is square root of difference between max pop and current pop, divided by 50.
 		// max pop is current jimmied as the planet size.
-		let diff = this.size - this.total_pop; // <----- OOOO BAD INF!
+		let diff = this.size - this.total_pop; 
 		let divisor = 60.0;
 		let maxpop = false;
 		if ( diff > 0 ) { // pop growth
@@ -486,7 +561,7 @@ export default class Planet {
 			planet.grav = utils.RandomInt(0,4);
 			}
 		else {
-			planet.grav = utils.BiasedRandInt(0, 4, ((planet.size-30)/100)*4.0, 0.75);
+			planet.grav = utils.BiasedRandInt(0, 4, ((planet.size-30)/100)*4.0, 1.0);
 			}
 			
 		// special attributes

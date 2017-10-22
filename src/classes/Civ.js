@@ -12,7 +12,17 @@ export default class Civ {
 	name = 'RACE';
 	name_plural = 'RACITES';
 	
-	race = null;
+	// we'll flesh this out later
+	race = {
+		env: { // natural habitat
+			atm: 2,
+			temp: 2,
+			grav: 2,
+			adaptation: 1, // number of hops without penulty
+			},
+		popsize: 1.0, // literal size of pop units
+		
+		};
 	
 	flag_img = 'img/workshop/flag_mock.gif';
 	diplo_img = 'img/races/diplo_race_000.jpg';

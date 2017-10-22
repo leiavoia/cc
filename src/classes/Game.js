@@ -75,23 +75,23 @@ export default class Game {
 
 	// hacked in for debug
 	RefactorPlanetList() { 
-		this.avg_rich = 0;
-		this.avg_rarity = 0;
-		this.rare_count = [0,0,0,0,0];
-		this.planets = [];
-		if ( this.galaxy ) { 
-			for ( let s of this.galaxy.stars ) { 
-				for ( let p of s.planets ) { 
-					this.planets.push(p);
-					let r = Math.abs( p.atm - p.temp );
-					this.avg_rarity += r;
-					this.rare_count[r]++;
-					this.avg_rich += p.rich;
-					}
-				}
-			this.avg_rarity /= this.planets.length;
-			this.avg_rich /= this.planets.length;
-			}
+// 		this.avg_rich = 0;
+// 		this.avg_rarity = 0;
+// 		this.rare_count = [0,0,0,0,0];
+// 		this.planets = [];
+// 		if ( this.galaxy ) { 
+// 			for ( let s of this.galaxy.stars ) { 
+// 				for ( let p of s.planets ) { 
+// 					this.planets.push(p);
+// 					let r = Math.abs( p.atm - p.temp );
+// 					this.avg_rarity += r;
+// 					this.rare_count[r]++;
+// 					this.avg_rich += p.rich;
+// 					}
+// 				}
+// 			this.avg_rarity /= this.planets.length;
+// 			this.avg_rich /= this.planets.length;
+// 			}
 		}
 	ProcessTurn( num_turns = 1 ) {
 		
@@ -234,6 +234,9 @@ export default class Game {
 					if ( p.settled ) {  
 					
 						p.ProcessSectors();
+						
+						// production
+						p.DoMining(); // production
 						
 						// production
 						p.DoProduction(); // production

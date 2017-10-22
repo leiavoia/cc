@@ -53,6 +53,8 @@
 			</div>
 			<div class="content resources">
 				<h2>Resources</h2>
+				<span>Keep in Stock:</span>
+				<input type="text" style="width: 4em" value.bind="planet.min_warehouse" pattern="\d+" />
 				<span>Needed: ${planet.act.mine.need|round:2}</span>
 				<span>Mined: ${planet.act.mine.output|round:2}</span>
 				<span class="${planet.econ.mine_export > 0 ? 'good' : ''}">Exported: ${ (planet.econ.mine_export > 0 ? planet.econ.mine_export : 0 ) |round:2}</span>
