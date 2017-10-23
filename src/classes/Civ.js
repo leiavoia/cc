@@ -38,7 +38,11 @@ export default class Civ {
 	ship_designs;
 	
 	spy = []; // how to structure???
-	econ = {}; // how to structure???
+	econ = {
+		warehouse : 0,
+		mp_need: 0,
+		mp_need_met: 0 // 0..1
+		}; // how to structure???
 	policies = []; // how to structure???
 	
 	planets = [];

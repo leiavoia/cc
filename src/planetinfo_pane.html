@@ -49,30 +49,27 @@
 				<span>MORALE: ${planet.morale|percent}%</span>
 				<span>UNEMP: ${planet.unempl|percent}%</span>
 				<span>WRHS: ${planet.warehouse|round:2}</span>
-				<span>BLD-FND: ${planet.building_fund|round}</span>
 			</div>
 			<div class="content resources">
 				<h2>Resources</h2>
 				<span>Keep in Stock:</span>
 				<input type="text" style="width: 4em" value.bind="planet.min_warehouse" pattern="\d+" />
-				<span>Needed: ${planet.act.mine.need|round:2}</span>
-				<span>Mined: ${planet.act.mine.output|round:2}</span>
-				<span class="${planet.econ.mine_export > 0 ? 'good' : ''}">Exported: ${ (planet.econ.mine_export > 0 ? planet.econ.mine_export : 0 ) |round:2}</span>
-				<span class="${planet.econ.mine_import > 0 ? 'alert' : ''}">Imported: ${planet.econ.mine_import|round:2}</span>
-				<span class="${planet.econ.mine_export < 0 ? 'bad' : ''}">Unmet Need: ${((planet.econ.mine_export < 0) ? -planet.econ.mine_export : 0) |round:2}</span>
+				<span>Needed: ${planet.mp_need|round:2}</span>
+				<span>Mined: ${planet.sect.mine.output|round:2}</span>
+				<span>Warehouse: ${planet.warehouse|round:2}</span>
+				<span>Export: ${planet.mp_export|round:2}</span>
+<!-- 				<span class="${planet.mp_export > 0 ? 'good' : ''}">Exported: ${ (planet.mp_export > 0 ? planet.mp_export : 0 ) |round:2}</span> -->
+<!-- 				<span class="${planet.mp_export < 0 ? 'alert' : ''}">Imported: ${(-planet.mp_export*planet.mp_need_met)|round:2}</span> -->
+<!-- 				<span class="${planet.mp_need_met < 1.0 ? 'bad' : ''}">Unmet Need: ${(planet.mp_export*(planet.mp_need_met-1.0))|round:2}</span> -->
+				<span>Civ Need: ${planet.owner.econ.mp_need|round:2}</span>
+				<span>Civ Need Met: ${planet.owner.econ.mp_need_met|percent:2}</span>
+				<span>Civ Warehouse: ${planet.owner.econ.warehouse|round:2}</span>
 			</div>
 			<div class="content financial">
 				<h2>Financial</h2>
 				<span class="${(planet.tax - planet.total_expense) > 0 ? 'good' : ''}">Profit: ${(planet.tax - planet.total_expense)|round:1}</span>
 				<span class="good">Tax Income: ${(planet.tax)|round:1}</span>
 				<span class="bad">Total costs last turn: ${planet.total_expense|round:1}</span>
-				<span>&nbsp;&nbsp;Maintenance: ${(planet.inf * planet.INF_maint_cost)|round:1}</span>
-				<span>&nbsp;&nbsp;Administrative: ${planet.base_colony_fee|round:1}</span>
-				<span>&nbsp;&nbsp;Mining Activity: ${planet.act.mine.cost|round:1}</span>
-				<span>&nbsp;&nbsp;Infrastructure Development: ${planet.act.inf.cost|round:1}</span>
-				<span>&nbsp;&nbsp;Production: ${planet.act.prod.cost|round:1}</span>
-				<span>&nbsp;&nbsp;Science Research: ${planet.act.sci.cost|round:1}</span>
-				<span>Estimated costs next turn: ${planet.est_total_expense|round:1}</span>
 			</div>
 			<div class="content economy">
 				<h2>Economy</h2>
@@ -82,10 +79,6 @@
 			</div>
 			<div class="content production">
 				<h2>Production</h2>
-				<span>Mining Output: ${planet.act.mine.output|round:1}</span>
-				<span>Infrastructure Output: ${planet.act.inf.output|round:1}</span>
-				<span>Production Output: ${planet.act.prod.output|round:1}</span>
-				<span>Science Output: ${planet.act.sci.output|round:1}</span>
 				<span>Currently Building: TODO</span>
 				<span>Complete In: [TODO] turns</span>
 			</div>

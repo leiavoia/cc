@@ -33,8 +33,8 @@ Array.prototype.pickRandom = function() {
 	return this[ Math.floor( (Math.random() * (this.length+1) ) ) ];
 	}
 
-export function Clamp( min, max ) { 
-	return Math.min(Math.max(this, min), max);
+export function Clamp( n, min, max ) { 
+	return Math.min(Math.max(n, min), max);
 	}
 	
 export function RandomFloat( min, max ) { 

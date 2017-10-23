@@ -228,19 +228,83 @@ export default class Game {
 // 					}
 // 				}
 			
+			
+			
+			
+			
+			// calculate how many material points (mining) we can afford 
+			// to distribute to those planets in need.
+			for ( let civ of this.galaxy.civs ) { 
+				civ.econ.mp_need = 0; // reset each turn loop;
+				for ( let p of civ.planets ) { 
+					if ( p.settled && p.mp_export < 0 ) {
+						civ.econ.mp_need -= p.mp_export;
+						}
+					}
+				// now figure out how much we can afford to give back.
+				if ( civ.econ.mp_need == 0 ) { 
+					civ.econ.mp_need_met = 1.0;
+					}
+				else if ( civ.econ.warehouse == 0 ) { 
+					civ.econ.mp_need_met = 0.0;
+					}
+				else {
+					civ.econ.mp_need_met = utils.Clamp( civ.econ.warehouse / civ.econ.mp_need, 0, 1 );
+					}
+				}
+			
+			
+			
+			
 			// Loop Part 2
 			for ( let s of this.galaxy.stars ) { 
 				for ( let p of s.planets ) {
 					if ( p.settled ) {  
 					
-						p.ProcessSectors();
-						
-						// production
-						p.DoMining(); // production
+						// Planets will mine resources and stock their local warehouses.
+						p.DoMining(); 
+						// collect exports from planets
+						if ( p.mp_export >= 0 ) { 
+// 							console.log(`collecting ${p.mp_export}MP from ${p.name}`);
+							p.owner.econ.warehouse += p.mp_export;
+							p.warehouse -= p.mp_export;
+							p.mp_need_met = 1.0; // trivial yet important
+							}
+						// They may need to borrow resources, so let them know how much they can borrow.
+						else if ( p.mp_export < 0 ) { 
+							let transferred = p.owner.econ.mp_need_met * -p.mp_export;
+// 							console.log(`importing ${transferred}MP to ${p.name}`);
+							p.mp_need_met = p.owner.econ.mp_need_met;
+							p.owner.econ.warehouse -= transferred; // [!]OPTIMIZE : would be easier to make one calculation further upstream
+							p.warehouse += transferred;
+							}
 						
 						// production
 						p.DoProduction(); // production
 						
+						// give or borrow money out of the civ treasury
+						p.owner.treasury += p.treasury_contrib;
+										
+						// grow or shrink the infrastructure of each sector
+						for ( let k in p.sect ) {
+							let s = p.sect[k];
+							if ( s.growth > 0 ) { 
+								// growth can be slower if there is unmet need for MP
+								let growth = s.growth * p.mp_need_met; 
+								s.inf += growth;
+								p.warehouse -= growth;
+								}
+							else {
+								// decrepitude is free
+								s.inf += s.growth;
+								}
+							// !IMPORTANT! 1.0 is the minimum infrastructure.
+							// This avoids not being able to bootstrap a colony when mining goes to zero.
+							if ( s.inf < 1.0 ) { s.inf = 1.0 } 
+							}
+		
+		
+		
 						// grow/shrink economy
 						p.GrowEconomy();
 						
@@ -251,8 +315,9 @@ export default class Game {
 							
 						// migration
 						
-						// pay piper
-// 						p.owner.treasury -= p.total_expense;
+						// Update this again because infrastructure levels changed
+						p.RecalcSectors();
+						
 						}
 					}
 				}
