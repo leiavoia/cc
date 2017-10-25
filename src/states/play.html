@@ -70,10 +70,10 @@
 
 	<div id="layout_ui_visor">
 		<span class="turn">TURN: ${app.game.turn_num}</span>
-		<span class="treasury">TREASURY: $${app.game.myciv.treasury|round:0}</span>
-		<span class="income">INCOME: $${app.game.myciv.econ.income|round:0}</span>
 		<span class="planets">PLANETS: ${app.game.myciv.planets.length}</span>
-		<span class="sci">RESEARCH: ${app.game.myciv.research|round}</span>
+		<span class="treasury">TREASURY: $${app.game.myciv.treasury|round:0} ${app.game.myciv.econ.income > 0 ?'+':''}${app.game.myciv.econ.income|round:0}</span>
+		<span class="gov">GOV: ${app.game.myciv.gov_pts|round:0} +${app.game.myciv.gov_pts_income|round:0}</span>
+		<span class="sci">RESEARCH: ${app.game.myciv.research|round} +${app.game.myciv.research_income|round:0}</span>
 <!-- 		<span class="turn">MODE: ${app.main_panel_mode}</span>			 -->
 <!-- 		<span class="turn">SIDEMODE: ${app.sidebar_mode}</span>			 -->
 	</div>

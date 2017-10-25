@@ -32,8 +32,13 @@ export default class Civ {
 	color = '#FFFFFF';
 	color_rgb = [255,255,255];
 	
-	gov_type = 'feudal';
 	research = 0; // to split into cats later
+	research_income = 0; // calculated per turn
+	
+	gov_type = 'feudal';
+	gov_pts = 0;
+	gov_pts_income = 0;
+	
 	treasury = 10000;
 	
 	ships = [];

@@ -82,7 +82,7 @@ export default class Planet {
 		mine:{ pct: 0.15, relpct: 0.15, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 		prod:{ pct: 0.35, relpct: 0.35, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 		sci:	{ pct: 0.20, relpct: 0.20, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
-		com:	{ pct: 0.00, relpct: 0.00, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
+		com:	{ pct: 0.00, relpct: 0.00, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 0 },
 		gov:	{ pct: 0.15, relpct: 0.15, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 		def:	{ pct: 0.15, relpct: 0.15, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 }
 // 		spy:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
@@ -276,19 +276,19 @@ export default class Planet {
 		this.RecalcSectors();
 		}
 	ProcessSectors() { 
-		this.RecalcSectors();
-		// if our spending is not 1.0, we give or borrow money out of the global treasury
-		this.owner.treasury += this.treasury_contrib;
-		// grow or shrink the infrastructure of each sector
-		for ( let k in this.sect ) {
-			let s = this.sect[k];
-			s.inf += s.growth;
-			// !IMPORTANT! 1.0 is the minimum infrastructure.
-			// This avoids not being able to bootstrap a colony when mining goes to zero.
-			if ( s.inf < 1.0 ) { s.inf = 1.0 } 
-			}
-		// Update this again because infrastructure levels changed
-		this.RecalcSectors();
+// 		this.RecalcSectors();
+// 		// if our spending is not 1.0, we give or borrow money out of the global treasury
+// 		this.owner.treasury += this.treasury_contrib;
+// 		// grow or shrink the infrastructure of each sector
+// 		for ( let k in this.sect ) {
+// 			let s = this.sect[k];
+// 			s.inf += s.growth;
+// 			// !IMPORTANT! 1.0 is the minimum infrastructure.
+// 			// This avoids not being able to bootstrap a colony when mining goes to zero.
+// 			if ( s.inf < 1.0 ) { s.inf = 1.0 } 
+// 			}
+// 		// Update this again because infrastructure levels changed
+// 		this.RecalcSectors();
 		}
 	RecalcSectors() { 
 		let taxes = this.tax;
@@ -422,19 +422,103 @@ export default class Planet {
 			}	
 		}
 		
+// 	GrowEconomy() { 
+// 		// morale and taxes affect the growth rate
+// 		let min_PCI = 1.0 + this.bonus_PCI;
+// 		let tax_baserate = 1.05;
+// 		let tax_mod = tax_baserate - (this.tax_rate * this.tax_rate);
+// 		let morale_baserate = 1.00;
+// 		let morale_effect = 0.12;
+// 		let morale_mod = morale_baserate + ((this.morale - 1.0) * morale_effect);
+// 		// commerce improves growth factor a lot
+// 		let com_effect = 0.05;
+// 		let com_mod = 1.0 + ( com_effect * this.sect.com.output );
+// 		// if commerce feeds into growth factor, it leads to semi-permanent gains !?
+// 		
+// 		// technology
+// 		
+// 		// galactic economy
+// 		
+// 		
+// 		// local resources
+// 		let local_rsc = (this.rich + this.energy) / 2; // this hovers around 1.0 naturally
+// 		let local_rsc_effect = 5; // increasing this waters down the effect, unlike the others
+// 		let local_rsc_mod = ( local_rsc + local_rsc_effect) / local_rsc_effect;
+// 		
+// 		// environment
+// 		let env = this.HabitationBonus( this.owner.race );
+// 		let env_effect = 0.5;
+// 		let env_mod = 1.0 + ( env_effect * env );
+// 		
+// 		this.econ.GF = Math.pow( com_mod * env_mod * local_rsc_mod * tax_mod * morale_mod, (1.0 / this.econ.PCI) );
+// 		this.econ.PCI *= this.econ.GF;
+// 		if ( this.econ.PCI < min_PCI ) { this.econ.PCI = min_PCI; }
+// 		this.econ.GDP = this.total_pop * this.econ.PCI;
+// 		}
+
 	GrowEconomy() { 
-		// morale and taxes affect the growth rate
-		let min_PCI = 1.0 + this.bonus_PCI;
-		let tax_baserate = 1.05;
-		let tax_mod = tax_baserate - (this.tax_rate * this.tax_rate);
-		let morale_baserate = 1.00;
-		let morale_effect = 0.12;
-		let morale_mod = morale_baserate + ((this.morale - 1.0) * morale_effect);
-		this.econ.GF = Math.pow(tax_mod * morale_mod, (1.0 / this.econ.PCI) );
-		this.econ.PCI *= this.econ.GF;
-		if ( this.econ.PCI < min_PCI ) { this.econ.PCI = min_PCI; }
+		
+		let factors = {};
+		
+		// tax
+		factors.tax = {
+			fx: (0.05 - (this.tax_rate * this.tax_rate)),
+			scale: 30.0
+			};
+			
+		// morale
+		factors.morale = {
+			fx: (this.morale - 0.8), // slight positive over 80%
+			scale: 8.0
+			};
+			
+		// commerce improves growth factor a lot
+		factors.commerce = {
+			fx: this.sect.com.output,
+			scale: 0.15
+			};
+			
+		// technology
+		
+		// galactic economy
+		
+		// recent events
+		
+		// connectivity / hyperlanes
+		
+		// local resources
+		factors.rsc = {
+			fx: ((this.rich + this.energy) / 2),
+			scale: 7.0
+			};
+			
+		// environment
+		factors.env = {
+			fx: this.HabitationBonus( this.owner.race ),
+			scale: 7.0
+			};
+			
+					
+		let total = 0;
+		for ( let f in factors ) { 
+			total += factors[f].fx * factors[f].scale;
+			}
+		let ecoscale = 5;
+		let min_PCI = 0.1; 
+		let base = total * ecoscale;
+		if ( base < 1 ) { base = 1; }
+		this.econ.target_PCI = Math.pow( base, 0.65 );
+		if ( this.econ.target_PCI < min_PCI ) { this.econ.target_PCI = min_PCI; }
+		
+		// grow economy in stages, like sector infrastructure, but faster
+		let diff = this.econ.target_PCI - this.econ.PCI;
+		let growth = diff ? (0.4 * Math.pow( Math.abs(diff), 0.75 ) ) : 0;
+		this.econ.PCI += ( diff > 0 ) ? growth : -growth ;	
 		this.econ.GDP = this.total_pop * this.econ.PCI;
+		this.econ.GF = 1.0; // not used
 		}
+		
+		
 	GrowPop() { 
 		// growth rate is square root of difference between max pop and current pop, divided by 50.
 		let maxpop = this.MaxPop( this.owner.race ); // TODO: factor in multiracial

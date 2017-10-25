@@ -235,6 +235,9 @@ export default class Game {
 			// calculate how many material points (mining) we can afford 
 			// to distribute to those planets in need.
 			for ( let civ of this.galaxy.civs ) { 
+				// reset some stuff
+				civ.research_income = 0;
+				civ.gov_pts_income = 0;
 				civ.econ.income = 0;
 				civ.econ.mp_need = 0; // reset each turn loop;
 				for ( let p of civ.planets ) { 
@@ -285,6 +288,11 @@ export default class Game {
 						
 						// research
 						p.owner.research += p.sect.sci.output;
+						p.owner.research_income += p.sect.sci.output;
+						
+						// government
+						p.owner.gov_pts += p.sect.gov.output;
+						p.owner.gov_pts_income += p.sect.gov.output;
 						
 						// give or borrow money out of the civ treasury
 						p.owner.treasury += p.treasury_contrib;
