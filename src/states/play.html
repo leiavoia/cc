@@ -71,11 +71,17 @@
 	<div id="layout_ui_visor">
 		<span class="turn">TURN: ${app.game.turn_num}</span>
 		<span class="treasury">TREASURY: $${app.game.myciv.treasury|round:0}</span>
-		<span class="income">INCOME: todo</span>
-		<span class="planets">PLANETS: todo</span>
-		<span class="sci">RESEARCH: ${app.game.myciv.research}</span>
-		<span class="turn">MODE: ${app.main_panel_mode}</span>			
-		<span class="turn">SIDEMODE: ${app.sidebar_mode}</span>			
+		<span class="income">INCOME: $${app.game.myciv.econ.income|round:0}</span>
+		<span class="planets">PLANETS: ${app.game.myciv.planets.length}</span>
+		<span class="sci">RESEARCH: ${app.game.myciv.research|round}</span>
+<!-- 		<span class="turn">MODE: ${app.main_panel_mode}</span>			 -->
+<!-- 		<span class="turn">SIDEMODE: ${app.sidebar_mode}</span>			 -->
+	</div>
+	
+	<div id="layout_ui_nav2">
+		<a href="#" click.delegate="app.MapZoomIn()">[+]</a>
+		<a href="#" click.delegate="app.MapZoomOut()">[-]</a>
+		<span if.bind="app.game.myciv.econ.mp_need_met < 1.0" class="bad">Not Enough Resources!</span>
 	</div>
 	
 	<div id="layout_ui_main" class="visible ${app.main_panel_mode ? 'trekIn' : 'trekOut'}">
@@ -92,12 +98,6 @@
 	
 	<div id="layout_ui_side" class="trekIn" if.bind="app.sidebar_mode && app.sidebar_obj">		
 		<compose if.bind="app.sidebar_mode && app.sidebar_obj" view-model="../ui/sidebars/sidebar_${app.sidebar_mode}" model.bind="{app: app, obj: app.sidebar_obj}" containerless></compose>
-
-		<!-- for reasons unknown, order of elements makes a difference here -->
-<!--		<fleet-detail-pane fleet.bind="app.sidebar_obj" if.bind="app.sidebar_mode == 'fleet'" app.bind="app" containerless ></fleet-detail-pane>
-		<star-detail-pane star.bind="app.sidebar_obj" if.bind="app.sidebar_mode == 'star'" app.bind="app" containerless ></star-detail-pane>
-		<planet-detail-pane planet.bind="app.sidebar_obj" if.bind="app.sidebar_mode == 'planet'" app.bind="app" containerless ></planet-detail-pane>
-		<constellation-detail-pane constel.bind="app.sidebar_obj" if.bind="app.sidebar_mode == 'constel'" app.bind="app" containerless ></constel-detail-pane>-->
 	</div>
 	
 	<div id="layout_ui_nav" class="slideInRight">

@@ -286,6 +286,23 @@ body,html {
 	overflow:auto;
 	}
 	
+#layout_ui_nav2 { 
+	bottom:0;
+	left:0;
+	position:absolute;
+/* 	width: 100%; */
+	background-color: rgba(0.5,0.5,0.5,0.3);
+	color: #FFF;
+	text-shadow: 1px 1px 1px #000;
+	box-sizing: border-box;
+	padding: 0.3em 1.5em 0.3em 0.5em ;
+	display:inline-block;
+	border-bottom-right-radius: 2em;
+	transition: all 0.30s;
+	transform-origin: 50% 50%;
+	animation: fadeIn .75s ease-out;
+	}
+	
 #layout_ui_visor { 
 	top:0;
 	left:0;

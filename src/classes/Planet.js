@@ -79,8 +79,8 @@ export default class Planet {
 	//		growth = 0.2 * ( work - inf ) ^ 0.75
 	//		inf += growth
 	sect = {
-		mine:{ pct: 0.25, relpct: 0.25, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
-		prod:{ pct: 0.25, relpct: 0.25, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
+		mine:{ pct: 0.15, relpct: 0.15, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
+		prod:{ pct: 0.35, relpct: 0.35, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 		sci:	{ pct: 0.20, relpct: 0.20, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 		com:	{ pct: 0.00, relpct: 0.00, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 		gov:	{ pct: 0.15, relpct: 0.15, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
@@ -146,8 +146,32 @@ export default class Planet {
 			name: "Thing 3",
 			},
 		];
-			
 		
+	// more is better
+	Adaptation( race ) { 
+		return -( 
+			(Math.abs( this.atm - race.env.atm ) + Math.abs( this.temp - race.env.temp ) + Math.abs( this.grav - race.env.grav )  )
+	 		- race.env.adaptation 
+	 		) ;
+		}
+	Habitable( race ) { 
+		return ( (Math.abs( this.atm - race.env.atm ) + Math.abs( this.temp - race.env.temp )  + Math.abs( this.grav - race.env.grav ) )
+	 		- race.env.adaptation 
+	 		) <= race.env.habitation;	
+		}
+	HabitationBonus( race ) { 
+		let x = this.Adaptation( race );
+// 		let y = ( 2 / ( 1 + Math.pow( Math.exp(1), -0.52*x ) ) ) - 1; // sigmoid function
+// 		return Math.round( y * 20 ) / 20; // this part rounds off to the nearest 5%
+		// lets keep this simple: -20% for each negative, +10% for each positive
+		if ( x < 0 ) { return utils.Clamp( x*0.2, -0.9, 0 ); }
+		else if ( x > 0 ) { return utils.Clamp( x*0.1, 0, 1.0 ); }
+		return 0;
+		}
+	MaxPop( race ) {
+		let b = this.HabitationBonus( race );
+		return ( this.size * (1+b) ) / race.size;
+		}
 	get tax() { 
 		return this.total_pop * this.tax_rate * this.econ.PCI;
 		}
@@ -269,11 +293,13 @@ export default class Planet {
 	RecalcSectors() { 
 		let taxes = this.tax;
 		let cost = 0;
+		this.econ.expenses.sectors = 0;
 		this.mp_need = 0; // material points (MP)
 		for ( let k in this.sect ) {
 			let s = this.sect[k];
 			s.work = this.total_pop * this.spending * s.pct * s.pow;
 			cost += s.work * s.cost; // we dont work for free. 
+			this.econ.expenses.sectors += s.work * s.cost;
 			s.output = Math.min(s.inf,s.work);
 			let diff = s.work - s.inf;
 			s.growth = diff ? (0.2 * Math.pow( Math.abs(diff), 0.75 ) ) : 0;
@@ -411,23 +437,23 @@ export default class Planet {
 		}
 	GrowPop() { 
 		// growth rate is square root of difference between max pop and current pop, divided by 50.
-		// max pop is current jimmied as the planet size.
-		let diff = this.size - this.total_pop; 
+		let maxpop = this.MaxPop( this.owner.race ); // TODO: factor in multiracial
+		let diff = maxpop - this.total_pop; 
 		let divisor = 60.0;
-		let maxpop = false;
+		let hitmaxpop = false;
 		if ( diff > 0 ) { // pop growth
 			let max_diff = 50.0;
 			let rate  = ( Math.sqrt( diff > max_diff ? max_diff : diff ) / divisor ) + 1.0;
 			this.total_pop = (this.total_pop * rate) + 0.05; // the 0.05 just helps it move along
-			if ( this.total_pop >= this.size ) {
-				maxpop = true;
+			if ( this.total_pop >= maxpop ) {
+				hitmaxpop = true;
 				}
 			}
-		else if ( diff < -5 ) { // pop decline - we outstripped housing
-			this.total_pop *= 1.0 - ((( this.total_pop / this.inf ) - 1.0) * 0.2);
-			}
-		if ( this.total_pop > this.size ) { this.total_pop = this.size; }
-		return maxpop; // let the app know if we hit max pop and maybe issue a message
+// 		else if ( diff < -5 ) { // pop decline - we outstripped allowable space somehow
+// 			this.total_pop *= 1.0 - ((( this.total_pop / maxpop ) - 1.0) * 0.2);
+// 			}
+		if ( this.total_pop > maxpop ) { this.total_pop = maxpop; }
+		return hitmaxpop; // let the app know if we hit max pop and maybe issue a message
 		}
 		
 	// temp => atm
@@ -440,6 +466,9 @@ export default class Planet {
 		['Wasteland',	'Desert',		'Arid',		'Swamp',	'Sauna'],
 		['Inferno',	'Scorched',	'Parched',	'Torrid',	'Cauldron'] //	HOT	
 		]; }
+	static GravNames() {
+		return ['Weak','Light','Medium','Heavy','Crushing' ]; 
+		}
 		
 	static AttributeSelector() { 
 		let attrs = Planet.AttributesList();
@@ -494,6 +523,9 @@ export default class Planet {
 		
 	get envDisplayName() {
 		return Planet.EnvNames()[this.temp][this.atm];
+		}
+	get gravDisplayName() {
+		return Planet.GravNames()[this.grav];
 		}
 			
 	static NextUniqueID() {
@@ -551,6 +583,7 @@ export default class Planet {
 		if ( rarity == 3 ) { planet.rich += utils.RandomFloat( 0.5, 2.5 ); }
 		else if ( rarity == 4 ) { planet.rich += utils.RandomFloat( 1.0, 5.0 ); }
 		planet.rich = parseFloat( planet.rich.toFixed(1) );
+		planet.sect.mine.pow = planet.rich;
 		
 		// younger stars have more energy potential, making them better for industry
 		let energy_salt = 0.8 + ((1.0-star_age) - 0.5);
@@ -560,6 +593,7 @@ export default class Planet {
 		if ( star.color == 'black' ) { planet.energy = utils.RandomFloat( 0.2, 5.0 ); }
 		if ( star.color == 'green' ) { planet.energy = utils.RandomFloat( 0.2, 8.0 ); } 
 		planet.energy = parseFloat( planet.energy.toFixed(1) );
+		planet.sect.prod.pow = planet.energy;
 		
 		// size is not dependent on star or galaxy. just random.
 		planet.size = ( Math.floor( utils.standardRandom() * 14 ) + 1 ) * 10 ;

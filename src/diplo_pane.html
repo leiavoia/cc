@@ -7,7 +7,7 @@
 		<h1>Diplomacy</h1>
 		
 		<div id="civ_list">
-			<div repeat.for="c of app.galaxy.civs" css="border-color: rgb( ${c.color_rgb[0]}, ${c.color_rgb[1]}, ${c.color_rgb[2]} ); background-color: rgba( ${c.color_rgb[0]}, ${c.color_rgb[1]}, ${c.color_rgb[2]}, 0.55 );">
+			<div repeat.for="c of app.game.galaxy.civs" css="border-color: rgb( ${c.color_rgb[0]}, ${c.color_rgb[1]}, ${c.color_rgb[2]} ); background-color: rgba( ${c.color_rgb[0]}, ${c.color_rgb[1]}, ${c.color_rgb[2]}, 0.55 );">
 				<img class="flag" src.one-time="c.flag_img" />
 				<h2>${c.name}</h2>
 				<div class="love_nub">Amiable</div>

@@ -5,6 +5,7 @@ import Constellation from './Constellation';
 import Planet from './Planet';
 
 
+
 export default class Civ {
 	
 	id = false;
@@ -18,9 +19,10 @@ export default class Civ {
 			atm: 2,
 			temp: 2,
 			grav: 2,
-			adaptation: 1, // number of hops without penulty
+			adaptation: 1, // levels to shift the habitability scale
+			habitation: 2 // maximum bad planet we can settle
 			},
-		popsize: 1.0, // literal size of pop units
+		size: 1.0, // literal size of pop units
 		
 		};
 	
@@ -39,6 +41,7 @@ export default class Civ {
 	
 	spy = []; // how to structure???
 	econ = {
+		income: 0,
 		warehouse : 0,
 		mp_need: 0,
 		mp_need_met: 0 // 0..1

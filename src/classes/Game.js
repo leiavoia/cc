@@ -16,7 +16,7 @@ export default class Game {
 	turn_num = 0;
 	iam = 0;
 	myciv = null;
-	
+		
 	constructor( theapp ) {
 		this.theapp = theapp;
 		Fleet.all_fleets = []; // need to set this manually since Fleet class doesn't do it itself very well
@@ -235,6 +235,7 @@ export default class Game {
 			// calculate how many material points (mining) we can afford 
 			// to distribute to those planets in need.
 			for ( let civ of this.galaxy.civs ) { 
+				civ.econ.income = 0;
 				civ.econ.mp_need = 0; // reset each turn loop;
 				for ( let p of civ.planets ) { 
 					if ( p.settled && p.mp_export < 0 ) {
@@ -282,9 +283,13 @@ export default class Game {
 						// production
 						p.DoProduction(); // production
 						
+						// research
+						p.owner.research += p.sect.sci.output;
+						
 						// give or borrow money out of the civ treasury
 						p.owner.treasury += p.treasury_contrib;
-										
+						p.owner.econ.income += p.treasury_contrib;
+						
 						// grow or shrink the infrastructure of each sector
 						for ( let k in p.sect ) {
 							let s = p.sect[k];

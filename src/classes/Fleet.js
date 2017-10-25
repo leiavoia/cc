@@ -27,7 +27,7 @@ export default class Fleet {
 			shield: 13,
 			maxshield: 20,
 			att: 14,
-			speed: 7,
+			speed: 50,
 			colonize: true,
 			offroad: true,
 			selected: true // default to selected for easier UI
@@ -42,7 +42,7 @@ export default class Fleet {
 			shield: 13,
 			maxshield: 20,
 			att: 14,
-			speed: 7,
+			speed: 50,
 			colonize: true,
 			offroad: true,
 			selected: true // default to selected for easier UI
@@ -57,7 +57,7 @@ export default class Fleet {
 			shield: 13,
 			maxshield: 20,
 			att: 14,
-			speed: 7,
+			speed: 50,
 			colonize: true,
 			offroad: true,
 			selected: true // default to selected for easier UI
@@ -72,7 +72,7 @@ export default class Fleet {
 			shield: 13,
 			maxshield: 20,
 			att: 14,
-			speed: 7,
+			speed: 100,
 			colonize: false,
 			offroad: true,
 			selected: true // default to selected for easier UI
@@ -87,7 +87,7 @@ export default class Fleet {
 			shield: 13,
 			maxshield: 20,
 			att: 14,
-			speed: 7,
+			speed: 200,
 			colonize: false,
 			offroad: true,
 			selected: true // default to selected for easier UI

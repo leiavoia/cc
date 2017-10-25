@@ -21,6 +21,7 @@
 				<th>ATM</th>
 				<th>TEMP</th>
 				<th>GRAV</th>
+				<th>HABT</th>
 				<th>Resource</th>
 				<th>Energy</th>
 				<th>Pop</th>
@@ -37,6 +38,7 @@
 					<td>${p.atm}</td>
 					<td>${p.temp}</td>
 					<td>${p.grav}</td>
+					<td class="${p.Habitable(app.game.myciv.race) ? (p.Adaptation(app.game.myciv.race) < 0 ? 'alert' : 'good') : 'bad'}">${p.Adaptation(app.game.myciv.race)}</td>
 					<td>${p.rich}x</td>
 					<td>${p.energy}x</td>
 					<td class="i">${p.total_pop|round:1}</td>

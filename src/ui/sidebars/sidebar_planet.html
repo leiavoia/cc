@@ -22,10 +22,14 @@
 		<div class="phys" style="display:flex; flex-flow: row;">
 			<div class="" style="flex:2;"><!-- planet.owner.id == app.game.iam -->
 				<div class="size" >
-					<span class="pop" if.bind="planet.owner !== false">${planet.total_pop|round}<br/><span class="pop">POP</span></span>
+					<span class="pop" if.bind="planet.owner !== false">${planet.total_pop|round} / ${maxpop|round}<br/><span class="pop">POP / MAX</span></span>
 					<span class="size">${planet.size}<br/><span class="size">SIZE</span></span>					
+					<br/>
 					<span class="mine">${planet.rich}x<br/><span class="mine">MINING</span></span>
 					<span class="en">${planet.energy}x<br/><span class="en">ENERGY</span></span>
+					<br/>
+					<span class="${habitable ? (habitat < 0 ? 'alert' : 'good') : 'bad'}">${(habitat >= 0 ? '+' : '')}${habitat}<br/><span class="">${habitable ? "HABITABILITY" : "UNINHABITABLE"}</span></span>
+<!-- 					<p>${habitat_bonus|percent}% HAB</p> -->
 				</div>
 				<p if.bind="planet.owner !== false">OWNER: ${planet.owner.name}</p>
 <!-- 				<p repeat.for="attr of planet.physattr" class="special">${attr.name}<br/><span style="font-size: 75%; color: #999;">${attr.note}</span></p> -->
@@ -34,13 +38,13 @@
 				<div class="env_box">
 					<div class="target"></div>
 				</div>
-				<p class="env_label">${planet.envDisplayName}</p>
+				<p class="env_label">${planet.gravDisplayName} ${planet.envDisplayName}</p>
 				<p class="env_stats">ATM:${planet.atm} TMP:${planet.temp} GRAV:${planet.grav}</p>
 			</div>	
 		</div> 
+		
 		<!-- Spending Levels -->
 		<div class="spending" if.bind="planet.owner">
-			<p class="${planet.treasury_contrib >= 0 ? 'good' : 'bad'}">Taxes: ${planet.treasury_contrib >= 0 ? '+' : ''}${planet.treasury_contrib|round:1}</p>
 			<div class="spending_stackbar">
 				<div class="m" css="width:${planet.sect.mine.pct | percent:3}%"><!--${planet.sect.mine.output | round:1}--></div>
 				<div class="p" css="width:${planet.sect.prod.pct | percent:3}%"><!--${planet.sect.prod.output | round:1}--></div>
@@ -60,12 +64,20 @@
 			<div class="th"><span>SPEND</span><input type="range" min="0" max.bind="planet.max_spending" step="0.01" value.bind="planet.slider_spending" /><span>${planet.spending | percent}%</span></div> 
 			<div><span>MORALE</span><input type="range" min="0" max="2.0" step="0.01" value.bind="planet.morale" /><span>${planet.morale | percent}%</span></div> 
 		</div>
+		
 		<!-- Colony Data -->
 		<div class="data" if.bind="planet.owner">
-			<p>GDP: ${planet.econ.GDP|round:4}</p>
-			<p>PCI: ${planet.econ.PCI|round:4}</p>
-			<p>GF: ${planet.econ.GF|round:4}</p>
-		
+			<span class="${planet.treasury_contrib >= 0 ? 'good' : 'bad'}">Taxes: ${planet.treasury_contrib >= 0 ? '+' : ''}${planet.treasury_contrib|round:1}</span>,
+			<span if.bind="planet.mp_export >= 0" class="good">Exporting: ${planet.mp_export|round:1}</span>
+			<span if.bind="planet.mp_export < 0" class="alert">Importing: ${-planet.mp_export|round:1}</span>,
+			<span>Warehouse: ${planet.warehouse|round:1}</span>
+			<br />
+			<span>GDP: ${planet.econ.GDP|round:1}</span>
+			<span>PCI: ${planet.econ.PCI|round:1}</span>
+			<span>GF: ${planet.econ.GF|round:4}</span>
+			<br />
+			<br />
+			
 			<h3>Now Building:</h3>
 			<table class="prod_queue">
 				<tr repeat.for="item of planet.prod_q">

@@ -47,8 +47,14 @@ export class App {
 	// can be a Star, Planet, Fleet, or an x/y pair: {x:100,y:100}
 	FocusMap( obj, snap = false ) { 
 		if ( this.state == 'play' ) { 
-			this.state.FocusMap( obj, snap );
+			this.state_obj.FocusMap( obj, snap );
 			}
+		}
+	MapZoomIn() { 
+		if ( this.state == 'play' ) { this.state_obj.MapZoomIn(); }
+		}
+	MapZoomOut() { 
+		if ( this.state == 'play' ) { this.state_obj.MapZoomOut(); }
 		}
 	
 	// returns promise

@@ -7,6 +7,7 @@ export class PlanetDetailPane {
 	activate(data) {
 		this.app = data.app;
 		this.planet = data.obj;
+		this.planetChanged( this.planet );
 		}
 
 	prod_q_repeat_vals = [
@@ -17,6 +18,18 @@ export class PlanetDetailPane {
 		{ value: 4, name: '4x'},
 		{ value: 5, name: '5x'},
 		];
+		
+	// update some calculated values whenever planet changes
+	planetChanged( planet ) { 
+		//
+		// WARNING: This stuff needs to be updated if our tech 
+		// would change the numbers while the panel is in focus.
+		//
+		this.habitat = planet.Adaptation( this.app.game.myciv.race );
+		this.habitable = planet.Habitable( this.app.game.myciv.race );
+		this.habitat_bonus = planet.HabitationBonus( this.app.game.myciv.race );
+		this.maxpop = planet.MaxPop( this.app.game.myciv.race );
+		}
 		
 	PressNextPlanetButton() { 
 		let planets = this.planet.star.planets;

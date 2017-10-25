@@ -64,6 +64,12 @@ export class PlayState {
 
 		}
 		
+	MapZoomIn() { 
+		// TODO
+		}
+	MapZoomOut() { 
+		// TODO
+		}
 		
 	/* this executes when DOM is ready */
 	attached () {
