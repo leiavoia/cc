@@ -20,6 +20,7 @@ export class PlayState {
 		
 	constructor( app ) {
 		this.app = app;
+// 		this.app.state_obj = this;
 		}
 
 	

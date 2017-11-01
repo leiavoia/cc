@@ -25,7 +25,6 @@ export class FleetDetailPane {
 		
 	// aurelia automatic function called when fleet object gets changed
 	fleetChanged( new_fleet, old_fleet ) {
-		console.log( 'fleet changed' );
 		if ( new_fleet instanceof Fleet ) { 
 			new_fleet.SetOnUpdate( () => this.UpdateStats() );
 			this.UpdateStats();
@@ -110,12 +109,14 @@ export class FleetDetailPane {
 		// or the first colony ship if there or no selections at all.
 		let selected = null;
 		let first = null;
-		for ( let ship of this.fleet.ships ) { 
-			if ( ship.colonize ) { 
-				if ( !first ) { first = ship; }
-				if ( ship.selected && !selected ) { selected = ship; }
+		if ( this.fleet && this.fleet.ships.length ) { 
+			for ( let ship of this.fleet.ships ) { 
+				if ( ship.colonize ) { 
+					if ( !first ) { first = ship; }
+					if ( ship.selected && !selected ) { selected = ship; }
+					}
+				if ( selected && first ) { break; } 
 				}
-			if ( selected && first ) { break; } 
 			}
 		return selected || first;
 		}

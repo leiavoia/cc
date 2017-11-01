@@ -11,6 +11,7 @@
 			<a href="#" class="button ${show_mine?'':'cool'}" click.delegate="show_mine=!show_mine">My Planets</a>
 			<a href="#" class="button ${show_foreign?'':'cool'}" click.delegate="show_foreign=!show_foreign">Foreign Planets</a>
 			<a href="#" class="button ${show_unclaimed?'':'cool'}" click.delegate="show_unclaimed=!show_unclaimed">Unclaimed Planets</a>
+			<b>${planets.length}</b> planets
 		</p>
 		
 		<table cellpadding="6" if.bind="planets.length">
@@ -32,7 +33,7 @@
 			</tr>
 			<template repeat.for="p of planets" containerless>
 				<tr if.bind="(show_mine && p.owner == myciv) || (show_unclaimed && !p.owner) || (show_foreign && p.owner != myciv && p.owner)">
-					<td><a href="#"  click.delegate="app.SwitchSideBar(p)">${p.name}</a></td>
+					<td><a href="#"  click.delegate="ClickPlanet(p)">${p.name}</a></td>
 					<td class="i">${p.size}</td>
 					<td>${p.envDisplayName}</td>
 					<td>${p.atm}</td>

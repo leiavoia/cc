@@ -6,6 +6,7 @@ import Fleet from './Fleet';
 import * as utils from '../util/utils';
 
 export default class Galaxy {
+	fleets = []; // maps to Fleet.all_fleets
 	stars = [];
 	lanes = [];
 	civs = [];
@@ -13,6 +14,10 @@ export default class Galaxy {
 	height = 2000;
 	age = 0.5;
 	
+	constructor() { 
+		this.fleets = Fleet.all_fleets;
+		}
+		
 	Make( map_size_x, map_size_y, stars_wanted, galaxy_age = 0.5 ) {
 		
 		// reset data
@@ -111,7 +116,85 @@ export default class Galaxy {
 				for ( let p of s.planets ) {
 					s.explored = true;
 					p.Settle( this.civs[0] );
-					s.fleets.push( new Fleet( p.owner, s ) );
+					let f = new Fleet( p.owner, s );
+					f.ships = [
+						{
+							name: 'Colony Ship',
+							img: 'img/ships/ship3_mock.png',
+							hp: 85,
+							maxhp: 100,
+							armor: 20,
+							maxarmor: 28,
+							shield: 13,
+							maxshield: 20,
+							att: 14,
+							speed: 50,
+							colonize: true,
+							offroad: true,
+							selected: true // default to selected for easier UI
+							},
+						{
+							name: 'Colony Ship',
+							img: 'img/ships/ship3_mock.png',
+							hp: 85,
+							maxhp: 100,
+							armor: 20,
+							maxarmor: 28,
+							shield: 13,
+							maxshield: 20,
+							att: 14,
+							speed: 50,
+							colonize: true,
+							offroad: true,
+							selected: true // default to selected for easier UI
+							},
+						{
+							name: 'Colony Ship',
+							img: 'img/ships/ship3_mock.png',
+							hp: 85,
+							maxhp: 100,
+							armor: 20,
+							maxarmor: 28,
+							shield: 13,
+							maxshield: 20,
+							att: 14,
+							speed: 50,
+							colonize: true,
+							offroad: true,
+							selected: true // default to selected for easier UI
+							},
+						{
+							name: 'Defender mkII',
+							img: 'img/ships/ship1_mock.png',
+							hp: 62,
+							maxhp: 100,
+							armor: 20,
+							maxarmor: 28,
+							shield: 13,
+							maxshield: 20,
+							att: 14,
+							speed: 100,
+							colonize: false,
+							offroad: true,
+							selected: true // default to selected for easier UI
+							},
+						{
+							name: 'Bomber',
+							img: 'img/ships/ship2_mock.png',
+							hp: 62,
+							maxhp: 100,
+							armor: 20,
+							maxarmor: 28,
+							shield: 13,
+							maxshield: 20,
+							att: 14,
+							speed: 200,
+							colonize: false,
+							offroad: true,
+							selected: true // default to selected for easier UI
+							},
+						];
+					f.ReevaluateStats();
 					break;
 					}
 				break;

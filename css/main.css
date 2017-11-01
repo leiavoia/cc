@@ -672,8 +672,12 @@ DIV.hyperlane {
 	}
 .planet_container.explored H2 {
 	animation: fadeIn 0.7s linear;
- 	color: rgba(255,255,255,0.28); 
+ 	color: rgba(255,255,255,0.18); 
 	}
+.planet_container.in_range H2 {
+	animation: fadeIn 0.7s linear;
+	color: rgba(255,255,255,0.80); 
+	}	
 .planet_container.settled H2 {
 	text-shadow: 2px 2px 1px #000;
 	color: #FFF;
@@ -967,6 +971,7 @@ DIV.hyperlane {
 	border-radius: 0.5em;
 	overflow:hidden;
 	margin-left: auto;
+	box-shadow: 3px 3px 2px black;
 	}
 #layout_ui_side .planet .env_box .target {
 	width: 20%;

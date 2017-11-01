@@ -7,8 +7,8 @@
 		<h1>Fleets</h1>
 		
 		<table>
-			<tr repeat.for="f of app.game.fleets" >
-				<td><a href="#" click.delegate="app.SwitchSideBar(f)">FLEET #${f.id}</a></td>
+			<tr repeat.for="f of app.game.myciv.fleets" >
+				<td><a href="#" click.delegate="ClickObject(f)">FLEET #${f.id}</a></td>
 				<td>SHIPS: ${f.ships.length}</td>
 				<td>STAR: ${f.star ? f.star.name : '-'}</td>
 				<td>DEST: ${f.dest ? f.dest.name : '-'}</td>

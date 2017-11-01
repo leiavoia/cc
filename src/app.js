@@ -38,6 +38,7 @@ export class App {
 		this.game.SetMyCiv( 0 ); // could switch using debug stuff
 		this.ChangeState('play');
 		this.hilite_star = mystar;
+		this.game.RecalcStarRanges();
 		}
 		
 	ToggleOption( o ) { 

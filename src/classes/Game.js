@@ -7,7 +7,7 @@ import Fleet from './Fleet';
 import * as utils from '../util/utils';
 
 export default class Game {
-	theapp = false;
+	app = false;
 	galaxy = null;
 	avg_rich = 0;
 	avg_rarity = 0;
@@ -17,10 +17,8 @@ export default class Game {
 	iam = 0;
 	myciv = null;
 		
-	constructor( theapp ) {
-		this.theapp = theapp;
-		Fleet.all_fleets = []; // need to set this manually since Fleet class doesn't do it itself very well
-		this.fleets = Fleet.all_fleets;
+	constructor( app ) {
+		this.app = app;
 		}
 		
 	InitGalaxy() {
@@ -46,7 +44,7 @@ export default class Game {
 // 
 // 					let fleet = new Fleet( this.galaxy.stars[i].planets[j].owner, this.galaxy.stars[i] )
 // 					this.galaxy.stars[i].fleets.push( fleet );
-// 					this.theapp.SwitchSideBar( fleet );
+// 					this.app.SwitchSideBar( fleet );
 // 					
 // 					
 // 					break loop1;
@@ -328,6 +326,9 @@ export default class Game {
 							
 						// migration
 						
+						// age the planet
+						p.AgePlanet();
+						
 						// Update this again because infrastructure levels changed
 						p.RecalcSectors();
 						
@@ -335,19 +336,53 @@ export default class Game {
 					}
 				}
 			
-			// ship movement
-			for ( let fleet of this.fleets ) { 
-				fleet.MoveFleet();
+			this.RecalcStarRanges();
+			
+			// AI!
+			for ( let civ of this.galaxy.civs ) { 
+				civ.TurnAI( this.app );
 				}
+				
+			// ship movement
+			for ( let f of this.galaxy.fleets ) { 
+				f.MoveFleet();
+				}
+				
 				
 			this.turn_num++;
 			
+			} // foreach turn (in case of multiple).
+			
+		} // end process turn
+		
+		
+	RecalcStarRanges() { 
+		// recalculate which planets are in range of my systems
+		// this may not be necessary as it is just for UI stuff
+		// but may become necessary to short circuit some 
+		// calculations later. Testing required.
+		let range = 600 * 600; // TODO get this by some means. NOTE2: avoid square rooting.
+		for ( let s of this.galaxy.stars ) { 
+			// do i live here?
+			if ( !s.Acct(this.myciv) ) {
+				s.in_range = false;
+				// how far am i from where i DO live?
+				for ( let p of this.myciv.planets ) { 
+					let dist = 
+						Math.pow( Math.abs(p.star.xpos - s.xpos), 2 )
+						+ Math.pow( Math.abs(p.star.ypos - s.ypos), 2 );
+					if ( dist <= range ) {
+						s.in_range = true;
+						break;
+						}
+					}
+				};
 			}
 		}
-			
+		
 	RegenerateGalaxy () {
-		this.theapp.sidebar_obj = null;
-		this.theapp.sidebar_mode = false;
+		this.app.sidebar_obj = null;
+		this.app.sidebar_mode = false;
 		// let there be light
 // 		this.galaxy = new Galaxy();
 		this.galaxy.Make( 8000, 4000, 65, Math.random() );

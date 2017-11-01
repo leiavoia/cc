@@ -13,15 +13,16 @@ export default class Star {
 	color = 'white';
 	xpos = 0;
 	ypos = 0;
-	xdivpos = 75;
-	ydivpos = 75;
+	xdivpos = -75;
+	ydivpos = -75;
 	planets = [];
 	lanes = [];
 	fleets = [];
 	ownership_title_css = null;
 	settled = false; // set to true to tell the UI to do special stuff
 	explored = false; // set to true to tell the UI to do special stuff
-
+	in_range = false; // set to true to tell the UI to do special stuff
+	
 	// accounts are used to keep track of activities per-civ,
 	// because multiple civs can inhabit the star system.
 	accts = null; // new Map();

@@ -1,9 +1,11 @@
 import Star from './Star';
 import Hyperlane from './Hyperlane';
+import Fleet from './Fleet';
 import Constellation from './Constellation';
 import RandomPicker from '../util/RandomPicker';
 import RandomName from '../util/RandomName';
 import * as utils from '../util/utils';
+import {computedFrom} from 'aurelia-framework';
 
 export default class Planet {
 	
@@ -21,7 +23,8 @@ export default class Planet {
 	total_pop = 0;
 	pop = [];
 	morale = 1.0;	
-	
+	age = 0;
+	age_level = 0;
 	
 	// PHYSICAL ATTRIBUTES -------------------------------
 	energy = 1.0; // represents production bonus
@@ -53,6 +56,7 @@ export default class Planet {
 			total: 0,
 			sectors: 0
 			},
+		tradegoods: 0, // not sure what this does yet
 		GDP: 1.0, // gross domestic product
 		PCI: 1.0, // per-capita income
 		GF: 1.0, // growth factor
@@ -82,9 +86,9 @@ export default class Planet {
 		mine:{ pct: 0.15, relpct: 0.15, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 		prod:{ pct: 0.35, relpct: 0.35, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 		sci:	{ pct: 0.20, relpct: 0.20, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
-		com:	{ pct: 0.00, relpct: 0.00, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 0 },
 		gov:	{ pct: 0.15, relpct: 0.15, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 		def:	{ pct: 0.15, relpct: 0.15, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 }
+// 		com:	{ pct: 0.00, relpct: 0.00, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 0 },
 // 		spy:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 // 		sup:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 // 		civ:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
@@ -95,10 +99,73 @@ export default class Planet {
 	// PRODUCTION --------------------------	
 	prod_q = [
 		{
+			type: 'ship',
+			obj: {
+				name: 'Colony Ship',
+				unique: false,
+				ProduceMe: function ( planet ) {
+					let myfleet = null;
+					for ( let f of planet.star.fleets ) { 
+						if ( f.owner == planet.owner ) { 
+							myfleet = f;
+							break;
+							}
+						}
+					let ship = {
+						name: 'Colony Ship',
+						img: 'img/ships/ship3_mock.png',
+						hp: 85,
+						maxhp: 100,
+						armor: 20,
+						maxarmor: 28,
+						shield: 13,
+						maxshield: 20,
+						att: 14,
+						speed: 50,
+						colonize: true,
+						offroad: true,
+						selected: true // default to selected for easier UI
+						};
+					if ( !myfleet ) { 
+						myfleet = new Fleet( planet.owner, planet.star );
+						myfleet.ships = []; // TODO: remove this debug junk
+						}
+					myfleet.AddShip(ship);
+					}
+				},
+			labor: 10, // "cost" in hammers
+			mp: 5, // material points
+			spent: 0,
+			quantity: -1,
+			turns_left: 0,
+			pct: 0
+			},
+		{
+			type: 'makework',
+			obj: {
+				name: 'Trade Goods',
+				unique: false,
+				ProduceMe: function ( planet ) {
+					// TODO: add to accounting records
+					planet.owner.treasury += 10;	
+					planet.econ.tradegoods += 10;
+					}
+				},
+			labor: 3, // "cost" in hammers
+			mp: 1, // material points
+			spent: 0,
+			quantity: -1,
+			turns_left: 0,
+			pct: 0
+			},
+		{
 			type: 'building',
 			obj: {
 				name: 'Orbital Defense Platform',
 				unique: true,
+				ProduceMe: function ( planet ) {
+					// TODO: make ship
+					}
 				},
 			labor: 60, // "cost" in hammers
 			mp: 10, // material points
@@ -112,6 +179,9 @@ export default class Planet {
 			obj: {
 				name: 'Defender mkIII',
 				unique: false,
+				ProduceMe: function ( planet ) {
+					// TODO: make ship
+					}
 				},
 			labor: 200, // "cost" in hammers
 			mp: 20, // material points
@@ -125,6 +195,9 @@ export default class Planet {
 			obj: {
 				name: 'Breakfast',
 				unique: true,
+				ProduceMe: function ( planet ) {
+					// TODO: make ship
+					}
 				},
 			labor: 30, // "cost" in hammers
 			mp: 5, // material points
@@ -147,6 +220,9 @@ export default class Planet {
 			},
 		];
 		
+	AgePlanet() { 
+		this.age_level = Math.min( Math.floor( ++this.age / 40 ), 5 );
+		}
 	// more is better
 	Adaptation( race ) { 
 		return -( 
@@ -168,13 +244,23 @@ export default class Planet {
 		else if ( x > 0 ) { return utils.Clamp( x*0.1, 0, 1.0 ); }
 		return 0;
 		}
-	MaxPop( race ) {
+	
+	_MaxPop( race ) {
+		let a = this.age_level * 0.05; // age bonus
 		let b = this.HabitationBonus( race );
-		return ( this.size * (1+b) ) / race.size;
+		return ( this.size * (1+b+a) ) / race.size;
 		}
+		
+	@computedFrom('age_level','owner','size','owner.adaptation')
+	get maxpop () { 
+		return this.owner ? this._MaxPop( this.owner.race ) : this.size;
+		}
+		
+	@computedFrom('total_pop','tax_rate','econ.PCI')
 	get tax() { 
 		return this.total_pop * this.tax_rate * this.econ.PCI;
 		}
+	@computedFrom('spending')
 	get slider_spending() { 
 		return this.spending;
 		}
@@ -222,36 +308,35 @@ export default class Planet {
 		this.tax_rate = parseFloat(x);
 		this.RecalcSpendingSliders();
 		}
-	get slider_mine() { 
-		return this.sect.mine.relpct;
-		}
-	get slider_gov() { 
-		return this.sect.gov.relpct;
-		}
-	get slider_prod() { 
-		return this.sect.prod.relpct;
-		}
-	get slider_sci() { 
-		return this.sect.sci.relpct;
-		}
-	get slider_com() { 
-		return this.sect.com.relpct;
-		}
-	get slider_civ() { 
-		return this.sect.civ.relpct;
-		}
-	get slider_def() { 
-		return this.sect.def.relpct;
-		}
-	get slider_sup() { 
-		return this.sect.sup.relpct;
-		}
-	get slider_spy() { 
-		return this.sect.spy.relpct;
-		}
-	get slider_taxrate() { 
-		return this.tax_rate;
-		}
+	@computedFrom('sect.mine.relpct')	
+	get slider_mine() { return this.sect.mine.relpct; }
+	
+	@computedFrom('sect.gov.relpct')	
+	get slider_gov() { return this.sect.gov.relpct; }
+	
+	@computedFrom('sect.prod.relpct')	
+	get slider_prod() { return this.sect.prod.relpct; }
+	
+	@computedFrom('sect.sci.relpct')	
+	get slider_sci() { return this.sect.sci.relpct; }
+	
+	@computedFrom('sect.com.relpct')	
+	get slider_com() { return this.sect.com.relpct; }
+	
+	@computedFrom('sect.civ.relpct')	
+	get slider_civ() { return this.sect.civ.relpct; }
+	
+	@computedFrom('sect.def.relpct')	
+	get slider_def() { return this.sect.def.relpct; }
+	
+	@computedFrom('sect.sup.relpct')	
+	get slider_sup() { return this.sect.sup.relpct; }
+	
+	@computedFrom('sect.spy.relpct')	
+	get slider_spy() { return this.sect.spy.relpct; }
+	
+	@computedFrom('tax_rate')	
+	get slider_taxrate() { return this.tax_rate; }
 		
 	RecalcSpendingSliders() { 
 		// get some stats
@@ -298,7 +383,7 @@ export default class Planet {
 		for ( let k in this.sect ) {
 			let s = this.sect[k];
 			s.work = this.total_pop * this.spending * s.pct * s.pow;
-			cost += s.work * s.cost; // we dont work for free. 
+			cost += s.work * ( s.cost * (1-(this.age_level*0.05)) ) ; // we dont work for free. 
 			this.econ.expenses.sectors += s.work * s.cost;
 			s.output = Math.min(s.inf,s.work);
 			let diff = s.work - s.inf;
@@ -310,21 +395,27 @@ export default class Planet {
 		// how much money we are making or losing
 		this.treasury_contrib = taxes - cost;	
 		// add production queue item MP requirements
+		// (count tradegoods income while we're here too)
 		if ( this.sect.prod.output ) { 
+			this.econ.tradegoods = 0; // reset
 			let labor_available = this.sect.prod.output;
 			outerloop:
 			for ( let item of this.prod_q ) {
 				// each queue item also has a quantity
-				let quantity = (item.quantity > 0) ? item.quantity : 10000; // account for infinite quantity "-1"
+				let quantity = (item.quantity > 0) ? item.quantity : 100000; // account for infinite quantity "-1"
 				for ( let n = 0; n < quantity; n++ ) { 
 					// how much can i build next turn?
 					let labor_per_mp = item.labor / item.mp;
-					let mp_remaining = item.mp - item.spent;
+					let mp_remaining = item.mp - ( n==0 ? item.spent : 0 );
 					let labor_needed = mp_remaining * labor_per_mp;
 					// can i build the whole thing?
 					if ( labor_needed < labor_available ) { 
 						labor_available -= labor_needed;
 						this.mp_need += mp_remaining;
+						// [!]TRADEGOODS
+						if ( item.type == 'makework' && item.obj.name == 'Trade Goods' ) { 
+							this.econ.tradegoods += 10; 
+							}
 						}
 					// can only build a portion.
 					// how many MP can i buy with this many hammers?
@@ -388,9 +479,7 @@ export default class Planet {
 					// did something get built?
 					if ( item.spent >= (item.mp - 0.0001) ) { // slop room
 // 						console.log(`item completed.`);
-						// 
-						// TODO: produce the item
-						//
+						item.obj.ProduceMe(this);
 						// reset
 						item.spent = 0;
 						item.pct = 0;
@@ -402,7 +491,7 @@ export default class Planet {
 						// pop from list if we reached zero
 						if ( item.quantity == 0 ) {
 // 							console.log(`popped from list`);
-							this.buildings.push( this.prod_q.shift() );
+// 							this.buildings.push( this.prod_q.shift() );
 							}
 						}
 					// update the stats
@@ -472,11 +561,11 @@ export default class Planet {
 			scale: 8.0
 			};
 			
-		// commerce improves growth factor a lot
-		factors.commerce = {
-			fx: this.sect.com.output,
-			scale: 0.15
-			};
+// 		// commerce improves growth factor a lot
+// 		factors.commerce = {
+// 			fx: this.sect.com.output,
+// 			scale: 0.25
+// 			};
 			
 		// technology
 		
@@ -521,7 +610,7 @@ export default class Planet {
 		
 	GrowPop() { 
 		// growth rate is square root of difference between max pop and current pop, divided by 50.
-		let maxpop = this.MaxPop( this.owner.race ); // TODO: factor in multiracial
+		let maxpop = this.maxpop; // TODO: factor in multiracial
 		let diff = maxpop - this.total_pop; 
 		let divisor = 60.0;
 		let hitmaxpop = false;

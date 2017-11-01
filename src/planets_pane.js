@@ -26,4 +26,8 @@ export class PlanetsPane {
 		this.app.CloseSideBar();
 		this.app.CloseMainPanel();
 		}
+	ClickPlanet(p) { 
+		this.app.SwitchSideBar(p);
+		this.app.FocusMap(p);	
+		}
 	}

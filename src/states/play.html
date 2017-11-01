@@ -6,6 +6,7 @@
 <require from="../econ_pane"></require>
 <require from="../diplo_pane"></require>
 <require from="../ship_des_pane"></require>
+<require from="../fleets_pane"></require>
 <require from="../spy_pane"></require>
 <require from="../tech_pane"></require>
 <require from="../colonize_pane"></require>
@@ -17,46 +18,58 @@
 <!-- base layer -->
 <div id="layout_pagewrap"></div>
 
-
 <!-- map layer -->
 <div id="layout_viewport" class="dragscroll nochilddrag ${app.options.dim_unexplored ? 'option_dim_unexplored' : ''}">
 		
 	<div id="layout_mapwrap" css="width: ${app.game.galaxy.width}px; height: ${app.game.galaxy.height}px;">
 		<div id="layout_map" class="${app.options.show_sectors ? 'sectors' : ''}" css="width: ${app.game.galaxy.width}px; height: ${app.game.galaxy.height}px">
 			
-<!--			<table style="margin-top: 200px; z-index: 100; margin-left: 500px; font-size: 150%;">
-			<tr repeat.for="f of app.game.fleets" >
-				<td><a href="#" click.delegate="app.SwitchSideBar(f,$event)">FLEET #${f.id}</a></td>
-				<td>SHIPS: ${f.ships.length}</td>
-				<td>STAR: ${f.star ? f.star.name : '-'}</td>
-				<td>DEST: ${f.dest ? f.dest.name : '-'}</td>
-				<td>X: ${f.xpos}</td>
-				<td>Y: ${f.ypos}</td>
-			</tr>
-			</table>-->
-			
-			<div click.trigger="app.ClickStar(star)" repeat.for="star of app.game.galaxy.stars" class="planet_container star_${star.color} ${star.settled ? 'settled' : ''} ${star.explored || app.options.see_all ? 'explored' : 'unexplored'}" css="left:${star.xdivpos}px; top:${star.ydivpos}px;">
+<!--			<div style="
+				position:absolute; 
+				margin-left: 400px; 
+				margin-top: 400px; 
+				background-color: none;
+				background-repeat: no-repeat;
+				background-image: url(../x/img/workshop/map/nebula20.png); 
+				background-size: 100% 100%;
+				width: 1600px;
+				height: 1000px;
+				">
+			</div>-->
+<!--			<div style="
+				position:absolute; 
+				margin-left: 1800px; 
+				margin-top: 1800px; 
+				background-color: none;
+				background-repeat: no-repeat;
+				background-image: url(../x/img/workshop/map/nebula13.png); 
+				background-size: 100% 100%;
+				width: 1200px;
+				height: 1200px;
+				">
+			</div>-->
+			<div click.trigger="app.ClickStar(star)" repeat.for="star of app.game.galaxy.stars" class="planet_container star_${star.color} ${star.settled ? 'settled' : ''} ${star.in_range ? 'in_range' : ''} ${star.explored || app.options.see_all ? 'explored' : 'unexplored'}" css="left:${star.xdivpos}px; top:${star.ydivpos}px;">
 				<div id="the_caret" class="caret" if.bind="app.hilite_star == star"></div>
 				<h2 css="${star.ownership_title_css}" >${star.name}</h2>
-				<div if.bind="star.planets" class="planet_list">	
+				<div if.bind="star.planets.length" class="planet_list">	
 					<a href="#" click.trigger="app.SwitchSideBar(p,$event)" repeat.for="p of star.planets" class="${star.settled ? 'settled' : ''}" css="color: ${p.ui_color};"><svg class="icon icon-nature"><use xlink:href="#icon-nature"></use></svg></a>
 				</div>
-				<div if.bind="star.fleets" class="fleet_list">
-					<a href="#" click.trigger="app.SwitchSideBar(f,$event)" repeat.for="f of star.fleets" css="color: ${f.ui_color};"><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
+				<div if.bind="star.fleets.length" class="fleet_list">
+					<a href="#" click.trigger="app.SwitchSideBar(f,$event)" repeat.for="f of star.fleets" css="color: ${f.ui_color};">F${f.colonize?'c':''}${f.id}<svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 				</div>
 			</div>
 			
 			<div repeat.for="lane of app.game.galaxy.lanes" class="hyperlane" css="left:${lane.x1}px; top:${lane.y1}px; width: ${lane.length}px; transform:  rotate(${lane.angle}deg) translateY(-5px); background-color: rgb( ${lane.color[0]}, ${lane.color[1]}, ${lane.color[2]}); ">
 			</div>
 		
-			<template containerless repeat.for="f of app.game.fleets" >
+			<template containerless repeat.for="f of app.game.galaxy.fleets" >
 					<!-- only display fleets en route -->
 				<template containerless if.bind="f.dest">
 					<!-- show destination indicator line -->
 					<div class="dest_line" css="left:${f.xpos}px; top:${f.ypos}px; width: ${f.dest_line_length}px; transform:  rotate(${f.dest_line_angle}deg) translateY(-5px); "></div>
 					<!-- show fleet icon -->
 					<div class="fleet_en_route" css="left:${f.xpos}px; top:${f.ypos}px;">
-						<a href="#" click.delegate="app.SwitchSideBar(f,$event)" css="color: ${f.ui_color};"><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
+						<a href="#" click.delegate="app.SwitchSideBar(f,$event)" css="color: ${f.ui_color};">F${f.colonize?'c':''}${f.id}<svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</template>
 			</template>
@@ -91,6 +104,7 @@
 		<gov-pane if.bind="app.main_panel_mode == 'gov'"  app.bind="app" containerless ></gov-pane>
 		<tech-pane if.bind="app.main_panel_mode == 'tech'"  app.bind="app" containerless ></tech-pane>
 		<ship-design-pane if.bind="app.main_panel_mode == 'shipdes'"  app.bind="app" containerless ></ship-design-pane>
+		<fleets-pane if.bind="app.main_panel_mode == 'fleets'"  app.bind="app" containerless ></fleets-pane>
 		<diplo-pane if.bind="app.main_panel_mode == 'diplo'"  app.bind="app" containerless ></diplo-pane>
 		<planetinfo-pane if.bind="app.main_panel_mode == 'planetinfo'" planet.bind="app.main_panel_obj" app.bind="app" containerless ></planetinfo-pane>
 		<colonize-pane if.bind="app.main_panel_mode == 'colonize'" planet.bind="app.main_panel_obj" app.bind="app" containerless ></colonize-pane>
@@ -109,7 +123,8 @@
 		<a href="#" id="nav_button_spy" click.delegate="app.SwitchMainPanel('spy')"><svg class="icon icon-medical"><use xlink:href="#icon-medical"></use></svg></a>
 		<a href="#" id="nav_button_tech" click.delegate="app.SwitchMainPanel('tech')"><svg class="icon icon-tool"><use xlink:href="#icon-tool"></use></svg></a>
 		<a href="#" id="nav_button_diplo" click.delegate="app.SwitchMainPanel('diplo')"><svg class="icon icon-shapes-2"><use xlink:href="#icon-shapes-2"></use></svg></a>
-		<a href="#" id="nav_button_shipdes" click.delegate="app.ToggleOption('show_sectors')"><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
+		<a href="#" id="nav_button_fleets" click.delegate="app.SwitchMainPanel('fleets')"><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
+<!-- 		<a href="#" id="nav_button_shipdes" click.delegate="app.ToggleOption('show_sectors')"><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a> -->
 		<a href="#" id="nav_button_victory" click.delegate="app.ToggleOption('dim_unexplored')" ><svg class="icon icon-black"><use xlink:href="#icon-black"></use></svg></a>
 		<a href="#" id="nav_button_opt" click.delegate="app.ChangeState('setup_new')" ><svg class="icon icon-gear"><use xlink:href="#icon-gear"></use></svg></a>
 		<a href="#" id="nav_button_help" click.delegate="app.game.ProcessTurn(20)" ><svg class="icon icon-signs"><use xlink:href="#icon-signs"></use></svg></a>

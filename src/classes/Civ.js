@@ -1,3 +1,4 @@
+import Fleet from './Fleet';
 // import Star from './Star';
 import RandomName from '../util/RandomName';
 import * as utils from '../util/utils';
@@ -55,6 +56,7 @@ export default class Civ {
 	
 	planets = [];
 	constels = []; // list of connected constellations
+	fleets = [];
 	
 	diplo = []; // list of contacts. starts empty
 	
@@ -109,6 +111,82 @@ export default class Civ {
 		civ.color_rgb = Civ.PickNextStandardColor();
 // 		console.log( 'my colors are: ' + civ.color_rgb[0] + ' ' + civ.color_rgb[1] + ' ' + civ.color_rgb[2]  );
 		return civ;
+		}
+		
+	TurnAI( app ) {
+		// build a list of targets, sorted by distance
+		let targets = [];
+		for ( let s of app.game.galaxy.stars ) { 
+			for ( let p of s.planets ) {
+				if ( !p.owner ) { 
+					targets.push(p);
+					}
+				}
+			}
+		// have colony ships?
+		if ( targets )  {
+			console.log(`[${targets.length}] targets`);
+			for ( let f of this.fleets ) {
+				// parked?
+				if ( f.colonize && f.star && !f.dest ) { 
+					next_ship:
+					for ( let s of f.ships ) {
+						if ( s.colonize ) { 
+							// can i settle anything where i am?
+							for ( let p of f.star.planets ) { 
+								if ( !p.owner ) { 
+									console.log(`F${f.id}: i'm already here, so i'm going to settle ${p.name}`);
+									p.Settle( this );
+									f.RemoveShip( s );
+									if ( !f.ships.length ) { f.Kill(); }
+									else { f.FireOnUpdate(); }
+	// 								this.mode = 'fleet';
+	// 								this.app.CloseSideBar();
+	// 								this.app.SwitchMainPanel('colonize',p);	
+									//
+									// TODO: destroy all refs to the ship
+									//	
+									break next_ship;
+									}
+								}
+							if ( targets.length) { 
+								// resort the list and send to the first target
+								targets.sort( (a,b) => {
+									if ( a.star == b.star ) { return 0; }
+									let dist_a = 
+										Math.pow( Math.abs(f.star.xpos - a.star.xpos), 2 ) 
+										+ Math.pow( Math.abs(f.star.ypos - a.star.ypos), 2 ) 
+										;
+									let dist_b = 
+										Math.pow( Math.abs(f.star.xpos - b.star.xpos), 2 ) 
+										+ Math.pow( Math.abs(f.star.ypos - b.star.ypos), 2 ) 
+										;
+									if ( dist_a > dist_b ) { return -1; }
+									else { return 1; }
+									} );
+								let t = targets.pop();
+								console.log(`F${f.id}: chose target ${t.name}`);
+								let myfleet = null;
+								// split fleet if more than ship in fleet
+								if ( f.ships.length > 1 ) { 
+									console.log(`F${f.id}: i'm splitting off and headed for ${t.name}`);
+									f.RemoveShip(s); // old fleet
+									myfleet = new Fleet( f.owner, f.star );
+									myfleet.ships = []; // TODO: remove this debug junk
+									myfleet.AddShip(s);
+// 									console.log(`sending fleet ${myfleet.id} from ${f.star.name} to ${t.name} `);
+									myfleet.SetDest(t.star);
+									}
+								else {
+									console.log(`F${f.id}: i'm on my own and headed for ${t.name}`);
+									f.SetDest(t.star);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 		
 	}

@@ -25,10 +25,11 @@ export class PlanetDetailPane {
 		// WARNING: This stuff needs to be updated if our tech 
 		// would change the numbers while the panel is in focus.
 		//
-		this.habitat = planet.Adaptation( this.app.game.myciv.race );
-		this.habitable = planet.Habitable( this.app.game.myciv.race );
-		this.habitat_bonus = planet.HabitationBonus( this.app.game.myciv.race );
-		this.maxpop = planet.MaxPop( this.app.game.myciv.race );
+		if ( planet ) { 
+			this.habitat = planet.Adaptation( this.app.game.myciv.race );
+			this.habitable = planet.Habitable( this.app.game.myciv.race );
+			this.habitat_bonus = planet.HabitationBonus( this.app.game.myciv.race );
+			}
 		}
 		
 	PressNextPlanetButton() { 
