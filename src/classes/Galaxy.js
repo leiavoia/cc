@@ -105,102 +105,27 @@ export default class Galaxy {
 		// reset data
 		this.lanes = [];
 	
-		this.MakeCivs(1);
+		this.MakeCivs(24);
 		
-		// settle one planet
-		let star = null;
-		let settled = null;
+		// settle some planets
+		let star_i = this.stars.length-1;
 		this.stars.shuffle();
-		for ( var s of this.stars ) { 
-			if ( s.planets.length ) { 
-				for ( let p of s.planets ) {
+		for ( let c of this.civs ) { 
+			while ( star_i >= 0 ) { 
+				let s = this.stars[star_i];
+				if ( s.planets.length ) { 
+					let p = s.planets[0];
 					s.explored = true;
-					p.Settle( this.civs[0] );
-					let f = new Fleet( p.owner, s );
-					f.ships = [
-						{
-							name: 'Colony Ship',
-							img: 'img/ships/ship3_mock.png',
-							hp: 85,
-							maxhp: 100,
-							armor: 20,
-							maxarmor: 28,
-							shield: 13,
-							maxshield: 20,
-							att: 14,
-							speed: 50,
-							colonize: true,
-							offroad: true,
-							selected: true // default to selected for easier UI
-							},
-						{
-							name: 'Colony Ship',
-							img: 'img/ships/ship3_mock.png',
-							hp: 85,
-							maxhp: 100,
-							armor: 20,
-							maxarmor: 28,
-							shield: 13,
-							maxshield: 20,
-							att: 14,
-							speed: 50,
-							colonize: true,
-							offroad: true,
-							selected: true // default to selected for easier UI
-							},
-						{
-							name: 'Colony Ship',
-							img: 'img/ships/ship3_mock.png',
-							hp: 85,
-							maxhp: 100,
-							armor: 20,
-							maxarmor: 28,
-							shield: 13,
-							maxshield: 20,
-							att: 14,
-							speed: 50,
-							colonize: true,
-							offroad: true,
-							selected: true // default to selected for easier UI
-							},
-						{
-							name: 'Defender mkII',
-							img: 'img/ships/ship1_mock.png',
-							hp: 62,
-							maxhp: 100,
-							armor: 20,
-							maxarmor: 28,
-							shield: 13,
-							maxshield: 20,
-							att: 14,
-							speed: 100,
-							colonize: false,
-							offroad: true,
-							selected: true // default to selected for easier UI
-							},
-						{
-							name: 'Bomber',
-							img: 'img/ships/ship2_mock.png',
-							hp: 62,
-							maxhp: 100,
-							armor: 20,
-							maxarmor: 28,
-							shield: 13,
-							maxshield: 20,
-							att: 14,
-							speed: 200,
-							colonize: false,
-							offroad: true,
-							selected: true // default to selected for easier UI
-							},
-						];
-					f.ReevaluateStats();
+					p.Settle( c );
+					this.AssignStartingFleet( c, s );
+					c.homeworld = p;
+					star_i--;
 					break;
 					}
-				break;
+				star_i--;
 				}
 			}
-		return s;
+		return this.civs[0].homeworld.star;
 		}	
 		
 	MakeCivs( num_civs, difficulty ) { 
@@ -220,5 +145,56 @@ export default class Galaxy {
 			}
 		}
 		
-		
+	AssignStartingFleet( owner, star ) { 
+		let f = new Fleet( owner, star );
+		f.ships = [
+			{
+				name: 'Colony Ship',
+				img: 'img/ships/ship3_mock.png',
+				hp: 85,
+				maxhp: 100,
+				armor: 20,
+				maxarmor: 28,
+				shield: 13,
+				maxshield: 20,
+				att: 14,
+				speed: 50,
+				colonize: true,
+				offroad: true,
+				selected: true // default to selected for easier UI
+				},
+			{
+				name: 'Defender mkII',
+				img: 'img/ships/ship1_mock.png',
+				hp: 62,
+				maxhp: 100,
+				armor: 20,
+				maxarmor: 28,
+				shield: 13,
+				maxshield: 20,
+				att: 14,
+				speed: 100,
+				colonize: false,
+				offroad: true,
+				selected: true // default to selected for easier UI
+				},
+			{
+				name: 'Bomber',
+				img: 'img/ships/ship2_mock.png',
+				hp: 62,
+				maxhp: 100,
+				armor: 20,
+				maxarmor: 28,
+				shield: 13,
+				maxshield: 20,
+				att: 14,
+				speed: 200,
+				colonize: false,
+				offroad: true,
+				selected: true // default to selected for easier UI
+				},
+			];
+		f.ReevaluateStats();	
+		return f;
+		}
 	}

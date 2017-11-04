@@ -3,7 +3,7 @@
 	<require from="./converters/round"></require>-->
 
 	<div id="diplo_pane" class="pane">
-	
+		<p style="float:right;"><a href="#"  click.delegate="ClosePanel()" class="button big">CLOSE</a></p>
 		<h1>Diplomacy</h1>
 		
 		<div id="civ_list">
@@ -16,12 +16,12 @@
 				<p>Research: ${c.research}</p>
 				<p>Government: ${c.gov_type}</p>
 				<p>
-					<a href="">SPEAK TO</a>
+					<a href="" click.delegate="SpeakTo(c)" class="button">SPEAK TO</a>
 				</p>
 			</div>
 		</div>
 		
-		<p><a href="#"  click.delegate="ClosePanel()" style="font-size: 200%; color: #000; background-color: #FFF; padding: 0.25em;">CLOSE</a></p>
+		<p><a href="#"  click.delegate="ClosePanel()" class="button big">CLOSE</a></p>
 	</div>
 
 

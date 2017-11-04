@@ -16,6 +16,7 @@
 		
 		<table cellpadding="6" if.bind="planets.length">
 			<tr>
+				<th></th>
 				<th>Planet</th>
 				<th>Size</th>
 				<th>Environment</th>
@@ -33,6 +34,7 @@
 			</tr>
 			<template repeat.for="p of planets" containerless>
 				<tr if.bind="(show_mine && p.owner == myciv) || (show_unclaimed && !p.owner) || (show_foreign && p.owner != myciv && p.owner)">
+					<td><img if.bind="p.owner" class="flag" src.bind="p.owner.flag_img" style="max-height: 16px;" /></td>
 					<td><a href="#"  click.delegate="ClickPlanet(p)">${p.name}</a></td>
 					<td class="i">${p.size}</td>
 					<td>${p.envDisplayName}</td>

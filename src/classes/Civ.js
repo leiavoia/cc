@@ -6,6 +6,9 @@ import Constellation from './Constellation';
 import Planet from './Planet';
 
 
+//
+// TODO: inter-civ relationship matrix
+//
 
 export default class Civ {
 	
@@ -65,19 +68,29 @@ export default class Civ {
 		if ( !Civ.colors ) { 
 			Civ.colors = [
 				[128, 0, 0], 		// maroon
-				[20, 20, 235], 	// blue
+				[45, 130, 220], 	// blue
 				[219, 210, 72], 	// yellow
-				[10, 128, 30], 	// green
-				[15, 155, 155],	// teal
+				[10, 128, 30], 	// forest green
+				[15, 120, 155],	// teal
 				[192, 192, 192], 	// silver
 				[255, 0, 0], 		// red
-				[0, 255, 0], 		// lime
+				[0, 220, 0], 		// green
 				[100, 100, 100], 	// grey
 				[128, 128, 0], 	// olive
-				[30, 30, 170], 	// navy
+				[20, 66, 170], 	// navy
 				[255, 0, 255],		// fuschia
 				[128, 0, 128],		// purple
-				[0, 255, 255]		// aqua
+				[0, 255, 255],		// aqua
+				[140,205,140],		// spring green
+				[195,144,212],		// lavender
+				[212,161,144],		// mid brown
+				[120,80,24],		// dark brown
+				[222,195,144],		// tan
+				[190,102,40],		// dull orange
+				[255,149,0],		// orange 
+				[162,255,31],		// chartreuse
+				[230,119,119],		// salmon
+				[255,186,206]		// pink
 				];
 			Civ.colors.shuffle();
 			} 
@@ -103,6 +116,18 @@ export default class Civ {
 		this.name_plural = name + 's';
 		Civ.IncTotalNumCivs();
 		this.id = Civ.total_civs;
+		// internal flag roster picks unique flags for each race
+		if ( !Civ.flag_id_roster ) { 
+			Civ.flag_id_roster = [];
+			for ( let i=0; i<=30; i++ ) { Civ.flag_id_roster.push(i); }
+			Civ.flag_id_roster.shuffle();
+			Civ.img_id_roster = [];
+			for ( let i=0; i<=137; i++ ) { Civ.img_id_roster.push(i); }
+			Civ.img_id_roster.shuffle();
+			}
+		this.flag_img = 'img/flags/flag_' + ("000" + Civ.flag_id_roster[this.id]).slice(-3) + '.png';
+		this.diplo_img = 'img/races/alien_' + ("000" + Civ.img_id_roster[this.id]).slice(-3) + '.jpg';
+		this.diplo_img_small = 'img/races/alien_' + ("000" + Civ.img_id_roster[this.id]).slice(-3) + '.jpg';
 		}
 	
 	static Random( difficulty = 0.5 ) {

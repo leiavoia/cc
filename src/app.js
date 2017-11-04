@@ -9,6 +9,7 @@ import * as utils from './util/utils';
 
 
 export class App {
+	version = '0.0.2';
 	main_panel_obj = null;
 	main_panel_mode = false;
 	sidebar_obj = null;
@@ -26,6 +27,7 @@ export class App {
 		};
 		
 	constructor() {
+		window.document.title = `Constellation Control v.${this.version}`;
 		this.theapp = this;
 		this.game = new Game(this);
 		// create initial state
@@ -33,7 +35,7 @@ export class App {
 // 		this.ChangeState('title');
 
 		// --------\/-- [!]DEBUG SHORTCUT --\/---------------------
-		this.game.galaxy.Make( 3000, 3000, 20, 0.5 );
+		this.game.galaxy.Make( 4500, 4500, 40, 0.5 );
 		let mystar = this.game.galaxy.AddExploreDemo();
 		this.game.SetMyCiv( 0 ); // could switch using debug stuff
 		this.ChangeState('play');

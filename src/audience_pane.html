@@ -1,0 +1,20 @@
+<template>
+<!--	<require from="./converters/percent"></require>
+	<require from="./converters/round"></require>-->
+	<div id="audience_pane" class="pane"
+		 css="border-color: rgb( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]} ); 
+		 background-color: rgba( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]}, 0.55 );"
+		 >
+		 
+		<p style="float:right;"><a href="#"  click.delegate="ClosePanel()" class="button big">CLOSE</a></p>
+		<h1>An Audience with the ${civ.name}</h1>
+		<img class="flag" src.one-time="civ.flag_img" />
+			<div>
+				<div class="love_nub">Amiable</div>
+				<img src.one-time="civ.diplo_img_small" class="diplo_img" />
+				<p>Treasury: $${civ.treasury}</p>
+				<p>Research: ${civ.research}</p>
+				<p>Government: ${civ.gov_type}</p>
+			</div>
+	</div>
+</template>

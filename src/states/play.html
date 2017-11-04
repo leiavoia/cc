@@ -2,6 +2,7 @@
 
 <require from="../planets_pane"></require>
 <require from="../planetinfo_pane"></require>
+<require from="../audience_pane"></require>
 <require from="../gov_pane"></require>
 <require from="../econ_pane"></require>
 <require from="../diplo_pane"></require>
@@ -107,6 +108,7 @@
 		<fleets-pane if.bind="app.main_panel_mode == 'fleets'"  app.bind="app" containerless ></fleets-pane>
 		<diplo-pane if.bind="app.main_panel_mode == 'diplo'"  app.bind="app" containerless ></diplo-pane>
 		<planetinfo-pane if.bind="app.main_panel_mode == 'planetinfo'" planet.bind="app.main_panel_obj" app.bind="app" containerless ></planetinfo-pane>
+		<audience-pane if.bind="app.main_panel_mode == 'audience'" civ.bind="app.main_panel_obj" app.bind="app" containerless ></audience-pane>
 		<colonize-pane if.bind="app.main_panel_mode == 'colonize'" planet.bind="app.main_panel_obj" app.bind="app" containerless ></colonize-pane>
 	</div>
 	
