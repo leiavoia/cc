@@ -11,5 +11,7 @@ export function configure(config) {
   	'./value-converters/objprops',
   	'./value-converters/uppercase',
   	'./value-converters/uppercaseFirst',
+  	'./value-converters/LoveNubConverter',
+  	'./value-converters/AnnoyometerConverter',
   	]);
 }

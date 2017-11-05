@@ -1254,7 +1254,7 @@
 		<span>MODE: ${main_panel_mode}</span>			
 	</div>
 	
-	<div id="layout_ui_main" >
+	<div id="layout_ui_main" style="visibility:visible;"><!-- control panel visibility here to bypass default CSS state -->
 	<!--	
 		<div id="setup_pane">
 			<h1>New Game</h2>
@@ -1370,6 +1370,61 @@
 			</div>
 			<div class="planet"></div>
 		</div>-->
+		
+<!--		<div id="colonize_pane">
+ 			<div class="spaceship" style="top:40%; left: 20%;"></div> 
+			<div class="content">
+				<h2>Welcome To</h2>
+				<p>
+					<input type="text" name="name" value="Rigel VII" maxlength="20" /><br/>
+					<span style="color: #999; font-size: 65%">(Overtype to change name)</span>
+					
+				</p>
+				<p>This beautiful planet holds great promise to your people who eager to colonize the stars. With an abundance of natural resources and energy, it will surely provide wealth and prosperity to your civilization.</p>
+				<p>The environment of ${planet.name} provides a sense of natural awe and wonder that should attract new citizens and tourists alike.</p>
+				<p><a href="#" class="button big">Done</a></p>
+			</div>
+			<div class="planet"></div>
+		</div>-->
+		
+
+		
+		<div id="audience_pane" class="pane">
+			<div id="audience_them" style="border-color: #D92; background-color: rgba(200,128,32,0.55);">
+				<div class="diplo_img_wrapper">
+					<div src.one-time="c.diplo_img_small" class="diplo_img trekIn"></div>
+				</div>
+				<h2><img class="flag" src.one-time="c.flag_img" src="img/flags/flag_000.png" /> ${c.name}</h2>
+				<p class="button_rack">
+					<a href="#" class="button big">Relations</a>
+					<a href="#" class="button big">Info</a>
+					<a href="#" class="button big alt">Leave</a>
+				</p>
+				<div class="love_nub"><div class="nub">Amiable</div></div>
+				<div class="annoyometer"><div class="nub">Annoyed</div></div>
+				<p>Treasury: $${c.treasury}</p>
+				<p>Research: ${c.research}</p>
+				<p>Government: ${c.gov_type}</p>
+			</div>
+			<div id="audience_us">
+				<div id="speech_them" style="color: #D92;" class="fadeIn">
+					<p>${c.name} Ambassador:<p>
+					<q>Nobody loves you and you're ugly.</q>
+					<p>The rebel group is believed to have access to a stockpile of Scud ballistic missiles and home-grown variants. Saudi forces have previously brought them down with Patriot surface-to-air missiles bought from the US.</p>
+					<p>The Houthis fired a missile towards Riyadh in May, a day before US President Donald Trump was due to arrive in the city for a visit, but it was shot down 200km (120 miles) from the capital.</p>
+				</div>
+				<div id="speech_us">
+					<ul>
+						<li><a href="#">My mom told me otherwise!</a></li>
+						<li><a href="#">Who are you calling ugly?</a></li>
+					</ul>
+					<p>Yemen has been devastated by a war between forces loyal to the internationally recognised government of President Abdrabbuh Mansour Hadi and those allied to the Houthi rebel movement.</p>
+					<p>The conflict has also left 20.7 million people in need of humanitarian assistance, created the world's largest food security emergency, and led to a cholera outbreak that is believed to have affected 884,000 people and caused 2,184 deaths.</p>
+				</div>
+			</div>
+<!-- 			<p><a href="#"  click.delegate="ClosePanel()" class="button big">CLOSE</a></p> -->
+		</div>
+		
 	</div>
 	
 <!--	<div id="layout_ui_side" class="planet trekIn">
@@ -1560,7 +1615,7 @@
 	
 	
 	
-	<div id="layout_ui_side" style="visibility:visible; display:block;">
+	<div id="layout_ui_side" style="visibility:visible; display:none;">
 
 		<div class="planet atm1 tmp1" css="min-height:200px; background-size: auto 200px; background-position: calc(100% + 100px) -100px ;">
 			

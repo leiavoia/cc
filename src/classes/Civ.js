@@ -36,6 +36,10 @@ export default class Civ {
 	color = '#FFFFFF';
 	color_rgb = [255,255,255];
 	
+	// stubbed for diplomacy later
+	lovenub = 0.5;
+	annoyed = 0.5;
+	
 	research = 0; // to split into cats later
 	research_income = 0; // calculated per turn
 	
@@ -128,6 +132,9 @@ export default class Civ {
 		this.flag_img = 'img/flags/flag_' + ("000" + Civ.flag_id_roster[this.id]).slice(-3) + '.png';
 		this.diplo_img = 'img/races/alien_' + ("000" + Civ.img_id_roster[this.id]).slice(-3) + '.jpg';
 		this.diplo_img_small = 'img/races/alien_' + ("000" + Civ.img_id_roster[this.id]).slice(-3) + '.jpg';
+		// [!]DEBUG HACK
+		this.lovenub = Math.random();
+		this.annoyed = Math.random();
 		}
 	
 	static Random( difficulty = 0.5 ) {

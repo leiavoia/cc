@@ -1,20 +1,34 @@
 <template>
-<!--	<require from="./converters/percent"></require>
-	<require from="./converters/round"></require>-->
-	<div id="audience_pane" class="pane"
-		 css="border-color: rgb( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]} ); 
-		 background-color: rgba( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]}, 0.55 );"
-		 >
-		 
-		<p style="float:right;"><a href="#"  click.delegate="ClosePanel()" class="button big">CLOSE</a></p>
-		<h1>An Audience with the ${civ.name}</h1>
-		<img class="flag" src.one-time="civ.flag_img" />
-			<div>
-				<div class="love_nub">Amiable</div>
-				<img src.one-time="civ.diplo_img_small" class="diplo_img" />
-				<p>Treasury: $${civ.treasury}</p>
-				<p>Research: ${civ.research}</p>
-				<p>Government: ${civ.gov_type}</p>
+
+	<div id="audience_pane" class="pane">
+		<div id="audience_them" css="border-color: rgb( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]} ); 
+		background-color: rgba( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]}, 0.55 );">
+			<div class="diplo_img_wrapper trekIn">
+				<div class="diplo_img" css="background-image: url(${civ.diplo_img_small});"></div>
 			</div>
+			<h2><img class="flag" src.one-time="civ.flag_img" /> ${civ.name}</h2>
+			<p class="button_rack">
+				<a href="#" class="button big">Relations</a>
+				<a href="#" class="button big">Info</a>
+				<a href="#" class="button big alt" click.delegate="app.SwitchMainPanel('diplo')" >Leave</a>
+			</p>
+			<div class="love_nub"><div class="nub" css="margin-left: calc(${civ.lovenub} * (100% - 6em));">${civ.lovenub|loveNub}</div></div>
+			<div class="annoyometer"><div class="nub" css="margin-left: calc(${civ.annoyed} * (100% - 6em));">${civ.annoyed|annoyometer}</div></div>
+			<p>Treasury: ${civ.treasury}</p>
+			<p>Research: ${civ.research}</p>
+			<p>Government: ${civ.gov_type}</p>
+		</div>
+		<div id="audience_us" class="slideInRight">
+			<div id="speech_them" class="fadeIn" css="color: rgb( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]} );">
+				<p><b style="font-weight:bold;">${civ.name} Ambassador:</b><p>
+				<div innerhtml.bind="text_response"></div>
+			</div>
+			<div id="speech_us">
+				<ol>
+					<li repeat.for="option of options"><a href="#" click.delegate="option.func()">${option.text}</a></li>
+				</ol>
+			</div>
+		</div>
 	</div>
+	
 </template>

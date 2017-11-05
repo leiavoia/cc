@@ -133,7 +133,30 @@ We also link to Google Fonts:
 	99% { opacity: 1; }
 	100% { opacity: 0; }
 }
-
+@keyframes fuzz {
+	0% { opacity: 0; }
+	5% { opacity: 0.25; }
+	10% { opacity: 0; }
+	15% { opacity: 0.75; }
+	20% { opacity: 0.1; }
+	25% { opacity: 0.3; }
+	30% { opacity: 0.9; }
+	35% { opacity: 0.4; }
+	40% { opacity: 0.0; }
+	45% { opacity: 0.5; }
+	50% { opacity: 0.95; }
+	55% { opacity: 0.7; }
+	60% { opacity: 0.2; }
+	65% { opacity: 0.0; }
+	70% { opacity: 0.6; }
+	75% { opacity: 1.0; }
+	80% { opacity: 0.4; }
+	85% { opacity: 0.7; }
+	90% { opacity: 0.3; }
+	95% { opacity: 0.9; }
+	100% { opacity: 1.0; }
+	}
+	
 @keyframes rotation {
     from {transform: rotate(0deg);}
     to   {transform: rotate(359deg);}
@@ -159,6 +182,19 @@ We also link to Google Fonts:
 	transform-origin: 50% 50%;
 	animation: trekOut .25s both ease-in;
 	opacity:0;
+}
+.fadeIn {
+	animation: fadeIn .5s both ease-out;
+	opacity: 0.01;
+}
+.fadeOut {
+	animation: fadeOut .5s both ease-in;
+	opacity:0;
+}
+.fuzzIn {
+	transform-origin: 50% 50%;
+	animation: blink3 .4s both ease-in;
+	opacity:1;
 }
 
 
@@ -1842,32 +1878,122 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	max-width: 100%;
 	display: inline-block;
 	margin: 0.5em 0;
+	cursor:pointer;
 	}
 #civ_list > DIV IMG.flag {
 	max-height: 22px;
 	float: right;
 	margin: 0 0 0.5em 0.5em;
 	}
-#diplo_pane DIV.love_nub {
-	background: linear-gradient(to right, rgba(209,37,37,1) 1%,rgba(255,251,135,1) 50%,rgba(63,186,85,1) 100%);
-	border-radius: 0.5em;
-	margin: 1.0em 0;
-	padding: 0.5em;
-	text-align: center;
-	font-weight: bold;
-	color: #000;
-	}
 #civ_list > DIV P {
 	margin: 0.5em 0;
 	}
 
-
-
+DIV.love_nub, DIV.annoyometer {
+	box-sizing:border-box;
+	background: linear-gradient(to right, rgba(209,37,37,1) 1%,rgba(255,251,135,1) 50%,rgba(63,186,85,1) 100%);
+	border-radius: 0.5em;
+	margin: 0.5em 0;
+	padding: 1px 0;
+	}
+DIV.annoyometer {
+	background: linear-gradient(to right, rgb(30,30,30) 1%,rgb(230,230,230) 100%);
+	}
+DIV.love_nub .nub,
+DIV.annoyometer .nub {
+	box-sizing:border-box;
+	background: rgba(1,1,1,0.5);
+/* 	border: 2px solid #FFF; */
+	border-radius: 0.5em;
+	margin: 0;
+	width:6em;
+	height: 100%;
+	box-sizing:border:box;
+	padding: 0.2em 0;
+	text-align: center;
+	font-weight: bold;
+	color: #FFF;
+	}
 	
 	
 
 
-
+	
+/* AUDIENCE PANE */
+#audience_pane {
+	display: flex;
+	flex-flow: row wrap;
+	height:100%;
+	padding: 0 !important; 	/* special override for #layout_ui_main .pane */
+	}
+#audience_pane > DIV {
+	box-sizing: border-box;
+	border: 5px solid #666;
+	border-radius: 1.0em;
+	padding: 1em;
+	margin: 1em;
+	flex: 1 1;
+	overflow: auto;
+	}
+#audience_pane DIV.diplo_img_wrapper {
+	box-sizing: border-box;
+	margin: 0.5em auto;
+/* 	padding: 1em; */
+	width: 100%;
+	max-width: 40em;;
+	margin: 0 auto 1em auto;
+	border: 2px solid #000;
+	box-shadow: 0.5em 0.5em 1em rgba(0,0,0,0.75);
+	border-radius: 1.0em;
+	overflow:hidden;
+	background: #000;
+	}
+#audience_pane #audience_them {
+	max-width: 40em;
+	}
+#audience_pane #speech_them,
+#audience_pane #speech_us {
+	font-size: 200%;
+	margin-bottom: 3em;
+	}
+#audience_pane #speech_them P,
+#audience_pane #speech_them Q,
+#audience_pane #speech_them DIV,
+#audience_pane #speech_them LI {
+	color:inherit;
+	}
+#audience_pane DIV.diplo_img {
+/* 	background-image: none; */
+	background-image: url(/cc/x/img/fx/staticsnow.gif);
+	background-color: #000;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+	padding-bottom: 66.6666%; /* 3:2 aspect ratio */
+	}
+#audience_pane DIV IMG.flag {
+	max-height: 30px;
+	margin: 0 0 0.5em 0;
+	vertical-align:middle;
+	}
+#audience_pane DIV H2 {
+	margin-top: 0;
+	}
+#audience_pane #audience_us OL, 	
+#audience_pane #audience_us UL {	
+	margin: 0.5em 0 0.5em 1.5em; ;
+	}
+#audience_pane #audience_us LI {	
+	list-style-type: disc;
+	margin: 0.3em 0;
+	}
+#audience_pane #audience_us OL LI {	
+	list-style-type: decimal;
+	}
+	
+	
+	
+	
 /* SETUP PANE */
 #setup_pane {
 	padding: 3em;
