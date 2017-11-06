@@ -345,7 +345,13 @@ export default class Game {
 				
 			// ship movement
 			for ( let f of this.galaxy.fleets ) { 
-				f.MoveFleet();
+				if ( f.MoveFleet() ) { 
+					// if the fleet arrived, mark the star as explored to help the UI
+					if ( f.owner == this.myciv && f.star && !f.dest ) { 
+						f.star.explored = true;
+						}
+				
+					}
 				}
 				
 				
@@ -361,7 +367,7 @@ export default class Game {
 		// this may not be necessary as it is just for UI stuff
 		// but may become necessary to short circuit some 
 		// calculations later. Testing required.
-		let range = 600 * 600; // TODO get this by some means. NOTE2: avoid square rooting.
+		let range = this.myciv.ship_range * this.myciv.ship_range ; // NOTE: avoid square rooting.
 		for ( let s of this.galaxy.stars ) { 
 			// do i live here?
 			if ( !s.Acct(this.myciv) ) {
@@ -385,7 +391,7 @@ export default class Game {
 		this.app.sidebar_mode = false;
 		// let there be light
 // 		this.galaxy = new Galaxy();
-		this.galaxy.Make( 8000, 4000, 65, Math.random() );
+		this.galaxy.Make( 20, 10, 65, Math.random() );
 		this.RefactorPlanetList();
 		Fleet.KillAll();
 		}

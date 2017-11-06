@@ -4,14 +4,21 @@ export class AudiencePane {
 	@bindable app = null;
 	@bindable civ = null;
 
-	options = [];
+	ambassador_present = true;
 	
+	options = [];
 	constructor() { 
 		
 		}
 		
 	ClosePanel() {
 		this.app.CloseMainPanel();
+		}	
+	
+	StartMeeting() { 
+		this.ambassador_present = true;
+		this.GetResponse();
+		this.SetStandardOptions();
 		}
 		
 	GetResponse() {

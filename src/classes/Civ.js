@@ -30,6 +30,8 @@ export default class Civ {
 		
 		};
 	
+	ship_range = 900; // px
+	
 	flag_img = 'img/workshop/flag_mock.gif';
 	diplo_img = 'img/races/diplo_race_000.jpg';
 	diplo_img_small = 'img/races/diplo_race_000s.jpg';
@@ -151,6 +153,11 @@ export default class Civ {
 		for ( let s of app.game.galaxy.stars ) { 
 			for ( let p of s.planets ) {
 				if ( !p.owner ) { 
+					// TODO: respect ship range.
+					// In order to calculate range, we have to check
+					// every colony we have against every unclaimed
+					// star system. Each civ has to keep track of their
+					// own ship range and that's a lot of track-keeping.
 					targets.push(p);
 					}
 				}
@@ -199,7 +206,7 @@ export default class Civ {
 								let t = targets.pop();
 								console.log(`F${f.id}: chose target ${t.name}`);
 								let myfleet = null;
-								// split fleet if more than ship in fleet
+								// split fleet if more than 1 ship in fleet
 								if ( f.ships.length > 1 ) { 
 									console.log(`F${f.id}: i'm splitting off and headed for ${t.name}`);
 									f.RemoveShip(s); // old fleet

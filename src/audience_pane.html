@@ -3,14 +3,15 @@
 	<div id="audience_pane" class="pane">
 		<div id="audience_them" css="border-color: rgb( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]} ); 
 		background-color: rgba( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]}, 0.55 );">
-			<div class="diplo_img_wrapper trekIn">
+			<div class="diplo_img_wrapper trekIn" if.bind="ambassador_present">
 				<div class="diplo_img" css="background-image: url(${civ.diplo_img_small});"></div>
 			</div>
 			<h2><img class="flag" src.one-time="civ.flag_img" /> ${civ.name}</h2>
 			<p class="button_rack">
+				<a href="#" class="button big" if.bind="!ambassador_present" click.delegate="StartMeeting()" >Audience</a>
+				<a href="#" class="button big alt" if.bind="ambassador_present" click.delegate="app.SwitchMainPanel('diplo')" >Leave</a>
 				<a href="#" class="button big">Relations</a>
 				<a href="#" class="button big">Info</a>
-				<a href="#" class="button big alt" click.delegate="app.SwitchMainPanel('diplo')" >Leave</a>
 			</p>
 			<div class="love_nub"><div class="nub" css="margin-left: calc(${civ.lovenub} * (100% - 6em));">${civ.lovenub|loveNub}</div></div>
 			<div class="annoyometer"><div class="nub" css="margin-left: calc(${civ.annoyed} * (100% - 6em));">${civ.annoyed|annoyometer}</div></div>
@@ -18,7 +19,7 @@
 			<p>Research: ${civ.research}</p>
 			<p>Government: ${civ.gov_type}</p>
 		</div>
-		<div id="audience_us" class="slideInRight">
+		<div id="audience_us" class="slideInRight" if.bind="ambassador_present">
 			<div id="speech_them" class="fadeIn" css="color: rgb( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]} );">
 				<p><b style="font-weight:bold;">${civ.name} Ambassador:</b><p>
 				<div innerhtml.bind="text_response"></div>

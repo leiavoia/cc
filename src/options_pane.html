@@ -1,0 +1,34 @@
+<template>
+<!--	<require from="./converters/percent"></require>
+	<require from="./converters/round"></require>-->
+
+	<div id="options_pane" class="pane">
+		<p style="float:right;"><a href="#"  click.delegate="ClosePanel()" class="button big">CLOSE</a></p>
+		<h2>Options</h2>
+		
+		<h3>Dim Unexplored Stars</h3>
+		<p class="button_rack">
+			<a href="#" click.delegate="app.ToggleOption('dim_unexplored')" class="button ${app.options.dim_unexplored ? 'alt' : 'cool'}">ON</a>
+			<a href="#" click.delegate="app.ToggleOption('dim_unexplored')" class="button ${app.options.dim_unexplored ? 'cool' : 'alt'}">OFF</a>
+		</p>
+		<h3>Show Sector Lines</h3>
+		<p class="button_rack">
+			<a href="#" click.delegate="app.ToggleOption('show_sectors')" class="button ${app.options.show_sectors ? 'alt' : 'cool'}">ON</a>
+			<a href="#" click.delegate="app.ToggleOption('show_sectors')" class="button ${app.options.show_sectors ? 'cool' : 'alt'}">OFF</a>
+		</p>
+		<h3>See Everything (Debug)</h3>
+		<p class="button_rack">
+			<a href="#" click.delegate="app.ToggleOption('see_all')" class="button ${app.options.see_all ? 'alt' : 'cool'}">ON</a>
+			<a href="#" click.delegate="app.ToggleOption('see_all')" class="button ${app.options.see_all ? 'cool' : 'alt'}">OFF</a>
+		</p>
+		<h3>Show Ship Range Circles</h3>
+		<p class="button_rack">
+			<a href="#" click.delegate="app.ToggleOption('show_range')" class="button ${app.options.show_range ? 'alt' : 'cool'}">ON</a>
+			<a href="#" click.delegate="app.ToggleOption('show_range')" class="button ${app.options.show_range ? 'cool' : 'alt'}">OFF</a>
+		</p>
+		
+	</div>
+
+
+
+</template>

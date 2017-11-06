@@ -18,30 +18,63 @@ export default class Galaxy {
 		this.fleets = Fleet.all_fleets;
 		}
 		
+	// size is in number of sectors, 
+	// where sector is 400px and max one star per sector
 	Make( map_size_x, map_size_y, stars_wanted, galaxy_age = 0.5 ) {
+		
+		let cell_size = 400;
 		
 		// reset data
 		this.stars = [];
 		this.lanes = [];
 	
-		this.width = map_size_x;
-		this.height = map_size_y;
+		// for aesthetics and UI reasons, 
+		// we want an empty padded border.
+		this.width = (map_size_x+2) * cell_size;
+		this.height = (map_size_y+2) * cell_size;
 		this.age = galaxy_age;
 		
-		// git us some stars and planets
-		let planet_cell_size = 400;
-		let planet_ratio = stars_wanted / (((map_size_x-planet_cell_size)/planet_cell_size) * ((map_size_y-planet_cell_size)/planet_cell_size));
-		for ( let x = planet_cell_size; x < map_size_x-(planet_cell_size); x += planet_cell_size ) { 
-			for ( let y = planet_cell_size; y < map_size_y-(planet_cell_size); y += planet_cell_size ) { 
-				if ( Math.random() <= planet_ratio ) {
+		// represent the galaxy as an array of bools, 
+		// where the 1D array is the flattened version 
+		// of a 2D array of sectors.
+		// We assign the first X slots to be a star ("true")
+		let sectors = map_size_x * map_size_y;
+		if ( sectors < stars_wanted ) { stars_wanted = sectors; }
+		let arr =  new Array( stars_wanted ).fill(true).concat(
+			new Array( sectors - stars_wanted ).fill(false)
+			) ;
+	
+		// these is where the shape of the galaxy is determined. 
+		// Most of the time just shuffling works fine.
+		arr.shuffle();
+		
+ 		// loop over the array and create a star wherever we find a "true"
+		for ( let x = 0; x < map_size_x; x++ ) { 
+			for ( let y = 0; y < map_size_y; y++ ) { 
+				if ( arr[ x*map_size_y + y ] ) {
 					this.stars.push( Star.Random( 
-						x + (Math.floor((Math.random() * 250)) - 125 ), 
-						y + (Math.floor((Math.random() * 250)) - 125 ),  
+						((x+1)*cell_size) + (Math.floor((Math.random() * 200)) + 100 ), 
+						((y+1)*cell_size) + (Math.floor((Math.random() * 200)) + 100 ),  
 						galaxy_age 
-						) );				
+						) );					
 					}
 				}
 			}
+
+
+		// OLD METHOD
+// 		let planet_ratio = stars_wanted / (((map_size_x-cell_size)/cell_size) * ((map_size_y-cell_size)/cell_size));
+// 		for ( let x = cell_size; x < map_size_x-(cell_size); x += cell_size ) { 
+// 			for ( let y = cell_size; y < map_size_y-(cell_size); y += cell_size ) { 
+// 				if ( Math.random() <= planet_ratio ) {
+// 					this.stars.push( Star.Random( 
+// 						x + (Math.floor((Math.random() * 250)) - 125 ), 
+// 						y + (Math.floor((Math.random() * 250)) - 125 ),  
+// 						galaxy_age 
+// 						) );				
+// 					}
+// 				}
+// 			}
 	
 		}
 	

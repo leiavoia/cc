@@ -99,9 +99,12 @@ export default class Fleet {
 			Fleet.all_fleets[i].Kill();	
 			}	
 		Fleet.all_fleets = [];
-		}		
+		}	
+	// returns true if the fleet moved
 	MoveFleet() {
+		let moved = false;
 		if ( this.dest ) { 
+			moved = true;
 			// move the ship closer to goal
 			let dist = Math.sqrt( Math.abs( (this.xpos - this.dest.xpos) * (this.ypos - this.dest.ypos) ) );
 			// for a cleaner look, strip off 75px from each end.
@@ -111,12 +114,6 @@ export default class Fleet {
 			if ( dist <= this.speed ) { 
 				this.star = this.dest;
 				this.dest = null;
-				// mark the star as explored if i'm me.
-				// TODO: FIXME: get the actual app.game.iam somehow
-				if ( !this.star.explored /*&& this.owner == 0*/ ) { 
-					this.star.explored = true;
-					// todo: emit an event message that we arrived. perhaps someone will care.
-					}
 				// check to see if we are merging into an existing fleet
 				for ( let f of this.star.fleets )  {
 					if ( f.owner == this.owner ) { 
@@ -143,6 +140,7 @@ export default class Fleet {
 				}
 			this.FireOnUpdate();
 			}
+		return moved;
 		}
 		
 	SetDest( dest ) { 

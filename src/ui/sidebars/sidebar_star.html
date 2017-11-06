@@ -9,6 +9,7 @@
 		</template>
 		<template if.bind="star.explored || app.options.see_all">
 			<h2 if.bind="!editing_name" click.delegate="ToggleNameEdit()">${star.name}</h2>
+			<p>settle dby player? ${star.settled_by[app.game.myciv.id] ? 'yes' : 'no'}</p>
 			<p if.bind="editing_name" >
 				<input type="text" value.bind="star.name" />
 				<a href="" click.delegate="ToggleNameEdit()">OK</a>

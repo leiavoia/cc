@@ -21,9 +21,10 @@ export class App {
 	state_obj = null;
 	game = null;
 	options = {
-		dim_unexplored: true,
+		dim_unexplored: false,
 		show_sectors: true,
 		see_all: true,
+		show_range: false
 		};
 		
 	constructor() {
@@ -35,7 +36,7 @@ export class App {
 // 		this.ChangeState('title');
 
 		// --------\/-- [!]DEBUG SHORTCUT --\/---------------------
-		this.game.galaxy.Make( 4500, 4500, 40, 0.5 );
+		this.game.galaxy.Make( 14, 8, 40, 0.5 );
 		let mystar = this.game.galaxy.AddExploreDemo();
 		this.game.SetMyCiv( 0 ); // could switch using debug stuff
 		this.ChangeState('play');
