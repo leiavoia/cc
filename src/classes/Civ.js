@@ -128,7 +128,7 @@ export default class Civ {
 			for ( let i=0; i<=30; i++ ) { Civ.flag_id_roster.push(i); }
 			Civ.flag_id_roster.shuffle();
 			Civ.img_id_roster = [];
-			for ( let i=0; i<=137; i++ ) { Civ.img_id_roster.push(i); }
+			for ( let i=0; i<=278; i++ ) { Civ.img_id_roster.push(i); }
 			Civ.img_id_roster.shuffle();
 			}
 		this.flag_img = 'img/flags/flag_' + ("000" + Civ.flag_id_roster[this.id]).slice(-3) + '.png';
