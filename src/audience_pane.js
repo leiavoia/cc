@@ -3,7 +3,8 @@ import {bindable} from 'aurelia-framework';
 export class AudiencePane {
 	@bindable app = null;
 	@bindable civ = null;
-
+	@bindable on_exit = 'diplo'; // can be '' or 'diplo' or any other main panel 
+	
 	ambassador_present = true;
 	
 	options = [];
@@ -63,20 +64,24 @@ export class AudiencePane {
 		let page = this;
 		this.options = [];
 		if ( page.civ.annoyed >= 0.05 ) {
-			this.options.push({ text:"Let's trade.", func:function(){ page.app.SwitchMainPanel('diplo'); } });
-			this.options.push({ text:"Let's make a deal.", func:function(){ page.app.SwitchMainPanel('diplo'); } });
+			this.options.push({ text:"Let's trade.", func:function(){ page.Exit(); } });
+			this.options.push({ text:"Let's make a deal.", func:function(){ page.Exit(); } });
 			this.options.push({ text:"We want to know about ...", func:function(){ page.SelectWantToKnowInfoOption(); } });
-			this.options.push({ text:"We declare war on you.", func:function(){ page.app.SwitchMainPanel('diplo'); } });
+			this.options.push({ text:"We declare war on you.", func:function(){ page.Exit(); } });
 			}
 		this.options.push({ text:"End conversation.", func:function(){ 
 			page.civ.annoyed -= 0.05;
 			if ( page.civ.annoyed < 0 ) { page.civ.annoyed = 0; }
-			page.app.SwitchMainPanel('diplo'); 
+			page.Exit();
 			} });
 		};
 		
 	bind( data ) {
 		this.GetResponse();
 		this.SetStandardOptions();
+		}
+		
+	Exit() { 
+		this.app.SwitchMainPanel( this.on_exit ); 
 		}
 	}

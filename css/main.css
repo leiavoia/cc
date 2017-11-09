@@ -317,54 +317,74 @@ body,html {
 /* 	display: none; */
 	}
 	
-/* visible children need to capture click events */
-#layout_ui > DIV { 
-	pointer-events: auto;
-	}
-	
 #layout_ui_main { 
 	order: 10;
 	flex: 70;
-	background: rgba(0,0,0,0.85);
-	visibility:hidden;
+/* 	background: rgba(0,0,0,0.85); */
+/* 	visibility:hidden; */
 	padding:0;
 	margin:0;
 	overflow:auto;
+	
+	display: flex;
+	flex-flow: column nowrap;
+	
+	/* allows click-though to map space when child elements are hidden */
+	pointer-events: none;
 	}
 	
-#layout_ui_nav2 { 
-	bottom:0;
-	left:0;
-	position:absolute;
-/* 	width: 100%; */
-	background-color: rgba(0.5,0.5,0.5,0.3);
-	color: #FFF;
-	text-shadow: 1px 1px 1px #000;
-	box-sizing: border-box;
-	padding: 0.3em 1.5em 0.3em 0.5em ;
-	display:inline-block;
-	border-bottom-right-radius: 2em;
-	transition: all 0.30s;
-	transform-origin: 50% 50%;
-	animation: fadeIn .75s ease-out;
-	}
-	
-#layout_ui_visor { 
-	top:0;
-	left:0;
-	position:absolute;
-/* 	width: 100%; */
+#layout_ui_visor {
+/* 	flex: 5; */
+/* 	height:  */
+	box-sizing:border-box;
+	overflow: auto;
 	background-color: rgba(0,0,0,0.3);
 	color: #FFF;
 	text-shadow: 1px 1px 1px #000;
-	box-sizing: border-box;
 	padding: 0.3em 1.5em 0.3em 0.5em ;
-	display:inline-block;
-	border-bottom-right-radius: 2em;
-	transition: all 0.30s;
-	transform-origin: 50% 50%;
-	animation: fadeIn .75s ease-out;
 	}
+#layout_ui_footer {
+	box-sizing:border-box;
+	overflow: auto;
+	background-color: rgba(1,1,1,0.3);
+	color: #FFF;
+	text-shadow: 1px 1px 1px #000;
+	padding: 0.3em 1.5em 0.3em 0.5em ;
+	}
+#layout_ui_center {
+	flex: 85;
+	overflow: hidden;
+	display:flex;
+	flex-flow: row nowrap;
+	/* allows click-though to map space when child elements are hidden */
+	pointer-events: none;
+	}
+#layout_ui_news {
+	flex: 30;
+	overflow: auto;
+/* 	background: #181; */
+	box-sizing:border-box;
+	padding: 1em;
+	max-width: 30em;
+	overflow: hidden; /* scrollbars are ugly */
+	/* allows click-though to map space when child elements are hidden */
+	pointer-events: none;
+	}
+#layout_ui_content {
+	flex: 70;
+	overflow: auto;
+/* 	background: #311; */
+	box-sizing:border-box;
+	/* allows click-though to map space when child elements are hidden */
+	pointer-events: none;
+	}
+/* we need this to get around a firefox bug where 
+   scrollbars do not respond to pointer events */
+#layout_ui_content.active { 
+	pointer-events: auto; 
+	background: rgba(0,0,0,0.85);
+	}
+	
 #layout_ui_visor SPAN { margin-right: 2em; }
 #layout_ui_visor .turn { color: #FFF; }
 #layout_ui_visor .pop { color: #FF2; }
@@ -387,7 +407,10 @@ body,html {
 	100% {  background-position: 200% 50%; }
 	}	
 #layout_ui_main .pane {
+	box-sizing: border-box;
 	padding: 1em; 	
+	pointer-events: auto; /* capture click events */
+	min-height: 100%;
 	}
 #layout_ui_side { 
 	order: 20;
@@ -402,6 +425,7 @@ body,html {
 	transform-style: preserve-3d;
 	transform: translate3d(0, 0, 0);
 	overflow: auto;
+	pointer-events: auto; /* capture click events */
 /* 	visibility:hidden; */
 	}
 #layout_ui_side > DIV { padding: 1em; }
@@ -415,6 +439,7 @@ body,html {
 	background: #000;
 	padding: 3px;
 	transition: all 0.30s;
+	pointer-events: auto; /* allow clicks */
 /* 	visibility:hidden; */
 	}
 	
@@ -452,6 +477,53 @@ body,html {
 	}
 	
 
+	
+	
+/* SIDE PANEL ANNOUNCEMENTS */
+#layout_ui_news > DIV  {
+	box-sizing: border-box;
+	border-radius: 1em;
+	padding: 0.5em 1em 0.5em 4em;
+	margin: 0 0 1em 0;
+	background: rgba(0,0,0,0.78) url(../img/layout/notice_good.png) no-repeat top left ;
+	color: #FFF;
+	min-height: 3em;
+	border: 1px solid #218A2D;
+	pointer-events: auto;
+	cursor:pointer;
+	}
+#layout_ui_news P {
+	margin: 0 0 0.5em 0;
+	}
+#layout_ui_news H3 {
+	font-size: 80%;
+	margin-bottom: 0.5em;
+	}
+#layout_ui_news > DIV.good {	
+	background-image: url(../img/layout/notice_good.png);
+	border-color: #218A2D;
+	background-size: 3em;
+	}
+#layout_ui_news > DIV.good H3 {
+	color: #218A2D;
+	}
+#layout_ui_news > DIV.bad {	
+	background-image: url(../img/layout/notice_bad.png);
+	border-color: #D11;
+	background-size: 3em;
+	}
+#layout_ui_news > DIV.bad H3 {
+	color: #D11;
+	}
+#layout_ui_news > DIV.neutral {	
+	background-image: url(../img/layout/notice_neutral.png);
+	border-color: #3B5A9A;
+	background-size: 3em;
+	}
+#layout_ui_news > DIV.neutral H3 {
+	color: #6091D1;
+	}
+	
 	
 	
 	

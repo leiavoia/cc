@@ -99,37 +99,52 @@
 <!-- UI layer -->
 <div id="layout_ui">
 
-	<div id="layout_ui_visor">
-		<span class="turn">TURN: ${app.game.turn_num}</span>
-		<span class="planets">PLANETS: ${app.game.myciv.planets.length}</span>
-		<span class="treasury">TREASURY: $${app.game.myciv.treasury|round:0} ${app.game.myciv.econ.income > 0 ?'+':''}${app.game.myciv.econ.income|round:0}</span>
-		<span class="gov">GOV: ${app.game.myciv.gov_pts|round:0} +${app.game.myciv.gov_pts_income|round:0}</span>
-		<span class="sci">RESEARCH: ${app.game.myciv.research|round} +${app.game.myciv.research_income|round:0}</span>
-<!-- 		<span class="turn">MODE: ${app.main_panel_mode}</span>			 -->
-<!-- 		<span class="turn">SIDEMODE: ${app.sidebar_mode}</span>			 -->
-	</div>
+	<div id="layout_ui_main">
 	
-	<div id="layout_ui_nav2">
-		<a href="#" click.delegate="app.MapZoomIn()">[+]</a>
-		<a href="#" click.delegate="app.MapZoomOut()">[-]</a>
-		<span if.bind="app.game.myciv.econ.mp_need_met < 1.0" class="bad">Not Enough Resources!</span>
+		<div id="layout_ui_visor" class="fadeIn" if.bind="!app.main_panel_mode">
+			<span class="turn">TURN: ${app.game.turn_num}</span>
+			<span class="planets">PLANETS: ${app.game.myciv.planets.length}</span>
+			<span class="treasury">TREASURY: $${app.game.myciv.treasury|round:0} ${app.game.myciv.econ.income > 0 ?'+':''}${app.game.myciv.econ.income|round:0}</span>
+			<span class="gov">GOV: ${app.game.myciv.gov_pts|round:0} +${app.game.myciv.gov_pts_income|round:0}</span>
+			<span class="sci">RESEARCH: ${app.game.myciv.research|round} +${app.game.myciv.research_income|round:0}</span>
+	<!-- 		<span class="turn">MODE: ${app.main_panel_mode}</span>			 -->
+	<!-- 		<span class="turn">SIDEMODE: ${app.sidebar_mode}</span>			 -->
+		</div>
+		
+		<div id="layout_ui_center">
+		
+			<div id="layout_ui_news" class="fadeIn" if.bind="!app.main_panel_mode">
+				<div repeat.for="note of app.notes" class="${note.type} trekIn" click.trigger="app.ClickNote(note)">
+					<h3 if.one-time="note.title">${note.title}</h3>
+					<div if.one-time="note.content" innerhtml.bind="note.content"></div>
+				</div>
+			</div>
+			
+			<div id="layout_ui_content" class="${app.main_panel_mode ? 'active trekIn' : 'trekOut'}">
+				<spy-pane if.bind="app.main_panel_mode == 'spy'"  app.bind="app"  ></spy-pane>
+				<planets-pane if.bind="app.main_panel_mode == 'planets'"  ></planets-pane>
+				<econ-pane if.bind="app.main_panel_mode == 'econ'"  app.bind="app"  ></econ-pane>
+				<gov-pane if.bind="app.main_panel_mode == 'gov'"  app.bind="app"  ></gov-pane>
+				<tech-pane if.bind="app.main_panel_mode == 'tech'"  app.bind="app"  ></tech-pane>
+				<ship-design-pane if.bind="app.main_panel_mode == 'shipdes'"  app.bind="app"  ></ship-design-pane>
+				<fleets-pane if.bind="app.main_panel_mode == 'fleets'"  app.bind="app"  ></fleets-pane>
+				<diplo-pane if.bind="app.main_panel_mode == 'diplo'"  app.bind="app"  ></diplo-pane>
+				<planetinfo-pane if.bind="app.main_panel_mode == 'planetinfo'" planet.bind="app.main_panel_obj" app.bind="app"  ></planetinfo-pane>
+				<audience-pane if.bind="app.main_panel_mode == 'audience'" civ.bind="app.main_panel_obj" app.bind="app"  ></audience-pane>
+				<colonize-pane if.bind="app.main_panel_mode == 'colonize'" planet.bind="app.main_panel_obj" app.bind="app"  ></colonize-pane>
+				<options-pane if.bind="app.main_panel_mode == 'options'" app.bind="app"  ></options-pane>
+			</div>
+
+		</div>
+
+		<div id="layout_ui_footer" class="fadeIn" if.bind="!app.main_panel_mode">
+			<a href="#" click.delegate="app.MapZoomIn()">[+]</a>
+			<a href="#" click.delegate="app.MapZoomOut()">[-]</a>
+			<span if.bind="app.game.myciv.econ.mp_need_met < 1.0" class="bad">Not Enough Resources!</span>
+		</div>
+		
 	</div>
-	
-	<div id="layout_ui_main" class="visible ${app.main_panel_mode ? 'trekIn' : 'trekOut'}">
-		<spy-pane if.bind="app.main_panel_mode == 'spy'"  app.bind="app" containerless ></spy-pane>
-		<planets-pane if.bind="app.main_panel_mode == 'planets'" containerless ></planets-pane>
-		<econ-pane if.bind="app.main_panel_mode == 'econ'"  app.bind="app" containerless ></econ-pane>
-		<gov-pane if.bind="app.main_panel_mode == 'gov'"  app.bind="app" containerless ></gov-pane>
-		<tech-pane if.bind="app.main_panel_mode == 'tech'"  app.bind="app" containerless ></tech-pane>
-		<ship-design-pane if.bind="app.main_panel_mode == 'shipdes'"  app.bind="app" containerless ></ship-design-pane>
-		<fleets-pane if.bind="app.main_panel_mode == 'fleets'"  app.bind="app" containerless ></fleets-pane>
-		<diplo-pane if.bind="app.main_panel_mode == 'diplo'"  app.bind="app" containerless ></diplo-pane>
-		<planetinfo-pane if.bind="app.main_panel_mode == 'planetinfo'" planet.bind="app.main_panel_obj" app.bind="app" containerless ></planetinfo-pane>
-		<audience-pane if.bind="app.main_panel_mode == 'audience'" civ.bind="app.main_panel_obj" app.bind="app" containerless ></audience-pane>
-		<colonize-pane if.bind="app.main_panel_mode == 'colonize'" planet.bind="app.main_panel_obj" app.bind="app" containerless ></colonize-pane>
-		<options-pane if.bind="app.main_panel_mode == 'options'" app.bind="app" containerless ></options-pane>
-	</div>
-	
+
 	<div id="layout_ui_side" class="trekIn" if.bind="app.sidebar_mode && app.sidebar_obj">		
 		<compose if.bind="app.sidebar_mode && app.sidebar_obj" view-model="../ui/sidebars/sidebar_${app.sidebar_mode}" model.bind="{app: app, obj: app.sidebar_obj}" containerless></compose>
 	</div>

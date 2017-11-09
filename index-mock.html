@@ -1247,14 +1247,51 @@
 
 <!-- UI layer -->
 <div id="layout_ui">
-	<div id="layout_ui_visor" style="display:none;">
-		<span>TURN: ${turn_num}</span>
-		<span>TREASURY: $${treasury}</span>
-		<span>RESEARCH: ${research}</span>
-		<span>MODE: ${main_panel_mode}</span>			
-	</div>
+	<div id="layout_ui_main"><!-- style="visibility:visible;" control panel visibility here to bypass default CSS state -->
 	
-	<div id="layout_ui_main" style="visibility:visible;"><!-- control panel visibility here to bypass default CSS state -->
+		<div id="layout_ui_visor">
+			<span>TURN: ${turn_num}</span>
+			<span>TREASURY: $${treasury}</span>
+			<span>RESEARCH: ${research}</span>
+			<span>MODE: ${main_panel_mode}</span>			
+		</div>
+		
+		<div id="layout_ui_center">
+		
+			<div id="layout_ui_news">
+				<div class="bad">
+					<h3>The Silicoids Are Coming!</h3>
+					<p>Intelligence indicates the dreaded silicoids are coming our way.</p>
+				</div>
+				
+				<div class="neutral">
+					<h3>Something Boring Happend</h3>
+					<p>Another report about some economic something or other on Tau Ceti.</p>
+				</div>
+				<div class="neutral">
+					<p>Farmers found a old cart wheel.</p>
+				</div>
+				<div class="neutral">
+					<h3>PopCap On Vista IV</h3>
+				</div>
+				
+				<div class="good">
+					<h3>LV426 Pest Infestation Cleared!</h3>
+					Troops have finally cleared the pests from LV426. There may have been some collateral damage.
+					<p>oihwseiohfha waweaf  awfioaw awefio efiawef</p>
+					<p>oihwseiohfha waweaf  awfioaw awefio efiawef</p>
+					<p>oihwseiohfha waweaf  awfioaw awefio efiawef</p>
+					<p>oihwseiohfha waweaf  awfioaw awefio efiawef</p>
+					<p>oihwseiohfha waweaf  awfioaw awefio efiawef</p>
+					<p>oihwseiohfha waweaf  awfioaw awefio efiawef</p>
+					<p>oihwseiohfha waweaf  awfioaw awefio efiawef</p>
+					<p>oihwseiohfha waweaf  awfioaw awefio efiawef</p>
+				</div>
+			</div>
+			
+			<div id="layout_ui_content">
+			
+	
 	<!--	
 		<div id="setup_pane">
 			<h1>New Game</h2>
@@ -1389,7 +1426,7 @@
 		
 
 		
-		<div id="audience_pane" class="pane">
+<!--		<div id="audience_pane" class="pane">
 			<div id="audience_them" style="border-color: #D92; background-color: rgba(200,128,32,0.55);">
 				<div class="diplo_img_wrapper">
 					<div src.one-time="c.diplo_img_small" class="diplo_img trekIn"></div>
@@ -1422,9 +1459,13 @@
 					<p>The conflict has also left 20.7 million people in need of humanitarian assistance, created the world's largest food security emergency, and led to a cholera outbreak that is believed to have affected 884,000 people and caused 2,184 deaths.</p>
 				</div>
 			</div>
-<!-- 			<p><a href="#"  click.delegate="ClosePanel()" class="button big">CLOSE</a></p> -->
+		</div>-->
+				content goes here
+			</div>
 		</div>
-		
+		<div id="layout_ui_footer">
+			foot er goes here
+		</div>
 	</div>
 	
 <!--	<div id="layout_ui_side" class="planet trekIn">
@@ -1615,7 +1656,7 @@
 	
 	
 	
-	<div id="layout_ui_side" style="visibility:visible; display:none;">
+	<div id="layout_ui_side" >
 
 		<div class="planet atm1 tmp1" css="min-height:200px; background-size: auto 200px; background-position: calc(100% + 100px) -100px ;">
 			

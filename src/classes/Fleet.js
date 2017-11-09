@@ -81,7 +81,7 @@ export default class Fleet {
 		if ( this.star ) { 
 			let pos = this.star.fleets.indexOf(this);
 			if ( pos !== -1 ) { 
-				console.log(`unhooking F${this.id} from ${this.star.name} in pos ${pos}`);
+// 				console.log(`unhooking F${this.id} from ${this.star.name} in pos ${pos}`);
 				this.star.fleets.splice( pos, 1 );
 				}
 			}
@@ -146,7 +146,7 @@ export default class Fleet {
 	SetDest( dest ) { 
 		// check to see if we're already there
 		if ( !this.dest && this.star == dest ) { 
-			console.log(`F${this.id}: I'm already where i want to be!`);
+// 			console.log(`F${this.id}: I'm already where i want to be!`);
 			return;
 			}
 		// check to see if i'm in the air and the user is issuing a return order
@@ -155,7 +155,7 @@ export default class Fleet {
 			this.star = dest;
 			this.xpos = 0;
 			this.ypos = 0;
-			console.log(`F${this.id}: I'm going nowhere!`);
+// 			console.log(`F${this.id}: I'm going nowhere!`);
 			}
 		else {
 			this.dest = dest;
@@ -177,7 +177,7 @@ export default class Fleet {
 			this.xpos = (1.0-ratio)*this.xpos + ratio*this.dest.xpos;
 			this.ypos = (1.0-ratio)*this.ypos + ratio*this.dest.ypos;	
 			this.UpdateDestLine();
-			console.log(`F${this.id}: I'm going to ${dest.name}!`);
+// 			console.log(`F${this.id}: I'm going to ${dest.name}!`);
 			}
 		this.FireOnUpdate();
 		}

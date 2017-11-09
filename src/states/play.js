@@ -7,8 +7,9 @@ import Fleet from '../classes/Fleet';
 import * as utils from '../util/utils';
 import {inject} from 'aurelia-framework';
 import {App} from '../app';
+// import {VelocityAnimator} from "aurelia-animator-velocity";
 
-@inject(App)
+@inject(App/*,VelocityAnimator*/)
 export class PlayState {
 
 
@@ -18,8 +19,9 @@ export class PlayState {
 	min_scale = 0.05;
 	scaling_step = 0.125;
 		
-	constructor( app ) {
+	constructor( app /*anim*/ ) {
 		this.app = app;
+// 		this.anim = anim;
 // 		this.app.state_obj = this;
 		}
 
@@ -62,6 +64,14 @@ export class PlayState {
 		// center the viewport on the clicked point
 		parent.scrollTop = new_scrolltop; 
 		parent.scrollLeft = new_scrollleft;
+
+// 		this.anim.runSequence([
+// 			{ e: parent, p: { scrollTop: new_scrolltop, scrollLeft: new_scrollleft }, o: { duration: 2000 } },
+// 			]);
+			
+		
+// 		this.anim.animate(parent,"scroll",{duration: 2000, offset: new_scrollleft, axis: 'x'});
+// 		this.anim.animate(parent,"scroll",{duration: 2000, offset: new_scrolltop, axis: 'y'});
 
 		}
 		

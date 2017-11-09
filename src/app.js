@@ -20,6 +20,7 @@ export class App {
 	state = 'title';
 	state_obj = null;
 	game = null;
+	notes = [];
 	options = {
 		dim_unexplored: false,
 		show_sectors: true,
@@ -42,6 +43,14 @@ export class App {
 		this.ChangeState('play');
 		this.hilite_star = mystar;
 		this.game.RecalcStarRanges();
+		let app = this; // needed for callback
+		this.AddNote(
+			'neutral',
+			`${this.game.galaxy.civs[1].name} Audience`,
+			`The ${this.game.galaxy.civs[1].name} ambassador would like a moment of your time`,
+			function(){app.SwitchMainPanel( 'audience', app.game.galaxy.civs[1] );}
+			);
+
 		}
 		
 	ToggleOption( o ) { 
@@ -76,6 +85,7 @@ export class App {
 			this.star_click_callback = null;
 			}
 		else {
+// 			this.FocusMap(star);
 			this.SwitchSideBar( star );
 			}
 		}
@@ -129,8 +139,28 @@ export class App {
 		this.modal_content = null;
 		}
 		
-		
-		
+	// type: good, bad, neutral
+	// title: optional
+	// content: optional, HTML allowed
+	// onclick: callback function. optional.
+	AddNote( type, title = null, content = null , onclick = null ) {
+		this.notes.push({ type:type, title:title, content:content, onclick:onclick });
+		}
+	// removes the note by default. executes onclick callback if set.
+	ClickNote( note, remove = true ) { 
+		let i = this.notes.indexOf(note);
+		if ( i >= 0 ) { 
+			if ( typeof note.onclick === 'function' ) { 
+				note.onclick();
+				}
+			if ( remove ) { 
+				this.notes.splice(i,1);
+				}
+			}
+		}
+	ClearNotes() { 
+		this.notes = [];
+		}
 	}
 
 	
