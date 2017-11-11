@@ -32,21 +32,24 @@ export class PlayState {
 		if ( obj instanceof Star ) { x = obj.xpos; y = obj.ypos; }
 		else if ( obj instanceof Planet ) { x = obj.star.xpos; y = obj.star.ypos; }
 		else if ( obj instanceof Fleet ) { x = obj.xpos; y = obj.ypos; }
-		else { x = obj.x; y = obj.y; }
+		else { x = obj.x; y = obj.y; } // not a safe fallback
 		
 		let div = document.getElementById('layout_map');
 		let parent = document.getElementById('layout_viewport');
 		
-		let scale_change = 0.0;
-		
-		let click_x = x;
-		let click_y = y;
-		
+		// calculate difference between map at full size and scaled size.
+		// This lets us bump the scaled coords into the correct real-world spot.
+		// +---------+
+		// | +-----+ |         
+		// |H|  x  | |
+		// | +-----+ |         
+		// +---------+
 		let halfdiff_x = ( (div.clientWidth - (div.clientWidth*this.current_scale)) * 0.5 );
 		let halfdiff_y = ( (div.clientHeight - (div.clientHeight*this.current_scale)) * 0.5 );
 		
-		let map_x_pct = (click_x - halfdiff_x ) / (div.clientWidth*this.current_scale);
-		let map_y_pct = (click_y - halfdiff_y ) / (div.clientHeight*this.current_scale);
+		// figure out where the target is as a percentage of the map (0..1)
+		let map_x_pct = x / div.clientWidth;
+		let map_y_pct = y / div.clientHeight;
 		
 		// convert and translate coords back to scroll space
 		let new_x = halfdiff_x + (div.clientWidth * this.current_scale * map_x_pct);
@@ -170,14 +173,6 @@ export class PlayState {
 
 		// zoom and pan functions ---------\/----------------
 		
-
-
-		// center the map
-// 		let viewport = document.getElementById('layout_viewport');
-// 		viewport.scrollTop = viewport.scrollHeight - viewport.clientHeight;
-// 		viewport.scrollLeft = viewport.scrollWidth - viewport.clientWidth;
-		
-		
 		// parallax scrolling
 		document.getElementById('layout_viewport').addEventListener("scroll", function(){
 			var div = document.getElementById('layout_viewport');
@@ -196,15 +191,24 @@ export class PlayState {
 				var div = document.getElementById('layout_map');
 				var parent = document.getElementById('layout_viewport');
 				
-				var prev_scale = state.current_scale;
-				var scale_change = 0.0;
-				
+				// calculate where the click happened in mapspace
 				var click_x = (event.pageX + parent.scrollLeft)/* + ( div.clientWidth * state.current_scale * 0.5)*/ ;
 				var click_y = (event.pageY + parent.scrollTop)/* + ( div.clientHeight * state.current_scale * 0.5) */;
 				
+				// calculate difference between map at full size and scaled size.
+				// This lets us bump the scaled coords into the correct real-world spot.
+				// +---------+
+				// | +-----+ |         
+				// |H|  x  | |
+				// | +-----+ |         
+				// +---------+
 				var halfdiff_x = ( (div.clientWidth - (div.clientWidth*state.current_scale)) * 0.5 );
 				var halfdiff_y = ( (div.clientHeight - (div.clientHeight*state.current_scale)) * 0.5 );
 				
+				// figure out where the target is as a percentage of the map (0..1)
+				// Normally you would just use (coord / width) however it causes
+				// jerking depending on where on the screen the cursor was (click_x).
+				// We put some extra jiggers here to counteract the jerking offsets.
 				var map_x_pct = (click_x - halfdiff_x ) / (div.clientWidth*state.current_scale);
 				var map_y_pct = (click_y - halfdiff_y ) / (div.clientHeight*state.current_scale);
 				
