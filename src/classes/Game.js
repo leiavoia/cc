@@ -16,7 +16,9 @@ export default class Game {
 	turn_num = 0;
 	iam = 0;
 	myciv = null;
-		
+	processing_turn = false;
+	autoplay = false;
+	
 	constructor( app ) {
 		this.app = app;
 		}
@@ -91,7 +93,21 @@ export default class Game {
 // 			this.avg_rich /= this.planets.length;
 // 			}
 		}
+		
+	ToggleAutoPlay() { 
+		if ( this.autoplay ) { 
+			clearInterval( this.autoplay );
+			this.autoplay = false;
+			}
+		else {
+			let game = this;
+			let cb = function(){ if ( !game.processing_turn ) { game.ProcessTurn(); } };
+			this.autoplay = setInterval(cb, 500);
+			}
+		}
+		
 	ProcessTurn( num_turns = 1 ) {
+		this.processing_turn = true;
 		
 		// TODO: lock the UI
 		
@@ -358,7 +374,8 @@ export default class Game {
 			this.turn_num++;
 			
 			} // foreach turn (in case of multiple).
-			
+		
+		this.processing_turn = false;
 		} // end process turn
 		
 		

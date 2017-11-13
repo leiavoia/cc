@@ -25,7 +25,12 @@ export class PlayState {
 // 		this.app.state_obj = this;
 		}
 
-	
+	unattach() { 
+		this.app.ResetEverything();
+		this.current_scale = 1.0;
+		document.body.className = document.body.className.replace('xtreme_zoom');
+		}
+		
 	// can be a Star, Planet, Fleet, or an x/y pair: {x:100,y:100}
 	FocusMap( obj, snap = false ) { 
 		let x, y = 0;
@@ -78,17 +83,114 @@ export class PlayState {
 
 		}
 		
+	MapScroll( xdiff, ydiff ) { 
+		let vp = document.getElementById('layout_viewport');
+		// normalize
+		xdiff = xdiff > 0 ? 1 : (xdiff < 0 ? -1 : 0); 
+		ydiff = ydiff > 0 ? 1 : (ydiff < 0 ? -1 : 0); 
+		vp.scrollLeft += vp.clientWidth * 0.4 * xdiff;	
+		vp.scrollTop += vp.clientHeight * 0.4 * ydiff; 
+		}
 	MapZoomIn() { 
-		// TODO
+		let vp = document.getElementById('layout_viewport');
+		this.MapZoom( vp.clientWidth*0.5, vp.clientHeight*0.5, -3 );
 		}
 	MapZoomOut() { 
-		// TODO
+		let vp = document.getElementById('layout_viewport');
+		this.MapZoom( vp.clientWidth*0.5, vp.clientHeight*0.5, 3 );
 		}
 		
+	MapZoom( pageX=null, pageY=null, steps=1 ) { 
+		var div = document.getElementById('layout_map');
+		var parent = document.getElementById('layout_viewport');
+		
+		// calculate where the click happened in mapspace
+		var click_x = (pageX + parent.scrollLeft)/* + ( div.clientWidth * this.current_scale * 0.5)*/ ;
+		var click_y = (pageY + parent.scrollTop)/* + ( div.clientHeight * this.current_scale * 0.5) */;
+		
+		// calculate difference between map at full size and scaled size.
+		// This lets us bump the scaled coords into the correct real-world spot.
+		// +---------+
+		// | +-----+ |         
+		// |H|  x  | |
+		// | +-----+ |         
+		// +---------+
+		var halfdiff_x = ( (div.clientWidth - (div.clientWidth*this.current_scale)) * 0.5 );
+		var halfdiff_y = ( (div.clientHeight - (div.clientHeight*this.current_scale)) * 0.5 );
+		
+		// figure out where the target is as a percentage of the map (0..1)
+		// Normally you would just use (coord / width) however it causes
+		// jerking depending on where on the screen the cursor was (click_x).
+		// We put some extra jiggers here to counteract the jerking offsets.
+		var map_x_pct = (click_x - halfdiff_x ) / (div.clientWidth*this.current_scale);
+		var map_y_pct = (click_y - halfdiff_y ) / (div.clientHeight*this.current_scale);
+		
+		// change scale on layout_map
+		if ( steps < 0 && this.current_scale < this.max_scale ) { 
+			this.current_scale *= 1.0 - (this.scaling_step * steps); 
+			if ( this.current_scale > this.max_scale ) { this.current_scale = this.max_scale; }
+			}
+		else if ( steps > 0 && this.current_scale > this.min_scale ) { 
+			this.current_scale *= 1.0 - (this.scaling_step * steps); 
+			if ( this.current_scale < this.min_scale ) { this.current_scale = this.min_scale; }
+			}
+		// note: we would eventually like to be perspective:1px instead of scale
+	// 	div.style.transform = 'translateZ(-' + ( 0.5 / this.current_scale ) + 'px)';
+		div.style.transform = 'scale('+this.current_scale+')';
+		
+		// repeat since we changed scale
+		var halfdiff_x = ( (div.clientWidth - (div.clientWidth*this.current_scale)) * 0.5 );
+		var halfdiff_y = ( (div.clientHeight - (div.clientHeight*this.current_scale)) * 0.5 );
+		
+		// convert and translate coords back to scroll space
+		var new_x = halfdiff_x + (div.clientWidth * this.current_scale * map_x_pct);
+		var new_y = halfdiff_y + (div.clientHeight * this.current_scale * map_y_pct);
+		
+		// we DONT want to center the screen on the new point - it causes jerking.
+		// instead, introduce the original screen offset
+		var pix_diff_x = pageX - ( 0.5 * parent.clientWidth )
+		var pix_diff_y = pageY - ( 0.5 * parent.clientHeight )
+		
+		// calculate the actual scroll position for the DOM element (and clamp result)
+		var new_scrollleft = new_x - ( 0.5 * parent.clientWidth ) - pix_diff_x;
+			if ( new_scrollleft < 0 ) { new_scrollleft = 0; }
+			if ( new_scrollleft > div.clientWidth - parent.clientWidth) { new_scrollleft = div.clientWidth - parent.clientWidth; }
+		var new_scrolltop = new_y - ( 0.5 * parent.clientHeight ) - pix_diff_y;
+			if ( new_scrolltop < 0 ) { new_scrolltop = 0; }
+			if ( new_scrolltop > div.clientHeight - parent.clientHeight) { new_scrolltop = div.clientHeight - parent.clientHeight; }
+		
+		// center the viewport on the clicked point
+		parent.scrollTop = new_scrolltop; 
+		parent.scrollLeft = new_scrollleft;
+		
+		// for that extra special effect, we can also zoom in on the background.
+		// note: background scale = 125% @ zoom = 1.0, 100% @ zoom = 0.0
+		var bgsize = 100.0 + (20.0 * this.current_scale);
+		// note that blank space will show if we assume the viewport 
+		// has a narrower aspect ratio than the image itself. Since we dont have
+		// info on the image, lets just use a rule of thumb. The other thing we can do
+		// is make all images a known aspect ratio and make assumptions about it here.
+		let str = (parent.clientHeight > parent.clientWidth ) ? ("auto " + bgsize + "%") : (bgsize + "% auto");
+		document.getElementById('layout_pagewrap').style.backgroundSize = str;
+
+		
+		if ( this.current_scale < 0.30 && document.body.className.indexOf('xtreme_zoom') == -1 ) {
+			document.body.className += ' xtreme_zoom';
+			}
+		else if ( this.current_scale >= 0.30 && document.body.className.indexOf('xtreme_zoom') > -1 ) {
+			document.body.className = document.body.className.replace('xtreme_zoom');
+			}
+			
+		// prevent scrolling
+		return false;
+			
+		}
 	/* this executes when DOM is ready */
 	attached () {
 		//
-		// TODO: deteach all event listeners when PlayState closes
+		// NOTE: the app only needs to do this once at startup.
+		// The events seem to persist even when we transition to 
+		// the startup screen. Happy accident.
 		//
 		if ( !PlayState.dragscroll_init ) { 
 			/* setup dragable map -- code imported directly from dragscroll.js */
@@ -164,116 +266,36 @@ export class PlayState {
 
 // 				exports.reset = reset;
 				}));
+		
+			// zoom and pan functions ---------\/----------------
+			
+			// parallax scrolling
+			document.getElementById('layout_viewport').addEventListener("scroll", function(){
+				var div = document.getElementById('layout_viewport');
+				// the 100% corresponds to the 100% of the background-size
+				var v_perc = 100 * div.scrollTop / ( div.scrollHeight - div.clientHeight ); 
+				var h_perc = 100 * div.scrollLeft / ( div.scrollWidth - div.clientWidth ); 
+				var str = h_perc + '% ' + v_perc + '%';
+				document.getElementById('layout_pagewrap').style.backgroundPosition = str;
+				return false;
+				});
 				
+			// zoom
+			let state = this;
+			['wheel', 'resize'].forEach( function ( event1 ) { 
+				document.getElementById('layout_viewport').addEventListener(event1, function(event){
+					state.MapZoom( event.pageX, event.pageY, ( event.deltaY > 0 ? 1 : -1 ) );
+					// prevent scrolling
+					event.preventDefault();
+					event.returnValue = false;
+					return false;
+					});		
+				});
+					
 			PlayState.dragscroll_init = true;
 			}
-		
-		
-
-
-		// zoom and pan functions ---------\/----------------
-		
-		// parallax scrolling
-		document.getElementById('layout_viewport').addEventListener("scroll", function(){
-			var div = document.getElementById('layout_viewport');
-			// the 100% corresponds to the 100% of the background-size
-			var v_perc = 100 * div.scrollTop / ( div.scrollHeight - div.clientHeight ); 
-			var h_perc = 100 * div.scrollLeft / ( div.scrollWidth - div.clientWidth ); 
-			var str = h_perc + '% ' + v_perc + '%';
-			document.getElementById('layout_pagewrap').style.backgroundPosition = str;
-			return false;
-			});
 			
-		// zoom
-		let state = this;
-		['wheel', 'resize'].forEach( function ( event1 ) { 
-			document.getElementById('layout_viewport').addEventListener(event1, function(event){
-				var div = document.getElementById('layout_map');
-				var parent = document.getElementById('layout_viewport');
-				
-				// calculate where the click happened in mapspace
-				var click_x = (event.pageX + parent.scrollLeft)/* + ( div.clientWidth * state.current_scale * 0.5)*/ ;
-				var click_y = (event.pageY + parent.scrollTop)/* + ( div.clientHeight * state.current_scale * 0.5) */;
-				
-				// calculate difference between map at full size and scaled size.
-				// This lets us bump the scaled coords into the correct real-world spot.
-				// +---------+
-				// | +-----+ |         
-				// |H|  x  | |
-				// | +-----+ |         
-				// +---------+
-				var halfdiff_x = ( (div.clientWidth - (div.clientWidth*state.current_scale)) * 0.5 );
-				var halfdiff_y = ( (div.clientHeight - (div.clientHeight*state.current_scale)) * 0.5 );
-				
-				// figure out where the target is as a percentage of the map (0..1)
-				// Normally you would just use (coord / width) however it causes
-				// jerking depending on where on the screen the cursor was (click_x).
-				// We put some extra jiggers here to counteract the jerking offsets.
-				var map_x_pct = (click_x - halfdiff_x ) / (div.clientWidth*state.current_scale);
-				var map_y_pct = (click_y - halfdiff_y ) / (div.clientHeight*state.current_scale);
-				
-				// change scale on layout_map
-				if ( event.deltaY < 0 && state.current_scale < state.max_scale ) { 
-					state.current_scale *= 1.0 + state.scaling_step; 
-					if ( state.current_scale > state.max_scale ) { state.current_scale = state.max_scale; }
-					}
-				else if ( event.deltaY > 0 && state.current_scale > state.min_scale ) { 
-					state.current_scale *= 1.0 - state.scaling_step; 
-					if ( state.current_scale < state.min_scale ) { state.current_scale = state.min_scale; }
-					}
-				// note: we would eventually like to be perspective:1px instead of scale
-			// 	div.style.transform = 'translateZ(-' + ( 0.5 / state.current_scale ) + 'px)';
-				div.style.transform = 'scale('+state.current_scale+')';
-				
-				// repeat since we changed scale
-				var halfdiff_x = ( (div.clientWidth - (div.clientWidth*state.current_scale)) * 0.5 );
-				var halfdiff_y = ( (div.clientHeight - (div.clientHeight*state.current_scale)) * 0.5 );
-				
-				// convert and translate coords back to scroll space
-				var new_x = halfdiff_x + (div.clientWidth * state.current_scale * map_x_pct);
-				var new_y = halfdiff_y + (div.clientHeight * state.current_scale * map_y_pct);
-				
-				// we DONT want to center the screen on the new point - it causes jerking.
-				// instead, introduce the original screen offset
-				var pix_diff_x = event.pageX - ( 0.5 * parent.clientWidth )
-				var pix_diff_y = event.pageY - ( 0.5 * parent.clientHeight )
-				
-				// calculate the actual scroll position for the DOM element (and clamp result)
-				var new_scrollleft = new_x - ( 0.5 * parent.clientWidth ) - pix_diff_x;
-					if ( new_scrollleft < 0 ) { new_scrollleft = 0; }
-					if ( new_scrollleft > div.clientWidth - parent.clientWidth) { new_scrollleft = div.clientWidth - parent.clientWidth; }
-				var new_scrolltop = new_y - ( 0.5 * parent.clientHeight ) - pix_diff_y;
-					if ( new_scrolltop < 0 ) { new_scrolltop = 0; }
-					if ( new_scrolltop > div.clientHeight - parent.clientHeight) { new_scrolltop = div.clientHeight - parent.clientHeight; }
-				
-				// center the viewport on the clicked point
-				parent.scrollTop = new_scrolltop; 
-				parent.scrollLeft = new_scrollleft;
-				
-				// for that extra special effect, we can also zoom in on the background.
-				// note: background scale = 125% @ zoom = 1.0, 100% @ zoom = 0.0
-				var bgsize = 100.0 + (20.0 * state.current_scale);
-				// note that blank space will show if we assume the viewport 
-				// has a narrower aspect ratio than the image itself. Since we dont have
-				// info on the image, lets just use a rule of thumb. The other thing we can do
-				// is make all images a known aspect ratio and make assumptions about it here.
-				let str = (parent.clientHeight > parent.clientWidth ) ? ("auto " + bgsize + "%") : (bgsize + "% auto");
-				document.getElementById('layout_pagewrap').style.backgroundSize = str;
-
-				
-				if ( state.current_scale < 0.30 && document.body.className.indexOf('xtreme_zoom') == -1 ) {
-					document.body.className += ' xtreme_zoom';
-					}
-				else if ( state.current_scale >= 0.30 && document.body.className.indexOf('xtreme_zoom') > -1 ) {
-					document.body.className = document.body.className.replace('xtreme_zoom');
-					}
-					
-				// prevent scrolling
-				event.preventDefault();
-				event.returnValue = false;
-				return false;
-				});		
-			});
+			
 		// focus on the home system if there is one
 		// [!]FUTURE-TODO - This is where the dramatic intro would go in the future.
 		if ( this.app.hilite_star ) { 

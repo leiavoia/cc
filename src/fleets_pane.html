@@ -12,8 +12,9 @@
 				<td>SHIPS: ${f.ships.length}</td>
 				<td>STAR: ${f.star ? f.star.name : '-'}</td>
 				<td>DEST: ${f.dest ? f.dest.name : '-'}</td>
-				<td>X: ${f.xpos}</td>
-				<td>Y: ${f.ypos}</td>
+				<td>X: ${f.xpos|round}</td>
+				<td>Y: ${f.ypos|round}</td>
+				<td>killme: ${f.killme?'1':''}</td>
 			</tr>
 		</table>
 			

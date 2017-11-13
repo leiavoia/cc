@@ -133,12 +133,12 @@ export default class Galaxy {
 			}
 		}	
 		
-	AddExploreDemo() {
+	AddExploreDemo( num_civs=1 ) {
 
 		// reset data
 		this.lanes = [];
 	
-		this.MakeCivs(24);
+		this.MakeCivs( num_civs );
 		
 		// settle some planets
 		let star_i = this.stars.length-1;
@@ -162,6 +162,7 @@ export default class Galaxy {
 		}	
 		
 	MakeCivs( num_civs, difficulty ) { 
+		this.civs = [];
 		for ( let i=0; i < num_civs; i++ ) { 
 			this.civs.push( Civ.Random( difficulty ) );
 			}

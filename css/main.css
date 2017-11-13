@@ -342,6 +342,7 @@ body,html {
 	color: #FFF;
 	text-shadow: 1px 1px 1px #000;
 	padding: 0.3em 1.5em 0.3em 0.5em ;
+	/*pointer-events: auto; capture click events */
 	}
 #layout_ui_footer {
 	box-sizing:border-box;
@@ -350,6 +351,7 @@ body,html {
 	color: #FFF;
 	text-shadow: 1px 1px 1px #000;
 	padding: 0.3em 1.5em 0.3em 0.5em ;
+	pointer-events: auto; /* capture click events */
 	}
 #layout_ui_center {
 	flex: 85;
@@ -399,6 +401,7 @@ body,html {
 	visibility:visible;
 	background: none; 
 	background: #000 url(../img/map/bg/setup.jpg) 0% 50% repeat-x;
+	pointer-events: auto; /* capture click events */
 /* 	background-size: cover; */
 /* 	animation: scrollbg 500s linear infinite; */
 	}
@@ -896,6 +899,9 @@ DIV.hyperlane {
 	opacity: 0.25; 
 	background-size: 120% 120%;
 	}
+.xtreme_zoom .option_dim_unexplored .planet_container.unexplored.in_range { 
+	opacity: 1; 
+	}
 .xtreme_zoom .planet_container > * { 
 	display:none;
 	opacity: 0; /* if you want transition fx, you cant use display:none */
@@ -943,7 +949,11 @@ DIV.hyperlane {
 	display:inline-block;
 	/* left and top are set dynamically */
 	margin-top: -18px;
-	margin-left: -18px;
+	margin-left: -18px;	
+	top:0;
+	left:0;
+	/* makes fleets scootch on next-turn-button */
+	transition: top 0.7s ease-in-out 0s, left 0.7s ease-in-out 0s;
 	}
 .fleet_en_route .icon {	
 	width: 22px;
@@ -960,11 +970,14 @@ DIV.hyperlane {
 	background-color: #999;
 	z-index:5;
 	}
+/* [!]OPTIMIZE possibly consider hiding these if there are lot; kills framerates */
 .xtreme_zoom .dest_line {
 	background-color: #FFF;
 	height: 4px; 
 	}
-	
+.xtreme_zoom .fleet_en_route {
+	transition: none; /* prevent browser from exploding */
+	}	
 	
 	
 	

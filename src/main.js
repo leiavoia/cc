@@ -12,7 +12,12 @@ Promise.config({
 export function configure(aurelia) {
   aurelia.use
     .standardConfiguration()
-    .feature('resources');
+    .feature('resources')
+/*    .plugin('aurelia-animator-velocity', instance => {
+      instance.enterAnimation.options.duration = 350;
+      instance.leaveAnimation.options.duration = 350;
+    	})   */ 
+    ;
 
   if (environment.debug) {
     aurelia.use.developmentLogging();

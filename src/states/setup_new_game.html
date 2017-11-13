@@ -24,7 +24,7 @@
 				</div>
 				<div class="option">
 					<label for="num_civs">AI Empires</label>
-					<input id="num_civs" type="range" min="1" max="30" step="1" value.bind="settings.num_civs" /> 
+					<input id="num_civs" type="range" min="1" max="23" step="1" value.bind="settings.num_civs" /> 
 					<output>${settings.num_civs}</output>
 				</div>
 				<div class="option">
@@ -51,7 +51,7 @@
 				<div class="option">
 					<input type="checkbox" name="rand_size" />
 					<label for="size">Galaxy Size</label>
-					<input id="size" type="range" min="8" max="100" step="1" value.bind="settings.galaxy_size" /> 
+					<input id="size" type="range" min="16" max="300" step="1" value.bind="settings.galaxy_size" /> 
 					<output>${settings.galaxy_size} Sectors</output>
 				</div>
 				<div class="option">
@@ -97,8 +97,8 @@
 				
 			</div>
 			<p class="button_rack right">
-				<a href="" class="big" click.delegate="Confirm()">MAKE IT SO</a>
-				<a href="" class="big bad" click.delegate="Cancel()">CANCEL</a>
+				<a href="#" class="big" click.delegate="ConfirmSetup()">MAKE IT SO</a>
+				<a href="#" class="big bad" click.delegate="CancelSetup()">CANCEL</a>
 			</p>
 		</div>
 		

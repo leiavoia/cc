@@ -106,10 +106,14 @@ export default class Fleet {
 		if ( this.dest ) { 
 			moved = true;
 			// move the ship closer to goal
-			let dist = Math.sqrt( Math.abs( (this.xpos - this.dest.xpos) * (this.ypos - this.dest.ypos) ) );
+			let dist = Math.sqrt( 
+				( (this.xpos - this.dest.xpos) * (this.xpos - this.dest.xpos) )
+				+ 
+				( (this.ypos - this.dest.ypos) * (this.ypos - this.dest.ypos) )
+				);
 			// for a cleaner look, strip off 75px from each end.
-			let STRIP_LENGTH = 0;
-			dist -= STRIP_LENGTH;
+// 			let STRIP_LENGTH = 0;
+// 			dist -= STRIP_LENGTH;
 			// arrived?
 			if ( dist <= this.speed ) { 
 				this.star = this.dest;
@@ -133,9 +137,10 @@ export default class Fleet {
 			else {
 				// if leaving our star, unhook
 				if ( this.star ) { this.star = null; }
-				let ratio = this.speed / dist;
-				this.xpos = (1.0-ratio)*this.xpos + ratio*this.dest.xpos;
-				this.ypos = (1.0-ratio)*this.ypos + ratio*this.dest.ypos;
+				// scootch forward
+				let ratio = dist ? (this.speed / dist) : 0; // catch div by zero
+				this.xpos = ((1.0-ratio)*this.xpos) + (ratio*this.dest.xpos);
+				this.ypos = ((1.0-ratio)*this.ypos) + (ratio*this.dest.ypos);
 				this.UpdateDestLine();
 				}
 			this.FireOnUpdate();
@@ -172,12 +177,13 @@ export default class Fleet {
 					this.star.fleets.splice( pos, 1 );
 					}
 				}
-			let dist = Math.sqrt( Math.abs( (this.xpos - this.dest.xpos) * (this.ypos - this.dest.ypos) ) );
-			let ratio = STRIP_LENGTH / dist;
-			this.xpos = (1.0-ratio)*this.xpos + ratio*this.dest.xpos;
-			this.ypos = (1.0-ratio)*this.ypos + ratio*this.dest.ypos;	
+			// if you want to offset the ship from the star for visual effect, do so here.
+// 			let dist = Math.sqrt( Math.abs( (this.xpos - this.dest.xpos) * (this.ypos - this.dest.ypos) ) );
+// 			let ratio = 0 ; // STRIP_LENGTH / dist;
+// 			this.xpos = ((1.0-ratio)*this.xpos) + (ratio*this.dest.xpos);
+// 			this.ypos = ((1.0-ratio)*this.ypos) + (ratio*this.dest.ypos);	
 			this.UpdateDestLine();
-// 			console.log(`F${this.id}: I'm going to ${dest.name}!`);
+// 			console.log(`F${this.id}: I'm going to ${dest.name}! (departing from ${this.star?this.star.name:'--'})`);
 			}
 		this.FireOnUpdate();
 		}

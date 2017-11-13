@@ -5,6 +5,7 @@ import Planet from './classes/Planet';
 import Hyperlane from './classes/Hyperlane';
 import Constellation from './classes/Constellation';
 import Fleet from './classes/Fleet';
+import Civ from './classes/Civ';
 import * as utils from './util/utils';
 
 
@@ -14,7 +15,6 @@ export class App {
 	main_panel_mode = false;
 	sidebar_obj = null;
 	sidebar_mode = false;
-	theapp = false;
 	star_click_callback = null;
 	hilite_star = null;
 	state = 'title';
@@ -25,31 +25,46 @@ export class App {
 		dim_unexplored: false,
 		show_sectors: true,
 		see_all: true,
-		show_range: false
+		show_range: true
 		};
+		
+	ResetEverything() { 
+		this.main_panel_obj = null;
+		this.main_panel_mode = false;
+		this.sidebar_obj = null;
+		this.sidebar_mode = false;
+		this.star_click_callback = null;
+		this.hilite_star = null;
+		Fleet.KillAll();
+		Fleet.all_fleets = [];
+		Civ.total_civs = 0;
+		Planet.next_uid = 1;
+		Star.next_id = 1;
+		this.game = null;		
+// 		this.state = 'title';
+// 		this.state_obj = null;
+		}
 		
 	constructor() {
 		window.document.title = `Constellation Control v.${this.version}`;
-		this.theapp = this;
+		// --------\/-- [!]DEBUG SHORTCUT --\/---------------------
 		this.game = new Game(this);
 		// create initial state
 		this.game.InitGalaxy();
 // 		this.ChangeState('title');
-
-		// --------\/-- [!]DEBUG SHORTCUT --\/---------------------
-		this.game.galaxy.Make( 14, 8, 40, 0.5 );
-		let mystar = this.game.galaxy.AddExploreDemo();
+		this.game.galaxy.Make( 12,7,50,0.5 );
+		let mystar = this.game.galaxy.AddExploreDemo( 5 );
 		this.game.SetMyCiv( 0 ); // could switch using debug stuff
 		this.ChangeState('play');
 		this.hilite_star = mystar;
 		this.game.RecalcStarRanges();
 		let app = this; // needed for callback
-		this.AddNote(
-			'neutral',
-			`${this.game.galaxy.civs[1].name} Audience`,
-			`The ${this.game.galaxy.civs[1].name} ambassador would like a moment of your time`,
-			function(){app.SwitchMainPanel( 'audience', app.game.galaxy.civs[1] );}
-			);
+// 		this.AddNote(
+// 			'neutral',
+// 			`${this.game.galaxy.civs[1].name} Audience`,
+// 			`The ${this.game.galaxy.civs[1].name} ambassador would like a moment of your time`,
+// 			function(){app.SwitchMainPanel( 'audience', app.game.galaxy.civs[1] );}
+// 			);
 
 		}
 		
@@ -69,7 +84,10 @@ export class App {
 	MapZoomOut() { 
 		if ( this.state == 'play' ) { this.state_obj.MapZoomOut(); }
 		}
-	
+	MapScroll( xdiff, ydiff ) { 
+		if ( this.state == 'play' ) { this.state_obj.MapScroll( xdiff, ydiff ); }
+		}
+		
 	// returns promise
 	ChangeState( state ) { 
 		console.log(`changing to ${state}`);

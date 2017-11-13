@@ -105,7 +105,7 @@ export default class Civ {
 	static PickNextStandardColor() {
 		return Civ.StandardColors()[ Civ.total_civs ];
 		}
-	static IncTotalNumCivs() {
+	static IncTotalNumCivs( reset=false ) {
 		if( !this.total_civs && this.total_civs!==0 ){
 			this.total_civs=0;
 			}
@@ -217,7 +217,7 @@ export default class Civ {
 									myfleet = new Fleet( f.owner, f.star );
 									myfleet.ships = []; // TODO: remove this debug junk
 									myfleet.AddShip(s);
-// 									console.log(`sending fleet ${myfleet.id} from ${f.star.name} to ${t.name} `);
+									console.log(`sending fleet ${myfleet.id} from ${f.star.name} to ${t.name} `);
 									myfleet.SetDest(t.star);
 									}
 								else {

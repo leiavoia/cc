@@ -121,14 +121,13 @@ export default class Planet {
 						shield: 13,
 						maxshield: 20,
 						att: 14,
-						speed: 50,
+						speed: 100,
 						colonize: true,
 						offroad: true,
 						selected: true // default to selected for easier UI
 						};
 					if ( !myfleet ) { 
 						myfleet = new Fleet( planet.owner, planet.star );
-						myfleet.ships = []; // TODO: remove this debug junk
 						}
 					myfleet.AddShip(ship);
 					}
