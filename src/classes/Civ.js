@@ -38,6 +38,31 @@ export default class Civ {
 	color = '#FFFFFF';
 	color_rgb = [255,255,255];
 	
+	// diplomatic communication with other races is measured
+	// by comparing their overlapping line segments composed 
+	// of diplo_style +/- diplo_skill
+	// US:   |----------------====#====-------|
+	// THEM: |---------======#======----------|
+	// the general spread of race types over diplo_style is (0..1) :
+	// rocks - plants - organic - cyborgs - robots - energy - trandimensional
+	diplo_style = 0.5; // 0..1, what kind of communication type this race uses 
+	diplo_skill = 0.25; // 0..1, the range of communication skills this race has.
+	
+	CommOverlapWith( civ ) { 
+		let min1 = utils.Clamp( this.diplo_style - this.diplo_skill, 0, 1 );
+		let max1 = utils.Clamp( this.diplo_style + this.diplo_skill, 0, 1 );
+		let range1 = max1 - min1;
+		let min2 = utils.Clamp( civ.diplo_style - civ.diplo_skill, 0, 1 );
+		let max2 = utils.Clamp( civ.diplo_style + civ.diplo_skill, 0, 1 );
+		let range2 = max2 - min2;
+		let overlap = Math.max(0, Math.min(max1, max2) - Math.max(min1, min2));
+		let ratio1 = range1 ? ( overlap / range1 ) : 0;
+		let ratio2 = range2 ? ( overlap / range2 ) : 0;
+		// console.log(`mystyle=${this.diplo_style},myrange=${this.diplo_skill},theirstyle=${civ.diplo_style},theirrange=${civ.diplo_skill}`);
+		// console.log(`min1=${min1},max1=${max1},min2=${min2},max2=${max2},range1=${range1},range2=${range2},overlap=${overlap}`);
+		return Math.max(ratio1,ratio2); // return the greater of the ratios of overlap
+		}
+		
 	// stubbed for diplomacy later
 	lovenub = 0.5;
 	annoyed = 0.5;
@@ -137,6 +162,8 @@ export default class Civ {
 		// [!]DEBUG HACK
 		this.lovenub = Math.random();
 		this.annoyed = Math.random();
+		this.diplo_style = Math.random();
+		this.diplo_skill = utils.BiasedRand(0.05, 0.25, 0.10, 0.5);
 		}
 	
 	static Random( difficulty = 0.5 ) {

@@ -533,6 +533,8 @@ body,html {
 	
 /* BASIC STYLES */	
 	
+I,EM { font-style: italic; }
+
 TD,TH,P,LI,SPAN,A,DIV {
 	font-family: 'Roboto Condensed', sans-serif;
 	color: #FFF;

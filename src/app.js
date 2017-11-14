@@ -53,7 +53,7 @@ export class App {
 		this.game.InitGalaxy();
 // 		this.ChangeState('title');
 		this.game.galaxy.Make( 12,7,50,0.5 );
-		let mystar = this.game.galaxy.AddExploreDemo( 5 );
+		let mystar = this.game.galaxy.AddExploreDemo( 12 );
 		this.game.SetMyCiv( 0 ); // could switch using debug stuff
 		this.ChangeState('play');
 		this.hilite_star = mystar;
