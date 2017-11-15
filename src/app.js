@@ -13,6 +13,7 @@ export class App {
 	version = '0.0.2';
 	main_panel_obj = null;
 	main_panel_mode = false;
+	exclusive_ui = false; // if true, hides all UI except main content panel
 	sidebar_obj = null;
 	sidebar_mode = false;
 	star_click_callback = null;
@@ -38,6 +39,7 @@ export class App {
 		Fleet.KillAll();
 		Fleet.all_fleets = [];
 		Civ.total_civs = 0;
+		Civ.relation_matrix = [];
 		Planet.next_uid = 1;
 		Star.next_id = 1;
 		this.game = null;		
@@ -122,18 +124,22 @@ export class App {
 		else { this.sidebar_mode = false; }
 		this.sidebar_obj = obj;
 		}
-	SwitchMainPanel( mode, obj = null ) {
+	// exclusive means to hide all UI elements to trap the user in the screen.
+	SwitchMainPanel( mode, obj = null, data = null, exclusive = false ) {
 		// toggle effect
 		if ( mode == this.main_panel_mode && obj == this.main_panel_obj ) { 
 			this.CloseMainPanel();
+			this.exclusive_ui = false;
 			}
 		else {
 			// close the sidebar in most cases
 			if ( mode != 'planets' && mode != 'planetinfo' ) { 
 				this.CloseSideBar();
 				}
+			this.exclusive_ui = !!exclusive;
 			this.main_panel_mode = mode;
 			this.main_panel_obj = obj;
+			this.main_panel_data = data;
 			}
 		}
 	CloseMainPanel() {

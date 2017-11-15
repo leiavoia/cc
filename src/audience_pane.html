@@ -13,7 +13,7 @@
 				<a href="#" class="button big">Relations</a>
 				<a href="#" class="button big">Info</a>
 			</p>
-			<div class="love_nub"><div class="nub" css="margin-left: calc(${civ.lovenub} * (100% - 6em));">${civ.lovenub|loveNub}</div></div>
+			<div class="love_nub"><div class="nub" css="margin-left: calc(${civ.LoveNub(app.game.myciv)} * (100% - 6em));">${civ.LoveNub(app.game.myciv)|loveNub}</div></div>
 			<div class="annoyometer"><div class="nub" css="margin-left: calc(${civ.annoyed} * (100% - 6em));">${civ.annoyed|annoyometer}</div></div>
 			<p>Treasury: ${civ.treasury}</p>
 			<p>Research: ${civ.research}</p>

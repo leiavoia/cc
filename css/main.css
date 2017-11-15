@@ -446,6 +446,10 @@ body,html {
 /* 	visibility:hidden; */
 	}
 	
+/* hides all UI elements including nav bar if exclusive UI is turned on */
+.exclusive_ui #layout_ui_nav {
+	display:none;
+	}	
 	
 /* modal dialog layer */
 #layout_modal {
@@ -804,11 +808,12 @@ DIV.hyperlane {
 }
 .planet_container .fleet_list {
 	position:absolute;
-	bottom: 15px;
+	top: 92px;
+	height: 6em; /* allows for overflow parking in crazy situations */
 	text-align:center;
 	margin: auto;
-	width: 120%;
-	margin-left:-10%;
+	width: 150%;
+	margin-left:-25%;
 }
 .planet_container .fleet_list A,
 .planet_container .planet_list A {	

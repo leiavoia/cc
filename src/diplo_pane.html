@@ -11,7 +11,7 @@
 				<img class="flag" src.one-time="c.flag_img" />
 				<h2>${c.name}</h2>
 				<img src.one-time="c.diplo_img_small" class="diplo_img" click.delegate="SpeakTo(c)" />
-				<div class="love_nub"><div class="nub" css="margin-left: calc(${c.lovenub} * (100% - 6em));">${c.lovenub|loveNub}</div></div>
+				<div class="love_nub"><div class="nub" css="margin-left: calc(${c.LoveNub(app.game.myciv)} * (100% - 6em));">${c.LoveNub(app.game.myciv)|loveNub}</div></div>
 				<div class="annoyometer"><div class="nub" css="margin-left: calc(${c.annoyed} * (100% - 6em));">${c.annoyed|annoyometer}</div></div>
 				<p>Treasury: $${c.treasury}</p>
 				<p>Research: ${c.research}</p>

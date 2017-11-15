@@ -5,11 +5,6 @@ import * as utils from '../util/utils';
 import Constellation from './Constellation';
 import Planet from './Planet';
 
-
-//
-// TODO: inter-civ relationship matrix
-//
-
 export default class Civ {
 	
 	id = false;
@@ -27,14 +22,13 @@ export default class Civ {
 			habitation: 2 // maximum bad planet we can settle
 			},
 		size: 1.0, // literal size of pop units
-		
 		};
 	
 	ship_range = 900; // px
 	
 	flag_img = 'img/workshop/flag_mock.gif';
-	diplo_img = 'img/races/diplo_race_000.jpg';
-	diplo_img_small = 'img/races/diplo_race_000s.jpg';
+	diplo_img = 'img/races/alien_000.jpg';
+	diplo_img_small = 'img/races/alien_000.jpg';
 	color = '#FFFFFF';
 	color_rgb = [255,255,255];
 	
@@ -47,6 +41,7 @@ export default class Civ {
 	// rocks - plants - organic - cyborgs - robots - energy - trandimensional
 	diplo_style = 0.5; // 0..1, what kind of communication type this race uses 
 	diplo_skill = 0.25; // 0..1, the range of communication skills this race has.
+	diplo_dispo = 0.5; // 0..1, lovenub starting disposition when we meet other races.
 	
 	CommOverlapWith( civ ) { 
 		let min1 = utils.Clamp( this.diplo_style - this.diplo_skill, 0, 1 );
@@ -63,8 +58,18 @@ export default class Civ {
 		return Math.max(ratio1,ratio2); // return the greater of the ratios of overlap
 		}
 		
-	// stubbed for diplomacy later
-	lovenub = 0.5;
+	LoveNub( civ ) {
+		let i1 = Math.min(this.id,civ.id);
+		let i2 = (i1 == civ.id) ? this.id : civ.id;
+		if ( !Civ.relation_matrix ) { Civ.relation_matrix = []; }
+		if ( !Civ.relation_matrix[i1] ) { Civ.relation_matrix[i1] = []; }
+		if ( !Civ.relation_matrix[i1][i2] ) { Civ.relation_matrix[i1][i2] = (this.diplo_dispo + civ.diplo_dispo ) * 0.5; }
+		return Civ.relation_matrix[i1][i2];
+		}
+		
+	// The 'annoyed' meter relates to the player only. 
+	// Other races are free to cheat. The player has no 
+	// access to monitor inter-species communication.
 	annoyed = 0.5;
 	
 	research = 0; // to split into cats later
@@ -162,6 +167,7 @@ export default class Civ {
 		// [!]DEBUG HACK
 		this.lovenub = Math.random();
 		this.annoyed = Math.random();
+		this.diplo_dispo = Math.random();
 		this.diplo_style = Math.random();
 		this.diplo_skill = utils.BiasedRand(0.05, 0.25, 0.10, 0.5);
 		}

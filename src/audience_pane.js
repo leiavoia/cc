@@ -4,6 +4,7 @@ import * as utils from 'util/utils';
 export class AudiencePane {
 	@bindable app = null;
 	@bindable civ = null;
+	@bindable data = null; // extra data in case we need to set up a situation
 	@bindable on_exit = 'diplo'; // can be '' or 'diplo' or any other main panel 
 	
 	comm = 0; // communication skills overlap with other civ;

@@ -9,7 +9,7 @@ export class DiploPane {
 		}
 
 	SpeakTo( civ ) { 
-		this.app.SwitchMainPanel( 'audience', civ );
+		this.app.SwitchMainPanel( 'audience', civ, null, true );
 		}
 		
 	}

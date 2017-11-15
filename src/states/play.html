@@ -116,7 +116,7 @@
 
 
 <!-- UI layer -->
-<div id="layout_ui">
+<div id="layout_ui" class="${app.exclusive_ui ? 'exclusive_ui' : ''}">
 
 	<div id="layout_ui_main">
 	
@@ -149,7 +149,7 @@
 				<fleets-pane if.bind="app.main_panel_mode == 'fleets'"  app.bind="app"  ></fleets-pane>
 				<diplo-pane if.bind="app.main_panel_mode == 'diplo'"  app.bind="app"  ></diplo-pane>
 				<planetinfo-pane if.bind="app.main_panel_mode == 'planetinfo'" planet.bind="app.main_panel_obj" app.bind="app"  ></planetinfo-pane>
-				<audience-pane if.bind="app.main_panel_mode == 'audience'" civ.bind="app.main_panel_obj" app.bind="app"  ></audience-pane>
+				<audience-pane if.bind="app.main_panel_mode == 'audience'" data.bind="app.main_panel_data" civ.bind="app.main_panel_obj" app.bind="app"  ></audience-pane>
 				<colonize-pane if.bind="app.main_panel_mode == 'colonize'" planet.bind="app.main_panel_obj" app.bind="app"  ></colonize-pane>
 				<options-pane if.bind="app.main_panel_mode == 'options'" app.bind="app"  ></options-pane>
 			</div>
