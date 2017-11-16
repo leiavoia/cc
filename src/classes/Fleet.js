@@ -14,6 +14,7 @@ export default class Fleet {
 	colonize = false;
 	owner = false; // false indicates unowned. zero can be an index
 	ui_color = 'rgb(255,255,255)';
+	in_range = false; // UI hint for visibility - only matters for player perspective
 	ships = [];
 		
 	onUpdate = null; // callback

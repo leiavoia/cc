@@ -25,6 +25,7 @@ export default class Civ {
 		};
 	
 	ship_range = 900; // px
+	empire_box = {x1:0,x2:0,y1:0,y2:0};
 	
 	flag_img = 'img/workshop/flag_mock.gif';
 	diplo_img = 'img/races/alien_000.jpg';
@@ -59,12 +60,31 @@ export default class Civ {
 		}
 		
 	LoveNub( civ ) {
-		let i1 = Math.min(this.id,civ.id);
-		let i2 = (i1 == civ.id) ? this.id : civ.id;
-		if ( !Civ.relation_matrix ) { Civ.relation_matrix = []; }
-		if ( !Civ.relation_matrix[i1] ) { Civ.relation_matrix[i1] = []; }
-		if ( !Civ.relation_matrix[i1][i2] ) { Civ.relation_matrix[i1][i2] = (this.diplo_dispo + civ.diplo_dispo ) * 0.5; }
-		return Civ.relation_matrix[i1][i2];
+		let key = Math.min(this.id,civ.id) + '-' + Math.max(this.id,civ.id);
+		if ( !(key in Civ.relation_matrix) ) { 
+			Civ.relation_matrix[key] = (this.diplo_dispo + civ.diplo_dispo ) * 0.5; 
+			}
+		return Civ.relation_matrix[key];
+		}
+		
+	InRangeOf( civ ) {
+		let key = Math.min(this.id,civ.id) + '-' + Math.max(this.id,civ.id);
+		return !!Civ.range_matrix[key];
+		}
+	
+	SetInRangeOf( civ, in_range = false ) {
+		let key = Math.min(this.id,civ.id) + '-' + Math.max(this.id,civ.id);
+		Civ.range_matrix[key] = in_range;
+		}
+	
+	RecalcEmpireBox() { 
+		this.empire_box = {x1:100000,x2:0,y1:100000,y2:0};
+		this.planets.forEach( (v, k, array) => {
+			this.empire_box.x1 = Math.min( this.empire_box.x1, v.star.xpos - this.ship_range );
+			this.empire_box.y1 = Math.min( this.empire_box.y1, v.star.ypos - this.ship_range );
+			this.empire_box.x2 = Math.max( this.empire_box.x2, v.star.xpos + this.ship_range );
+			this.empire_box.y2 = Math.max( this.empire_box.y2, v.star.ypos + this.ship_range );
+			});
 		}
 		
 	// The 'annoyed' meter relates to the player only. 
@@ -152,6 +172,8 @@ export default class Civ {
 		this.name_plural = name + 's';
 		Civ.IncTotalNumCivs();
 		this.id = Civ.total_civs;
+		if ( !Civ.relation_matrix ) { Civ.relation_matrix = []; }
+		if ( !Civ.range_matrix ) { Civ.range_matrix = []; }
 		// internal flag roster picks unique flags for each race
 		if ( !Civ.flag_id_roster ) { 
 			Civ.flag_id_roster = [];
@@ -250,7 +272,7 @@ export default class Civ {
 									myfleet = new Fleet( f.owner, f.star );
 									myfleet.ships = []; // TODO: remove this debug junk
 									myfleet.AddShip(s);
-									console.log(`sending fleet ${myfleet.id} from ${f.star.name} to ${t.name} `);
+// 									console.log(`sending fleet ${myfleet.id} from ${f.star.name} to ${t.name} `);
 									myfleet.SetDest(t.star);
 									}
 								else {

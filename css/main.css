@@ -287,11 +287,11 @@ body,html {
 	width: 100%;
 	height: 100%;
 	z-index: -10;
-	opacity: 0.18;
+	opacity: 0.08;
 	}
 #layout_map #range_layer DIV {
 	position: absolute;
-	background: #181;
+	background: #FFF;
 	border-radius: 50%;
 	}
 	
@@ -828,7 +828,8 @@ DIV.hyperlane {
 /* 	border: 1px solid white; */
 /* 	border-radius: 0.35em; */
 	}
-.planet_container.unexplored .planet_list A {	
+.planet_container.unexplored .planet_list,	
+.planet_container.unexplored .fleet_list A {	
 	pointer-events: none;
 	cursor: default;
 	}
@@ -865,13 +866,22 @@ DIV.hyperlane {
 	
 	
 	
-/* exploration and range status determine which parts are displayed */
+/* 
+Exploration and range status determine which parts are displayed 
+hidden: star is completely invisible on the map
+unexplored: can't see name, fleets, planets
+in_range: can see name, fleets, planets
+explored: brighter nametag, planets are clickable
+settled
+*/
 .planet_container.unexplored H2,
-.planet_container.unexplored .planet_list {
+.planet_container.unexplored .planet_list,
+.planet_container.unexplored .fleet_list {
 	visibility: hidden;
 	}
 .planet_container.in_range.unexplored H2,
-.planet_container.in_range.unexplored .planet_list {
+.planet_container.in_range.unexplored .planet_list,
+.planet_container.in_range.unexplored .fleet_list {
 	visibility: visible;
 	}
 .planet_container.in_range H2 {
@@ -976,13 +986,16 @@ DIV.hyperlane {
 	transform-origin: 0% 0%; 
 	background-color: #999;
 	z-index:5;
+	/* makes fleets scootch on next-turn-button */
+	transition: top 0.7s ease-in-out 0s, left 0.7s ease-in-out 0s, width 0.7s ease-in-out ;
 	}
 /* [!]OPTIMIZE possibly consider hiding these if there are lot; kills framerates */
 .xtreme_zoom .dest_line {
 	background-color: #FFF;
 	height: 4px; 
 	}
-.xtreme_zoom .fleet_en_route {
+.xtreme_zoom .fleet_en_route,
+.xtreme_zoom .dest_line {
 	transition: none; /* prevent browser from exploding */
 	}	
 	

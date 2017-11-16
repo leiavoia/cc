@@ -124,6 +124,12 @@ export class FleetDetailPane {
 		let ship = this.GetFirstColonyShip();
 		if ( ship ) { 
 			p.Settle( this.app.game.MyCiv() );
+			// [!]OPTIMIZE: we only need to do this:
+			// - if we dont already have a planet in this system
+			// - only for our own civ, not all of them
+// 			this.app.RecalcCivContactRange();
+// 			this.app.RecalcStarRanges();
+			
 			this.fleet.RemoveShip( ship );
 			if ( !this.fleet.ships.length ) { 
 				this.fleet.Kill();

@@ -148,8 +148,10 @@ export default class Galaxy {
 				let s = this.stars[star_i];
 				if ( s.planets.length ) { 
 					let p = s.planets[0];
-					s.explored = true;
 					p.Settle( c );
+					if ( c.id == 0 ) { 
+						s.explored = true;
+						}
 					this.AssignStartingFleet( c, s );
 					c.homeworld = p;
 					star_i--;

@@ -75,3 +75,13 @@ export function Romanize( n ) {
 		default: return 'XXX';
 		}
 	}	
+
+// box = {x1,x2,y1,y2}
+export function BoxIntersect( a, b ) {
+	return !( a.x1 >= b.x2 || b.x1 >= a.x2 || a.y1 >= b.y2 || b.y1 >= a.y2 );
+	}
+	
+// box = {x1,x2,y1,y2}
+export function BoxPointIntersect( b, px, py ) {
+	return px >= b.x1 && px <= b.x2 && py >= b.y1 && py <= b.y2;
+	}

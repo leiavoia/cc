@@ -1,3 +1,4 @@
+// import Civ from './Civ';
 import Galaxy from './Galaxy';
 import Star from './Star';
 import Planet from './Planet';
@@ -23,77 +24,11 @@ export default class Game {
 		this.app = app;
 		}
 		
+	// probably can just get rid of this eventually
 	InitGalaxy() {
-		
-		
-		// let there be light
 		this.galaxy = new Galaxy();
-// 		this.galaxy.MakeExploreDemo(); //Make( 5000, 5000, 100, 0.5 );
-// 		this.RefactorPlanetList();
-// 
-// 		
-// 		// open the planetinfo panel for testing
-// 		loop1: for ( let i=0,  max=this.galaxy.stars.length; i < max; i++ ) { 
-// 			for ( let j=0,  maxj=this.galaxy.stars[i].planets.length; j < maxj; j++ ) { 
-// 				
-// 				// this.galaxy.stars[i].planets[j].size = 120;
-// 				// this.SwitchMainPanel('colonize',	this.galaxy.stars[i].planets[j]);
-// 				
-// // 				if ( this.galaxy.stars[i].planets[j].owner == this.iam ) {
-// // 					this.SwitchSideBar( this.galaxy.stars[i].planets[j] );
-// // 					this.SwitchMainPanel( "planetinfo", this.galaxy.stars[i].planets[j] );
-// 
-// 
-// 					let fleet = new Fleet( this.galaxy.stars[i].planets[j].owner, this.galaxy.stars[i] )
-// 					this.galaxy.stars[i].fleets.push( fleet );
-// 					this.app.SwitchSideBar( fleet );
-// 					
-// 					
-// 					break loop1;
-// 					
-// 					
-// // 					}
-// 				}
-// 			}
-			
-		// make hyperlanes
-// 		for ( let i=0,  max=this.galaxy.stars.length; i < max; i++ ) { 
-// 			if ( i != 1 ) { 
-// 				let l = this.galaxy.stars[1].ConnectLane( 
-// 					this.galaxy.stars[i], 
-// 					( this.galaxy.stars[i].planets.length ? this.galaxy.stars[i].planets[0].owner : 0 )
-// 					); 
-// 				this.galaxy.lanes.push( l );
-// 				}
-// 			}
-			
-// 		Constellation.Refactor( this.galaxy.civs );
-
-
-
 		}
 
-	// hacked in for debug
-	RefactorPlanetList() { 
-// 		this.avg_rich = 0;
-// 		this.avg_rarity = 0;
-// 		this.rare_count = [0,0,0,0,0];
-// 		this.planets = [];
-// 		if ( this.galaxy ) { 
-// 			for ( let s of this.galaxy.stars ) { 
-// 				for ( let p of s.planets ) { 
-// 					this.planets.push(p);
-// 					let r = Math.abs( p.atm - p.temp );
-// 					this.avg_rarity += r;
-// 					this.rare_count[r]++;
-// 					this.avg_rich += p.rich;
-// 					}
-// 				}
-// 			this.avg_rarity /= this.planets.length;
-// 			this.avg_rich /= this.planets.length;
-// 			}
-		}
-		
 	ToggleAutoPlay() { 
 		if ( this.autoplay ) { 
 			clearInterval( this.autoplay );
@@ -249,6 +184,8 @@ export default class Game {
 			// calculate how many material points (mining) we can afford 
 			// to distribute to those planets in need.
 			for ( let civ of this.galaxy.civs ) { 
+				// recalculate box filter while we're here
+// 				civ.RecalcEmpireBox();
 				// reset some stuff
 				civ.research_income = 0;
 				civ.gov_pts_income = 0;
@@ -274,7 +211,7 @@ export default class Game {
 			
 			
 			
-			// Loop Part 2
+			// Planetary Economics
 			for ( let s of this.galaxy.stars ) { 
 				for ( let p of s.planets ) {
 					if ( p.settled ) {  
@@ -351,9 +288,7 @@ export default class Game {
 						}
 					}
 				}
-			
-			this.RecalcStarRanges();
-			
+
 			// AI!
 			for ( let civ of this.galaxy.civs ) { 
 				civ.TurnAI( this.app );
@@ -370,6 +305,13 @@ export default class Game {
 					}
 				}
 				
+			// [!]OPTIMIZE we can optimize this out of the loop if 
+			// we limit it to events that change planets or ship ranges
+			this.RecalcCivContactRange();
+			this.RecalcStarRanges();
+				
+			// fleets move, so we need to do this on each turn
+			this.RecalcFleetRanges(); 
 				
 			this.turn_num++;
 			
@@ -387,19 +329,119 @@ export default class Game {
 		let range = this.myciv.ship_range * this.myciv.ship_range ; // NOTE: avoid square rooting.
 		for ( let s of this.galaxy.stars ) { 
 			// do i live here?
-			if ( !s.Acct(this.myciv) ) {
+			if ( s.Acct(this.myciv) ) {
+				s.in_range = true;
+				}
+			else {
 				s.in_range = false;
-				// how far am i from where i DO live?
-				for ( let p of this.myciv.planets ) { 
-					let dist = 
-						Math.pow( Math.abs(p.star.xpos - s.xpos), 2 )
-						+ Math.pow( Math.abs(p.star.ypos - s.ypos), 2 );
-					if ( dist <= range ) {
-						s.in_range = true;
-						break;
+				// use easy box test first
+				if ( utils.BoxPointIntersect( this.myciv.empire_box, s.xpos, s.ypos ) ) {
+					// how far am i from where i DO live?
+					for ( let p of this.myciv.planets ) { 
+						let dist = 
+							Math.pow( Math.abs(p.star.xpos - s.xpos), 2 )
+							+ Math.pow( Math.abs(p.star.ypos - s.ypos), 2 );
+						if ( dist <= range ) {
+							s.in_range = true;
+							break;
+							}
 						}
 					}
 				};
+			}
+		}
+		
+	RecalcFleetRanges() { 
+		// same notes as star ranges
+		let range = this.myciv.ship_range * this.myciv.ship_range ; // NOTE: avoid square rooting.
+		for ( let f of Fleet.all_fleets ) { 
+			// all of my fleets are always visible
+			if ( f.owner == this.myciv ) {
+				f.in_range = true;
+				}
+			// only check fleets in the air. parked fleets are handled by star range 
+			else if ( !f.star && f.dest && f.xpos && f.ypos ) {
+				f.in_range = false;
+				// use easy box test first
+				if ( utils.BoxPointIntersect( this.myciv.empire_box, f.xpos, f.ypos ) ) {
+					// how far am i from where i DO live?
+					for ( let p of this.myciv.planets ) { 
+						let dist = 
+							Math.pow( Math.abs(p.star.xpos - f.xpos), 2 )
+							+ Math.pow( Math.abs(p.star.ypos - f.ypos), 2 );
+						if ( dist <= range ) {
+							f.in_range = true;
+							break;
+							}
+						}
+					}
+				};
+			}
+		}
+		
+	RecalcCivContactRange() { 
+		// we dont have a handy list of stars, but we do have planets.
+		// no need to check every planet to every other planet, just their host stars.
+		let starlist = []; // multidimensial array of [civ][star]
+		for ( let c=0; c < this.galaxy.civs.length; c++ ) {
+			let civ = this.galaxy.civs[c];
+			starlist[civ.id] = [];
+			for ( let p=0; p < civ.planets.length; p++ ) {
+				if ( starlist[civ.id].indexOf( civ.planets[p].star ) == -1 ) {
+					starlist[civ.id].push( civ.planets[p].star );
+// 					console.log(`added ${civ.planets[p].star.name} to civ ${civ.name}`);
+					}
+				}
+			}
+		// recalculate which civs are in communication range.
+		for ( let c1=0; c1 < this.galaxy.civs.length-1; c1++ ) { 
+			let civ1 = this.galaxy.civs[c1];
+			compare_civ2_loop:
+			for ( let c2=c1+1; c2 < this.galaxy.civs.length; c2++ ) { 
+				let civ2 = this.galaxy.civs[c2];
+				// try the first-pass box filter
+				if ( utils.BoxIntersect( civ1.empire_box, civ2.empire_box ) ) {
+					// in-range is determined by the lesser of the civs' ship ranges
+					let max_range = Math.pow( Math.min( civ1.ship_range, civ2.ship_range ), 2 ); // avoid sqrt
+					// scan for range
+					for ( let c1s=0; c1s < starlist[civ1.id].length; c1s++ ) { // for each of civ1's stars
+						for ( let c2s=0; c2s < starlist[civ2.id].length; c2s++ ) { // for each of civ2's stars
+							let star1 = starlist[civ1.id][c1s];
+							let star2 = starlist[civ2.id][c2s];
+							let dist = 0;
+							if ( star1 != star2 ) { // no need to compare to self
+								dist = 
+								((star1.xpos - star2.xpos)*(star1.xpos - star2.xpos)) + 
+								((star1.ypos - star2.ypos)*(star1.ypos - star2.ypos))
+								;
+								}
+							if ( max_range > dist ) { // avoid sqrt
+								if ( civ1 == this.app.game.myciv && !civ1.InRangeOf( civ2 ) ) { 
+									let app = this.app;
+									this.app.AddNote(
+										'good',
+										`Contact!`,
+										`We have received communication signals from an alien civilization called the <b>"${civ2.name}"</b>`,
+										function(){app.SwitchMainPanel( 'audience', civ2, {is_greeting:true}, true );}
+										);
+									}
+								civ1.SetInRangeOf( civ2, true );
+								continue compare_civ2_loop;
+								}
+							}
+						}
+					}
+				// lost contact notice
+				if ( civ1 == this.app.game.myciv && civ1.InRangeOf( civ2 ) ) { 
+					this.app.AddNote(
+						'bad',
+						`Lost Contact`,
+						`We have lost contact with the ${civ2.name}`
+						);
+					}
+				// found nothing in range
+				civ1.SetInRangeOf( civ2, false );
+				}
 			}
 		}
 		

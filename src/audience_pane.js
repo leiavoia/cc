@@ -71,6 +71,13 @@ export class AudiencePane {
 				case 5: { this.our_response = '<p>Uh..... right. None of that makes any sense. There is nothing more we can do with these "things" right now. Perhaps one day better <i>communication skills</i> will enable our species to somehow relate to theirs.</p>'; break; } 
 				}
 			}
+		else if ( this.data && this.data.is_greeting /* i.e. first_contact */ ) { 
+			switch ( Math.floor( this.app.game.myciv.LoveNub( this.civ ) / .33333 ) ) { // make integers
+				case 0: { this.text_response = `<p>We have no interest in dealing with lesser beings. Do not bother us unless you come bearng gifts.</p>`; break; }
+				case 1: { this.text_response = `<p>We look forward to the mutual benefit of our two civilizations.</p>`; break; }
+				default: { this.text_response = `<p>We are delighted to meet you and your people.</p>`; break; }
+				};
+			}
 		else { 
 			switch ( Math.round( this.civ.annoyed * 10 ) ) { // make integers
 				case 0: { this.text_response = `<p>We have heard enough of your blather. We will hear no more.</p>`; break; }
@@ -130,6 +137,10 @@ export class AudiencePane {
 		
 	bind( data ) {
 		this.comm = this.app.game.myciv.CommOverlapWith(this.civ);
+		/* i.e. first_contact */
+		if ( this.data && this.data.is_greeting  ) { 
+			this.on_exit = ''; // exit to map
+			}
 		this.text_response = '';
 		this.our_response = '';
 		this.GetResponse();

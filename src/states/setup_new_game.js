@@ -56,6 +56,8 @@ export class SetupNewGameState {
 		let mystar = this.app.game.galaxy.AddExploreDemo(this.settings.num_civs);
 		this.app.game.SetMyCiv( 0 ); // could switch using debug stuff
 		this.app.game.RecalcStarRanges();
+		this.app.game.RecalcFleetRanges();
+		this.app.game.RecalcCivContactRange();
 		this.app.hilite_star = mystar;
 		this.app.ChangeState('play');
 		console.log( 'total civs: ' + Civ.total_civs );

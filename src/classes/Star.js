@@ -25,8 +25,7 @@ export default class Star {
 	explored = false; // set to true to tell the UI to do special stuff
 	in_range = false; // set to true to tell the UI to do special stuff
 	
-	// UI hinting - This is an integer that we use as a bit flag set.
-	// If a civ has settled this star, it's Civ-ID bit position will be 1.
+	// UI hinting - If a civ has settled this star, it's Civ-ID will be in the list
 	settled_by = []; 
 	
 	// accounts are used to keep track of activities per-civ,

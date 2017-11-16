@@ -23,9 +23,9 @@ export class App {
 	game = null;
 	notes = [];
 	options = {
-		dim_unexplored: false,
+		dim_unexplored: true,
 		show_sectors: true,
-		see_all: true,
+		see_all: false,
 		show_range: true
 		};
 		
@@ -40,9 +40,11 @@ export class App {
 		Fleet.all_fleets = [];
 		Civ.total_civs = 0;
 		Civ.relation_matrix = [];
+		Civ.range_matrix = [];
 		Planet.next_uid = 1;
 		Star.next_id = 1;
 		this.game = null;		
+		this.notes = [];
 // 		this.state = 'title';
 // 		this.state_obj = null;
 		}
@@ -60,6 +62,8 @@ export class App {
 		this.ChangeState('play');
 		this.hilite_star = mystar;
 		this.game.RecalcStarRanges();
+		this.game.RecalcFleetRanges();
+		this.game.RecalcCivContactRange();
 		let app = this; // needed for callback
 // 		this.AddNote(
 // 			'neutral',

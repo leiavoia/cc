@@ -830,6 +830,7 @@ export default class Planet {
 			}
 			
 		this.RecalcSectors();
+		this.owner.RecalcEmpireBox();			
 		} // end Settle
 		
 	}
