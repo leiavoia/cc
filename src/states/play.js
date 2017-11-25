@@ -18,7 +18,8 @@ export class PlayState {
 	max_scale = 1.0;
 	min_scale = 0.05;
 	scaling_step = 0.125;
-		
+	xtreme_zoom = false;
+	
 	constructor( app /*anim*/ ) {
 		this.app = app;
 // 		this.anim = anim;
@@ -29,6 +30,7 @@ export class PlayState {
 		this.app.ResetEverything();
 		this.current_scale = 1.0;
 		document.body.className = document.body.className.replace('xtreme_zoom');
+		xtreme_zoom = false;
 		}
 		
 	// can be a Star, Planet, Fleet, or an x/y pair: {x:100,y:100}
@@ -88,8 +90,8 @@ export class PlayState {
 		// normalize
 		xdiff = xdiff > 0 ? 1 : (xdiff < 0 ? -1 : 0); 
 		ydiff = ydiff > 0 ? 1 : (ydiff < 0 ? -1 : 0); 
-		vp.scrollLeft += vp.clientWidth * 0.4 * xdiff;	
-		vp.scrollTop += vp.clientHeight * 0.4 * ydiff; 
+		vp.scrollLeft += vp.clientWidth * 0.3 * xdiff;	
+		vp.scrollTop += vp.clientHeight * 0.3 * ydiff; 
 		}
 	MapZoomIn() { 
 		let vp = document.getElementById('layout_viewport');
@@ -101,6 +103,9 @@ export class PlayState {
 		}
 		
 	MapZoom( pageX=null, pageY=null, steps=1 ) { 
+		
+		// that.invertOnMac && navigator.platform.match(/mac/i) && (sY *= -1, pY *= -1); //invert direction on MacOS
+		 
 		var div = document.getElementById('layout_map');
 		var parent = document.getElementById('layout_viewport');
 		
@@ -176,9 +181,11 @@ export class PlayState {
 		
 		if ( this.current_scale < 0.30 && document.body.className.indexOf('xtreme_zoom') == -1 ) {
 			document.body.className += ' xtreme_zoom';
+			this.xtreme_zoom = true;
 			}
 		else if ( this.current_scale >= 0.30 && document.body.className.indexOf('xtreme_zoom') > -1 ) {
 			document.body.className = document.body.className.replace('xtreme_zoom');
+			this.xtreme_zoom = false;
 			}
 			
 		// prevent scrolling
@@ -304,7 +311,109 @@ export class PlayState {
 		}
 		
 		
+	DramaticIntro() { 
+
+		document.body.className += ' exclusive_ui';
 		
+		// default all elements
+		var map = document.getElementById('layout_map');
+		var parent = document.getElementById('layout_viewport');
+		var bgdiv = document.getElementById('layout_pagewrap');
+		
+		// utility function to flush CSS  changes
+		function flushCSS() { 
+			map.offsetHeight;
+			parent.offsetHeight;
+			bgdiv.offsetHeight;
+			}
+			
+		bgdiv.style.transition = "0s all";
+		map.style.transition = "0s all";
+		parent.style.transition = "0s all";
+		flushCSS();
+		
+		// center the screen
+		parent.scrollLeft = (map.clientWidth - parent.clientWidth) * 0.5;
+		parent.scrollTop = (map.clientHeight - parent.clientHeight) * 0.5;
+		bgdiv.style.backgroundPosition = '50% 50%';
+		
+		// fade from black
+		map.style.opacity = '0.0';
+		parent.style.backgroundColor = 'rgba(0,0,0,1)';
+		flushCSS();
+		
+		// start zoomed out
+		document.body.className += ' xtreme_zoom'; // icon view
+		// turn this on if you want maximum bling. otherwise it hurts framerate too much
+	// 	bgdiv.style.backgroundSize = "100% auto"; // parallax
+		// we would prefer to use translate, but it causes weird GPU issues.
+	// 	map.style.transform = 'translateZ(-50px) rotate(30deg)';
+		map.style.transform = 'scale(0.01)'; // rotate(30deg)
+		flushCSS();
+		
+		// animate stuff
+		parent.style.transition = "background-color 16s ease-in-out";
+		map.style.transition = " 3s all ease-in-out";
+		bgdiv.style.transition = " 3s all ease-in-out";
+		flushCSS();
+		parent.style.backgroundColor = 'rgba(0,0,0,0.5)';
+		// we would prefer to use translate, but it causes weird GPU issues.
+	// 	map.style.transform = 'translateZ(-' + (0.5 / 0.075) + 'px)';
+		map.style.transform = 'scale(0.075)';
+		// turn this on if you want maximum bling. otherwise it hurts framerate too much
+	// 	bgdiv.style.backgroundSize = '107% auto';
+		map.style.opacity = '1.0';
+		flushCSS();
+		
+		// TODO: change the background position to end up in the same spot as the sreen
+		
+		// TODO: target a specific star instead of hacking in a percentage just for show.
+		
+		// midpoint
+		setTimeout( function() { 
+// 			$('#flash_caret').show();
+			
+			setTimeout( function() { 
+				document.body.className = document.body.className.replace('xtreme_zoom');
+				}, 2000 );
+
+		
+			setTimeout( function() { 
+				document.getElementById('layout_ui').style.display = 'flex';
+				}, 4500 );
+				
+			setTimeout( function() { 
+				document.getElementById('layout_ui_nav').style.visibility = 'visible';
+				}, 4750 );
+		
+			setTimeout( function() { 
+				document.body.className = document.body.className.replace('exclusive_ui');
+				flushCSS();
+// 				document.getElementById('layout_ui_side').style.display = 'block';
+// 				$('#the_caret').show();
+				}, 5000 );
+		
+			parent.style.transition = "background-color 10s ease-in-out";
+			map.style.transition = " 4s all ease-in-out";
+			bgdiv.style.transition = " 4s all ease-in-out";
+			flushCSS();
+			parent.style.background = 'rgba(0,0,0,0)';
+			map.style.transform = 'scale(1.0)'; // translateX(43%) translateY(47%)		
+	// 		map.style.transform = 'translateZ(0) translateX(-15%) translateY(-15%)';
+			map.style.opacity = '1.0';
+			// turn this on if you want maximum bling. otherwise it hurts framerate too much
+	// 		bgdiv.style.backgroundSize = '125% auto';
+	// 		parent.scrollLeft = 0;
+	// 		parent.scrollTop = 0;
+			flushCSS();
+			// reset everything
+			bgdiv.style.transition = "0s all";
+			map.style.transition = "0s all";
+			parent.style.transition = "0s all";
+			flushCSS();
+			}, 1000 );
+		
+		}
 		
 	}
 

@@ -82,19 +82,37 @@
 							">		
 					</div>
 				</template>
-			</div>    
-			
+			</div>   
 			<!-- STARS -->
-			<div click.trigger="app.ClickStar(star)" repeat.for="star of app.game.galaxy.stars" class="planet_container star_${star.color & oneTime} ${star.settled ? 'settled' : ''} ${star.in_range ? 'in_range' : ''} ${star.explored || app.options.see_all ? 'explored' : 'unexplored'}" css="left:${star.xdivpos & oneTime}px; top:${star.ydivpos & oneTime}px;">
+			<div click.trigger="app.ClickStar(star)" repeat.for="star of app.game.galaxy.stars" class="mapobj_container star_${star.color & oneTime} ${star.settled ? 'settled' : ''} ${star.in_range ? 'in_range' : ''} ${star.explored || app.options.see_all ? 'explored' : 'unexplored'}" css="left:${star.xpos & oneTime}px; top:${star.ypos & oneTime}px;">
 				<div id="the_caret" class="caret" if.bind="app.hilite_star == star"></div>
 				<h2 css="${star.ownership_title_css}" >${star.name}</h2>
 				<div if.bind="star.planets.length" class="planet_list"><!--  && (star.explored || app.options.see_all) -->
 					<a href="#" click.trigger="app.SwitchSideBar(p,$event)" repeat.for="p of star.planets" class="${star.settled ? 'settled' : ''}" css="color: ${p.ui_color};"><svg class="icon icon-nature"><use xlink:href="#icon-nature"></use></svg></a>
 				</div>
 				<div if.bind="star.fleets.length" class="fleet_list">
-					<a href="#" click.trigger="app.SwitchSideBar(f,$event)" repeat.for="f of star.fleets" css="color: ${f.ui_color};">F${f.colonize?'c':''}${f.id}<svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
+					<a href="#" click.trigger="app.SwitchSideBar(f,$event)" repeat.for="f of star.fleets" css="color: ${f.ui_color};"><span if.bind="app.options.debug">F${f.colonize?'c':''}${f.id}</span><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 				</div>
 			</div>
+			
+			<!-- ANOMALIES -->
+			<template containerless repeat.for="anom of app.game.galaxy.anoms">
+				<div if.bind="anom.onmap || app.options.see_all"
+					click.trigger="app.ClickStar(anom)" 
+					class="mapobj_container anom_${anom.type & oneTime} ${anom.settled ? 'settled' : ''} ${anom.in_range ? 'in_range' : ''} ${anom.explored || app.options.see_all ? 'explored' : 'unexplored'}" 
+					css="left:${anom.xpos & oneTime}px; top:${anom.ypos & oneTime}px;"
+					>
+					<div id="the_caret" class="caret" if.bind="app.hilite_star == anom"></div>
+					<h3>${anom.name}</h3>
+					<p if.bind="app.options.debug">
+						${anom.onmap ? 'onmap' : 'deepspace'}<br/>
+						${anom.size} / v${anom.vis_layer} / o${anom.order} / r${anom.AmountResearched(app.game.myciv)}
+					</p>
+					<div if.bind="anom.fleets.length" class="fleet_list">
+						<a href="#" click.trigger="app.SwitchSideBar(f,$event)" repeat.for="f of anom.fleets" css="color: ${f.ui_color};"><span if.bind="app.options.debug">F${f.colonize?'c':''}${f.id}</span><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
+					</div>
+				</div>
+			</template>
 			
 			<div repeat.for="lane of app.game.galaxy.lanes" class="hyperlane" css="left:${lane.x1}px; top:${lane.y1}px; width: ${lane.length}px; transform:  rotate(${lane.angle}deg) translateY(-5px); background-color: rgb( ${lane.color[0]}, ${lane.color[1]}, ${lane.color[2]}); ">
 			</div>
@@ -102,12 +120,12 @@
 			<!-- FLEETS -->
 			<template containerless repeat.for="f of app.game.galaxy.fleets" >
 				<!-- only display fleets en route -->
-				<template containerless if.bind="f.dest && (app.options.see_all || f.in_range || f.owner == app.game.myciv)">
+				<template containerless if.bind="f.dest && (app.options.show_xtreme_fleets || !app.state_obj.xtreme_zoom) && (app.options.see_all || f.in_range || f.owner == app.game.myciv)">
 					<!-- show destination indicator line -->
-					<div if.bind="app.options.see_all || f.owner == app.game.myciv" class="dest_line" css="left:${f.xpos}px; top:${f.ypos}px; width: ${f.dest_line_length}px; transform:  rotate(${f.dest_line_angle}deg) translateY(-5px); "></div>
+					<div if.bind="!app.state_obj.xtreme_zoom && app.options.see_all || f.owner == app.game.myciv" class="dest_line" css="left:${f.xpos}px; top:${f.ypos}px; width: ${f.dest_line_length}px; transform:  rotate(${f.dest_line_angle}deg) translateY(-5px); "></div>
 					<!-- show fleet icon -->
 					<div class="fleet_en_route" css="left:${f.xpos}px; top:${f.ypos}px;">
-						<a href="#" click.delegate="app.SwitchSideBar(f,$event)" css="color: ${f.ui_color};">F${f.colonize?'c':''}${f.id}<svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
+						<a href="#" click.delegate="app.SwitchSideBar(f,$event)" css="color: ${f.ui_color};"><span if.bind="app.options.debug">F${f.colonize?'c':''}${f.id}</span><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</template>
 			</template>
@@ -126,7 +144,13 @@
 			<span class="planets">PLANETS: ${app.game.myciv.planets.length}</span>
 			<span class="treasury">TREASURY: $${app.game.myciv.treasury|round:0} ${app.game.myciv.econ.income > 0 ?'+':''}${app.game.myciv.econ.income|round:0}</span>
 			<span class="gov">GOV: ${app.game.myciv.gov_pts|round:0} +${app.game.myciv.gov_pts_income|round:0}</span>
-			<span class="sci">RESEARCH: ${app.game.myciv.research|round} +${app.game.myciv.research_income|round:0}</span>
+			<span class="sci">RESEARCH: <!--${app.game.myciv.research|round}--> +${app.game.myciv.research_income|round:0}</span>
+			<span class="sci" if.bind="app.game.myciv.tech.current_project">
+				${( app.game.myciv.tech.current_project.rp / app.game.myciv.tech.current_project.node.rp) | percent}% of 	
+				${app.game.myciv.tech.current_project.node.name}  
+			</span>
+			<span>HAB: ${app.game.myciv.race.env.habitation}</span>
+			<span>ADAPT: ${app.game.myciv.race.env.adaptation}</span>
 	<!-- 		<span class="turn">MODE: ${app.main_panel_mode}</span>			 -->
 	<!-- 		<span class="turn">SIDEMODE: ${app.sidebar_mode}</span>			 -->
 		</div>
@@ -134,7 +158,9 @@
 		<div id="layout_ui_center">
 		
 			<div id="layout_ui_news" class="fadeIn" if.bind="!app.main_panel_mode">
+				<p><a href="#" class="button micro cool" click.delegate="app.ClearNotes()" if.bind="app.notes.length > 1">Clear Messages</a></p>
 				<div repeat.for="note of app.notes" class="${note.type} trekIn" click.trigger="app.ClickNote(note)">
+					<a href="#" class="x" click.trigger="app.ClickNote(note,true,false)">🗙</a>
 					<h3 if.one-time="note.title">${note.title}</h3>
 					<div if.one-time="note.content" innerhtml.bind="note.content"></div>
 				</div>
@@ -158,13 +184,19 @@
 		</div>
 
 		<div id="layout_ui_footer" class="fadeIn" if.bind="!app.main_panel_mode">
-			<a href="#" click.delegate="app.MapZoomIn()" class="button cool">+</a>
-			<a href="#" click.delegate="app.MapZoomOut()" class="button cool">-</a>
-			<a href="#" click.delegate="app.MapScroll(0,-800)" class="button cool">▲</a>
-			<a href="#" click.delegate="app.MapScroll(0,800)" class="button cool">▼</a>
-			<a href="#" click.delegate="app.MapScroll(-800,0)" class="button cool">◀</a>
-			<a href="#" click.delegate="app.MapScroll(800,0)" class="button cool">▶</a>
-			<span if.bind="app.game.myciv.econ.mp_need_met < 1.0" class="bad">Not Enough Resources!</span>
+			<a href="#" click.delegate="app.MapZoomIn()" class="button cool bold">+</a>
+			<a href="#" click.delegate="app.MapZoomOut()" class="button cool bold">-</a>
+			<a href="#" click.delegate="app.MapScroll(0,-400)" class="button cool">▲</a>
+			<a href="#" click.delegate="app.MapScroll(0,400)" class="button cool">▼</a>
+			<a href="#" click.delegate="app.MapScroll(-400,0)" class="button cool">◀</a>
+			<a href="#" click.delegate="app.MapScroll(400,0)" class="button cool">▶</a>
+			<a href="#" click.delegate="app.ToggleOption('show_range')" class="button ${app.options.show_range ? 'alt' : 'cool'}">◯</a>
+			<a href="#" click.delegate="app.ToggleOption('show_sectors')" class="button ${app.options.show_sectors ? 'alt' : 'cool'}">⛶</a>
+			<a href="#" click.delegate="app.ToggleOption('see_all')" class="button ${app.options.see_all ? 'alt' : 'cool'}">★</a>
+			<a href="#" click.delegate="app.ToggleOption('show_xtreme_fleets')" class="button ${app.options.show_xtreme_fleets ? 'alt' : 'cool'}">▪</a>
+			<a href="#" click.delegate="app.ToggleOption('debug')" class="button ${app.options.debug ? 'alt' : 'cool'}">❇</a>
+			<a href="#" click.delegate="app.state_obj.DramaticIntro()" class="button">✈</a>
+<!-- 			<span if.bind="app.game.myciv.econ.mp_need_met < 1.0" class="bad">Not Enough Resources!</span> -->
 		</div>
 		
 	</div>
@@ -204,128 +236,6 @@
 		<p><a href="#" click.delegate="app.CloseDialog()">OK</a>
 	</div>
 </div>
-
-
-
-
-
-
-
-<script>
-
-
-	
-// dramatic intro
-// $( document ).ready(function() {
-// 	
-// 
-// 	document.getElementById('layout_ui').style.display = 'none';
-// 	document.getElementById('layout_ui_side').style.display = 'none';
-// 	document.getElementById('layout_ui_nav').style.visibility = 'hidden';
-// 	
-// 	// default all elements
-// 	var map = document.getElementById('layout_map');
-// 	var parent = document.getElementById('layout_viewport');
-// 	var bgdiv = document.getElementById('layout_pagewrap');
-// 	
-// 	// utility function to flush CSS  changes
-// 	function flushCSS() { 
-// 		map.offsetHeight;
-// 		parent.offsetHeight;
-// 		bgdiv.offsetHeight;
-// 		}
-// 		
-// 	bgdiv.style.transition = "0s all";
-// 	map.style.transition = "0s all";
-// 	parent.style.transition = "0s all";
-// 	flushCSS();
-// 	
-// 	// center the screen
-// 	parent.scrollLeft = (map.clientWidth - parent.clientWidth) * 0.5;
-// 	parent.scrollTop = (map.clientHeight - parent.clientHeight) * 0.5;
-// 	bgdiv.style.backgroundPosition = '50% 50%';
-// 	
-// 	// fade from black
-// 	map.style.opacity = '0.0';
-// 	parent.style.backgroundColor = 'rgba(0,0,0,1)';
-// 	flushCSS();
-// 	
-// 	// start zoomed out
-// 	document.body.className += ' xtreme_zoom'; // icon view
-// 	// turn this on if you want maximum bling. otherwise it hurts framerate too much
-// // 	bgdiv.style.backgroundSize = "100% auto"; // parallax
-// 	// we would prefer to use translate, but it causes weird GPU issues.
-// // 	map.style.transform = 'translateZ(-50px) rotate(30deg)';
-// 	map.style.transform = 'scale(0.01) rotate(30deg)';
-// 	flushCSS();
-// 	
-// 	// animate stuff
-// 	parent.style.transition = "background-color 16s ease-in-out";
-// 	map.style.transition = " 20s all ease-in-out";
-// 	bgdiv.style.transition = " 20s all ease-in-out";
-// 	flushCSS();
-// 	parent.style.backgroundColor = 'rgba(0,0,0,0.5)';
-// 	// we would prefer to use translate, but it causes weird GPU issues.
-// // 	map.style.transform = 'translateZ(-' + (0.5 / 0.075) + 'px)';
-// 	map.style.transform = 'scale(0.075)';
-// 	// turn this on if you want maximum bling. otherwise it hurts framerate too much
-// // 	bgdiv.style.backgroundSize = '107% auto';
-// 	map.style.opacity = '1.0';
-// 	flushCSS();
-// 	
-// 	// TODO: change the background position to end up in the same spot as the sreen
-// 	 
-// 	// TODO: target a specific star instead of hacking in a percentage just for show.
-// 	 
-// 	// midpoint
-// 	setTimeout( function() { 
-// 		$('#flash_caret').show();
-// 		
-// 		setTimeout( function() { 
-// 			document.body.className = document.body.className.replace('xtreme_zoom');
-// 			}, 4000 );
-// 
-//         
-// 		setTimeout( function() { 
-// 			document.getElementById('layout_ui').style.display = 'flex';
-// 			}, 19000 );
-// 			
-// 		setTimeout( function() { 
-// 			document.getElementById('layout_ui_nav').style.visibility = 'visible';
-// 			}, 20000 );
-//         
-// 		setTimeout( function() { 
-// 			document.getElementById('layout_ui_side').style.display = 'block';
-// 			$('#the_caret').show();
-// 			}, 21000 );
-//         
-// 		parent.style.transition = "background-color 10s ease-in-out";
-// 		map.style.transition = " 20s all ease-in-out";
-// 		bgdiv.style.transition = " 20s all ease-in-out";
-// 		flushCSS();
-// 		parent.style.background = 'rgba(0,0,0,0)';
-// 		map.style.transform = 'scale(1.0) translateX(43%) translateY(47%)';		
-// // 		map.style.transform = 'translateZ(0) translateX(-15%) translateY(-15%)';
-// 		map.style.opacity = '1.0';
-// 		// turn this on if you want maximum bling. otherwise it hurts framerate too much
-// // 		bgdiv.style.backgroundSize = '125% auto';
-// // 		parent.scrollLeft = 0;
-// // 		parent.scrollTop = 0;
-// 		flushCSS();
-// 		// reset everything
-// 		bgdiv.style.transition = "0s all";
-// 		map.style.transition = "0s all";
-// 		parent.style.transition = "0s all";
-// 		flushCSS();
-// 		}, 22000 );
-// 	
-//  
-// });
-
-</script>
-
-
-
 
 
 </template>

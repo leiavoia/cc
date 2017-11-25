@@ -168,7 +168,7 @@ We also link to Google Fonts:
 }
 .slideInLeft {
 	transform-origin: 50% 50%;
-	animation: slideInLeft .5s both ease-out;
+	animation: slideInLeft .3s both ease-out;
 }
 .slideInRight {
 	transform-origin: 100% 50%;
@@ -228,8 +228,8 @@ body,html {
 	min-width:640px;
 	/* bg grahics */	
 /* 	background: #000 url(../img/map/bg/space_001c.jpg) 50% 50% no-repeat; */
-	background: #000 url(../img/map/bg/space_007b.jpg) 50% 50% no-repeat;
-/* 	background: #000 url(../img/map/bg/orion_2500px_dark_16x9.jpg) 50% 50% no-repeat; */
+	background: #000 url(../img/map/bg/space_007d.jpg) 50% 50% no-repeat;
+/* 	background: #000 url(../img/map/bg/orion_2500px_dark.jpg) 50% 50% no-repeat; */
 	background-size: cover;
 	background-position: 50% 50%;
 	z-index: 100;
@@ -252,7 +252,8 @@ body,html {
 	}
 
 .xtreme_zoom #layout_viewport {
-	background-color: rgba(0,0,0,0.75);
+	background-color: rgba(0,0,0,0.70);
+/* 	background-color: #000; */
 	}
 	
 	
@@ -392,7 +393,7 @@ body,html {
 #layout_ui_visor .pop { color: #FF2; }
 #layout_ui_visor .income { color: #AEA; }
 #layout_ui_visor .treasury { color: #7C7; }
-#layout_ui_visor .sci { color: #26F; }
+#layout_ui_visor .sci { color: #3CF; }
 #layout_ui_visor .planets { color: #C92; }
 
 #layout_ui_main.hidden { visibility:hidden; }
@@ -496,9 +497,27 @@ body,html {
 	color: #FFF;
 	min-height: 3em;
 	border: 1px solid #218A2D;
+	}
+
+#layout_ui_news > * {	
 	pointer-events: auto;
 	cursor:pointer;
 	}
+	
+#layout_ui_news A.x {
+	display: block;
+	float:right;
+/* 	height: 1em; */
+	width: auto;
+	background-color: rgba(255,25,25,0.50);
+	color: #FFF;
+	border-radius: 0.25em;
+	text-align:center;
+	padding: 0.1em;
+	text-decoration: none;
+	font-size:70%;
+	}
+	
 #layout_ui_news P {
 	margin: 0 0 0.5em 0;
 	}
@@ -583,7 +602,7 @@ TABLE.env TD.ideal {
 .bottomless {margin-bottom: 0;}
 .marginless {margin: 0;}
 
-
+.bold { font-weight:bold; }
 
 
 
@@ -738,10 +757,12 @@ DIV.hyperlane {
 	}
 	
 /* map screen planet containers */
-.planet_container {
+.mapobj_container {
 	position:absolute;
 	height:150px;
 	width:150px;
+	margin-left: -75px;
+	margin-top: -75px;
 	border:10px solid rgba(255,255,255,0.0);
 	border-radius:50%;
 	box-sizing: border-box;
@@ -754,40 +775,45 @@ DIV.hyperlane {
 	opacity: 1.0;
 	z-index: 10;
 }
-.planet_container.star_red, .star.star_red {
+.mapobj_container.star_red, .star.star_red {
 	background-image: url(../img/map/air_collect_sparkle_red.png);
 }
-.planet_container.star_orange, .star.star_orange {
+.mapobj_container.star_orange, .star.star_orange {
 	background-image: url(../img/map/air_collect_sparkle_orange.png);
 }
-.planet_container.star_yellow, .star.star_yellow {
+.mapobj_container.star_yellow, .star.star_yellow {
 	background-image: url(../img/map/air_collect_sparkle_yellow.png);
 }
-.planet_container.star_green, .star.star_green {
+.mapobj_container.star_green, .star.star_green {
 	background-image: url(../img/map/air_collect_sparkle_green.png);
 }
-.planet_container.star_blue, .star.star_blue {
+.mapobj_container.star_blue, .star.star_blue {
 	background-image: url(../img/map/air_collect_sparkle_blue_dark.png);
 }
-.planet_container.star_cyan, .star.star_cyan {
+.mapobj_container.star_cyan, .star.star_cyan {
 	background-image: url(../img/map/air_collect_sparkle_cyan.png);
 }
-.planet_container.star_purple, .star.star_purple {
+.mapobj_container.star_purple, .star.star_purple {
 	background-image: url(../img/map/air_collect_sparkle_purple.png);
 }
-.planet_container.star_white, .star.star_white {
+.mapobj_container.star_white, .star.star_white {
 	background-image: url(../img/map/air_collect_sparkle_white.png);
 }
-.planet_container.star_black, .star.star_black {
+.mapobj_container.star_black, .star.star_black {
 	background-image: url(../img/map/air_collect_sparkle_black.png);
+}
+.mapobj_container.anom_normal {
+	background-image: url(../img/workshop/icons/3dbox_64px_transp.png);
+	background-size: 25% 25%;
 }
 
 
-.planet_container:hover/*, .planet_container.hilite*/ {
+.mapobj_container:hover/*, .mapobj_container.hilite*/ {
 	border-color:rgba(255,255,255,0.55);
 	border-width:10px;
 	}
-.planet_container H2 {
+.mapobj_container H2,
+.mapobj_container H3 {
 	color: #FFF;
 	padding:5px 0 2px 0;
 	margin:-20px 0 0 0;
@@ -797,16 +823,19 @@ DIV.hyperlane {
 	white-space: nowrap;
 	text-align:center;
 	}
-	
+.mapobj_container H3 {
+	margin-top: 15px;
+	font-size: 16px;
+	}
 
-.planet_container .planet_list {
+.mapobj_container .planet_list {
 	color: rgba(255,255,255,0.45);
 	margin: 4px 0 8px 0;
 	text-align:center;
 	width: 120%;
 	margin-left:-10%;
 }
-.planet_container .fleet_list {
+.mapobj_container .fleet_list {
 	position:absolute;
 	top: 92px;
 	height: 6em; /* allows for overflow parking in crazy situations */
@@ -815,8 +844,8 @@ DIV.hyperlane {
 	width: 150%;
 	margin-left:-25%;
 }
-.planet_container .fleet_list A,
-.planet_container .planet_list A {	
+.mapobj_container .fleet_list A,
+.mapobj_container .planet_list A {	
 	width: 20px;
 	height: 20px;
 	font-size: 20px;
@@ -825,16 +854,17 @@ DIV.hyperlane {
 	display:inline-block;
 	flex:1;
 	margin: 0 2px;
+	text-decoration:none;
 /* 	border: 1px solid white; */
 /* 	border-radius: 0.35em; */
 	}
-.planet_container.unexplored .planet_list,	
-.planet_container.unexplored .fleet_list A {	
+.mapobj_container.unexplored .planet_list,	
+.mapobj_container.unexplored .fleet_list A {	
 	pointer-events: none;
 	cursor: default;
 	}
-.planet_container .fleet_list .icon,
-.planet_container .planet_list .icon {	
+.mapobj_container .fleet_list .icon,
+.mapobj_container .planet_list .icon {	
 	width: 16px;
 	height: 16px;
 	display:inline-block;
@@ -842,13 +872,13 @@ DIV.hyperlane {
 	line-height: 16px;
 	padding: 0.1em;
 	}
-.planet_container .planet_list A.settled .icon,
-.planet_container .fleet_list .icon,
+.mapobj_container .planet_list A.settled .icon,
+.mapobj_container .fleet_list .icon,
 .fleet .icon {	
     -webkit-filter: drop-shadow( 1px 1px 0 rgba(255,255,255,0.5) );
             filter: drop-shadow( 1px 1px 0 rgba(255,255,255,0.5) );
 	}
-.planet_container .caret {	
+.mapobj_container .caret {	
 	width: 140%;
 	height: 140%;
 	position:absolute;
@@ -874,56 +904,71 @@ in_range: can see name, fleets, planets
 explored: brighter nametag, planets are clickable
 settled
 */
-.planet_container.unexplored H2,
-.planet_container.unexplored .planet_list,
-.planet_container.unexplored .fleet_list {
+.mapobj_container.unexplored H2,
+.mapobj_container.unexplored H3,
+.mapobj_container.unexplored .planet_list,
+.mapobj_container.unexplored .fleet_list {
 	visibility: hidden;
 	}
-.planet_container.in_range.unexplored H2,
-.planet_container.in_range.unexplored .planet_list,
-.planet_container.in_range.unexplored .fleet_list {
+.mapobj_container.in_range.unexplored H2,
+.mapobj_container.in_range.unexplored .planet_list,
+.mapobj_container.in_range.unexplored .fleet_list {
 	visibility: visible;
 	}
-.planet_container.in_range H2 {
+.mapobj_container.in_range H2 {
 	animation: fadeIn 0.7s linear;
 	color: rgba(255,255,255,0.18); 
 	}	
-.planet_container.explored H2 {
+
+/* .mapobj_container.explored H3, */
+.mapobj_container.explored H2 {
+/* 	visibility: visible; */
 	animation: fadeIn 0.7s linear;
  	color: rgba(255,255,255,0.80); 
 	}
-.planet_container.settled H2 {
+.mapobj_container.settled H3,
+.mapobj_container.settled H2 {
 	text-shadow: 2px 2px 1px #000;
 	color: #FFF;
 	}
-.planet_container.hidden {
+.mapobj_container.hidden {
 	display:none;
 	}
-	
-	
-.xtreme_zoom .planet_container {
+
+/* anomaly titles have a simpler visibility scheme:
+invisible when unexplored, dim when explored */
+.mapobj_container.explored H3 {
+	visibility: visible;
+	animation: fadeIn 0.7s linear;
+	color: rgba(255,255,255,0.32); 
+	}
+
+.xtreme_zoom .mapobj_container {
 	background-size:120% 120%;
+	}
+.xtreme_zoom .mapobj_container.anom_normal {
+	background-size:100% 100%;
 	}
 	
 /* turn this on if you want maximum bling. its hard on older machines */
-/*.planet_container > * { 
+/*.mapobj_container > * { 
 	transition: opacity 0.5s;
 	}*/
-.xtreme_zoom .planet_container.unexplored { 
+.xtreme_zoom .mapobj_container.unexplored { 
 	background-size:65% 65%;
 	}
-.xtreme_zoom .option_dim_unexplored .planet_container.unexplored { 
+.xtreme_zoom .option_dim_unexplored .mapobj_container.unexplored { 
 	opacity: 0.25; 
-	background-size: 120% 120%;
+/* 	background-size: 120% 120%; */
 	}
-.xtreme_zoom .option_dim_unexplored .planet_container.unexplored.in_range { 
+.xtreme_zoom .option_dim_unexplored .mapobj_container.unexplored.in_range { 
 	opacity: 1; 
 	}
-.xtreme_zoom .planet_container > * { 
+.xtreme_zoom .mapobj_container > * { 
 	display:none;
 	opacity: 0; /* if you want transition fx, you cant use display:none */
 	}
-.xtreme_zoom .planet_container .caret {
+.xtreme_zoom .mapobj_container .caret {
 	box-sizing: border-box;
 	width: 180%;
 	height: 180%;
@@ -938,7 +983,7 @@ settled
 	display:block !important;
 	}
 /* now we're just being abusive */
-.xtreme_zoom .planet_container.settled > H2 {
+.xtreme_zoom .mapobj_container.settled > H2 {
 	display:block;
 	opacity: 1;
 	padding:0;
@@ -970,7 +1015,7 @@ settled
 	top:0;
 	left:0;
 	/* makes fleets scootch on next-turn-button */
-	transition: top 0.7s ease-in-out 0s, left 0.7s ease-in-out 0s;
+	transition: top 0.7s ease-out 0s, left 0.7s ease-out 0s;
 	}
 .fleet_en_route .icon {	
 	width: 22px;
@@ -987,17 +1032,33 @@ settled
 	background-color: #999;
 	z-index:5;
 	/* makes fleets scootch on next-turn-button */
-	transition: top 0.7s ease-in-out 0s, left 0.7s ease-in-out 0s, width 0.7s ease-in-out ;
+	transition: top 0.7s ease-out 0s, left 0.7s ease-out 0s, width 0.7s ease-out ;
 	}
 /* [!]OPTIMIZE possibly consider hiding these if there are lot; kills framerates */
 .xtreme_zoom .dest_line {
-	background-color: #FFF;
-	height: 4px; 
+/* 	background-color: #FFF; */
+/* 	height: 4px;  */
+	display: none;
 	}
 .xtreme_zoom .fleet_en_route,
+.xtreme_zoom .fleet_en_route .icon,
+.xtreme_zoom .fleet_en_route A,
 .xtreme_zoom .dest_line {
-	transition: none; /* prevent browser from exploding */
+	transition: none !important; /* prevent browser from exploding */
+	text-decoration:none;
 	}	
+.xtreme_zoom .fleet_en_route .icon {
+	display:none;
+	}
+.xtreme_zoom .fleet_en_route {
+	border:none;
+	background: none;
+	}
+.xtreme_zoom .fleet_en_route A:after {
+	content:'◼';
+	font-size:40px;
+	text-decoration:none;
+	}
 	
 	
 	
@@ -2124,7 +2185,108 @@ DIV.annoyometer .nub {
 	
 	
 	
+
 	
+/* TECHNOLOGY PANE */
+#tech_pane {
+	height:100%;
+	padding: 0 !important; 	/* special override for #layout_ui_main .pane */
+/* 	background: url(../img/workshop/tech/techmock.jpg)  50% 50% no-repeat; */
+/* 	background-size: cover; */
+	display: flex;
+	flex-flow: column nowrap;
+/* 	height:100%; */
+	}
+#tech_pane #now_researching {
+	box-sizing: border-box;
+	border: 5px #11436B outset;
+	border-radius: 1.0em;
+	padding: 1.5em;
+	margin: 1em;
+	flex: 1 1;
+	background: #11436B;
+	}
+#tech_pane > H1 {
+	box-sizing: border-box;
+	margin: 1rem 0 0.5rem 1rem;
+	padding: 0;
+/* 	flex: 1 1; */
+	}
+#tech_pane DIV H2 {
+	margin-top: 0;
+	margin-bottom: 1rem;
+	}
+#tech_pane  OL, 	
+#tech_pane  UL {	
+	margin: 0.5em 0 0.5em 1.5em; ;
+	}
+#tech_pane  LI {	
+	list-style-type: disc;
+	margin: 0.3em 0;
+	}
+#tech_pane  OL LI {	
+	list-style-type: decimal;
+	}
+#tech_pane #inner_wrapper {
+	flex: 10 10;
+	display: flex;
+	flex-flow: row no-wrap;
+	padding: 0 !important; 	/* special override for #layout_ui_main .pane */
+	}
+#tech_pane #inner_wrapper > DIV {
+	box-sizing: border-box;
+	border: 5px #11436B outset;
+	border-radius: 1.0em;
+	padding: 1.5em;
+	margin: 1em;
+	flex: 1 1;
+	background: rgb( 17, 67, 107);
+/* 	background: rgba( 17, 67, 107, 0.9); */
+/* 	background: rgba( 0,0,0, 0.65); */
+	}	
+	
+#tech_pane .techlist DIV {
+	box-sizing: border-box;
+	margin: 0 -1.5rem;
+	padding: 1.0rem 1.5rem;
+	}
+#tech_pane .techlist P {
+	font-size: 150%;
+	margin: 0;
+	}
+#tech_pane .techlist SPAN {
+	display: inline-block;
+	float: right;
+	font-size: 1rem;
+	color:  #3C96BA;
+	}
+#tech_pane .techlist .researching { 
+/* 	background-image: radial-gradient(circle closest-corner at 50% 50% , transparent 0%, transparent 50%, #3C96BA 100%); */
+/* 	border: #777 outset 1px; */
+	background: #3C96BA;
+	}
+#tech_pane .techlist .focus { 
+/* 	background-image: radial-gradient(circle closest-corner at 50% 50% , transparent 0%, transparent 50%, #3C96BA 100%); */
+	background: #3C96BA;
+
+	}
+#tech_pane .techlist .researching SPAN { 
+	color: #11436b;
+	}
+#tech_pane .techlist PROGRESS {
+	width: 100%;
+	display: block;
+	height: 0.6em;
+	margin-top: 0.25em;
+	}
+	
+@media screen and (max-width:1600px) {
+	#tech_pane .techlist SPAN {
+		display: block;
+		float: none;
+		}
+	}
+
 /* SETUP PANE */
 #setup_pane {
 	padding: 3em;

@@ -2,6 +2,7 @@ import Fleet from './Fleet';
 // import Star from './Star';
 import RandomName from '../util/RandomName';
 import * as utils from '../util/utils';
+import * as Tech from './Tech';
 import Constellation from './Constellation';
 import Planet from './Planet';
 
@@ -19,12 +20,13 @@ export default class Civ {
 			temp: 2,
 			grav: 2,
 			adaptation: 1, // levels to shift the habitability scale
-			habitation: 2 // maximum bad planet we can settle
+			habitation: 1 // maximum bad planet we can settle
 			},
 		size: 1.0, // literal size of pop units
 		};
 	
-	ship_range = 900; // px
+	ship_range = 750; // px
+	ship_speed = 200; // HACK
 	empire_box = {x1:0,x2:0,y1:0,y2:0};
 	
 	flag_img = 'img/workshop/flag_mock.gif';
@@ -95,6 +97,104 @@ export default class Civ {
 	research = 0; // to split into cats later
 	research_income = 0; // calculated per turn
 	
+	tech = {
+		techs: new Map(),
+		nodes_avail: new Map(),
+		nodes_compl: new Map(),
+		current_project: null
+		};
+		
+	// set the civ up with starting technology roster
+	InitResearch() { 
+		// commit free seed nodes
+// 		this.tech.nodes_compl.set( 'NODE0', {
+// 			node: Tech.TechNodes.NODE0,
+// 			key: 'NODE0',
+// 			rp: 0 // how much research we've committed so far
+// 			});
+		this.RecalcAvailableTechNodes();
+		this.AI_ChooseNextResearchProject();
+		// TODO: some civs may get free techs or have other seed nodes
+		}
+		
+	SelectResearchProject( key ) {
+		if ( this.tech.nodes_avail.has(key) ) { 
+			this.tech.current_project = this.tech.nodes_avail.get(key);
+			}
+		}
+		
+	AI_ChooseNextResearchProject() { 
+		if ( !this.tech.current_project ) { 
+			if ( !this.tech.nodes_avail.size ) { 
+// 				console.warn(`CIV #${this.id} "${this.name}" ran out of research projects.`);
+				}
+			else {
+				this.tech.current_project = this.tech.nodes_avail.values().next().value; // first item in list
+				}
+			}	
+		}
+		
+	RecalcAvailableTechNodes() {
+		nodescannerloop:
+		for ( let key in Tech.TechNodes ) { 
+			// if it isn't in either of our lists ...
+			if ( !this.tech.nodes_avail.has(key) && !this.tech.nodes_compl.has(key) ) { 
+				// check the prerequisites against our completed nodes
+				let t = Tech.TechNodes[key];
+				if ( t.requires ) { 
+					for ( let req of t.requires ) { 
+						if ( !this.tech.nodes_compl.has(req) ) { 
+							continue nodescannerloop;
+							}
+						}
+					// all prerequisites met. add the node to available list
+					this.tech.nodes_avail.set( key, { node: t, key: key, rp: 0 } );
+					}
+				// else: this node has no prereqs, but these are 
+				// usually special seed nodes, so do NOT add them here.
+				}
+			}
+		}
+		
+	DoResearch( app ) { 
+		let income = this.research_income;
+		// pick something to work on if i dont already have one
+		this.AI_ChooseNextResearchProject();
+		let sanity_counter = 0;
+		while ( income > 0.001 && this.tech.current_project && ++sanity_counter < 5 ) { 
+			let rp_applied = Math.min( income, this.tech.current_project.node.rp - this.tech.current_project.rp );
+			income -= rp_applied;
+			this.tech.current_project.rp += rp_applied;
+			// project completed?
+			if ( this.tech.current_project.rp >= this.tech.current_project.node.rp ) { 
+				// dispurse any techs
+				if ( this.tech.current_project.node.yields.length ) { 
+					for ( let t of this.tech.current_project.node.yields ) { 
+						this.tech.techs.set(t,Tech.Techs[t]);
+						Tech.Techs[t].onComplete( this ); // run callback
+						}
+					}
+				// note to player
+				if ( app.game.myciv == this ) { 
+					app.AddNote(
+						'good',
+						`${this.tech.current_project.node.name} completed.`,
+						`Research on "${this.tech.current_project.node.name}" has been completed`,
+						function(){app.SwitchMainPanel('tech');}
+						);
+					}
+				// move node into the completed pile
+				this.tech.nodes_compl.set(this.tech.current_project.key, this.tech.current_project );
+				this.tech.nodes_avail.delete(this.tech.current_project.key);
+				this.tech.current_project = null;
+				// reevaluate our nodes available. completing the last node may have opened up new ones.
+				this.RecalcAvailableTechNodes();
+				// are there new nodes available?
+				this.AI_ChooseNextResearchProject();			
+				}
+			}
+		}
+		
 	gov_type = 'feudal';
 	gov_pts = 0;
 	gov_pts_income = 0;
@@ -186,19 +286,20 @@ export default class Civ {
 		this.flag_img = 'img/flags/flag_' + ("000" + Civ.flag_id_roster[this.id]).slice(-3) + '.png';
 		this.diplo_img = 'img/races/alien_' + ("000" + Civ.img_id_roster[this.id]).slice(-3) + '.jpg';
 		this.diplo_img_small = 'img/races/alien_' + ("000" + Civ.img_id_roster[this.id]).slice(-3) + '.jpg';
-		// [!]DEBUG HACK
-		this.lovenub = Math.random();
-		this.annoyed = Math.random();
-		this.diplo_dispo = Math.random();
-		this.diplo_style = Math.random();
-		this.diplo_skill = utils.BiasedRand(0.05, 0.25, 0.10, 0.5);
+		this.InitResearch();
 		}
 	
 	static Random( difficulty = 0.5 ) {
 		let civ = new Civ;
-// 		this.color_rgb = [ utils.RandomInt(0,255), utils.RandomInt(0,255), utils.RandomInt(0,255), ];
 		civ.color_rgb = Civ.PickNextStandardColor();
-// 		console.log( 'my colors are: ' + civ.color_rgb[0] + ' ' + civ.color_rgb[1] + ' ' + civ.color_rgb[2]  );
+		civ.lovenub = Math.random();
+		civ.annoyed = Math.random();
+		civ.diplo_dispo = Math.random();
+		civ.diplo_style = Math.random();
+		civ.diplo_skill = utils.BiasedRand(0.05, 0.25, 0.10, 0.5);
+		civ.race.env.atm = utils.BiasedRandInt(0, 4, 2, 0.5);
+		civ.race.env.temp = utils.BiasedRandInt(0, 4, 2, 0.5);
+		civ.race.env.grav = utils.BiasedRandInt(0, 4, 2, 0.5);
 		return civ;
 		}
 		
@@ -207,7 +308,7 @@ export default class Civ {
 		let targets = [];
 		for ( let s of app.game.galaxy.stars ) { 
 			for ( let p of s.planets ) {
-				if ( !p.owner ) { 
+				if ( !p.owner && p.Habitable( this.race ) ) { 
 					// TODO: respect ship range.
 					// In order to calculate range, we have to check
 					// every colony we have against every unclaimed
@@ -221,14 +322,14 @@ export default class Civ {
 		if ( targets )  {
 // 			console.log(`[${targets.length}] targets`);
 			for ( let f of this.fleets ) {
-				// parked?
-				if ( f.colonize && f.star && !f.dest ) { 
+				// parked and not on mission
+				if ( f.colonize && f.star && !f.dest && f.star.objtype == 'star' && !f.mission ) { 
 					next_ship:
 					for ( let s of f.ships ) {
 						if ( s.colonize ) { 
 							// can i settle anything where i am?
 							for ( let p of f.star.planets ) { 
-								if ( !p.owner ) { 
+								if ( !p.owner && p.Habitable( this.race ) ) { 
 // 									console.log(`F${f.id}: i'm already here, so i'm going to settle ${p.name}`);
 									p.Settle( this );
 									f.RemoveShip( s );

@@ -269,7 +269,21 @@
 		<div id="layout_map" class="sectors">
 				<h1>Constellation<br/>Control</h1>
 				
-				
+				<svg viewBox="0 0 32 32" style="
+					margin-left: 800px; margin-top: 1200px;
+					width: 200px; height: 200px;
+					transform: rotate(-90deg);
+					background: yellowgreen;
+					border-radius: 50%;
+					">
+					<circle r="16" cx="16" cy="16" style="
+						fill: yellowgreen;
+						stroke: #655;
+						stroke-width: 32;
+						stroke-dasharray: 100 100;					
+						" />
+				</svg>
+
 				<div class="explosion">explode!</div>
 				<div class="spaceshipx">x</div>
 				
@@ -302,7 +316,7 @@
 				<div class="hyperlane" style="left:365px; top:475px; width: 250px; transform: rotate(-24.5deg);"></div>
 				
 				
-				<div class="planet_container star_red unexplored" style="position:absolute;left:650px;top:50px;">
+				<div class="mapobj_container star_red unexplored" style="position:absolute;left:650px;top:50px;">
 					<h2>ARYRACYD</h2>
 					<div class="planet_list">	
 						<a href="#" class="settled"><svg class="icon icon-nature"><use xlink:href="#icon-nature"></use></svg></a>
@@ -319,7 +333,7 @@
 				
 				<div id="flash_caret" class="flash_caret" style="display:none;position:absolute;left:-400px;top:-400px;"></div>
 				
-				<div class="planet_container star_purple hilite" style="position:absolute;left:300px;top:400px;">
+				<div class="mapobj_container star_purple hilite" style="position:absolute;left:300px;top:400px;">
 					<div id="the_caret" class="caret" style="display:none;"></div>
 					<h2>LEIAVOIA</h2>
 					<div class="planet_list">	
@@ -331,7 +345,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container star_blue" style="position:absolute;left:525px;top:300px;">
+				<div class="mapobj_container star_blue" style="position:absolute;left:525px;top:300px;">
 					<h2>EPSILON PRIME 7</h2>
 					<div class="planet_list">	
 						<a href="#" class="settled"><svg class="icon icon-nature"><use xlink:href="#icon-nature"></use></svg></a>
@@ -346,7 +360,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container star_black unexplored" style="position:absolute;left:1800px;top:1800px;">
+				<div class="mapobj_container star_black unexplored" style="position:absolute;left:1800px;top:1800px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						<a href="#" class="settled"><svg class="icon icon-nature"><use xlink:href="#icon-nature"></use></svg></a>
@@ -359,7 +373,7 @@
 				</div>
 				
 				
-				<div class="planet_container" style="position:absolute;left:9876px;top:9876px;">
+				<div class="mapobj_container" style="position:absolute;left:9876px;top:9876px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -370,7 +384,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:4789px;top:600px;">
+				<div class="mapobj_container" style="position:absolute;left:4789px;top:600px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -381,7 +395,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:5532px;top:2290px;">
+				<div class="mapobj_container" style="position:absolute;left:5532px;top:2290px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -392,7 +406,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:9584px;top:1262px;">
+				<div class="mapobj_container" style="position:absolute;left:9584px;top:1262px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -403,7 +417,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:9355px;top:7764px;">
+				<div class="mapobj_container" style="position:absolute;left:9355px;top:7764px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -414,7 +428,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:660px;top:2246px;">
+				<div class="mapobj_container" style="position:absolute;left:660px;top:2246px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -425,7 +439,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:1845px;top:9378px;">
+				<div class="mapobj_container" style="position:absolute;left:1845px;top:9378px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -436,7 +450,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:2545px;top:8787px;">
+				<div class="mapobj_container" style="position:absolute;left:2545px;top:8787px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -447,7 +461,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:155px;top:1211px;">
+				<div class="mapobj_container" style="position:absolute;left:155px;top:1211px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -458,7 +472,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:4266px;top:5622px;">
+				<div class="mapobj_container" style="position:absolute;left:4266px;top:5622px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -469,7 +483,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:1678px;top:8000px;">
+				<div class="mapobj_container" style="position:absolute;left:1678px;top:8000px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -480,7 +494,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:7489px;top:9366px;">
+				<div class="mapobj_container" style="position:absolute;left:7489px;top:9366px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -491,7 +505,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:8245px;top:1324px;">
+				<div class="mapobj_container" style="position:absolute;left:8245px;top:1324px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -502,7 +516,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:4167px;top:9433px;">
+				<div class="mapobj_container" style="position:absolute;left:4167px;top:9433px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -513,7 +527,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:3333px;top:4444px;">
+				<div class="mapobj_container" style="position:absolute;left:3333px;top:4444px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -524,7 +538,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:2125px;top:6377px;">
+				<div class="mapobj_container" style="position:absolute;left:2125px;top:6377px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -535,7 +549,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:8477px;top:6777px;">
+				<div class="mapobj_container" style="position:absolute;left:8477px;top:6777px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -546,7 +560,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:1456px;top:1000px;">
+				<div class="mapobj_container" style="position:absolute;left:1456px;top:1000px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -557,7 +571,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:3311px;top:8844px;">
+				<div class="mapobj_container" style="position:absolute;left:3311px;top:8844px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -568,7 +582,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:1600px;top:2400px;">
+				<div class="mapobj_container" style="position:absolute;left:1600px;top:2400px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -579,7 +593,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:4098px;top:7911px;">
+				<div class="mapobj_container" style="position:absolute;left:4098px;top:7911px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -590,7 +604,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:2888px;top:8444px;">
+				<div class="mapobj_container" style="position:absolute;left:2888px;top:8444px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -601,7 +615,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:500px;top:5000px;">
+				<div class="mapobj_container" style="position:absolute;left:500px;top:5000px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -612,7 +626,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:4550px;top:3988px;">
+				<div class="mapobj_container" style="position:absolute;left:4550px;top:3988px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -623,7 +637,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:3000px;top:9122px;">
+				<div class="mapobj_container" style="position:absolute;left:3000px;top:9122px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -634,7 +648,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:2200px;top:2900px;">
+				<div class="mapobj_container" style="position:absolute;left:2200px;top:2900px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -645,7 +659,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:7843px;top:400px;">
+				<div class="mapobj_container" style="position:absolute;left:7843px;top:400px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -656,7 +670,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:9400px;top:5733px;">
+				<div class="mapobj_container" style="position:absolute;left:9400px;top:5733px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -667,7 +681,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:8666px;top:1500px;">
+				<div class="mapobj_container" style="position:absolute;left:8666px;top:1500px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -678,7 +692,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:6879px;top:4141px;">
+				<div class="mapobj_container" style="position:absolute;left:6879px;top:4141px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -689,7 +703,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:4809px;top:8678px;">
+				<div class="mapobj_container" style="position:absolute;left:4809px;top:8678px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -700,7 +714,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:289px;top:9142px;">
+				<div class="mapobj_container" style="position:absolute;left:289px;top:9142px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -711,7 +725,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:3879px;top:5353px;">
+				<div class="mapobj_container" style="position:absolute;left:3879px;top:5353px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -722,7 +736,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:1666px;top:8765px;">
+				<div class="mapobj_container" style="position:absolute;left:1666px;top:8765px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -733,7 +747,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:7756px;top:8373px;">
+				<div class="mapobj_container" style="position:absolute;left:7756px;top:8373px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -744,7 +758,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:6777px;top:4311px;">
+				<div class="mapobj_container" style="position:absolute;left:6777px;top:4311px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -755,7 +769,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:7255px;top:7265px;">
+				<div class="mapobj_container" style="position:absolute;left:7255px;top:7265px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -766,7 +780,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:6500px;top:6500px;">
+				<div class="mapobj_container" style="position:absolute;left:6500px;top:6500px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -777,7 +791,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:7000px;top:7000px;">
+				<div class="mapobj_container" style="position:absolute;left:7000px;top:7000px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -788,7 +802,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:6000px;top:6000px;">
+				<div class="mapobj_container" style="position:absolute;left:6000px;top:6000px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -799,7 +813,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:5000px;top:5000px;">
+				<div class="mapobj_container" style="position:absolute;left:5000px;top:5000px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -810,7 +824,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:4000px;top:4000px;">
+				<div class="mapobj_container" style="position:absolute;left:4000px;top:4000px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -821,7 +835,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:3000px;top:3000px;">
+				<div class="mapobj_container" style="position:absolute;left:3000px;top:3000px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -832,7 +846,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:2000px;top:2000px;">
+				<div class="mapobj_container" style="position:absolute;left:2000px;top:2000px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -843,7 +857,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:1900px;top:1000px;">
+				<div class="mapobj_container" style="position:absolute;left:1900px;top:1000px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -854,7 +868,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:9126px;top:8932px;">
+				<div class="mapobj_container" style="position:absolute;left:9126px;top:8932px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -865,7 +879,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:4789px;top:8080px;">
+				<div class="mapobj_container" style="position:absolute;left:4789px;top:8080px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -876,7 +890,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:6444px;top:800px;">
+				<div class="mapobj_container" style="position:absolute;left:6444px;top:800px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -887,7 +901,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:2220px;top:6000px;">
+				<div class="mapobj_container" style="position:absolute;left:2220px;top:6000px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -898,7 +912,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:5000px;top:5555px;">
+				<div class="mapobj_container" style="position:absolute;left:5000px;top:5555px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -909,7 +923,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:4646px;top:1289px;">
+				<div class="mapobj_container" style="position:absolute;left:4646px;top:1289px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -920,7 +934,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:3000px;top:3590px;">
+				<div class="mapobj_container" style="position:absolute;left:3000px;top:3590px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -931,7 +945,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:6666px;top:7777px;">
+				<div class="mapobj_container" style="position:absolute;left:6666px;top:7777px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -942,7 +956,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:3333px;top:9975px;">
+				<div class="mapobj_container" style="position:absolute;left:3333px;top:9975px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -953,7 +967,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:2456px;top:1616px;">
+				<div class="mapobj_container" style="position:absolute;left:2456px;top:1616px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -964,7 +978,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:5690px;top:3212px;">
+				<div class="mapobj_container" style="position:absolute;left:5690px;top:3212px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -975,7 +989,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:7879px;top:500px;">
+				<div class="mapobj_container" style="position:absolute;left:7879px;top:500px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -986,7 +1000,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:8644px;top:2388px;">
+				<div class="mapobj_container" style="position:absolute;left:8644px;top:2388px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -997,7 +1011,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:4635px;top:4733px;">
+				<div class="mapobj_container" style="position:absolute;left:4635px;top:4733px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -1008,7 +1022,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:3677px;top:7345px;">
+				<div class="mapobj_container" style="position:absolute;left:3677px;top:7345px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -1019,7 +1033,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:4888px;top:4000px;">
+				<div class="mapobj_container" style="position:absolute;left:4888px;top:4000px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -1030,7 +1044,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:1777px;top:944px;">
+				<div class="mapobj_container" style="position:absolute;left:1777px;top:944px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -1041,7 +1055,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:200px;top:2800px;">
+				<div class="mapobj_container" style="position:absolute;left:200px;top:2800px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -1052,7 +1066,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:4777px;top:7499px;">
+				<div class="mapobj_container" style="position:absolute;left:4777px;top:7499px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -1063,7 +1077,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:7443px;top:4224px;">
+				<div class="mapobj_container" style="position:absolute;left:7443px;top:4224px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -1074,7 +1088,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:5888px;top:8555px;">
+				<div class="mapobj_container" style="position:absolute;left:5888px;top:8555px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -1085,7 +1099,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:2525px;top:3535px;">
+				<div class="mapobj_container" style="position:absolute;left:2525px;top:3535px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -1096,7 +1110,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:6111px;top:6771px;">
+				<div class="mapobj_container" style="position:absolute;left:6111px;top:6771px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -1107,7 +1121,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:1783px;top:6333px;">
+				<div class="mapobj_container" style="position:absolute;left:1783px;top:6333px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -1118,7 +1132,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:7343px;top:3131px;">
+				<div class="mapobj_container" style="position:absolute;left:7343px;top:3131px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -1129,7 +1143,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:9222px;top:5000px;">
+				<div class="mapobj_container" style="position:absolute;left:9222px;top:5000px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -1140,7 +1154,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:4000px;top:3000px;">
+				<div class="mapobj_container" style="position:absolute;left:4000px;top:3000px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -1151,7 +1165,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:6266px;top:4242px;">
+				<div class="mapobj_container" style="position:absolute;left:6266px;top:4242px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -1162,7 +1176,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:2000px;top:8000px;">
+				<div class="mapobj_container" style="position:absolute;left:2000px;top:8000px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -1173,7 +1187,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:500px;top:8944px;">
+				<div class="mapobj_container" style="position:absolute;left:500px;top:8944px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -1184,7 +1198,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:124px;top:8543px;">
+				<div class="mapobj_container" style="position:absolute;left:124px;top:8543px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -1195,7 +1209,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:5255px;top:1567px;">
+				<div class="mapobj_container" style="position:absolute;left:5255px;top:1567px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -1206,7 +1220,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:9203px;top:7211px;">
+				<div class="mapobj_container" style="position:absolute;left:9203px;top:7211px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -1217,7 +1231,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:6222px;top:7242px;">
+				<div class="mapobj_container" style="position:absolute;left:6222px;top:7242px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -1228,7 +1242,7 @@
 						<a href="#" ><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 					</div>
 				</div>
-				<div class="planet_container" style="position:absolute;left:1000px;top:6000px;">
+				<div class="mapobj_container" style="position:absolute;left:1000px;top:6000px;">
 					<h2>Farway</h2>
 					<div class="planet_list">	
 						O O O O O
@@ -1249,7 +1263,7 @@
 <div id="layout_ui">
 	<div id="layout_ui_main"><!-- style="visibility:visible;" control panel visibility here to bypass default CSS state -->
 	
-		<div id="layout_ui_visor">
+		<div id="layout_ui_visor" style="display:none;">
 			<span>TURN: ${turn_num}</span>
 			<span>TREASURY: $${treasury}</span>
 			<span>RESEARCH: ${research}</span>
@@ -1258,7 +1272,7 @@
 		
 		<div id="layout_ui_center">
 		
-			<div id="layout_ui_news">
+			<div id="layout_ui_news" style="display:none;">
 				<div class="bad">
 					<h3>The Silicoids Are Coming!</h3>
 					<p>Intelligence indicates the dreaded silicoids are coming our way.</p>
@@ -1289,7 +1303,8 @@
 				</div>
 			</div>
 			
-			<div id="layout_ui_content">
+			<!-- use class "active" to darken background and bypass FF scrollbar bug -->
+			<div id="layout_ui_content" class="active"> 
 			
 	
 	<!--	
@@ -1458,12 +1473,109 @@
 					<p>Yemen has been devastated by a war between forces loyal to the internationally recognised government of President Abdrabbuh Mansour Hadi and those allied to the Houthi rebel movement.</p>
 					<p>The conflict has also left 20.7 million people in need of humanitarian assistance, created the world's largest food security emergency, and led to a cholera outbreak that is believed to have affected 884,000 people and caused 2,184 deaths.</p>
 				</div>
+
 			</div>
 		</div>-->
-				content goes here
-			</div>
+			
+		<div id="tech_pane" class="pane">
+<!-- 			<p style="float:right;"><a href="#"  click.delegate="ClosePanel()" class="button big">CLOSE</a></p> -->
+
+			<h1>Research</h1>
+			
+<!-- 			<div id="outer_wrapper"> -->
+<!--				<div id="now_researching">
+					<h2>Now Researching: Xploder Thing</h2>
+					<p>
+						<progress value="70" max="100">70% (4-6 turns remaining)</progress>
+					</p>
+				</div>-->
+				
+				<div id="inner_wrapper">
+					<div id="available" class="techlist">
+						<h2>Available</h2>
+						<div>
+							<p>Moleculartronic Spatial Compressor<span>2-4 turns</span></p>
+							
+						</div>
+						<div class="researching">
+							<p>Oberon Command<span>less than 3 turns</span></p>
+							<progress value="70" max="100">70% (4-6 turns remaining)</progress>
+						</div>
+						<div>
+							<p>Massive Semibiotic Rescue Dragon Fire Squad<span>12-18 turns</span></p>
+						</div>
+					</div>
+					
+					<div id="completed" class="techlist">
+						<h2>Completed</h2>
+						<div>
+							<p>Thermonuclear Spandex</p>
+						</div>
+						<div>
+							<p>Fibonnaci Grand Prix</p>
+						</div>
+						<div>
+							<p>Powered Armor</p>
+						</div>
+						<div class="focus">
+							<p>Synthesized Cornbread</p>
+						</div>
+						<div>
+							<p>Smart Guns</p>
+						</div>
+						<div>
+							<p>Anti-Xenomorph Tunnel Guns</p>
+						</div>
+						<div>
+							<p>Tribble Trouble</p>
+						</div>
+						<div>
+							<p>Veritasium</p>
+						</div>
+						<div>
+							<p>Mung Bean Noodles</p>
+						</div>
+						<div>
+							<p>Tribble Trouble</p>
+						</div>
+						<div>
+							<p>Thermonuclear Spandex</p>
+						</div>
+					</div>
+					
+					<div id="featured">
+						<h2>Xploder Thing mkIV</h2>
+						<img src="/cc/x/img/workshop/tech/techmock.jpg" style="width: 100%;" />
+						<div><p>Xploder Thing mkIV is the sequel to the successfull mkIII. It adds new xplosions with offset material layers and some added laser shrapnel. Makes for a good fireworks display or window planeter. Old tires make it go faster.</p></div>
+						<ul>
+							<li>[#] Does stuff</li>
+							<li>[+] Gives you monkies</li>
+							<li>[=] Enhances motorcycle</li>
+						</ul>
+					</div>
+				</div>
+<!-- 			</div> -->
+					
+					
+<!--					<svg viewBox="0 0 32 32" style="
+						margin-left: 0px; margin-top: 0px;
+						width: 50px; height: 50px;
+						transform: rotate(-90deg);
+						background: yellowgreen;
+						border-radius: 50%;
+						">
+						<circle r="16" cx="16" cy="16" style="
+							fill: yellowgreen;
+							stroke: #655;
+							stroke-width: 32;
+							stroke-dasharray: 100 100;					
+							" />
+					</svg>-->
 		</div>
-		<div id="layout_ui_footer">
+		
+		
+		
+		<div id="layout_ui_footer" style="display:none;">
 			foot er goes here
 		</div>
 	</div>
@@ -1656,7 +1768,7 @@
 	
 	
 	
-	<div id="layout_ui_side" >
+	<div id="layout_ui_side" style="display:none;">
 
 		<div class="planet atm1 tmp1" css="min-height:200px; background-size: auto 200px; background-position: calc(100% + 100px) -100px ;">
 			

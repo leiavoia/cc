@@ -16,7 +16,8 @@ export default class Fleet {
 	ui_color = 'rgb(255,255,255)';
 	in_range = false; // UI hint for visibility - only matters for player perspective
 	ships = [];
-		
+	research = false;
+	
 	onUpdate = null; // callback
 	SetOnUpdate( callback ) { 
 		if ( callback instanceof Function ) { 
@@ -55,10 +56,13 @@ export default class Fleet {
 	// use this if ships are added or removed.
 	ReevaluateStats() { 
 		this.colonize = false;
+		this.research = 0;
 		this.speed = 1000000;
 		for ( let ship of this.ships ) { 
 			// check if there are colony ships
 			if ( ship.colonize ) { this.colonize = true; }
+			// check if there are research ships
+			if ( ship.research ) { this.research += ship.research; }
 			// find our lowest speed
 			if ( ship.speed < this.speed ) { this.speed = ship.speed; }
 			}
@@ -104,7 +108,7 @@ export default class Fleet {
 	// returns true if the fleet moved
 	MoveFleet() {
 		let moved = false;
-		if ( this.dest ) { 
+		if ( this.dest && !this.mission ) { // don't move fleets on deep space missions 
 			moved = true;
 			// move the ship closer to goal
 			let dist = Math.sqrt( 
@@ -151,14 +155,8 @@ export default class Fleet {
 		
 	SetDest( dest ) { 
 		// check to see if we're already there
-		if ( !this.dest && this.star == dest ) { 
-// 			console.log(`F${this.id}: I'm already where i want to be!`);
-			return;
-			}
-		// check to see if i'm in the air and the user is issuing a return order
-		else if ( this.dest && this.star ) { 
+		if ( this.dest == this.star ) { 
 			this.dest = null;
-			this.star = dest;
 			this.xpos = 0;
 			this.ypos = 0;
 // 			console.log(`F${this.id}: I'm going nowhere!`);
@@ -196,8 +194,95 @@ export default class Fleet {
 			}
 		}
 		
-		
-		
+	SendOnMission( galaxy, duration ) { 
+		// keep a reference to the star we were parked at, but detach from the list
+		if ( this.star ) { 
+			let pos = this.star.fleets.indexOf(this);
+			if ( pos !== -1 ) { 
+				this.star.fleets.splice( pos, 1 );
+				}
+			}
+		// find deepspace anomalies within range
+		let targets = [];
+		let myrange = this.owner.ship_range * this.owner.ship_range; // avoiding sqrt 
+		for ( let a of galaxy.anoms ) { 
+			if ( !a.onmap && !a.owner && !a.ResearchIsCompleted(this.owner) ) { // deepspace, unclaimed
+				//
+				// TODO: take into account vis_level (Technology required)
+				//
+				let dist = 
+					Math.pow( Math.abs(a.xpos - this.xpos), 2) +
+					Math.pow( Math.abs(a.ypos - this.ypos), 2)
+					;
+				if ( myrange >= dist ) { 
+					targets.push( a );
+					}
+				}
+			}
+		// sort targets by their prescribed order
+		targets.sort( (a,b) => { return (a.order < b.order) ? -1 : ((a.order > b.order) ? 1 : 0 ); } );
+		// create the mission
+		this.mission = { targets, time: Math.max( duration, 1 ), completed: [] };
+		}
+	
+	// returns a mission report for any completed missions
+	// { fleet, completed[] }
+	DoResearch() { 
+		if ( !this.research ) { return; }
+		let report = null;
+		// fleet is on a deepspace research mission
+		if ( this.mission ) { 
+			// check to see if someone else swiped our targets since last turn
+			while ( this.mission.targets.length && this.mission.targets[0].owner ) { 
+				this.mission.targets.shift();
+				}
+			// have any valid targets?
+			if ( this.mission.targets.length ) { 
+				// TODO: Add danger/conflict
+				let completed = this.mission.targets[0].AddResearch( this.owner, this.research );
+				console.log(`Fleet#${this.id} researched ${this.mission.targets[0].name}`);
+				// TODO: do something here?
+				if ( completed ) { 
+					console.log(`Fleet#${this.id} FINISHED researching ${this.mission.targets[0].name}`);
+					this.mission.targets[0].onComplete();
+					this.mission.completed.push( this.mission.targets.shift() );
+					}
+				}
+			this.mission.time--;
+			console.log(`Fleet#${this.id} returns in T-${this.mission.time}`);
+			if ( this.mission.time <= 0 ) { 
+				// mission complete; put back on star
+				this.star.fleets.push( this );
+				//
+				// TODO IMPORTANT: May be merging with another fleet
+				//
+				// send back report
+				report = { fleet: this, completed: this.mission.completed };
+				this.mission = null;
+				}
+			}	
+		// parked fleets with research ships do research
+		else if ( this.star && !this.dest ) { 
+			// if the ship is parked on an anomaly, research directly
+			if ( this.star.objtype == 'anom' && !this.star.owner && !this.star.ResearchIsCompleted(this.owner) ) { 
+				// TODO: Add danger/conflict
+				let completed = this.star.AddResearch( this.owner, this.research );
+				// send back report
+				if ( completed ) { 
+					this.star.onComplete();
+					report = { fleet: this, completed: [this.star] };
+					}
+				// TODO: do something here or let anom handle it directly?
+				}
+			// if the ship is parked in a system, do orbital research
+			else if ( this.star.objtype == 'star' ) { 
+				// TODO
+// 					let completed = this.star.AddResearch( this.owner, this.research );
+				// do something here or let anom handle it directly?
+				}
+			}
+		return report;
+		}
 	}
 	
 Fleet.all_fleets = []; 

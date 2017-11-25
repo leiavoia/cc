@@ -1,3 +1,4 @@
+import Anom from './Anom';
 import Star from './Star';
 import Planet from './Planet';
 import Civ from './Civ';
@@ -10,6 +11,7 @@ export default class Galaxy {
 	stars = [];
 	lanes = [];
 	civs = [];
+	anoms = [];
 	width = 2000;
 	height = 2000;
 	age = 0.5;
@@ -27,11 +29,12 @@ export default class Galaxy {
 		// reset data
 		this.stars = [];
 		this.lanes = [];
+		this.anoms = [];
 	
 		// for aesthetics and UI reasons, 
 		// we want an empty padded border.
-		this.width = (map_size_x+2) * cell_size;
-		this.height = (map_size_y+2) * cell_size;
+		this.width = ((map_size_x+2) * cell_size) + 401; // +400 to make room for sidebar
+		this.height = ((map_size_y+2) * cell_size) + 1; // +1 is to get the sector overlay graphic border
 		this.age = galaxy_age;
 		
 		// represent the galaxy as an array of bools, 
@@ -40,8 +43,15 @@ export default class Galaxy {
 		// We assign the first X slots to be a star ("true")
 		let sectors = map_size_x * map_size_y;
 		if ( sectors < stars_wanted ) { stars_wanted = sectors; }
-		let arr =  new Array( stars_wanted ).fill(true).concat(
-			new Array( sectors - stars_wanted ).fill(false)
+		let remainder = sectors - stars_wanted;
+		// anomalies cover half the un-starred space or 20% of the total space, 
+		// whichever is less.
+		let num_anoms = Math.min( Math.floor( remainder * 0.5 ), Math.floor( sectors * 0.2) );
+		remainder -= num_anoms;
+		let arr =  new Array( stars_wanted ).fill(1).concat(
+			new Array( num_anoms ).fill(2).concat( 
+				new Array( remainder ).fill(0)
+				)
 			) ;
 	
 		// these is where the shape of the galaxy is determined. 
@@ -51,11 +61,18 @@ export default class Galaxy {
  		// loop over the array and create a star wherever we find a "true"
 		for ( let x = 0; x < map_size_x; x++ ) { 
 			for ( let y = 0; y < map_size_y; y++ ) { 
-				if ( arr[ x*map_size_y + y ] ) {
+				let cell = arr[ x*map_size_y + y ];
+				if ( cell==1 ) {
 					this.stars.push( Star.Random( 
 						((x+1)*cell_size) + (Math.floor((Math.random() * 200)) + 100 ), 
 						((y+1)*cell_size) + (Math.floor((Math.random() * 200)) + 100 ),  
 						galaxy_age 
+						) );					
+					}
+				else if ( cell==2 ) {
+					this.anoms.push( Anom.Random( 
+						((x+1)*cell_size) + (Math.floor((Math.random() * 200)) + 100 ), 
+						((y+1)*cell_size) + (Math.floor((Math.random() * 200)) + 100 )
 						) );					
 					}
 				}
@@ -196,11 +213,12 @@ export default class Galaxy {
 				att: 14,
 				speed: 50,
 				colonize: true,
+				research: 0,
 				offroad: true,
 				selected: true // default to selected for easier UI
 				},
 			{
-				name: 'Defender mkII',
+				name: 'Research Vessel',
 				img: 'img/ships/ship1_mock.png',
 				hp: 62,
 				maxhp: 100,
@@ -211,6 +229,7 @@ export default class Galaxy {
 				att: 14,
 				speed: 100,
 				colonize: false,
+				research: 50,
 				offroad: true,
 				selected: true // default to selected for easier UI
 				},
@@ -226,6 +245,7 @@ export default class Galaxy {
 				att: 14,
 				speed: 200,
 				colonize: false,
+				research: 0,
 				offroad: true,
 				selected: true // default to selected for easier UI
 				},

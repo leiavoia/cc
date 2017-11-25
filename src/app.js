@@ -1,6 +1,7 @@
 import Game from './classes/Game';
 import Galaxy from './classes/Galaxy';
 import Star from './classes/Star';
+import Anom from './classes/Anom';
 import Planet from './classes/Planet';
 import Hyperlane from './classes/Hyperlane';
 import Constellation from './classes/Constellation';
@@ -23,10 +24,12 @@ export class App {
 	game = null;
 	notes = [];
 	options = {
-		dim_unexplored: true,
+		dim_unexplored: false,
 		show_sectors: true,
-		see_all: false,
-		show_range: true
+		see_all: true,
+		show_range: true,
+		show_xtreme_fleets: true,
+		debug: true
 		};
 		
 	ResetEverything() { 
@@ -57,7 +60,7 @@ export class App {
 		this.game.InitGalaxy();
 // 		this.ChangeState('title');
 		this.game.galaxy.Make( 12,7,50,0.5 );
-		let mystar = this.game.galaxy.AddExploreDemo( 12 );
+		let mystar = this.game.galaxy.AddExploreDemo( 1 );
 		this.game.SetMyCiv( 0 ); // could switch using debug stuff
 		this.ChangeState('play');
 		this.hilite_star = mystar;
@@ -123,6 +126,7 @@ export class App {
 		
 		if ( obj instanceof Planet ) { this.sidebar_mode = 'planet'; this.hilite_star = obj.star; }
 		else if ( obj instanceof Star ) { this.sidebar_mode = 'star'; this.hilite_star = obj; }
+		else if ( obj instanceof Anom ) { this.sidebar_mode = 'anom'; this.hilite_star = obj; }
 		else if ( obj instanceof Fleet ) { this.sidebar_mode = 'fleet'; }
 		else if ( obj instanceof Constellation ) { this.sidebar_mode = 'constel'; }
 		else { this.sidebar_mode = false; }
@@ -175,10 +179,10 @@ export class App {
 		this.notes.push({ type:type, title:title, content:content, onclick:onclick });
 		}
 	// removes the note by default. executes onclick callback if set.
-	ClickNote( note, remove = true ) { 
+	ClickNote( note, remove = true, do_action = true ) { 
 		let i = this.notes.indexOf(note);
 		if ( i >= 0 ) { 
-			if ( typeof note.onclick === 'function' ) { 
+			if ( typeof note.onclick === 'function' && do_action ) { 
 				note.onclick();
 				}
 			if ( remove ) { 
@@ -187,7 +191,7 @@ export class App {
 			}
 		}
 	ClearNotes() { 
-		this.notes = [];
+		this.notes.splice(0,this.notes.length);
 		}
 	}
 

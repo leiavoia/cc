@@ -5,7 +5,10 @@ export class FleetDetailPane {
 	mode = 'fleet';
 	can_colonize = false;
 	can_send = false;
-	star_select_mode = false;
+	can_bomb = false;
+	can_research = false;
+	can_invade = false;
+	mission_turns = 10;
 	
 	@bindable fleet = null;
 	app = null;
@@ -19,20 +22,18 @@ export class FleetDetailPane {
 		}
 		
 	constructor() { 
-		this.mode = 'fleet';
-		this.can_colonize = false;
 		};
 		
 	// aurelia automatic function called when fleet object gets changed
 	fleetChanged( new_fleet, old_fleet ) {
 		if ( new_fleet instanceof Fleet ) { 
 			new_fleet.SetOnUpdate( () => this.UpdateStats() );
+			this.SelectAll(); 
 			this.UpdateStats();
 			}
 		if ( old_fleet instanceof Fleet ) { 
 			old_fleet.SetOnUpdate(null);
 			}
-		this.star_select_mode = false;
 		this.mode = 'fleet';
 		}
 	PlanetSizeCSS( planet ) {
@@ -56,14 +57,13 @@ export class FleetDetailPane {
 			this.app.CloseSideBar();
 			}
 		else {
-			this.UpdateCanColonize();
-			this.can_send = this.fleet.star && this.AtLeastOneShipSelected();
+			this.Recalc();
 			// TODO: speed, strength, etc
 			}
 		}
 	SelectShip(ship) {
-		ship.selected = ship.selected ? false : true;
-		this.can_send = this.fleet.star && this.AtLeastOneShipSelected();
+		ship.selected = !ship.selected;
+		this.Recalc();
 		}
 	GetHealthClass(ship) {
 		let pct = ship.hp / ship.maxhp;
@@ -75,33 +75,24 @@ export class FleetDetailPane {
 		for ( let ship of this.fleet.ships ) { 
 			ship.selected = true;
 			}
-		this.can_send = true;
+		this.Recalc();
 		}
 	SelectNone() { 
 		for ( let ship of this.fleet.ships ) { 
 			ship.selected = false;
 			}
-		this.can_send = false;
+		this.Recalc();
 		}
 	SelectInvert() { 
 		for ( let ship of this.fleet.ships ) { 
 			ship.selected = ship.selected ? false : true;
 			}
-		this.can_send = this.fleet.star && this.AtLeastOneShipSelected();
-		}
-	AtLeastOneShipSelected() {
-		for ( let ship of this.fleet.ships ) { 
-			if ( ship.selected ) { 
-				return true;
-				}
-			}
-		return false;
+		this.Recalc();
 		}
 	ClickSend() {
-		// first check if there is anything to send
-		if ( this.AtLeastOneShipSelected() ) {
+		if ( this.can_send==2 ) {
 			this.app.RegisterStarClickCallback( (star) => this.StarClickCallback(star) );
-			this.star_select_mode = true;
+			this.mode = 'awaiting_star_click';
 			}
 		}
 	GetFirstColonyShip() {
@@ -145,28 +136,106 @@ export class FleetDetailPane {
 		// TODO: destroy all refs to the ship
 		//
 		}
-	UpdateCanColonize() { 
+	Recalc() { 
+		// for each stat, distinguish between ability of the
+		// fleet as a whole (1) or the specific selection (2)
+		// or no ability at all (0)
+		this.num_selected = 0;
 		this.can_colonize = false;
-		this.fleet.colonize = this.GetFirstColonyShip() ? true : false;
-		if ( this.fleet.star && this.fleet.star.planets.length && this.fleet.colonize ) {
+		this.can_bomb = false;
+		this.can_invade = false;
+		this.can_research = this.fleet.star ? 0 : false; // is parked
+		this.can_send = this.fleet.star ? 1 : false; // is parked
+		// some abilities depend on what we might be parked over.
+		// mark abilites with ===0 as a signal to look further
+		if ( this.fleet.star && 'planets' in this.fleet.star && this.fleet.star.planets.length ) {
 			for ( let p of this.fleet.star.planets ) { 
-				if ( p.owner === false ) { 
-					this.can_colonize = true; 
+				if ( p.owner === false && p.Habitable( this.fleet.owner.race ) ) { 
+					this.can_colonize = 0; 
+					}
+				else if ( p.owner != this.fleet.owner.race ) { 
+					this.can_bomb = 0; 
+					this.can_invade = 0; 
 					}
 				}
 			}
+		for ( let s of this.fleet.ships ) { 
+			if ( this.can_send !== false && this.can_send < 2 ) 				{ 
+				this.can_send = Math.max( this.can_send, (s.selected ? 2 : 1) ); 
+				}
+			if ( this.can_colonize !== false && this.can_colonize < 2 && s.colonize )	{ 
+				this.can_colonize = Math.max( this.can_colonize, (s.selected ? 2 : 1) ); 
+				}
+			if ( this.can_bomb !== false && this.can_bomb < 2 && s.bomb_pow )		{ 
+				this.can_bomb = Math.max( this.can_bomb, (s.selected ? 2 : 1) ); 
+				}
+			if ( this.can_research !== false && this.can_research < 2 && s.research )	{ 
+				this.can_research = Math.max( this.can_research, (s.selected ? 2 : 1) ); 
+				}
+			if ( this.can_invade !== false && this.can_invade < 2 && s.invade )		{ 
+				this.can_invade = Math.max( this.can_invade, (s.selected ? 2 : 1) ); 
+				}
+			if ( s.selected ) { this.num_selected++; }
+			}
+		}
+	AnomalyResearch() { 
+		if ( this.fleet.star && !this.fleet.dest && this.fleet.star.objtype == 'anom' ) { 
+			return this.fleet.star.AmountResearched( this.fleet.owner ) / this.fleet.star.size;
+			}
+		return 0;
 		}
 	ClickColonize() {
-		if ( this.can_colonize ) { 
+		if ( this.can_colonize==2 ) { 
 			this.mode = 'colonize';
 			}
 		}
-	ClickCancelChoosePlanet() {
+	ClickChooseMission() {
+		if ( this.can_research==2 ) { 
+			this.mission_turns = 10;
+			this.mode = 'mission';
+			}
+		}
+	ClickStartMission() {
+		if ( this.mode == 'mission' ) { 
+			// if we are sending all ships, just move the entire fleet.
+			// otherwise we have to split the fleet.
+			let total_ships = this.fleet.ships.length;
+			let ships_leaving = [];
+			for ( let i=total_ships-1; i >= 0; i-- ) {
+				if ( this.fleet.ships[i].selected ) { 
+					//this.fleet.ships[i].selected = false;
+					// tech note: using unshift instead of push maintains order
+					ships_leaving.unshift( this.fleet.ships.splice( i, 1 )[0] );
+					}
+				}
+			if ( ships_leaving.length ) { 
+				// send the entire fleet
+				if ( ships_leaving.length == total_ships ) { 
+					this.fleet.ships = ships_leaving;
+					this.app.SwitchSideBar( this.fleet.star );
+					this.fleet.SendOnMission( this.app.game.galaxy, this.mission_turns );
+					}
+				// send a splinter fleet
+				else {
+					let f = new Fleet( this.fleet.owner, this.fleet.star );
+					f.ships = ships_leaving;
+					f.ReevaluateStats();
+					this.app.SwitchSideBar( this.fleet.star );
+					f.SendOnMission( this.app.game.galaxy, this.mission_turns );
+					}
+				this.Recalc();
+				}
+			this.fleet.FireOnUpdate();
+			}
 		this.mode = 'fleet';
+		}
+	ClickCancel() {
+		this.mode = 'fleet';
+		this.app.RegisterStarClickCallback( null );
 		}
 	ClickScrap() {
 		// first check if there is anything to scrap
-		if ( this.AtLeastOneShipSelected() ) {
+		if ( this.num_selected ) {
 			// TODO
 			}
 		// tell them nothing to scrap
@@ -174,38 +243,38 @@ export class FleetDetailPane {
 			// TODO
 			}
 		}
-	ClickSendCancel() {
-		this.app.RegisterStarClickCallback( null );
-		this.star_select_mode = false;
-		}
 	StarClickCallback( star ) { 
-		this.star_select_mode = false;
-		// if we are sending all ships, just move the entire fleet.
-		// otherwise we have to split the fleet.
-		let total_ships = this.fleet.ships.length;
-		let ships_leaving = [];
-		for ( let i=total_ships-1; i >= 0; i-- ) {
-			if ( this.fleet.ships[i].selected ) { 
-				this.fleet.ships[i].selected = false;
-				// tech note: using unshift instead of push maintains order
-				ships_leaving.unshift( this.fleet.ships.splice( i, 1 )[0] );
+		if ( this.mode == 'awaiting_star_click' ) { 
+			// if we are sending all ships, just move the entire fleet.
+			// otherwise we have to split the fleet.
+			let total_ships = this.fleet.ships.length;
+			let ships_leaving = [];
+			for ( let i=total_ships-1; i >= 0; i-- ) {
+				if ( this.fleet.ships[i].selected ) { 
+					//this.fleet.ships[i].selected = false;
+					// tech note: using unshift instead of push maintains order
+					ships_leaving.unshift( this.fleet.ships.splice( i, 1 )[0] );
+					}
 				}
+			if ( ships_leaving.length ) { 
+				// send the entire fleet
+				if ( ships_leaving.length == total_ships ) { 
+					this.fleet.ships = ships_leaving;
+					this.fleet.SetDest( star );
+					this.app.SwitchSideBar( this.fleet );
+					}
+				// send a splinter fleet
+				else {
+					let f = new Fleet( this.fleet.owner, this.fleet.star );
+					f.ships = ships_leaving;
+					f.SetDest( star );
+					f.ReevaluateStats();
+					this.app.SwitchSideBar( f );
+					}
+				this.Recalc();
+				}
+			this.fleet.FireOnUpdate();
 			}
-		if ( ships_leaving.length ) { 
-			if ( ships_leaving.length == total_ships ) { 
-				this.fleet.ships = ships_leaving;
-				this.fleet.SetDest( star );
-				this.app.SwitchSideBar( this.fleet );
-				}
-			else {
-				let f = new Fleet( this.fleet.owner, this.fleet.star );
-				f.ships = ships_leaving;
-				f.SetDest( star );
-				f.ReevaluateStats();
-				this.app.SwitchSideBar( f );
-				}
-			this.can_colonize = false;
-			}
-		this.fleet.FireOnUpdate();
+		this.mode = 'fleet';
 		}
 	}

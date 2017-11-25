@@ -121,8 +121,52 @@ export default class Planet {
 						shield: 13,
 						maxshield: 20,
 						att: 14,
-						speed: 100,
+						speed: planet.owner.ship_speed, // HACK
 						colonize: true,
+						research: 0,
+						offroad: true,
+						selected: true // default to selected for easier UI
+						};
+					if ( !myfleet ) { 
+						myfleet = new Fleet( planet.owner, planet.star );
+						}
+					myfleet.AddShip(ship);
+					}
+				},
+			labor: 10, // "cost" in hammers
+			mp: 5, // material points
+			spent: 0,
+			quantity: -1,
+			turns_left: 0,
+			pct: 0
+			},
+		{
+			type: 'ship',
+			obj: {
+				name: 'Research Vessel',
+				unique: false,
+				ProduceMe: function ( planet ) {
+					let myfleet = null;
+					for ( let f of planet.star.fleets ) { 
+						if ( f.owner == planet.owner ) { 
+							myfleet = f;
+							break;
+							}
+						}
+					let ship = {
+						name: 'Research Vessel',
+						img: 'img/ships/ship1_mock.png',
+						hp: 85,
+						maxhp: 100,
+						armor: 20,
+						maxarmor: 28,
+						shield: 13,
+						maxshield: 20,
+						att: 14,
+						speed: planet.owner.ship_speed, // HACK
+						colonize: true,
+						research: 5,
+						research: 0,
 						offroad: true,
 						selected: true // default to selected for easier UI
 						};
@@ -188,22 +232,6 @@ export default class Planet {
 			quantity: 3,
 			turns_left: 3,
 			pct: 0
-			},
-		{
-			type: 'building',
-			obj: {
-				name: 'Breakfast',
-				unique: true,
-				ProduceMe: function ( planet ) {
-					// TODO: make ship
-					}
-				},
-			labor: 30, // "cost" in hammers
-			mp: 5, // material points
-			spent: 2,
-			quantity: 1,
-			turns_left: 2,
-			pct: (2.0/5.0)*100
 			}
 		];
 

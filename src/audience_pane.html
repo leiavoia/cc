@@ -15,10 +15,11 @@
 			</p>
 			<div class="love_nub"><div class="nub" css="margin-left: calc(${civ.LoveNub(app.game.myciv)} * (100% - 6em));">${civ.LoveNub(app.game.myciv)|loveNub}</div></div>
 			<div class="annoyometer"><div class="nub" css="margin-left: calc(${civ.annoyed} * (100% - 6em));">${civ.annoyed|annoyometer}</div></div>
+			<p>Preferred Habitat: ${civ.race.env.atm} Atmosphere, ${civ.race.env.temp} Temperature, ${civ.race.env.grav} Gravity</p>
 			<p>Treasury: ${civ.treasury}</p>
 			<p>Research: ${civ.research}</p>
 			<p>Government: ${civ.gov_type}</p>
-			<p>Communication Ability: ${comm|percent}%</p>
+			<p>Communication Ability: ${comm|communicationAbility}</p>
 		</div>
 		<div id="audience_us" class="slideInRight" if.bind="ambassador_present">
 			<div id="speech_them" class="fadeIn" css="color: rgb( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]} );">

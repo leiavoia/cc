@@ -13,5 +13,6 @@ export function configure(config) {
   	'./value-converters/uppercaseFirst',
   	'./value-converters/LoveNubConverter',
   	'./value-converters/AnnoyometerConverter',
+  	'./value-converters/CommunicationAbility',
   	]);
 }

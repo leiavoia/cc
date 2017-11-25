@@ -1,5 +1,6 @@
 // import Civ from './Civ';
 import Galaxy from './Galaxy';
+import Anom from './Anom';
 import Star from './Star';
 import Planet from './Planet';
 import Hyperlane from './Hyperlane';
@@ -48,17 +49,17 @@ export default class Game {
 		
 		for ( let t=0; t < num_turns; t++ ) { 
 
-			// Loop Part 1
-			for ( let s of this.galaxy.stars ) { 
-				for ( let p of s.planets ) {
-					if ( p.settled ) {  
-	
-						// collect taxes
-// 						p.owner.treasury += p.CollectTax();
-												
-						}
-					}
-				}
+// 			// Loop Part 1
+// 			for ( let s of this.galaxy.stars ) { 
+// 				for ( let p of s.planets ) {
+// 					if ( p.settled ) {  
+// 	
+// 						// collect taxes
+// // 						p.owner.treasury += p.CollectTax();
+// 												
+// 						}
+// 					}
+// 				}
 				
 			// import/export mined resources
 // 			for ( let civ of this.galaxy.civs ) { 
@@ -212,6 +213,7 @@ export default class Game {
 			
 			
 			// Planetary Economics
+			console.time('Planetary Econ');
 			for ( let s of this.galaxy.stars ) { 
 				for ( let p of s.planets ) {
 					if ( p.settled ) {  
@@ -288,12 +290,22 @@ export default class Game {
 						}
 					}
 				}
-
+			console.timeEnd('Planetary Econ');
+			
 			// AI!
+			console.time('AI');
 			for ( let civ of this.galaxy.civs ) { 
 				civ.TurnAI( this.app );
 				}
-				
+			console.timeEnd('AI');
+			
+			// important to do ship research BEFORE moving ships,
+			// otherwise they get to do both in one turn. Not allowed.
+			console.time('Fleet Research');
+			this.DoFleetResearch();
+			console.timeEnd('Fleet Research');
+			
+			console.time('Ship Movement');
 			// ship movement
 			for ( let f of this.galaxy.fleets ) { 
 				if ( f.MoveFleet() ) { 
@@ -304,14 +316,30 @@ export default class Game {
 				
 					}
 				}
-				
+			console.timeEnd('Ship Movement');
+			
+			
+			// RESEARCH
+			console.time('Research');
+			for ( let civ of this.galaxy.civs ) { 
+				civ.DoResearch( this.app );
+				}	
+			console.timeEnd('Research');
+			
 			// [!]OPTIMIZE we can optimize this out of the loop if 
 			// we limit it to events that change planets or ship ranges
+			console.time('Recalc Civ Contact');
 			this.RecalcCivContactRange();
+			console.timeEnd('Recalc Civ Contact');
+			
+			console.time('Recalc Star Range');
 			this.RecalcStarRanges();
+			console.timeEnd('Recalc Star Range');
 				
 			// fleets move, so we need to do this on each turn
+			console.time('Recalc Fleet Range');
 			this.RecalcFleetRanges(); 
+			console.timeEnd('Recalc Fleet Range');
 				
 			this.turn_num++;
 			
@@ -376,6 +404,31 @@ export default class Game {
 						}
 					}
 				};
+			}
+		}
+		
+	DoFleetResearch() { 
+// 		let maxrange = this.myciv.ship_range * this.myciv.ship_range ; // NOTE: avoid square rooting.
+		for ( let f of Fleet.all_fleets ) { 
+			let report = f.DoResearch();
+			if ( report && f.owner == this.app.game.myciv ) { 
+				let findings_hook = '';
+				if ( report.completed.length ) {
+					findings_hook = ' They found: ';
+					let n = report.completed.length;
+					for ( let a of report.completed ) { 
+						findings_hook += a.name;
+						if ( --n > 0 ) { findings_hook += ', '; }
+						else { findings_hook += '.'; }
+						}
+					}
+				this.app.AddNote(
+					'good',
+					`Research Mission Complete`,
+					`Fleet ${f.id} Has completed it's research mission.${findings_hook}`,
+// 					function(){app.SwitchMainPanel('audience');}
+					);				
+				}
 			}
 		}
 		

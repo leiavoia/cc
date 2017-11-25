@@ -10,13 +10,12 @@ import * as utils from '../util/utils';
 
 export default class Star {
 	
+	objtype = 'star';
 	id = 0;
 	name = 'UNKNOWN';
 	color = 'white';
 	xpos = 0;
 	ypos = 0;
-	xdivpos = -75;
-	ydivpos = -75;
 	planets = [];
 	lanes = [];
 	fleets = [];
@@ -47,8 +46,6 @@ export default class Star {
 		this.color = color;
 		this.xpos = xpos;
 		this.ypos = ypos;
-		this.xdivpos = xpos - 75;
-		this.ydivpos = ypos - 75;	
 		this.id = Star.IncNextID();
 		this.accts = new Map();
 		}

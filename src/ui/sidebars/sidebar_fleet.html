@@ -3,20 +3,34 @@
 	<require from="./converters/round"></require>-->
 
 	<!-- FLEET DISPLAY MODE -->
-	<div class="fleet" if.bind="mode == 'fleet'">
+	<div class="fleet" if.bind="mode == 'fleet' || mode == 'awaiting_star_click'">
 		<h2>${fleet.owner.name} Fleet #${fleet.id}</h2>
 		<p class="msg" if.bind="fleet.star">Stationed at <b>${fleet.star.name}</b></p>
 		<p class="msg" if.bind="fleet.dest">Heading to <b>${fleet.dest.name}</b></p>
+		<!-- local anomoly research info -->
+		<p if.bind="fleet.star && !fleet.dest && fleet.star.objtype == 'anom'">
+			Anomaly Research: ${(app.game.turn_num?0:0) + fleet.star.AmountResearched( fleet.owner )} <progress value.bind="(app.game.turn_num ? 0 : 0) + fleet.star.AmountResearched( fleet.owner ) / fleet.star.size" />
+		</p>
+		<p class="button_rack" if.bind="mode=='fleet'">
+			<a href="#" click.delegate="ClickSend()" if.bind="can_send " class="${can_send==2 ? 'alt' : 'ghost'}">MOVE</a>
+			<a href="#" click.delegate="ClickColonize()" if.bind="can_colonize" class="${can_colonize==2 ? 'alt' : 'ghost'}">COLONIZE</a>
+			<a href="#" click.delegate="ClickChooseMission()" if.bind="can_research" class="${can_research==2 ? 'alt' : 'ghost'}">MISSION</a>
+			<a href="#" click.delegate="ClickBomb()" if.bind="can_bomb" class="${can_bomb==2 ? 'alt' : 'ghost'}">BOMBARD</a>
+			<a href="#" click.delegate="ClickInvade()" if.bind="can_invade" class="${can_invade==2 ? 'alt' : 'ghost'}" >INVADE</a>
+			<a href="#" click.delegate="ClickScrap()" class="${num_selected ? 'alt' : 'ghost'}" >SCRAP</a>
+		</p>
+		<p class="button_rack" if.bind="mode != 'fleet'">
+			<a href="#" click.delegate="ClickCancel()" class="bad" >CANCEL</a>
+		</p>
 		<p class="button_rack">
-			<a href="#" click.delegate="ClickSend()" if.bind="!star_select_mode" class="${can_send ? '' : 'ghost'}">SEND</a>
-			<a href="#" click.delegate="ClickSendCancel()" class="bad" if.bind="star_select_mode">CANCEL</a>
-			<a href="#" click.delegate="ClickColonize()" class="${can_colonize ? 'alt' : 'ghost'}">COLONIZE</a>
 			<a href="#" click.delegate="SelectAll()" >ALL</a>
 			<a href="#" click.delegate="SelectNone()" >NONE</a>
 			<a href="#" click.delegate="SelectInvert()" >INVERT</a>
-<!-- 			<a href="#" click.delegate="ClickScrap()" >SCRAP</a> -->
+			<span>${num_selected}/${fleet.ships.length}</span>
 		</p>
-		<p style="font-weight:bold; color: #FAA;" if.bind="star_select_mode">Click a star to send fleet to.</p>
+		
+		<p style="font-weight:bold; color: #FAA;" if.bind="mode=='awaiting_star_click'">Click a star to send fleet to.</p>
+		
 		<div class="shiplist">
 			<div class="ship ${ship.selected ? 'selected' : ''}" click.delegate="SelectShip(ship)" repeat.for="ship of fleet.ships" >
 				<img src.one-time="ship.img" />
@@ -29,13 +43,23 @@
 			</div>
 		</div>
 	</div>
+		
+	<template if.bind="mode=='mission'">
+		<p style="font-weight:bold; color: #FAA;">Sending fleet on deep-space research mission. How long should the mission last?</p>
+		<p><input type="range" min="2" max="50" step="1" value.bind="mission_turns" /> ${mission_turns} turns</p>
+		<p class="button_rack">
+			<a href="#" click.delegate="ClickStartMission()" class="good" >START MISSION</a>
+			<a href="#" click.delegate="ClickCancel()" class="bad" >CANCEL</a>
+		</p>
 
-	<!-- CHOOSE-COLONY MODE -->
-	<div class="star star_${fleet.star.color}" if.bind="mode == 'colonize'">
+	</template>
+		
+	<!-- CHOOSE-PLANET MODE -->
+	<div class="star star_${fleet.star.color}" if.bind="mode == 'colonize' || mode == 'bomb' || mode == 'invade'">
 		<h2>Colonize ${fleet.star.name}</h2>
 		<p style="font-weight:bold; color: #FAA;" >Choose a planet to colonize:</p>
 		<template repeat.for="p of fleet.star.planets" containerless>
-			<div class="planet atm${p.atm} tmp${p.temp}" css.one-time="PlanetSizeCSS(p)" if.bind="p.owner === false" click.delegate="ChoosePlanetToColonize(p)">
+			<div class="planet atm${p.atm} tmp${p.temp}" css.one-time="PlanetSizeCSS(p)" if.bind="p.owner === false && p.Habitable(fleet.owner.race)" click.delegate="ChoosePlanetToColonize(p)">
 				<p class="env_label"><span class="env_label">${p.envDisplayName}</span></p>
 				<div class="env_box">
 					<div class="target"></div>
@@ -46,12 +70,15 @@
 						<span class="size">${p.size}<br/><span class="size">SIZE</span></span>							
 						<span class="mine">${p.rich}x<br/><span class="mine">MINING</span></span>
 						<span class="en">${p.energy}x<br/><span class="en">ENERGY</span></span>
-					</div>			
+						<span class="${p.Habitable(app.game.myciv.race) ? (p.Adaptation( app.game.myciv.race ) < 0 ? 'alert' : 'good') : 'bad'}">
+							${(p.Adaptation( app.game.myciv.race ) >= 0 ? '+' : '')}${p.Adaptation( app.game.myciv.race )}<br/>
+							<span class="">ENV</span>
+						</span>					</div>			
 				</div>
 			</div>
 		</template>
 		<p class="button_rack">
-			<a href="#" click.delegate="ClickCancelChoosePlanet()" class="bad">CANCEL</a>
+			<a href="#" click.delegate="ClickCancel()" class="bad">CANCEL</a>
 		</p>		
 	</div>
 	

@@ -1,14 +1,57 @@
 <template>
 <!--	<require from="./converters/percent"></require>
 	<require from="./converters/round"></require>-->
-
-	<div id="tech_pane" class="pane">
-	
-		<h1>Technology</h1>
 		
-		<p><a href="#"  click.delegate="ClosePanel()" style="font-size: 200%; color: #000; background-color: #FFF; padding: 0.25em;">CLOSE</a></p>
+	<div id="tech_pane" class="pane">
+
+<!-- 		<p><a href="#"  click.delegate="ClosePanel()" class="button big" style="float: right">CLOSE</a></p> -->
+		
+		<h1>Research</h1>
+	
+		<div id="inner_wrapper">
+			<div id="available" class="techlist"><!-- if.bind="app.game.myciv.tech.nodes_avail.size" -->
+				<h2>Available</h2>
+				<div 
+					repeat.for="[key,n] of app.game.myciv.tech.nodes_avail" 
+					class="${key == app.game.myciv.tech.current_project.key ? 'researching' : ''} fadeIn"
+					click.delegate="ClickAvailableTech(key)"
+					>
+					<p>${n.node.name}
+						<span>
+						<!--${n.rp|round}
+						/-->
+						${n.node.rp|round} RP
+						</span></p>
+					<progress value="${n.rp}" max="${n.node.rp}" if.bind="n.rp"></progress>
+				</div>
+			</div>
+			
+			<div id="completed" class="techlist">
+				<h2>Completed</h2>
+				<div repeat.for="[key,n] of app.game.myciv.tech.nodes_compl" 
+					click.delegate="ClickCompletedTech(key)"
+					class="fadeIn"
+					>
+					<p>${n.node.name}</p>
+				</div>
+			</div>
+			
+			<div id="featured">
+				<h2>${app.game.myciv.tech.current_project.node.name}</h2>
+				<img src="${app.game.myciv.tech.current_project.node.img}" style="width: 100%; margin-bottom:1em;" />
+				<div innerhtml.bind="AutoDesc( app.game.myciv.tech.current_project )">
+				</div>
+				<p>${app.game.myciv.tech.current_project.node.rp} RP</p>
+				<p>Requires:</p>
+				<ul>
+					<li repeat.for="req of app.game.myciv.tech.current_project.node.requires">${req}</li>
+				</ul>
+				<p>Yields:</p>
+				<ul>
+					<li repeat.for="yield of app.game.myciv.tech.current_project.node.yields">${yield}</li>
+				</ul>
+			</div>
+		</div>
 	</div>
-
-
 
 </template>

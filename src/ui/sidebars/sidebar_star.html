@@ -9,7 +9,7 @@
 		</template>
 		<template if.bind="star.explored || app.options.see_all">
 			<h2 if.bind="!editing_name" click.delegate="ToggleNameEdit()">${star.name}</h2>
-			<p>settle dby player? ${star.settled_by[app.game.myciv.id] ? 'yes' : 'no'}</p>
+<!-- 			<p>settle dby player? ${star.settled_by[app.game.myciv.id] ? 'yes' : 'no'}</p> -->
 			<p if.bind="editing_name" >
 				<input type="text" value.bind="star.name" />
 				<a href="" click.delegate="ToggleNameEdit()">OK</a>
@@ -24,25 +24,25 @@
 				<div class="phys">
 					<div class="size">
 						<span class="pop" if.bind="p.owner !== false">${p.total_pop|round}<br/><span class="pop">POP</span></span>
-						<span class="inf" if.bind="p.owner !== false">${p.inf|round}<br/><span class="inf">INFR</span></span>
 						<span class="size">${p.size}<br/><span class="size">SIZE</span></span>							
 						<span class="mine">${p.rich}x<br/><span class="mine">MINING</span></span>
 						<span class="en">${p.energy}x<br/><span class="en">ENERGY</span></span>
-
-						<div class="size" if.bind="p.owner !== false" css="width:${p.size / 200 | percent:3}%"></div>
-						<div class="inf" if.bind="p.owner !== false" css="width:${(p.inf / p.size) * (p.size / 200) | percent:3}%"></div>
-						<div class="pop" if.bind="p.owner !== false" css="width:${(p.total_pop / p.size) * (p.size / 200) | percent:3}%"></div>
+						<span class="${p.Habitable(app.game.myciv.race) ? (p.Adaptation( app.game.myciv.race ) < 0 ? 'alert' : 'good') : 'bad'}">
+							${(p.Adaptation( app.game.myciv.race ) >= 0 ? '+' : '')}${p.Adaptation( app.game.myciv.race )}<br/>
+							<span class="">ENV</span>
+						</span>
+<!-- 						<div class="size" if.bind="p.owner !== false" css="width:${p.size / 200 | percent:3}%"></div> -->
+<!-- 						<div class="pop" if.bind="p.owner !== false" css="width:${(p.total_pop / p.size) * (p.size / 200) | percent:3}%"></div> -->
 					</div>			
 				</div>
 					
-				<div class="spending" if.bind="p.owner">
+<!--				<div class="spending" if.bind="p.owner">
 					<div class="spending_stackbar">
 						<div class="m" css="width:${p.act.mine.pct | percent:3}%">${p.act.mine.output | round:1}${p.act.mine.output > p.act.mine.need ? '+' : '-'}</div>
-						<div class="i" css="width:${p.act.inf.pct | percent:3}%">${p.act.inf.output | round:1}</div>
 						<div class="p" css="width:${p.act.prod.pct | percent:3}%">${p.act.prod.output | round:1}</div>
 						<div class="s" css="width:${p.act.sci.pct | percent:3}%">${p.act.sci.output | round:1}</div>
 					</div>
-				</div>
+				</div>-->
 				
 	<!--			<p class="physattr">
 					<span repeat.for="attr of p.physattr">${attr.name} </span>
