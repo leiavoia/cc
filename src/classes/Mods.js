@@ -52,7 +52,7 @@ export class Modlist {
 		}
 		
 	static SortMods( a, b ) {
-		let op_order = ['^','*','/','+','-','L','H','=']; // higher .. lower
+		let op_order = ['B','^','*','/','+','-','L','H','=']; // first .. last
 		let a_op = op_order.indexOf( a.op );
 		let b_op = op_order.indexOf( b.op );
 		// ability 
@@ -84,14 +84,15 @@ export class Mod {
 		}
 	Apply( value ) { 
 		switch ( this.op ) { 
-			case 'H': { return this.val > value ? this.val : value; }
-			case 'L': { return this.val < value ? this.val : value; }
-			case '^': { return Math.pow( value, this.val ); }
+			case 'H': { return this.val > value ? this.val : value; } // highest of
+			case 'L': { return this.val < value ? this.val : value; } // lowest of
+			case '^': { return Math.pow( value, this.val ); } // to the power of (i.e. "exponent")
 			case '*': { return value * this.val; }
 			case '/': { return value / this.val; }
 			case '+': { return value + this.val; }
 			case '-': { return value - this.val; }
-			case '=': { return this.val; }
+			case '=': { return this.val; } // per se "is" (i.e. "ends with")
+			case 'B': { return this.val; } // [B]ase value (i.e. "starts with")
 			default: { return value; }
 			}
 		}

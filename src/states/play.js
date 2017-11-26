@@ -1,5 +1,6 @@
 
 import Star from '../classes/Star';
+import Anom from '../classes/Anom';
 import Planet from '../classes/Planet';
 import Hyperlane from '../classes/Hyperlane';
 import Constellation from '../classes/Constellation';
@@ -19,7 +20,8 @@ export class PlayState {
 	min_scale = 0.05;
 	scaling_step = 0.125;
 	xtreme_zoom = false;
-	
+	caret = { obj: null, x: 0, y: 0, class: null };
+
 	constructor( app /*anim*/ ) {
 		this.app = app;
 // 		this.anim = anim;
@@ -32,14 +34,58 @@ export class PlayState {
 		document.body.className = document.body.className.replace('xtreme_zoom');
 		xtreme_zoom = false;
 		}
-		
+	
+	SetCaret( obj ) { 
+		if ( (obj instanceof Star) || (obj instanceof Anom) ) { 
+			this.caret.x = obj.xpos; 
+			this.caret.y = obj.ypos; 
+			this.caret.obj = obj;
+			this.caret.class = 'star';
+			}
+		else if ( obj instanceof Planet ) { 
+			this.caret.x = obj.star.xpos; 
+			this.caret.y = obj.star.ypos; 
+			this.caret.obj = obj.star;
+			this.caret.class = 'star';
+			}
+		else if ( obj instanceof Fleet ) { 
+			this.caret.x = obj.xpos; 
+			this.caret.y = obj.ypos; 
+			// HACK: if we are updating the caret and following the same fleet,
+			// update the the class from 'fleet' to 'fleet_follow'. This prevents
+			// the caret from floating around the screen when switching from 
+			// any other object to this fleet. We also want to switch coords to
+			// star if the fleet is parked.
+			if ( obj.star && !obj.dest ) { 
+				this.caret.obj = obj;
+				this.caret.class = 'star';
+				this.caret.x = obj.star.xpos; 
+				this.caret.y = obj.star.ypos; 
+				}
+			else if ( this.caret.obj == obj ) { 
+				this.caret.class = 'fleet_follow';
+				}
+			else {
+				this.caret.obj = obj;
+				this.caret.class = 'fleet';
+				}
+			}
+		else { 
+			this.caret.x = 0;
+			this.caret.y = 0; 
+			this.caret.obj = null;
+			this.caret.class = null;
+			} 
+		}
+
 	// can be a Star, Planet, Fleet, or an x/y pair: {x:100,y:100}
 	FocusMap( obj, snap = false ) { 
 		let x, y = 0;
-		if ( obj instanceof Star ) { x = obj.xpos; y = obj.ypos; }
+		if ( obj instanceof Star || obj instanceof Anom ) { x = obj.xpos; y = obj.ypos; }
 		else if ( obj instanceof Planet ) { x = obj.star.xpos; y = obj.star.ypos; }
 		else if ( obj instanceof Fleet ) { x = obj.xpos; y = obj.ypos; }
 		else { x = obj.x; y = obj.y; } // not a safe fallback
+		this.SetCaret( obj );
 		
 		let div = document.getElementById('layout_map');
 		let parent = document.getElementById('layout_viewport');

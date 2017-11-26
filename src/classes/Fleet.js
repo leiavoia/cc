@@ -152,14 +152,28 @@ export default class Fleet {
 			}
 		return moved;
 		}
-		
+
 	SetDest( dest ) { 
 		// check to see if we're already there
-		if ( this.dest == this.star ) { 
+		if ( this.dest == this.star || dest == this.star ) { 
 			this.dest = null;
 			this.xpos = 0;
 			this.ypos = 0;
-// 			console.log(`F${this.id}: I'm going nowhere!`);
+			// check to see if we are merging into an existing fleet
+			for ( let f of this.star.fleets )  {
+				if ( f.owner == this.owner ) { 
+					f.ships = f.ships.concat( this.ships );
+					f.ReevaluateStats();
+					this.ships = [];
+					this.merged_with = f; // hint for UI
+					this.Kill();
+					break;
+					}
+				}
+			// otherwise, call it home.
+			if ( !this.merged_with && this.star.fleets.indexOf(this) == -1 ) { 
+				this.star.fleets.push( this );
+				}			
 			}
 		else {
 			this.dest = dest;
@@ -206,10 +220,7 @@ export default class Fleet {
 		let targets = [];
 		let myrange = this.owner.ship_range * this.owner.ship_range; // avoiding sqrt 
 		for ( let a of galaxy.anoms ) { 
-			if ( !a.onmap && !a.owner && !a.ResearchIsCompleted(this.owner) ) { // deepspace, unclaimed
-				//
-				// TODO: take into account vis_level (Technology required)
-				//
+			if ( !a.onmap && !a.collected && !a.ResearchIsCompleted(this.owner) && a.vis_level <= this.owner.vis_level ) { 
 				let dist = 
 					Math.pow( Math.abs(a.xpos - this.xpos), 2) +
 					Math.pow( Math.abs(a.ypos - this.ypos), 2)
@@ -227,13 +238,13 @@ export default class Fleet {
 	
 	// returns a mission report for any completed missions
 	// { fleet, completed[] }
-	DoResearch() { 
+	DoResearch( game ) { // link to game so we can fire completion events 
 		if ( !this.research ) { return; }
 		let report = null;
 		// fleet is on a deepspace research mission
 		if ( this.mission ) { 
 			// check to see if someone else swiped our targets since last turn
-			while ( this.mission.targets.length && this.mission.targets[0].owner ) { 
+			while ( this.mission.targets.length && this.mission.targets[0].collected ) { 
 				this.mission.targets.shift();
 				}
 			// have any valid targets?
@@ -244,7 +255,7 @@ export default class Fleet {
 				// TODO: do something here?
 				if ( completed ) { 
 					console.log(`Fleet#${this.id} FINISHED researching ${this.mission.targets[0].name}`);
-					this.mission.targets[0].onComplete();
+// 					this.mission.targets[0].onComplete();
 					this.mission.completed.push( this.mission.targets.shift() );
 					}
 				}
@@ -264,7 +275,7 @@ export default class Fleet {
 		// parked fleets with research ships do research
 		else if ( this.star && !this.dest ) { 
 			// if the ship is parked on an anomaly, research directly
-			if ( this.star.objtype == 'anom' && !this.star.owner && !this.star.ResearchIsCompleted(this.owner) ) { 
+			if ( this.star.objtype == 'anom' && !this.star.collected && !this.star.ResearchIsCompleted(this.owner) ) { 
 				// TODO: Add danger/conflict
 				let completed = this.star.AddResearch( this.owner, this.research );
 				// send back report

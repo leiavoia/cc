@@ -164,8 +164,8 @@ export default class Planet {
 						maxshield: 20,
 						att: 14,
 						speed: planet.owner.ship_speed, // HACK
-						colonize: true,
-						research: 5,
+						colonize: false,
+						research: 50,
 						research: 0,
 						offroad: true,
 						selected: true // default to selected for easier UI

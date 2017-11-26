@@ -83,33 +83,34 @@
 					</div>
 				</template>
 			</div>   
+			
+			<div id="the_caret" class="caret ${caret.class}" if.bind="caret.obj" css="left:${caret.x}px; top:${caret.y}px;"></div>
+			
 			<!-- STARS -->
 			<div click.trigger="app.ClickStar(star)" repeat.for="star of app.game.galaxy.stars" class="mapobj_container star_${star.color & oneTime} ${star.settled ? 'settled' : ''} ${star.in_range ? 'in_range' : ''} ${star.explored || app.options.see_all ? 'explored' : 'unexplored'}" css="left:${star.xpos & oneTime}px; top:${star.ypos & oneTime}px;">
-				<div id="the_caret" class="caret" if.bind="app.hilite_star == star"></div>
 				<h2 css="${star.ownership_title_css}" >${star.name}</h2>
 				<div if.bind="star.planets.length" class="planet_list"><!--  && (star.explored || app.options.see_all) -->
-					<a href="#" click.trigger="app.SwitchSideBar(p,$event)" repeat.for="p of star.planets" class="${star.settled ? 'settled' : ''}" css="color: ${p.ui_color};"><svg class="icon icon-nature"><use xlink:href="#icon-nature"></use></svg></a>
+					<a href="#" click.trigger="app.SwitchSideBar(p,$event)" repeat.for="p of star.planets" class="${p.settled ? 'settled' : ''}" css="color: ${p.ui_color};"><svg class="icon icon-nature"><use xlink:href="#icon-nature"></use></svg></a>
 				</div>
 				<div if.bind="star.fleets.length" class="fleet_list">
-					<a href="#" click.trigger="app.SwitchSideBar(f,$event)" repeat.for="f of star.fleets" css="color: ${f.ui_color};"><span if.bind="app.options.debug">F${f.colonize?'c':''}${f.id}</span><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
+					<a href="#" click.trigger="app.SwitchSideBar(f,$event)" repeat.for="f of star.fleets" css="color: ${f.ui_color};"><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg><span if.bind="app.options.debug">F${f.colonize?'c':''}${f.id}</span></a>
 				</div>
 			</div>
 			
 			<!-- ANOMALIES -->
 			<template containerless repeat.for="anom of app.game.galaxy.anoms">
-				<div if.bind="anom.onmap || app.options.see_all"
+				<div if.bind="(anom.onmap && anom.vis_level <= app.game.myciv.vis_level) || app.options.see_all"
 					click.trigger="app.ClickStar(anom)" 
 					class="mapobj_container anom_${anom.type & oneTime} ${anom.settled ? 'settled' : ''} ${anom.in_range ? 'in_range' : ''} ${anom.explored || app.options.see_all ? 'explored' : 'unexplored'}" 
 					css="left:${anom.xpos & oneTime}px; top:${anom.ypos & oneTime}px;"
 					>
-					<div id="the_caret" class="caret" if.bind="app.hilite_star == anom"></div>
 					<h3>${anom.name}</h3>
 					<p if.bind="app.options.debug">
 						${anom.onmap ? 'onmap' : 'deepspace'}<br/>
-						${anom.size} / v${anom.vis_layer} / o${anom.order} / r${anom.AmountResearched(app.game.myciv)}
+						${anom.size} / v${anom.vis_level} / o${anom.order} / r${app.game.turn_num*0 + anom.AmountResearched(app.game.myciv)} / ${ anom.collected===null ? '-' : ( anom.collected ? '☒' : '☐' ) }
 					</p>
 					<div if.bind="anom.fleets.length" class="fleet_list">
-						<a href="#" click.trigger="app.SwitchSideBar(f,$event)" repeat.for="f of anom.fleets" css="color: ${f.ui_color};"><span if.bind="app.options.debug">F${f.colonize?'c':''}${f.id}</span><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
+						<a href="#" click.trigger="app.SwitchSideBar(f,$event)" repeat.for="f of anom.fleets" css="color: ${f.ui_color};"><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg><span if.bind="app.options.debug">F${f.colonize?'c':''}${f.id}</span></a>
 					</div>
 				</div>
 			</template>
@@ -117,15 +118,15 @@
 			<div repeat.for="lane of app.game.galaxy.lanes" class="hyperlane" css="left:${lane.x1}px; top:${lane.y1}px; width: ${lane.length}px; transform:  rotate(${lane.angle}deg) translateY(-5px); background-color: rgb( ${lane.color[0]}, ${lane.color[1]}, ${lane.color[2]}); ">
 			</div>
 		
-			<!-- FLEETS -->
+			<!-- FLEETS EN ROUTE -->
 			<template containerless repeat.for="f of app.game.galaxy.fleets" >
 				<!-- only display fleets en route -->
 				<template containerless if.bind="f.dest && (app.options.show_xtreme_fleets || !app.state_obj.xtreme_zoom) && (app.options.see_all || f.in_range || f.owner == app.game.myciv)">
 					<!-- show destination indicator line -->
 					<div if.bind="!app.state_obj.xtreme_zoom && app.options.see_all || f.owner == app.game.myciv" class="dest_line" css="left:${f.xpos}px; top:${f.ypos}px; width: ${f.dest_line_length}px; transform:  rotate(${f.dest_line_angle}deg) translateY(-5px); "></div>
 					<!-- show fleet icon -->
-					<div class="fleet_en_route" css="left:${f.xpos}px; top:${f.ypos}px;">
-						<a href="#" click.delegate="app.SwitchSideBar(f,$event)" css="color: ${f.ui_color};"><span if.bind="app.options.debug">F${f.colonize?'c':''}${f.id}</span><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
+					<div class="fleet_en_route" css="left:${f.xpos}px; top:${f.ypos}px; border-color: ${f.ui_color};">
+						<a href="#" click.delegate="app.SwitchSideBar(f,$event)" css="color: ${f.ui_color};"><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg><span if.bind="app.options.debug">F${f.colonize?'c':''}${f.id}</span></a>
 					</div>
 				</template>
 			</template>
@@ -229,11 +230,11 @@
 
 <!-- modal layer -->
 <!-- if.bind="modal_header || modal_content" -->
-<div id="layout_modal"  class="${(app.modal_header || app.modal_content) ? 'trekIn' : 'trekOut'}">
+<div id="layout_modal" class="${(app.modal_header || app.modal_content) ? 'trekIn' : 'trekOut'}">
 	<div class="dialog modal" >
 		<h2>${app.modal_header}</h2>
-		<p>${app.modal_content}</p>
-		<p><a href="#" click.delegate="app.CloseDialog()">OK</a>
+		<div innerhtml.bind="app.modal_content"></div>
+		<p><a href="#" click.delegate="app.CloseDialog()" class="button">OK</a>
 	</div>
 </div>
 

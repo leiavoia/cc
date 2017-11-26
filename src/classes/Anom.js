@@ -6,8 +6,8 @@ export default class Anom {
 	
 	objtype = 'anom';
 	id = 0;
-	name = 'UNKNOWN';
-	type = 'white';
+	name = 'Anomaly';
+	type = 'normal';
 	xpos = 0;
 	ypos = 0;
 	fleets = [];
@@ -16,11 +16,9 @@ export default class Anom {
 	in_range = false; // set to true to tell the UI to do special stuff
 	order = 0; // for exploration
 	onmap = false;
-	vis_layer = 0;
-	ownable = false;
-	owner = null;
+	vis_level = 0;
 	size = 100; // measure of how much it takes to research this anom
-	collectable = false; // evaporates after being researched
+	collected = false; // NULL = not collectable, FALSE = not collected, TRUE = collected
 	researched = new Map();
 	
 	// pre-discovery description. A hint of what lurks inside
@@ -42,8 +40,10 @@ export default class Anom {
 	AddResearch( civ, amount ) {
 		let a = this.researched.get( civ ) || 0;
 		if ( a < this.size ) { 
-			this.researched.set( civ, a + amount );
-			return ( a + amount ) >= this.size ;
+			this.researched.set( civ, Math.min( this.size, a + amount ) );
+			let finished = ( a + amount ) >= this.size;
+			if ( finished && this.collected === false ) { this.collected = true; }
+			return finished;
 			}
 		else {
 			return true;
@@ -79,7 +79,7 @@ export default class Anom {
 		let a = new Anom( /*utils.RandomName()*/ 'X', 'normal', x, y );
 		a.onmap = !( Math.random() > 0.5 ); // 50% chance of being a map object
 		a.size = utils.RandomInt( 2, 50 ) * 10;
-		a.vis_layer = utils.RandomInt(0,2);
+		a.vis_level = utils.RandomInt(0,2);
 		a.order = utils.RandomInt( 0, 100 );
 		return a;
 		}

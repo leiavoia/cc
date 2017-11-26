@@ -7,6 +7,7 @@ import Hyperlane from './classes/Hyperlane';
 import Constellation from './classes/Constellation';
 import Fleet from './classes/Fleet';
 import Civ from './classes/Civ';
+// import {Modlist,Mod} from './classes/Mods';
 import * as utils from './util/utils';
 
 
@@ -18,9 +19,9 @@ export class App {
 	sidebar_obj = null;
 	sidebar_mode = false;
 	star_click_callback = null;
-	hilite_star = null;
 	state = 'title';
 	state_obj = null;
+	hilite_star = null;
 	game = null;
 	notes = [];
 	options = {
@@ -38,10 +39,10 @@ export class App {
 		this.sidebar_obj = null;
 		this.sidebar_mode = false;
 		this.star_click_callback = null;
-		this.hilite_star = null;
+		this.hilite_star = null; // hint for playstate startup
 		Fleet.KillAll();
 		Fleet.all_fleets = [];
-		Civ.total_civs = 0;
+		Civ.total_civs = false; // next one will be zero
 		Civ.relation_matrix = [];
 		Civ.range_matrix = [];
 		Planet.next_uid = 1;
@@ -63,7 +64,7 @@ export class App {
 		let mystar = this.game.galaxy.AddExploreDemo( 1 );
 		this.game.SetMyCiv( 0 ); // could switch using debug stuff
 		this.ChangeState('play');
-		this.hilite_star = mystar;
+		this.hilite_star = mystar; // hint for playstate startup
 		this.game.RecalcStarRanges();
 		this.game.RecalcFleetRanges();
 		this.game.RecalcCivContactRange();
@@ -124,11 +125,11 @@ export class App {
 		// special exception if a planet is not explored
 		if ( obj instanceof Planet && !obj.star.explored && !this.options.see_all ) { return; }		
 		
-		if ( obj instanceof Planet ) { this.sidebar_mode = 'planet'; this.hilite_star = obj.star; }
-		else if ( obj instanceof Star ) { this.sidebar_mode = 'star'; this.hilite_star = obj; }
-		else if ( obj instanceof Anom ) { this.sidebar_mode = 'anom'; this.hilite_star = obj; }
-		else if ( obj instanceof Fleet ) { this.sidebar_mode = 'fleet'; }
-		else if ( obj instanceof Constellation ) { this.sidebar_mode = 'constel'; }
+		if ( obj instanceof Planet ) { this.sidebar_mode = 'planet'; this.state_obj.SetCaret(obj.star); }
+		else if ( obj instanceof Star ) { this.sidebar_mode = 'star';  this.state_obj.SetCaret(obj); }
+		else if ( obj instanceof Anom ) { this.sidebar_mode = 'anom';  this.state_obj.SetCaret(obj); }
+		else if ( obj instanceof Fleet ) { this.sidebar_mode = 'fleet'; this.state_obj.SetCaret(obj); }
+// 		else if ( obj instanceof Constellation ) { this.sidebar_mode = 'constel'; }
 		else { this.sidebar_mode = false; }
 		this.sidebar_obj = obj;
 		}

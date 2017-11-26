@@ -316,6 +316,7 @@ export default class Game {
 				
 					}
 				}
+			this.app.state_obj.SetCaret( this.app.state_obj.caret.obj );
 			console.timeEnd('Ship Movement');
 			
 			
@@ -410,7 +411,7 @@ export default class Game {
 	DoFleetResearch() { 
 // 		let maxrange = this.myciv.ship_range * this.myciv.ship_range ; // NOTE: avoid square rooting.
 		for ( let f of Fleet.all_fleets ) { 
-			let report = f.DoResearch();
+			let report = f.DoResearch( this ); // pass reference to Game so it can notify us when stuff happens
 			if ( report && f.owner == this.app.game.myciv ) { 
 				let findings_hook = '';
 				if ( report.completed.length ) {

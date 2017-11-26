@@ -25,6 +25,9 @@ export class PlanetDetailPane {
 		// WARNING: This stuff needs to be updated if our tech 
 		// would change the numbers while the panel is in focus.
 		//
+		// NOTE: Numbers displayed are from the point of view of the
+		// race of the player, NOT the owner of the planet
+		//
 		if ( planet ) { 
 			this.habitat = planet.Adaptation( this.app.game.myciv.race );
 			this.habitable = planet.Habitable( this.app.game.myciv.race );

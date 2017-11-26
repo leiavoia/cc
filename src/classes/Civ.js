@@ -25,8 +25,11 @@ export default class Civ {
 		size: 1.0, // literal size of pop units
 		};
 	
+	homeworld = null; // a Planet
+	
 	ship_range = 750; // px
 	ship_speed = 200; // HACK
+	vis_level = 0; // HACK : 0 = space, 1 = hyperspace, 2 = subspace
 	empire_box = {x1:0,x2:0,y1:0,y2:0};
 	
 	flag_img = 'img/workshop/flag_mock.gif';

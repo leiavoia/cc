@@ -4,31 +4,34 @@
 
 	<!-- FLEET DISPLAY MODE -->
 	<div class="fleet" if.bind="mode == 'fleet' || mode == 'awaiting_star_click'">
-		<h2>${fleet.owner.name} Fleet #${fleet.id}</h2>
-		<p class="msg" if.bind="fleet.star">Stationed at <b>${fleet.star.name}</b></p>
-		<p class="msg" if.bind="fleet.dest">Heading to <b>${fleet.dest.name}</b></p>
-		<!-- local anomoly research info -->
-		<p if.bind="fleet.star && !fleet.dest && fleet.star.objtype == 'anom'">
-			Anomaly Research: ${(app.game.turn_num?0:0) + fleet.star.AmountResearched( fleet.owner )} <progress value.bind="(app.game.turn_num ? 0 : 0) + fleet.star.AmountResearched( fleet.owner ) / fleet.star.size" />
-		</p>
-		<p class="button_rack" if.bind="mode=='fleet'">
-			<a href="#" click.delegate="ClickSend()" if.bind="can_send " class="${can_send==2 ? 'alt' : 'ghost'}">MOVE</a>
-			<a href="#" click.delegate="ClickColonize()" if.bind="can_colonize" class="${can_colonize==2 ? 'alt' : 'ghost'}">COLONIZE</a>
-			<a href="#" click.delegate="ClickChooseMission()" if.bind="can_research" class="${can_research==2 ? 'alt' : 'ghost'}">MISSION</a>
-			<a href="#" click.delegate="ClickBomb()" if.bind="can_bomb" class="${can_bomb==2 ? 'alt' : 'ghost'}">BOMBARD</a>
-			<a href="#" click.delegate="ClickInvade()" if.bind="can_invade" class="${can_invade==2 ? 'alt' : 'ghost'}" >INVADE</a>
-			<a href="#" click.delegate="ClickScrap()" class="${num_selected ? 'alt' : 'ghost'}" >SCRAP</a>
-		</p>
-		<p class="button_rack" if.bind="mode != 'fleet'">
-			<a href="#" click.delegate="ClickCancel()" class="bad" >CANCEL</a>
-		</p>
-		<p class="button_rack">
-			<a href="#" click.delegate="SelectAll()" >ALL</a>
-			<a href="#" click.delegate="SelectNone()" >NONE</a>
-			<a href="#" click.delegate="SelectInvert()" >INVERT</a>
-			<span>${num_selected}/${fleet.ships.length}</span>
-		</p>
-		
+		<h2 css="color: ${fleet.ui_color};">${fleet.owner.name} Fleet #${fleet.id}</h2>
+		<template containerless if.bind="app.options.see_all || fleet.owner == app.game.myciv">
+			<p class="msg" if.bind="fleet.star">Stationed at <b>${fleet.star.name}</b></p>
+			<p class="msg" if.bind="fleet.dest">Heading to <b>${fleet.dest.name}</b></p>
+			<!-- local anomoly research info -->
+			<p if.bind="fleet.star && !fleet.dest && fleet.star.objtype == 'anom'">
+				Anomaly Research: ${(app.game.turn_num*0) + fleet.star.AmountResearched( fleet.owner )} 
+				<progress value.bind="(app.game.turn_num*0) + fleet.star.AmountResearched( fleet.owner ) / fleet.star.size" />
+			</p>
+			<p class="button_rack" if.bind="mode=='fleet'">
+				<a href="#" click.delegate="ClickSend()" if.bind="can_send " class="${can_send==2 ? 'alt' : 'ghost'}">MOVE</a>
+				<a href="#" click.delegate="ClickColonize()" if.bind="can_colonize" class="${can_colonize==2 ? 'alt' : 'ghost'}">COLONIZE</a>
+				<a href="#" click.delegate="ClickChooseMission()" if.bind="can_research" class="${can_research==2 ? 'alt' : 'ghost'}">MISSION</a>
+				<a href="#" click.delegate="ClickBomb()" if.bind="can_bomb" class="${can_bomb==2 ? 'alt' : 'ghost'}">BOMBARD</a>
+				<a href="#" click.delegate="ClickInvade()" if.bind="can_invade" class="${can_invade==2 ? 'alt' : 'ghost'}" >INVADE</a>
+				<a href="#" click.delegate="ClickScrap()" class="${num_selected ? 'alt' : 'ghost'}" >SCRAP</a>
+			</p>
+			<p class="button_rack" if.bind="mode != 'fleet'">
+				<a href="#" click.delegate="ClickCancel()" class="bad" >CANCEL</a>
+			</p>
+			<p class="button_rack">
+				<a href="#" click.delegate="SelectAll()" >ALL</a>
+				<a href="#" click.delegate="SelectNone()" >NONE</a>
+				<a href="#" click.delegate="SelectInvert()" >INVERT</a>
+				<span>${num_selected}/${fleet.ships.length}</span>
+			</p>
+		</template>
+			
 		<p style="font-weight:bold; color: #FAA;" if.bind="mode=='awaiting_star_click'">Click a star to send fleet to.</p>
 		
 		<div class="shiplist">

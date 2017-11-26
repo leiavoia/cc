@@ -14,7 +14,7 @@
 		<!-- NOTE: using one-time binding to avoid brief moment when the 
 		object is undefined and browser tries to ask server for 'undefined' -->
 		<img if.bind="planet.owner" class="flag" src.bind="planet.owner.flag_img" />
-		<h2>${planet.name}</h2>
+		<h2 css="color: ${planet.ui_color};">${planet.name}</h2>
 		<h2 style="margin-bottom:-1.0em; color: #EE1;">${'🟊'.repeat(planet.age_level)}</h2>
 <!-- 		<p class="alert" if.bind="planet.econ.mine_export < 0">Not enough resources</p> -->
 		
@@ -31,7 +31,7 @@
 					<span class="${habitable ? (habitat < 0 ? 'alert' : 'good') : 'bad'}">${(habitat >= 0 ? '+' : '')}${habitat}<br/><span class="">${habitable ? "HABITABILITY" : "UNINHABITABLE"}</span></span>
 <!-- 					<p>${habitat_bonus|percent}% HAB</p> -->
 				</div>
-				<p if.bind="planet.owner !== false">OWNER: ${planet.owner.name}</p>
+				<p if.bind="planet.owner !== false && planet.owner !== app.game.myciv">Settled by the <em>${planet.owner.name}</em></p>
 <!-- 				<p repeat.for="attr of planet.physattr" class="special">${attr.name}<br/><span style="font-size: 75%; color: #999;">${attr.note}</span></p> -->
 			</div>			
 			<div class="env">
@@ -43,63 +43,66 @@
 			</div>	
 		</div> 
 		
-		<!-- Spending Levels -->
-		<div class="spending" if.bind="planet.owner">
-			<div class="spending_stackbar">
-				<div class="m" css="width:${planet.sect.mine.pct | percent:3}%"><!--${planet.sect.mine.output | round:1}--></div>
-				<div class="p" css="width:${planet.sect.prod.pct | percent:3}%"><!--${planet.sect.prod.output | round:1}--></div>
-				<div class="s" css="width:${planet.sect.sci.pct | percent:3}%"><!--${planet.sect.sci.output | round:1}--></div>
-				<div class="p" css="width:${planet.sect.gov.pct | percent:3}%"><!--${planet.sect.gov.output | round:1}--></div>
-				<div class="s" css="width:${planet.sect.def.pct | percent:3}%"><!--${planet.sect.def.output | round:1}--></div>
-<!-- 				<div class="m" css="width:${planet.sect.com.pct | percent:3}%"></div> -->
+		<template containerless if.bind="app.options.see_all || planet.owner == app.game.myciv">
+			
+			<!-- Spending Levels -->
+			<div class="spending" if.bind="planet.owner">
+				<div class="spending_stackbar">
+					<div class="m" css="width:${planet.sect.mine.pct | percent:3}%"><!--${planet.sect.mine.output | round:1}--></div>
+					<div class="p" css="width:${planet.sect.prod.pct | percent:3}%"><!--${planet.sect.prod.output | round:1}--></div>
+					<div class="s" css="width:${planet.sect.sci.pct | percent:3}%"><!--${planet.sect.sci.output | round:1}--></div>
+					<div class="p" css="width:${planet.sect.gov.pct | percent:3}%"><!--${planet.sect.gov.output | round:1}--></div>
+					<div class="s" css="width:${planet.sect.def.pct | percent:3}%"><!--${planet.sect.def.output | round:1}--></div>
+	<!-- 				<div class="m" css="width:${planet.sect.com.pct | percent:3}%"></div> -->
+				</div>
+				<div class="m"><span>MINE</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_mine" /><span>${planet.sect.mine.output|round:1}➞${planet.sect.mine.work|round:1}&nbsp;${planet.sect.mine.growth > 0.01 ? '▲' : (planet.sect.mine.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
+				<div class="p"><span>PROD</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_prod" /><span>${planet.sect.prod.output|round:1}➞${planet.sect.prod.work|round:1}&nbsp;${planet.sect.prod.growth > 0.01 ? '▲' : (planet.sect.prod.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
+				<div class="s"><span>SCI</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_sci" /><span>${planet.sect.sci.output|round:1}➞${planet.sect.sci.work|round:1}&nbsp;${planet.sect.sci.growth > 0.01 ? '▲' : (planet.sect.sci.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
+				<div class="g"><span>GOV</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_gov" /><span>${planet.sect.gov.output|round:1}➞${planet.sect.gov.work|round:1}&nbsp;${planet.sect.gov.growth > 0.01 ? '▲' : (planet.sect.gov.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
+				<div class="d"><span>DEF</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_def" /><span>${planet.sect.def.output|round:1}➞${planet.sect.def.work|round:1}&nbsp;${planet.sect.def.growth > 0.01 ? '▲' : (planet.sect.def.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
+	<!-- 			<div class="c"><span>COM</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_com" /><span>${planet.sect.com.output|round:1}➞${planet.sect.com.work|round:1}&nbsp;${planet.sect.com.growth > 0.01 ? '▲' : (planet.sect.com.growth < -0.01 ? '▼' : '\u2003')}</span></div>  -->
+				<br/>
+				<div class="t"><span>TAX</span><input type="range"  min="0" max="0.5" step="0.01" value.bind="planet.slider_taxrate" /><span>${planet.tax_rate | percent}%</span></div> 
+				<div class="th"><span>SPEND</span><input type="range" min="0" max.bind="planet.max_spending" step="0.01" value.bind="planet.slider_spending" /><span>${planet.spending | percent}%</span></div> 
+				<div><span>MORALE</span><input type="range" min="0" max="2.0" step="0.01" value.bind="planet.morale" /><span>${planet.morale | percent}%</span></div> 
 			</div>
-			<div class="m"><span>MINE</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_mine" /><span>${planet.sect.mine.output|round:1}➞${planet.sect.mine.work|round:1}&nbsp;${planet.sect.mine.growth > 0.01 ? '▲' : (planet.sect.mine.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
-			<div class="p"><span>PROD</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_prod" /><span>${planet.sect.prod.output|round:1}➞${planet.sect.prod.work|round:1}&nbsp;${planet.sect.prod.growth > 0.01 ? '▲' : (planet.sect.prod.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
-			<div class="s"><span>SCI</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_sci" /><span>${planet.sect.sci.output|round:1}➞${planet.sect.sci.work|round:1}&nbsp;${planet.sect.sci.growth > 0.01 ? '▲' : (planet.sect.sci.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
-			<div class="g"><span>GOV</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_gov" /><span>${planet.sect.gov.output|round:1}➞${planet.sect.gov.work|round:1}&nbsp;${planet.sect.gov.growth > 0.01 ? '▲' : (planet.sect.gov.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
-			<div class="d"><span>DEF</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_def" /><span>${planet.sect.def.output|round:1}➞${planet.sect.def.work|round:1}&nbsp;${planet.sect.def.growth > 0.01 ? '▲' : (planet.sect.def.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
-<!-- 			<div class="c"><span>COM</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_com" /><span>${planet.sect.com.output|round:1}➞${planet.sect.com.work|round:1}&nbsp;${planet.sect.com.growth > 0.01 ? '▲' : (planet.sect.com.growth < -0.01 ? '▼' : '\u2003')}</span></div>  -->
-			<br/>
-			<div class="t"><span>TAX</span><input type="range"  min="0" max="0.5" step="0.01" value.bind="planet.slider_taxrate" /><span>${planet.tax_rate | percent}%</span></div> 
-			<div class="th"><span>SPEND</span><input type="range" min="0" max.bind="planet.max_spending" step="0.01" value.bind="planet.slider_spending" /><span>${planet.spending | percent}%</span></div> 
-			<div><span>MORALE</span><input type="range" min="0" max="2.0" step="0.01" value.bind="planet.morale" /><span>${planet.morale | percent}%</span></div> 
-		</div>
+			
+			<!-- Colony Data -->
+			<div class="data" if.bind="planet.owner">
+				<span class="${planet.treasury_contrib >= 0 ? 'good' : 'bad'}">Taxes: ${planet.treasury_contrib >= 0 ? '+' : ''}${planet.treasury_contrib|round:1}</span>,
+				<span if.bind="planet.mp_export >= 0" class="good">Exporting: ${planet.mp_export|round:1}</span>
+				<span if.bind="planet.mp_export < 0" class="alert">Importing: ${-planet.mp_export|round:1}</span>,
+				<span>Warehouse: ${planet.warehouse|round:1}</span>
+				<br />
+				<span>GDP: ${planet.econ.GDP|round:1}</span>
+				<span>PCI: ${planet.econ.PCI|round:1} ➞ ${planet.econ.target_PCI|round:1} </span>
+	<!-- 			<span>GF: ${planet.econ.GF|round:4}</span> -->
+				<span>TradeGoods: ${planet.econ.tradegoods|round:1}</span>
+				<br />
+				<br />
+				
+				<h3>Now Building:</h3>
+				<table class="prod_queue">
+					<tr repeat.for="item of planet.prod_q">
+						<td>${item.turns_left}</td>
+						<td><progress max="100" value="${item.pct|round}"></progress><p>${item.obj.name}</p></td>
+						<td><a href="#" click.delegate="BuildQueueMoveItemUp($index)" if.bind="$index > 0">▲</a></td>
+						<td><a href="#" click.delegate="BuildQueueMoveItemDown($index)" if.bind="$index != (planet.prod_q.length-1)">▼</a></td>
+						<td>
+							<select value.bind="item.quantity">
+								<option repeat.for="option of prod_q_repeat_vals" model.bind="option.value">${option.name}</option>
+							</select>			
+						</td>
+						<td><a href="#" click.delegate="BuildQueueRemoveItem($index)" class="bad">X</a></td>
+					</tr>
+				</table>
+				<p>Built:</p>
+				<ul>
+					<li repeat.for="bdg of planet.buildings">${bdg.obj.name}</li>				
+				</ul>
+				
+			</div>
+		</template>
 		
-		<!-- Colony Data -->
-		<div class="data" if.bind="planet.owner">
-			<span class="${planet.treasury_contrib >= 0 ? 'good' : 'bad'}">Taxes: ${planet.treasury_contrib >= 0 ? '+' : ''}${planet.treasury_contrib|round:1}</span>,
-			<span if.bind="planet.mp_export >= 0" class="good">Exporting: ${planet.mp_export|round:1}</span>
-			<span if.bind="planet.mp_export < 0" class="alert">Importing: ${-planet.mp_export|round:1}</span>,
-			<span>Warehouse: ${planet.warehouse|round:1}</span>
-			<br />
-			<span>GDP: ${planet.econ.GDP|round:1}</span>
-			<span>PCI: ${planet.econ.PCI|round:1} ➞ ${planet.econ.target_PCI|round:1} </span>
-<!-- 			<span>GF: ${planet.econ.GF|round:4}</span> -->
-			<span>TradeGoods: ${planet.econ.tradegoods|round:1}</span>
-			<br />
-			<br />
-			
-			<h3>Now Building:</h3>
-			<table class="prod_queue">
-				<tr repeat.for="item of planet.prod_q">
-					<td>${item.turns_left}</td>
-					<td><progress max="100" value="${item.pct|round}"></progress><p>${item.obj.name}</p></td>
-					<td><a href="#" click.delegate="BuildQueueMoveItemUp($index)" if.bind="$index > 0">▲</a></td>
-					<td><a href="#" click.delegate="BuildQueueMoveItemDown($index)" if.bind="$index != (planet.prod_q.length-1)">▼</a></td>
-					<td>
-						<select value.bind="item.quantity">
-							<option repeat.for="option of prod_q_repeat_vals" model.bind="option.value">${option.name}</option>
-						</select>			
-					</td>
-					<td><a href="#" click.delegate="BuildQueueRemoveItem($index)" class="bad">X</a></td>
-				</tr>
-			</table>
-			<p>Built:</p>
-			<ul>
-				<li repeat.for="bdg of planet.buildings">${bdg.obj.name}</li>				
-			</ul>
-			
-		</div>
-
 	</div>
 </template>

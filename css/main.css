@@ -471,13 +471,21 @@ body,html {
 	}
 	
 #layout_modal .dialog {	
-	background: #666;
+	font-size: 150%;
 	color: #FFF;
 	text-align: center;
 	padding: 2em;
 	min-height: 12em;
-	margin: auto;
+	max-height: 90%;
 	min-width: 25%;
+	max-width: 35em;
+	margin: auto;
+	box-sizing: border-box;
+	background: #000;
+	background-image: radial-gradient(circle closest-corner at 50% 50% , transparent 0%, transparent 50%, #3C96BA 100%);
+	border: #777 outset 1px;
+	border-radius: 0.5em;
+	overflow-y: auto;
 	/* animations*/
 	transform-origin: 50% 50%;
 	animation: trekIn 0.25s linear;
@@ -558,7 +566,7 @@ body,html {
 	
 I,EM { font-style: italic; }
 
-TD,TH,P,LI,SPAN,A,DIV {
+BODY {
 	font-family: 'Roboto Condensed', sans-serif;
 	color: #FFF;
 	}
@@ -816,7 +824,7 @@ DIV.hyperlane {
 .mapobj_container H3 {
 	color: #FFF;
 	padding:5px 0 2px 0;
-	margin:-20px 0 0 0;
+	margin:-22px 0 0 0;
 	width:200%;
 	margin-left:-50%;
 	font-size:25px;
@@ -830,10 +838,10 @@ DIV.hyperlane {
 
 .mapobj_container .planet_list {
 	color: rgba(255,255,255,0.45);
-	margin: 4px 0 8px 0;
+	margin: 0px 0 8px 0;
 	text-align:center;
-	width: 120%;
-	margin-left:-10%;
+	width: 150%;
+	margin-left:-25%;
 }
 .mapobj_container .fleet_list {
 	position:absolute;
@@ -846,17 +854,23 @@ DIV.hyperlane {
 }
 .mapobj_container .fleet_list A,
 .mapobj_container .planet_list A {	
-	width: 20px;
-	height: 20px;
-	font-size: 20px;
-	line-height: 20px;
+	width: 24px;
+	height: 24px;
+	font-size: 24px;
+	line-height: 24px;
 	padding: 0.1em;
 	display:inline-block;
 	flex:1;
 	margin: 0 2px;
 	text-decoration:none;
+/* 	box-sizing:border-box; */
+/* 	border-width: 1px; */
 /* 	border: 1px solid white; */
-/* 	border-radius: 0.35em; */
+	border-radius: 0.35em;
+	}
+.mapobj_container .fleet_list A:hover,
+.mapobj_container .planet_list A:hover {	
+	background: rgba(255,255,255,0.35);
 	}
 .mapobj_container.unexplored .planet_list,	
 .mapobj_container.unexplored .fleet_list A {	
@@ -865,34 +879,52 @@ DIV.hyperlane {
 	}
 .mapobj_container .fleet_list .icon,
 .mapobj_container .planet_list .icon {	
-	width: 16px;
-	height: 16px;
+	width: 20px;
+	height: 20px;
 	display:inline-block;
-	font-size: 16px;
-	line-height: 16px;
+	font-size: 20px;
+	line-height: 20px;
 	padding: 0.1em;
 	}
 .mapobj_container .planet_list A.settled .icon,
-.mapobj_container .fleet_list .icon,
-.fleet .icon {	
-    -webkit-filter: drop-shadow( 1px 1px 0 rgba(255,255,255,0.5) );
-            filter: drop-shadow( 1px 1px 0 rgba(255,255,255,0.5) );
+.mapobj_container .fleet_list .icon {	
+	filter: drop-shadow( 1px 1px 0 rgba(255,255,255,0.85) );
 	}
-.mapobj_container .caret {	
-	width: 140%;
-	height: 140%;
+	
+#the_caret {	
+	width: 200px;
+	height: 200px;
 	position:absolute;
-	left:-20%;
-	top:-20%;
-	bottom: 120%;
-	right: 120%;
+	margin-left:-100px;
+	margin-top:-100px;
+	top: 0;
+	left: 0;
 	background: url(../img/map/caret.png) 50% 50% no-repeat;
 	background-size: cover;
 	animation: rotation 7s infinite linear;
 	z-index:-1;
 	opacity: 0.5;
 	}
-
+#the_caret.fleet_follow {
+	/* makes fleets scootch on next-turn-button */
+	transition: top 0.7s ease-out 0s, left 0.7s ease-out 0s;	
+	}
+.xtreme_zoom #the_caret {
+	box-sizing: border-box;
+	width: 250px;
+	height: 250px;
+	margin-left:-125px;
+	margin-top:-125px;
+	position:absolute;
+	border: 10px solid #15FF00;
+	border-radius: 2em;
+	background: none;
+	animation: none;
+	transition:none;
+	opacity: 1;
+	display:block !important;
+	}	
+	
 	
 	
 	
@@ -968,20 +1000,6 @@ invisible when unexplored, dim when explored */
 	display:none;
 	opacity: 0; /* if you want transition fx, you cant use display:none */
 	}
-.xtreme_zoom .mapobj_container .caret {
-	box-sizing: border-box;
-	width: 180%;
-	height: 180%;
-	position:absolute;
-	left:-40%;
-	top:-40%;
-	border: 10px solid #15FF00;
-	border-radius: 2em;
-	background: none;
-	animation: none;
-	opacity: 1;
-	display:block !important;
-	}
 /* now we're just being abusive */
 .xtreme_zoom .mapobj_container.settled > H2 {
 	display:block;
@@ -1004,16 +1022,18 @@ invisible when unexplored, dim when explored */
 .fleet_en_route {
 	z-index: 10; 
 	position:absolute;
-	border: 1px solid #FFF;
+	border: 2px solid #FFF;
 	border-radius: 0.3em;
 	width: 26px;
 	height: 26px;
 	display:inline-block;
 	/* left and top are set dynamically */
-	margin-top: -18px;
-	margin-left: -18px;	
+	margin-top: -16px;
+	margin-left: -16px;	
 	top:0;
 	left:0;
+	background: #000;
+/* 	box-shadow: 1px 1px 1px #FFF; */
 	/* makes fleets scootch on next-turn-button */
 	transition: top 0.7s ease-out 0s, left 0.7s ease-out 0s;
 	}
@@ -1024,13 +1044,15 @@ invisible when unexplored, dim when explored */
 	font-size: 22px;
 	line-height: 22px;
 	padding: 2px;
-	}		
+/* 	filter: drop-shadow( 1px 1px 1px rgba(255,255,255,1) ); */
+	}
 .dest_line {
 	position:absolute;
 	height: 2px; 
+	margin-top:-1px;
 	transform-origin: 0% 0%; 
 	background-color: #999;
-	z-index:5;
+	z-index:5; /* changing this to 9 has weird graphical jank in FF 57 */
 	/* makes fleets scootch on next-turn-button */
 	transition: top 0.7s ease-out 0s, left 0.7s ease-out 0s, width 0.7s ease-out ;
 	}
@@ -1053,6 +1075,7 @@ invisible when unexplored, dim when explored */
 .xtreme_zoom .fleet_en_route {
 	border:none;
 	background: none;
+	border-radius: 0;
 	}
 .xtreme_zoom .fleet_en_route A:after {
 	content:'◼';
@@ -2249,6 +2272,7 @@ DIV.annoyometer .nub {
 	box-sizing: border-box;
 	margin: 0 -1.5rem;
 	padding: 1.0rem 1.5rem;
+	cursor:pointer;
 	}
 #tech_pane .techlist P {
 	font-size: 150%;

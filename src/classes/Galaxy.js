@@ -44,9 +44,9 @@ export default class Galaxy {
 		let sectors = map_size_x * map_size_y;
 		if ( sectors < stars_wanted ) { stars_wanted = sectors; }
 		let remainder = sectors - stars_wanted;
-		// anomalies cover half the un-starred space or 20% of the total space, 
+		// anomalies cover 60% of un-starred space or 40% of total space, 
 		// whichever is less.
-		let num_anoms = Math.min( Math.floor( remainder * 0.5 ), Math.floor( sectors * 0.2) );
+		let num_anoms = Math.min( Math.floor( remainder * 0.6 ), Math.floor( sectors * 0.4) );
 		remainder -= num_anoms;
 		let arr =  new Array( stars_wanted ).fill(1).concat(
 			new Array( num_anoms ).fill(2).concat( 
