@@ -8,6 +8,7 @@
 		<template containerless if.bind="app.options.see_all || fleet.owner == app.game.myciv">
 			<p class="msg" if.bind="fleet.star">Stationed at <b>${fleet.star.name}</b></p>
 			<p class="msg" if.bind="fleet.dest">Heading to <b>${fleet.dest.name}</b></p>
+			<p class="msg" if.bind="fleet.research">Research Capacity: <b>${fleet.research}</b></p>
 			<!-- local anomoly research info -->
 			<p if.bind="fleet.star && !fleet.dest && fleet.star.objtype == 'anom'">
 				Anomaly Research: ${(app.game.turn_num*0) + fleet.star.AmountResearched( fleet.owner )} 

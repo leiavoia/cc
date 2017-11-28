@@ -1,4 +1,4 @@
-
+import * as Signals from '../util/signals';
 
 export default class Fleet {
 	
@@ -99,12 +99,14 @@ export default class Fleet {
 		Fleet.all_fleets.splice( Fleet.all_fleets.indexOf(this), 1 );
 		this.FireOnUpdate();
 		}
+		
 	static KillAll() {
 		for ( let i = Fleet.all_fleets.length-1; i >=0; i-- ) { 
 			Fleet.all_fleets[i].Kill();	
 			}	
 		Fleet.all_fleets = [];
-		}	
+		}
+		
 	// returns true if the fleet moved
 	MoveFleet() {
 		let moved = false;

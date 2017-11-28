@@ -197,11 +197,6 @@ We also link to Google Fonts:
 	opacity:1;
 }
 
-
-
-
-
-
 /* LAYOUT */
 
 body,html {
@@ -228,8 +223,10 @@ body,html {
 	min-width:640px;
 	/* bg grahics */	
 /* 	background: #000 url(../img/map/bg/space_001c.jpg) 50% 50% no-repeat; */
-	background: #000 url(../img/map/bg/space_007d.jpg) 50% 50% no-repeat;
-/* 	background: #000 url(../img/map/bg/orion_2500px_dark.jpg) 50% 50% no-repeat; */
+	background: #000 url(../img/workshop/map/bg/space_001d.jpg) 50% 50% no-repeat;
+/* 	background: #000 url(../img/map/bg/space_007d.jpg) 50% 50% no-repeat; */
+/* 	background: #000 url(../img/workshop/map/bg/space_001.jpg) 50% 50% no-repeat; */
+/* 	background: #000 url(../img/workshop/map/bg/orion_2500px_darkerer.jpg) 50% 50% no-repeat; */
 	background-size: cover;
 	background-position: 50% 50%;
 	z-index: 100;
@@ -414,7 +411,7 @@ body,html {
 	box-sizing: border-box;
 	padding: 1em; 	
 	pointer-events: auto; /* capture click events */
-	min-height: 100%;
+/* 	min-height: 100%; */
 	}
 #layout_ui_side { 
 	order: 20;
@@ -991,7 +988,7 @@ invisible when unexplored, dim when explored */
 	}
 .xtreme_zoom .option_dim_unexplored .mapobj_container.unexplored { 
 	opacity: 0.25; 
-/* 	background-size: 120% 120%; */
+	background-size: 120% 120%;
 	}
 .xtreme_zoom .option_dim_unexplored .mapobj_container.unexplored.in_range { 
 	opacity: 1; 
@@ -1134,6 +1131,19 @@ invisible when unexplored, dim when explored */
 	
 #layout_ui_side > .planet H2 {
 	text-shadow: #000 2px 2px 2px;
+	margin-bottom: 1.3em; 
+	padding: 0.2em; 
+	text-align:center;
+/*	background-image: linear-gradient( to right, 
+		rgba(255,255,255,0) 0%,
+		rgba(255,255,255,1) 25%,
+		rgba(255,255,255,1) 75%,
+		rgba(255,255,255,0) 100%
+		);*/
+	}
+#layout_ui_side > .planet .age {
+	margin-bottom:-1.0em; 
+	color: #EE1;
 	}
 #layout_ui_side > .planet > IMG {
 	float:right;
@@ -1223,8 +1233,10 @@ invisible when unexplored, dim when explored */
 	overflow:hidden;
 	margin-left: auto;
 	box-shadow: 3px 3px 2px black;
+	position:relative;
 	}
 #layout_ui_side .planet .env_box .target {
+	position:absolute;
 	width: 20%;
 	height: 20%;
 	border: 1px solid #FFF;
@@ -1781,15 +1793,21 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	margin-right: 0.75em;
 	}*/
 #layout_ui_side .star .planet .env_box {
-	width: 50px;
-	height: 50px;
+	width: 52px;
+	height: 52px;
 	float:right;	
 	clear:right;
 	margin-bottom: 0;
-	margin-top: 0.5em;
+	margin-top: 0.0em;
+	overflow:hidden;
 	}
+#layout_ui_side .star .planet.grav1 .env_box .target { border-width: 2px; }
+#layout_ui_side .star .planet.grav2 .env_box .target { border-width: 3px; }
+#layout_ui_side .star .planet.grav3 .env_box .target { border-width: 4px; }
+#layout_ui_side .star .planet.grav4 .env_box .target { border-width: 5px; }
+
 #layout_ui_side .star .planet P.env_label {
-	width: 100px;
+/* 	width: 100px; */
 	float:right;
 	clear: right;
 	font-size: 100%;
@@ -2055,7 +2073,7 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	margin: 0;
 	}
 /*  */
-#colonize_pane.star_red 		{ background-image: url(../img/map/air_collect_sparkle_red.png), url(../img/map/bg/space_003.jpg); }
+/*#colonize_pane.star_red 		{ background-image: url(../img/map/air_collect_sparkle_red.png), url(../img/map/bg/space_003.jpg); }
 #colonize_pane.star_orange 	{ background-image: url(../img/map/air_collect_sparkle_orange.png), url(../img/map/bg/space_006b.jpg); }
 #colonize_pane.star_yellow 	{ background-image: url(../img/map/air_collect_sparkle_yellow.png), url(../img/map/bg/tarantula_dark.jpg); }
 #colonize_pane.star_green 	{ background-image: url(../img/map/air_collect_sparkle_green.png), url(../img/map/bg/space_003.jpg); }
@@ -2063,7 +2081,7 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 #colonize_pane.star_cyan 	{ background-image: url(../img/map/air_collect_sparkle_cyan.png), url(../img/map/bg/tarantula_dark.jpg); }
 #colonize_pane.star_purple 	{ background-image: url(../img/map/air_collect_sparkle_purple.png), url(../img/map/bg/space_003.jpg); }
 #colonize_pane.star_white 	{ background-image: url(../img/map/air_collect_sparkle_white.png), url(../img/map/bg/space_006b.jpg); }
-#colonize_pane.star_black 	{ background-image: url(../img/map/air_collect_sparkle_black.png), url(../img/map/bg/tarantula_dark.jpg); }
+#colonize_pane.star_black 	{ background-image: url(../img/map/air_collect_sparkle_black.png), url(../img/map/bg/tarantula_dark.jpg); }*/
 
 
 
@@ -2391,6 +2409,7 @@ DIV.annoyometer .nub {
 #layout_ui_main.title_screen .content {
 	margin-top: 5em;
 	text-align:center;
+	position:relative;
 	}
 #layout_ui_main.title_screen P {
 	margin-top: 3em;
@@ -2399,7 +2418,37 @@ DIV.annoyometer .nub {
 	text-align:center;
 	}
 	
-	
+#layout_ui_main.title_screen .disclaimer {
+	position: absolute;
+	bottom: 2em;
+	text-align:center;
+	width: 100%;
+	color: #AAA;
+	}
+
+/* overkill title intro */
+#layout_ui_main.title_screen H1 SPAN { opacity: 0.001; }
+#layout_ui_main.title_screen H1 SPAN:nth-child(1) { opacity: 1; animation: fadeIn 2s both ease-out 0s; }
+#layout_ui_main.title_screen H1 SPAN:nth-child(2) { opacity: 1; animation: fadeIn 2s both ease-out 1s; }
+#layout_ui_main.title_screen H1 SPAN:nth-child(3) { opacity: 1; animation: fadeIn 2s both ease-out 0.5s; }
+#layout_ui_main.title_screen H1 SPAN:nth-child(4) { opacity: 1; animation: fadeIn 2s both ease-out 0.15s; }
+#layout_ui_main.title_screen H1 SPAN:nth-child(5) { opacity: 1; animation: fadeIn 2s both ease-out 0.1s; }
+#layout_ui_main.title_screen H1 SPAN:nth-child(6) { opacity: 1; animation: fadeIn 2s both ease-out 0.85s; }
+#layout_ui_main.title_screen H1 SPAN:nth-child(7) { opacity: 1; animation: fadeIn 2s both ease-out 1.1s; }
+#layout_ui_main.title_screen H1 SPAN:nth-child(8) { opacity: 1; animation: fadeIn 2s both ease-out 0.65s; }
+#layout_ui_main.title_screen H1 SPAN:nth-child(9) { opacity: 1; animation: fadeIn 2s both ease-out 1.7s; }
+#layout_ui_main.title_screen H1 SPAN:nth-child(10) { opacity: 1; animation: fadeIn 2s both ease-out 0.1s; }
+#layout_ui_main.title_screen H1 SPAN:nth-child(11) { opacity: 1; animation: fadeIn 2s both ease-out 0.6s; }
+#layout_ui_main.title_screen H1 SPAN:nth-child(12) { opacity: 1; animation: fadeIn 2s both ease-out 2s; }
+#layout_ui_main.title_screen H1 SPAN:nth-child(13) { opacity: 1; animation: fadeIn 2s both ease-out 1.6s; }
+#layout_ui_main.title_screen H1 SPAN:nth-child(14) { opacity: 1; animation: fadeIn 2s both ease-out 1.2s; }
+#layout_ui_main.title_screen H1 SPAN:nth-child(15) { opacity: 1; animation: fadeIn 2s both ease-out 1.44s; }
+#layout_ui_main.title_screen H1 SPAN:nth-child(16) { opacity: 1; animation: fadeIn 2s both ease-out 0.9s; }
+#layout_ui_main.title_screen H1 SPAN:nth-child(17) { opacity: 1; animation: fadeIn 2s both ease-out 0.2s; }
+#layout_ui_main.title_screen H1 SPAN:nth-child(18) { opacity: 1; animation: fadeIn 2s both ease-out 0.8s; }
+#layout_ui_main.title_screen H1 SPAN:nth-child(19) { opacity: 1; animation: fadeIn 2s both ease-out 1.4s; }
+#layout_ui_main.title_screen H1 SPAN:nth-child(20) { opacity: 1; animation: fadeIn 2s both ease-out 0.95s; }
+#layout_ui_main.title_screen H1 SPAN:nth-child(21) { opacity: 1; animation: fadeIn 2s both ease-out 0.44s; }	
 	
 	
 	

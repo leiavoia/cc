@@ -310,8 +310,22 @@ export default class Game {
 			for ( let f of this.galaxy.fleets ) { 
 				if ( f.MoveFleet() ) { 
 					// if the fleet arrived, mark the star as explored to help the UI
-					if ( f.owner == this.myciv && f.star && !f.dest ) { 
+					if ( f.owner == this.myciv && f.star && !f.dest && !f.star.explored ) { 
 						f.star.explored = true;
+						if ( this.app.options.announce_scouted_stars && f.star.objtype == 'star' ) { 
+							// count habitable systems
+							let goods = 0;
+							f.star.planets.forEach( (p) => {if (!p.owner && p.Habitable(f.owner.race)) { goods++; }} )
+							let app = this.app; 
+							let star = f.star; // fleet may disappear leaving `f` == null
+							let note = `${goods ? goods : 'No'} habitable system${goods==1 ? '' : 's'} found.`;
+							this.app.AddNote(
+								'neutral',
+								`Scouts Explore ${f.star.name}`,
+								note,
+								function(){app.FocusMap(star); app.SwitchSideBar(star);}
+								);						
+							}
 						}
 				
 					}

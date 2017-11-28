@@ -13,9 +13,17 @@
 		
 		<!-- NOTE: using one-time binding to avoid brief moment when the 
 		object is undefined and browser tries to ask server for 'undefined' -->
-		<img if.bind="planet.owner" class="flag" src.bind="planet.owner.flag_img" />
-		<h2 css="color: ${planet.ui_color};">${planet.name}</h2>
-		<h2 style="margin-bottom:-1.0em; color: #EE1;">${'🟊'.repeat(planet.age_level)}</h2>
+<!-- 		<img if.bind="planet.owner" class="flag" src.bind="planet.owner.flag_img" /> -->
+		<h2 if.bind="planet.owner" css="
+		background-image: linear-gradient( to right, 
+			rgba(${planet.owner.color_rgb[0]},${planet.owner.color_rgb[1]},${planet.owner.color_rgb[2]},0) 0%     ,
+			rgba(${planet.owner.color_rgb[0]},${planet.owner.color_rgb[1]},${planet.owner.color_rgb[2]},1) 25%    ,
+			rgba(${planet.owner.color_rgb[0]},${planet.owner.color_rgb[1]},${planet.owner.color_rgb[2]},1) 75%    ,
+			rgba(${planet.owner.color_rgb[0]},${planet.owner.color_rgb[1]},${planet.owner.color_rgb[2]},0) 100%
+			);
+		">${planet.name}</h2>
+		<h2 if.bind="!planet.owner">${planet.name}</h2>
+		<p class="age">${'🟊'.repeat(planet.age_level)}</p>
 <!-- 		<p class="alert" if.bind="planet.econ.mine_export < 0">Not enough resources</p> -->
 		
 		<!-- Physical attributes -->
@@ -36,6 +44,15 @@
 			</div>			
 			<div class="env">
 				<div class="env_box">
+					<div if.bind="app.options.debug" class="race_target" css="
+						position:absolute;
+						width:20%; height:20%;
+						text-align:center; 
+						margin-top: ${planet.owner.race.env.temp * 20}%;
+						margin-left: ${planet.owner.race.env.atm * 20}%;
+						color: #888;
+						text-shadow: none;
+						">${['🞡','🞢','🞣','🞤','✚'][planet.owner.race.env.grav]}</div>
 					<div class="target"></div>
 				</div>
 				<p class="env_label">${planet.gravDisplayName} ${planet.envDisplayName}</p>

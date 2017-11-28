@@ -166,7 +166,6 @@ export default class Planet {
 						speed: planet.owner.ship_speed, // HACK
 						colonize: false,
 						research: 50,
-						research: 0,
 						offroad: true,
 						selected: true // default to selected for easier UI
 						};
@@ -518,6 +517,7 @@ export default class Planet {
 						// pop from list if we reached zero
 						if ( item.quantity == 0 ) {
 // 							console.log(`popped from list`);
+							this.prod_q.shift()
 // 							this.buildings.push( this.prod_q.shift() );
 							}
 						}

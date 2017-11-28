@@ -15,8 +15,7 @@
 				<a href="" click.delegate="ToggleNameEdit()">OK</a>
 			</p>
 			<div class="planet atm${p.atm} tmp${p.temp} grav${p.grav}" css.one-time="PlanetSizeCSS(p)" repeat.for="p of star.planets"  click.delegate="app.SwitchSideBar(p)">
-				<img if.bind="p.owner" class="flag" src.bind="p.owner.flag_img" />
-				<p class="env_label"><span class="env_label">${p.envDisplayName}</span></p>
+				<img if.bind="p.owner" class="flag" src.bind="p.owner.flag_img" style="border:1px solid #666;" />
 				<div class="env_box">
 					<div class="target"></div>
 				</div>	
@@ -35,6 +34,7 @@
 <!-- 						<div class="pop" if.bind="p.owner !== false" css="width:${(p.total_pop / p.size) * (p.size / 200) | percent:3}%"></div> -->
 					</div>			
 				</div>
+					<p class="env_label">${p.gravDisplayName}  ${p.envDisplayName}</p>
 					
 <!--				<div class="spending" if.bind="p.owner">
 					<div class="spending_stackbar">
@@ -49,7 +49,7 @@
 				</p>-->
 	<!-- 			<p class="bonus">[TODO:BONUSES]</p> -->
 			</div>
-			<p if.bind="star.Acct( app.game.iam )"><a href="#" click.delegate="ClickConstelLink()" class="button">Constellation</a></p>
+<!--			<p if.bind="star.Acct( app.game.iam )"><a href="#" click.delegate="ClickConstelLink()" class="button">Constellation</a></p>
 			<p if.bind="star.Acct( app.game.iam )">
 				<b>Resources:</b><br/>
 				&nbsp;&nbsp;<span>Collected: ${star.Acct( app.iam ).econ.collected|round:2}</span><br/>
@@ -57,7 +57,7 @@
 				&nbsp;&nbsp;<span class="${star.Acct( app.iam ).econ.imported > 0 ? 'alert' : ''}">Imported: ${star.Acct( app.iam ).econ.imported|round:2}</span><br/>
 				&nbsp;&nbsp;<span>Distributed: ${star.Acct( app.iam ).econ.redistrib|round:2}</span><br/>
 				&nbsp;&nbsp;<span class="${star.Acct( app.iam ).econ.need > 0 ? 'bad' : ''}">Unmet Need: ${star.Acct( app.iam ).econ.need|round:2}</span>
-			</p>
+			</p>-->
 		</template>
 	</div>
 </template>

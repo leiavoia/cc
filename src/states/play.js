@@ -48,7 +48,7 @@ export class PlayState {
 			this.caret.obj = obj.star;
 			this.caret.class = 'star';
 			}
-		else if ( obj instanceof Fleet ) { 
+		else if ( obj instanceof Fleet && !obj.killme ) { 
 			this.caret.x = obj.xpos; 
 			this.caret.y = obj.ypos; 
 			// HACK: if we are updating the caret and following the same fleet,

@@ -21,6 +21,11 @@ export class FleetDetailPane {
 		this.fleetChanged( this.fleet, null );
 		}
 		
+	unbind() { 
+		// stop leaking callbacks
+		this.app.RegisterStarClickCallback(null);
+		}
+		
 	constructor() { 
 		};
 		

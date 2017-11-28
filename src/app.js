@@ -30,7 +30,8 @@ export class App {
 		see_all: true,
 		show_range: true,
 		show_xtreme_fleets: true,
-		debug: true
+		debug: true,
+		announce_scouted_stars: true
 		};
 		
 	ResetEverything() { 
@@ -45,6 +46,8 @@ export class App {
 		Civ.total_civs = false; // next one will be zero
 		Civ.relation_matrix = [];
 		Civ.range_matrix = [];
+		Civ.flag_id_roster = null;
+		Civ.img_id_roster = null;
 		Planet.next_uid = 1;
 		Star.next_id = 1;
 		this.game = null;		
@@ -55,6 +58,8 @@ export class App {
 		
 	constructor() {
 		window.document.title = `Constellation Control v.${this.version}`;
+// 		this.state = 'title';
+// 		return;
 		// --------\/-- [!]DEBUG SHORTCUT --\/---------------------
 		this.game = new Game(this);
 		// create initial state

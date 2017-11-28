@@ -7,9 +7,9 @@
 		<div id="setup_pane">
 			<h1>New Game</h2>
 			<p class="button_rack">
-				<a href="#" class="button ${show_pane == 'game' ? '' : 'cool'}" click.trigger="ChangePanel('game')">Game Setup</a>
-				<a href="#" class="button ${show_pane == 'galaxy' ? '' : 'cool'}" click.trigger="ChangePanel('galaxy')">Galaxy Setup</a>
-				<a href="#" class="button ${show_pane == 'race' ? '' : 'cool'} ghost" click.trigger="ChangePanel('race')">Race Setup</a>
+				<a href="#" class="button big ${show_pane == 'game' ? '' : 'cool'}" click.trigger="ChangePanel('game')">Game Setup</a>
+				<a href="#" class="button big ${show_pane == 'galaxy' ? '' : 'cool'}" click.trigger="ChangePanel('galaxy')">Galaxy Setup</a>
+				<a href="#" class="button big ${show_pane == 'race' ? '' : 'cool'} ghost" click.trigger="ChangePanel('race')">Race Setup</a>
 			</p>
 			<div id="game_setup_pane" class="pane" show.bind="show_pane == 'game'">
 				<div class="option">

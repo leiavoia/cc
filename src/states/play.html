@@ -84,7 +84,7 @@
 				</template>
 			</div>   
 			
-			<div id="the_caret" class="caret ${caret.class}" if.bind="caret.obj" css="left:${caret.x}px; top:${caret.y}px;"></div>
+			<div id="the_caret" class="caret ${caret.class}" if.bind="caret.obj && caret.x && caret.y" css="left:${caret.x}px; top:${caret.y}px;"></div>
 			
 			<!-- STARS -->
 			<div click.trigger="app.ClickStar(star)" repeat.for="star of app.game.galaxy.stars" class="mapobj_container star_${star.color & oneTime} ${star.settled ? 'settled' : ''} ${star.in_range ? 'in_range' : ''} ${star.explored || app.options.see_all ? 'explored' : 'unexplored'}" css="left:${star.xpos & oneTime}px; top:${star.ypos & oneTime}px;">
