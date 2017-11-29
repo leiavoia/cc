@@ -12,7 +12,7 @@ import * as utils from './util/utils';
 
 
 export class App {
-	version = '0.0.2';
+	version = '0.0.3';
 	main_panel_obj = null;
 	main_panel_mode = false;
 	exclusive_ui = false; // if true, hides all UI except main content panel
@@ -25,13 +25,13 @@ export class App {
 	game = null;
 	notes = [];
 	options = {
-		dim_unexplored: false,
-		show_sectors: true,
-		see_all: true,
-		show_range: true,
+		dim_unexplored: true,
+		show_sectors: false,
+		see_all: false,
+		show_range: false,
 		show_xtreme_fleets: true,
-		debug: true,
-		announce_scouted_stars: true
+		debug: false,
+		announce_scouted_stars: false
 		};
 		
 	ResetEverything() { 

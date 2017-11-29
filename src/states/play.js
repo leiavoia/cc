@@ -19,6 +19,9 @@ export class PlayState {
 	max_scale = 1.0;
 	min_scale = 0.05;
 	scaling_step = 0.125;
+	bg_img = 'img/map/bg/spacebg_031.jpg';
+	bg_img_w = 2500; // standardized bg img dims
+	bg_img_h = 1400; // but can accomodate any image 
 	xtreme_zoom = false;
 	caret = { obj: null, x: 0, y: 0, class: null };
 
@@ -214,16 +217,7 @@ export class PlayState {
 		parent.scrollTop = new_scrolltop; 
 		parent.scrollLeft = new_scrollleft;
 		
-		// for that extra special effect, we can also zoom in on the background.
-		// note: background scale = 125% @ zoom = 1.0, 100% @ zoom = 0.0
-		var bgsize = 100.0 + (20.0 * this.current_scale);
-		// note that blank space will show if we assume the viewport 
-		// has a narrower aspect ratio than the image itself. Since we dont have
-		// info on the image, lets just use a rule of thumb. The other thing we can do
-		// is make all images a known aspect ratio and make assumptions about it here.
-		let str = (parent.clientHeight > parent.clientWidth ) ? ("auto " + bgsize + "%") : (bgsize + "% auto");
-		document.getElementById('layout_pagewrap').style.backgroundSize = str;
-
+		this.RecalcBGSize();
 		
 		if ( this.current_scale < 0.30 && document.body.className.indexOf('xtreme_zoom') == -1 ) {
 			document.body.className += ' xtreme_zoom';
@@ -238,6 +232,39 @@ export class PlayState {
 		return false;
 			
 		}
+		
+	RecalcBGSize() { 
+		let vp = document.getElementById('layout_viewport');
+		// for that extra special effect, we can also zoom in on the background.
+		// note: background scale = 125% @ zoom = 1.0, 100% @ zoom = 0.0
+		var bgsize = 100.0 + (25.0 * this.current_scale);
+		// note that blank space will show if we assume the viewport 
+		// has a narrower aspect ratio than the image itself. Since we dont have
+		// info on the image, lets just use a rule of thumb. The other thing we can do
+		// is make all images a known aspect ratio and make assumptions about it here.
+		// UPDATE: we're going with a standard 2500 x 1400 image now. 
+		// FUTURE: We can accomodate any image by loading it as an IMG element and
+		// getting the dimensions. This is something you want to do only once
+		// when the image is selected, not every time you zoom the map.
+		let img_ratio = this.bg_img_h / this.bg_img_w;
+		let screen_ratio = vp.clientHeight / vp.clientWidth;
+		let str = (screen_ratio > img_ratio) ? ("auto " + bgsize + "%") : (bgsize + "% auto");
+		document.getElementById('layout_pagewrap').style.backgroundSize = str;	
+		}
+		
+	// grab the nebula background image and measure exact dimensions
+	GetBGDims() {
+		let img = new Image();
+		let playstate = this;
+		// need to use the onload event because we cant
+		// access the data until it finishes.
+		img.onload = function ( event ) {
+			playstate.bg_img_w = img.width; 
+			playstate.bg_img_h = img.height;
+			};
+		img.src = this.bg_img;
+		}
+		
 	/* this executes when DOM is ready */
 	attached () {
 		//
@@ -335,20 +362,30 @@ export class PlayState {
 				
 			// zoom
 			let state = this;
-			['wheel', 'resize'].forEach( function ( event1 ) { 
-				document.getElementById('layout_viewport').addEventListener(event1, function(event){
-					state.MapZoom( event.pageX, event.pageY, ( event.deltaY > 0 ? 1 : -1 ) );
-					// prevent scrolling
-					event.preventDefault();
-					event.returnValue = false;
-					return false;
-					});		
-				});
+			document.getElementById('layout_viewport').addEventListener('wheel', function(event){
+				state.RecalcBGSize();
+				state.MapZoom( event.pageX, event.pageY, ( event.deltaY > 0 ? 1 : -1 ) );
+				// prevent scrolling
+				event.preventDefault();
+				event.returnValue = false;
+				return false;
+				});	
+			// window resize
+			window.addEventListener('resize', function(event){
+				state.RecalcBGSize();
+				return false;
+				});	
 					
 			PlayState.dragscroll_init = true;
 			}
-			
-			
+		
+		// pick a random nebula background
+		this.bg_img = 'img/map/bg/spacebg_' + ("000" + utils.RandomInt(0,54)).slice(-3) + '.jpg';
+		this.GetBGDims();
+		
+		// set the initial background size
+		this.RecalcBGSize();
+		
 		// focus on the home system if there is one
 		// [!]FUTURE-TODO - This is where the dramatic intro would go in the future.
 		if ( this.app.hilite_star ) { 

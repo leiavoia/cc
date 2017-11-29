@@ -221,13 +221,11 @@ body,html {
 	max-width: 100%;
 	min-height:480px;
 	min-width:640px;
-	/* bg grahics */	
-/* 	background: #000 url(../img/map/bg/space_001c.jpg) 50% 50% no-repeat; */
-	background: #000 url(../img/workshop/map/bg/space_001d.jpg) 50% 50% no-repeat;
-/* 	background: #000 url(../img/map/bg/space_007d.jpg) 50% 50% no-repeat; */
-/* 	background: #000 url(../img/workshop/map/bg/space_001.jpg) 50% 50% no-repeat; */
-/* 	background: #000 url(../img/workshop/map/bg/orion_2500px_darkerer.jpg) 50% 50% no-repeat; */
-	background-size: cover;
+	/* default bg img - JS may override when app starts */
+	background-color: #000;
+	background-image: url(../img/map/bg/spacebg_031.jpg);
+	background-repeat: repeat;
+	background-size: 125% auto;
 	background-position: 50% 50%;
 	z-index: 100;
 	overflow:hidden;
@@ -397,11 +395,9 @@ body,html {
 #layout_ui_main.visible { visibility:visible; }
 #layout_ui_main.setup { 
 	visibility:visible;
-	background: none; 
-	background: #000 url(../img/map/bg/setup.jpg) 0% 50% repeat-x;
+	background: #000 url(../img/map/bg/spacebg_031.jpg) 50% 50% no-repeat;
 	pointer-events: auto; /* capture click events */
-/* 	background-size: cover; */
-/* 	animation: scrollbg 500s linear infinite; */
+	background-size: cover;
 	}
 @keyframes scrollbg {
 	0% { background-position: 0% 50%; }
@@ -2027,7 +2023,7 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	padding: 0;
 	background: 
 		url(../img/map/air_collect_sparkle_white.png) 45% 20% no-repeat,
-		url(../img/map/bg/space_003.jpg) 50% 50% no-repeat
+		url(../img/map/bg/stars.jpg) 50% 50% no-repeat
 		;
 	background-size: 30%, cover;
 	}
