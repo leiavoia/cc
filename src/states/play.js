@@ -380,7 +380,7 @@ export class PlayState {
 			}
 		
 		// pick a random nebula background
-		this.bg_img = 'img/map/bg/spacebg_' + ("000" + utils.RandomInt(0,54)).slice(-3) + '.jpg';
+		this.bg_img = 'img/map/bg/spacebg_' + ("000" + utils.RandomInt(0,69)).slice(-3) + '.jpg';
 		this.GetBGDims();
 		
 		// set the initial background size
