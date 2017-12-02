@@ -1,5 +1,6 @@
 // import Civ from './Civ';
 import * as utils from '../util/utils';
+// import * as Signals from '../util/signals';
 
 
 export default class Anom {
@@ -27,8 +28,8 @@ export default class Anom {
 	post_desc = `We checked it out and it was just the neighbor's cat.`;
 	
 	// a callback you can override
-	onComplete() { 
-	
+	onComplete( fleet ) { 
+		
 		}
 		
 	AmountResearched( civ ) {
@@ -79,7 +80,7 @@ export default class Anom {
 		let a = new Anom( /*utils.RandomName()*/ 'X', 'normal', x, y );
 		a.onmap = !( Math.random() > 0.5 ); // 50% chance of being a map object
 		a.size = utils.RandomInt( 2, 50 ) * 10;
-		a.vis_level = utils.RandomInt(0,2);
+		a.vis_level = 0; // utils.RandomInt(0,2);
 		a.order = utils.RandomInt( 0, 100 );
 		return a;
 		}

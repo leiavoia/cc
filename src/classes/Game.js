@@ -7,6 +7,7 @@ import Hyperlane from './Hyperlane';
 import Constellation from './Constellation';
 import Fleet from './Fleet';
 import * as utils from '../util/utils';
+import * as Signals from '../util/signals';
 
 export default class Game {
 	app = false;
@@ -23,6 +24,18 @@ export default class Game {
 	
 	constructor( app ) {
 		this.app = app;
+		Signals.Listen('anom_complete', data => this.AnomCompleted(data) );
+		}
+		
+	AnomCompleted( data ) { // data contains at `anom`
+		if ( data.fleet.owner == this.myciv ) { 
+			this.app.AddNote(
+				'neutral',
+				data.anom.name,
+				`Research teams finished investigating Anomaly ${data.anom.id}.`,
+				() => { if ( !data.fleet.killme ) { this.app.SwitchSideBar(data.fleet); this.app.FocusMap(data.fleet); } } 
+				);	
+			}
 		}
 		
 	// probably can just get rid of this eventually
@@ -293,12 +306,14 @@ export default class Game {
 			console.timeEnd('Planetary Econ');
 			
 			// AI!
-			console.time('AI');
-			for ( let civ of this.galaxy.civs ) { 
-				civ.TurnAI( this.app );
+			if ( this.app.options.ai ) { 
+				console.time('AI');
+				for ( let civ of this.galaxy.civs ) { 
+					civ.TurnAI( this.app );
+					}
+				console.timeEnd('AI');
 				}
-			console.timeEnd('AI');
-			
+				
 			// important to do ship research BEFORE moving ships,
 			// otherwise they get to do both in one turn. Not allowed.
 			console.time('Fleet Research');
@@ -423,25 +438,35 @@ export default class Game {
 		}
 		
 	DoFleetResearch() { 
-// 		let maxrange = this.myciv.ship_range * this.myciv.ship_range ; // NOTE: avoid square rooting.
 		for ( let f of Fleet.all_fleets ) { 
-			let report = f.DoResearch( this ); // pass reference to Game so it can notify us when stuff happens
+			let report = f.DoResearch();
 			if ( report && f.owner == this.app.game.myciv ) { 
-				let findings_hook = '';
-				if ( report.completed.length ) {
-					findings_hook = ' They found: ';
-					let n = report.completed.length;
-					for ( let a of report.completed ) { 
-						findings_hook += a.name;
-						if ( --n > 0 ) { findings_hook += ', '; }
-						else { findings_hook += '.'; }
+				let note = '';
+				// status portion
+				if ( report.status == 0 ) { 
+					note = 'Nothing of interest to report in this sector of space.';
+					}
+				else if ( report.status == -1 ) { 
+					note = `Fleet #${f.id} has not returned from its deep space mission. The crew is feared lost.`;
+					if ( report.remaining ) {
+						note = note + ' Our last communication with the team indicates they were on to something. Perhaps we can continue the tour with additional precautions in the future.';
+						}
+					}
+				else { 
+					note = 'Success!';
+					// followup comment 
+					if ( report.remaining ) {
+						note = note + ' Expedition leaders indicate the presence of yet more interesting things to investigate and would like to continue the mission if possible.';
+						}
+					else {
+						note = note + ' The team has done an exhaustive search of the area and found nothing more to investigate.';
 						}
 					}
 				this.app.AddNote(
-					'good',
-					`Research Mission Complete`,
-					`Fleet ${f.id} Has completed it's research mission.${findings_hook}`,
-// 					function(){app.SwitchMainPanel('audience');}
+					( report.status == -1 ? 'bad' : (report.status == 0 ? 'neutral' : 'good') ),
+					`Research Mission ${report.status == -1 ? 'Failed' : 'Complete'}`,
+					note,
+					() => { if ( report.status > -1 && !f.killme ) { this.app.SwitchSideBar(f); this.app.FocusMap(f); } } 
 					);				
 				}
 			}

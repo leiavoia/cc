@@ -125,21 +125,7 @@ export default class Fleet {
 			if ( dist <= this.speed ) { 
 				this.star = this.dest;
 				this.dest = null;
-				// check to see if we are merging into an existing fleet
-				for ( let f of this.star.fleets )  {
-					if ( f.owner == this.owner ) { 
-						f.ships = f.ships.concat( this.ships );
-						f.ReevaluateStats();
-						this.ships = [];
-						this.merged_with = f; // hint for UI
-						this.Kill();
-						break;
-						}
-					}
-				// otherwise, call it home.
-				if ( !this.merged_with && this.star.fleets.indexOf(this) == -1 ) { 
-					this.star.fleets.push( this );
-					}
+				this.ParkOnStar();
 				}
 			else {
 				// if leaving our star, unhook
@@ -155,27 +141,33 @@ export default class Fleet {
 		return moved;
 		}
 
+	// Utility function. Either puts the fleet in orbit or merges with an existing fleet.
+	// Returns TRUE if parked, FALSE on merged (signal to kill fleet).
+	ParkOnStar() { 
+		// check to see if we are merging into an existing fleet
+		for ( let f of this.star.fleets )  {
+			if ( f.owner == this.owner ) { 
+				f.ships = f.ships.concat( this.ships );
+				f.ReevaluateStats();
+				this.ships = [];
+				this.merged_with = f; // hint for UI
+				this.Kill();
+				break;
+				}
+			}
+		// otherwise, call it home.
+		if ( !this.merged_with && this.star.fleets.indexOf(this) == -1 ) { 
+			this.star.fleets.push( this );
+			}
+		}
+		
 	SetDest( dest ) { 
 		// check to see if we're already there
 		if ( this.dest == this.star || dest == this.star ) { 
 			this.dest = null;
 			this.xpos = 0;
 			this.ypos = 0;
-			// check to see if we are merging into an existing fleet
-			for ( let f of this.star.fleets )  {
-				if ( f.owner == this.owner ) { 
-					f.ships = f.ships.concat( this.ships );
-					f.ReevaluateStats();
-					this.ships = [];
-					this.merged_with = f; // hint for UI
-					this.Kill();
-					break;
-					}
-				}
-			// otherwise, call it home.
-			if ( !this.merged_with && this.star.fleets.indexOf(this) == -1 ) { 
-				this.star.fleets.push( this );
-				}			
+			this.ParkOnStar();		
 			}
 		else {
 			this.dest = dest;
@@ -234,13 +226,12 @@ export default class Fleet {
 			}
 		// sort targets by their prescribed order
 		targets.sort( (a,b) => { return (a.order < b.order) ? -1 : ((a.order > b.order) ? 1 : 0 ); } );
-		// create the mission
-		this.mission = { targets, time: Math.max( duration, 1 ), completed: [] };
+		// create the mission. ("status": 0 = in progress / no report, -1 = failed, +1 = success )
+		this.mission = { targets, time: Math.max( duration, 1 ), status: 0, completed: 0, remaining: 0 };
 		}
 	
-	// returns a mission report for any completed missions
-	// { fleet, completed[] }
-	DoResearch( game ) { // link to game so we can fire completion events 
+	// returns a mission report for any completed deepspace missions
+	DoResearch() {
 		if ( !this.research ) { return; }
 		let report = null;
 		// fleet is on a deepspace research mission
@@ -249,29 +240,41 @@ export default class Fleet {
 			while ( this.mission.targets.length && this.mission.targets[0].collected ) { 
 				this.mission.targets.shift();
 				}
-			// have any valid targets?
-			if ( this.mission.targets.length ) { 
-				// TODO: Add danger/conflict
-				let completed = this.mission.targets[0].AddResearch( this.owner, this.research );
-				console.log(`Fleet#${this.id} researched ${this.mission.targets[0].name}`);
-				// TODO: do something here?
-				if ( completed ) { 
-					console.log(`Fleet#${this.id} FINISHED researching ${this.mission.targets[0].name}`);
-// 					this.mission.targets[0].onComplete();
-					this.mission.completed.push( this.mission.targets.shift() );
+			// I not dead and have any valid targets?
+			if ( this.mission.targets.length && this.mission.status != -1 ) { 
+				// TODO: Add danger/conflict logic here
+				if ( Math.random() <= 0.03 ) { 
+					this.mission.status = -1; // we've lost
+					this.mission.targets = []; // give up
+// 					console.log(`Fleet#${this.id} lost in space`);
+					}
+				else {
+					let completed = this.mission.targets[0].AddResearch( this.owner, this.research );
+					console.log(`Fleet#${this.id} researched ${this.mission.targets[0].name}`);
+					if ( completed ) { 
+// 						console.log(`Fleet#${this.id} FINISHED researching ${this.mission.targets[0].name}`);
+						this.mission.completed++;
+						Signals.Send('anom_complete', {anom:this.mission.targets[0], fleet:this});
+						this.mission.targets.shift().onComplete(this);
+						}
 					}
 				}
 			this.mission.time--;
-			console.log(`Fleet#${this.id} returns in T-${this.mission.time}`);
+// 			console.log(`Fleet#${this.id} returns in T-${this.mission.time}`);
 			if ( this.mission.time <= 0 ) { 
-				// mission complete; put back on star
-				this.star.fleets.push( this );
-				//
-				// TODO IMPORTANT: May be merging with another fleet
-				//
-				// send back report
-				report = { fleet: this, completed: this.mission.completed };
+				// mission complete; wrap up and put back on star
+				if ( this.mission.status > -1 ) { this.mission.status = this.mission.completed ? 1 : 0 };
+				report = { 
+					fleet: this, 
+					completed: this.mission.completed, 
+					remaining: this.mission.targets.length, 
+					status: this.mission.status,
+					// possibly add a captain's note here for flavor
+					};
+				let failed = this.mission.status == -1;
 				this.mission = null;
+				if ( !failed ) { this.ParkOnStar(); } // only the lucky ones come home
+				else { this.Kill(); } // U R DED
 				}
 			}	
 		// parked fleets with research ships do research
@@ -280,18 +283,14 @@ export default class Fleet {
 			if ( this.star.objtype == 'anom' && !this.star.collected && !this.star.ResearchIsCompleted(this.owner) ) { 
 				// TODO: Add danger/conflict
 				let completed = this.star.AddResearch( this.owner, this.research );
-				// send back report
 				if ( completed ) { 
-					this.star.onComplete();
-					report = { fleet: this, completed: [this.star] };
+					Signals.Send('anom_complete', {anom:this.star, fleet:this});
+					this.star.onComplete( this );
 					}
-				// TODO: do something here or let anom handle it directly?
 				}
 			// if the ship is parked in a system, do orbital research
 			else if ( this.star.objtype == 'star' ) { 
-				// TODO
-// 					let completed = this.star.AddResearch( this.owner, this.research );
-				// do something here or let anom handle it directly?
+				// TODO - orbital research
 				}
 			}
 		return report;
