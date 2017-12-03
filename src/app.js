@@ -27,11 +27,12 @@ export class App {
 	options = {
 		dim_unexplored: true,
 		show_sectors: false,
-		see_all: false,
-		show_range: false,
+		see_all: true,
+		show_range: true,
 		show_xtreme_fleets: true,
-		debug: false,
-		announce_scouted_stars: false
+		debug: true,
+		announce_scouted_stars: true,
+		ai: true
 		};
 		
 	ResetEverything() { 
@@ -113,9 +114,11 @@ export class App {
 		this.star_click_callback = callback;
 		}
 	ClickStar( star ) { 
+		// deepsace anomalies on map for debug only
+		if ( star.objtype == 'anom' && !star.onmap ) { return; }
 		if ( this.star_click_callback instanceof Function ) { 
 			this.star_click_callback( star );
-			this.star_click_callback = null;
+// 			this.star_click_callback = null;
 			}
 		else {
 // 			this.FocusMap(star);

@@ -11,7 +11,7 @@
 				<td><a href="#" click.delegate="ClickObject(f)">FLEET #${f.id}</a></td>
 				<td>SHIPS: ${f.ships.length}</td>
 				<td>STAR: ${f.star ? f.star.name : '-'}</td>
-				<td>DEST: ${f.dest ? f.dest.name : '-'}</td>
+				<td>DEST: ${f.mission ? 'On Mission' : (f.dest ? f.dest.name : '-')}</td>
 				<td>X: ${f.xpos|round}</td>
 				<td>Y: ${f.ypos|round}</td>
 				<td>killme: ${f.killme?'1':''}</td>

@@ -19,15 +19,30 @@ export class FleetDetailPane {
 		// manually trigger our binding function because
 		// this element is normally built through <compose>
 		this.fleetChanged( this.fleet, null );
+		window.addEventListener('keypress', this.keypressCallback, false);
 		}
 		
+	deactivate() {
+		window.removeEventListener('keypress', this.keypressCallback);
+		}
+    
+    
 	unbind() { 
 		// stop leaking callbacks
-		this.app.RegisterStarClickCallback(null);
+		this.StopCaptureStarClicks();
 		}
-		
+				
 	constructor() { 
+		this.keypressCallback = (e) => this.KeyPress(e);
 		};
+		
+	CaptureStarClicks() { 
+		this.app.RegisterStarClickCallback( (star) => this.StarClickCallback(star) );
+		this.mode = 'awaiting_star_click';
+		}
+	StopCaptureStarClicks() { 
+		this.app.RegisterStarClickCallback( null );
+		}
 		
 	// aurelia automatic function called when fleet object gets changed
 	fleetChanged( new_fleet, old_fleet ) {
@@ -39,7 +54,13 @@ export class FleetDetailPane {
 		if ( old_fleet instanceof Fleet ) { 
 			old_fleet.SetOnUpdate(null);
 			}
-		this.mode = 'fleet';
+		// assume we start in move-fleet mode to save clicks, unless we are en route
+		if ( this.fleet.dest && !this.fleet.star ) {
+			this.mode = 'fleet';
+			}
+		else {
+			this.CaptureStarClicks();
+			}
 		}
 	PlanetSizeCSS( planet ) {
 		let size = Math.round(planet.size * 0.572);
@@ -93,12 +114,6 @@ export class FleetDetailPane {
 			ship.selected = ship.selected ? false : true;
 			}
 		this.Recalc();
-		}
-	ClickSend() {
-		if ( this.can_send==2 ) {
-			this.app.RegisterStarClickCallback( (star) => this.StarClickCallback(star) );
-			this.mode = 'awaiting_star_click';
-			}
 		}
 	GetFirstColonyShip() {
 		// we want either the first colony ship that is selected
@@ -191,12 +206,14 @@ export class FleetDetailPane {
 		}
 	ClickColonize() {
 		if ( this.can_colonize==2 ) { 
+			this.StopCaptureStarClicks();
 			this.mode = 'colonize';
 			}
 		}
 	ClickChooseMission() {
 		if ( this.can_research==2 ) { 
 			this.mission_turns = 10;
+			this.StopCaptureStarClicks();
 			this.mode = 'mission';
 			}
 		}
@@ -232,11 +249,18 @@ export class FleetDetailPane {
 				}
 			this.fleet.FireOnUpdate();
 			}
-		this.mode = 'fleet';
+		// dont revert to move-fleet mode. we're done moving this fleet.
+		this.mode = 'fleet'; 
+		this.StopCaptureStarClicks();
+		this.app.CloseSideBar();
+		}
+	ClickClose() {
+		this.StopCaptureStarClicks();
+		this.app.CloseSideBar();
 		}
 	ClickCancel() {
-		this.mode = 'fleet';
-		this.app.RegisterStarClickCallback( null );
+		// revert to move-fleet mode
+		this.CaptureStarClicks();
 		}
 	ClickScrap() {
 		// first check if there is anything to scrap
@@ -249,37 +273,67 @@ export class FleetDetailPane {
 			}
 		}
 	StarClickCallback( star ) { 
-		if ( this.mode == 'awaiting_star_click' ) { 
-			// if we are sending all ships, just move the entire fleet.
-			// otherwise we have to split the fleet.
-			let total_ships = this.fleet.ships.length;
-			let ships_leaving = [];
-			for ( let i=total_ships-1; i >= 0; i-- ) {
-				if ( this.fleet.ships[i].selected ) { 
-					//this.fleet.ships[i].selected = false;
-					// tech note: using unshift instead of push maintains order
-					ships_leaving.unshift( this.fleet.ships.splice( i, 1 )[0] );
+		if ( this.mode == 'awaiting_star_click' && this.can_send==2 ) { 
+			// dont let fleet route to the planet its parked at
+			if ( !( star == this.fleet.star && !this.fleet.dest ) ) { 
+			
+				//
+				// TODO: check for range
+				//
+				
+				// if we are sending all ships, just move the entire fleet.
+				// otherwise we have to split the fleet.
+				let total_ships = this.fleet.ships.length;
+				let ships_leaving = [];
+				for ( let i=total_ships-1; i >= 0; i-- ) {
+					if ( this.fleet.ships[i].selected ) { 
+						//this.fleet.ships[i].selected = false;
+						// tech note: using unshift instead of push maintains order
+						ships_leaving.unshift( this.fleet.ships.splice( i, 1 )[0] );
+						}
 					}
+				if ( ships_leaving.length ) { 
+					// send the entire fleet
+					if ( ships_leaving.length == total_ships ) { 
+						this.fleet.ships = ships_leaving;
+						this.fleet.SetDest( star );
+						this.app.SwitchSideBar( this.fleet );
+						}
+					// send a splinter fleet
+					else {
+						let f = new Fleet( this.fleet.owner, this.fleet.star );
+						f.ships = ships_leaving;
+						f.SetDest( star );
+						f.ReevaluateStats();
+						this.app.SwitchSideBar( f );
+						}
+					this.Recalc();
+					}
+				this.fleet.FireOnUpdate();
 				}
-			if ( ships_leaving.length ) { 
-				// send the entire fleet
-				if ( ships_leaving.length == total_ships ) { 
-					this.fleet.ships = ships_leaving;
-					this.fleet.SetDest( star );
-					this.app.SwitchSideBar( this.fleet );
-					}
-				// send a splinter fleet
-				else {
-					let f = new Fleet( this.fleet.owner, this.fleet.star );
-					f.ships = ships_leaving;
-					f.SetDest( star );
-					f.ReevaluateStats();
-					this.app.SwitchSideBar( f );
-					}
-				this.Recalc();
-				}
-			this.fleet.FireOnUpdate();
 			}
-		this.mode = 'fleet';
+// 		this.mode = 'fleet';
+		}
+		
+	KeyPress( event ) { 
+		switch ( event.keyCode || event.which ) { 
+			case 27: { // escape
+				this.app.CloseSideBar();
+				event.preventDefault(); return false;
+				}
+			case 105: { // I
+				this.SelectInvert();
+				event.preventDefault(); return false;
+				}
+			case 97: { // A
+				this.SelectAll();
+				event.preventDefault(); return false;
+				}
+			case 110: { // N
+				this.SelectNone();
+				event.preventDefault(); return false;
+				}
+// 			default: { console.log(`${event.which} was pressed`); }
+			}
 		}
 	}

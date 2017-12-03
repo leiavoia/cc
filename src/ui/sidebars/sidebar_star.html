@@ -14,40 +14,42 @@
 				<input type="text" value.bind="star.name" />
 				<a href="" click.delegate="ToggleNameEdit()">OK</a>
 			</p>
-			<div class="planet atm${p.atm} tmp${p.temp} grav${p.grav}" css.one-time="PlanetSizeCSS(p)" repeat.for="p of star.planets"  click.delegate="app.SwitchSideBar(p)">
-				<img if.bind="p.owner" class="flag" src.bind="p.owner.flag_img" style="border:1px solid #666;" />
-				<div class="env_box">
-					<div class="target"></div>
-				</div>	
-				<h3 css="color: ${p.ui_color};">${p.name}</h3>
-				<div class="phys">
-					<div class="size">
-						<span class="pop" if.bind="p.owner !== false">${p.total_pop|round}<br/><span class="pop">POP</span></span>
-						<span class="size">${p.size}<br/><span class="size">SIZE</span></span>							
-						<span class="mine">${p.rich}x<br/><span class="mine">MINING</span></span>
-						<span class="en">${p.energy}x<br/><span class="en">ENERGY</span></span>
-						<span class="${p.Habitable(app.game.myciv.race) ? (p.Adaptation( app.game.myciv.race ) < 0 ? 'alert' : 'good') : 'bad'}">
-							${(p.Adaptation( app.game.myciv.race ) >= 0 ? '+' : '')}${p.Adaptation( app.game.myciv.race )}<br/>
-							<span class="">ENV</span>
-						</span>
-<!-- 						<div class="size" if.bind="p.owner !== false" css="width:${p.size / 200 | percent:3}%"></div> -->
-<!-- 						<div class="pop" if.bind="p.owner !== false" css="width:${(p.total_pop / p.size) * (p.size / 200) | percent:3}%"></div> -->
-					</div>			
-				</div>
-					<p class="env_label">${p.gravDisplayName}  ${p.envDisplayName}</p>
-					
-<!--				<div class="spending" if.bind="p.owner">
-					<div class="spending_stackbar">
-						<div class="m" css="width:${p.act.mine.pct | percent:3}%">${p.act.mine.output | round:1}${p.act.mine.output > p.act.mine.need ? '+' : '-'}</div>
-						<div class="p" css="width:${p.act.prod.pct | percent:3}%">${p.act.prod.output | round:1}</div>
-						<div class="s" css="width:${p.act.sci.pct | percent:3}%">${p.act.sci.output | round:1}</div>
+			<div class="hilite_wrapper" repeat.for="p of star.planets"  click.delegate="app.SwitchSideBar(p)">
+				<div class="planet atm${p.atm} tmp${p.temp} grav${p.grav}" css.one-time="PlanetSizeCSS(p)">
+					<img if.bind="p.owner" class="flag" src.bind="p.owner.flag_img" style="border:1px solid #666;" />
+					<div class="env_box">
+						<div class="target"></div>
+					</div>	
+					<h3 css="color: ${p.ui_color};">${p.name}</h3>
+					<div class="phys">
+						<div class="size">
+							<span class="pop" if.bind="p.owner !== false">${p.total_pop|round}<br/><span class="pop">POP</span></span>
+							<span class="size">${p.size}<br/><span class="size">SIZE</span></span>							
+							<span class="mine">${p.rich}x<br/><span class="mine">MINING</span></span>
+							<span class="en">${p.energy}x<br/><span class="en">ENERGY</span></span>
+							<span class="${p.Habitable(app.game.myciv.race) ? (p.Adaptation( app.game.myciv.race ) < 0 ? 'alert' : 'good') : 'bad'}">
+								${(p.Adaptation( app.game.myciv.race ) >= 0 ? '+' : '')}${p.Adaptation( app.game.myciv.race )}<br/>
+								<span class="">ENV</span>
+							</span>
+	<!-- 						<div class="size" if.bind="p.owner !== false" css="width:${p.size / 200 | percent:3}%"></div> -->
+	<!-- 						<div class="pop" if.bind="p.owner !== false" css="width:${(p.total_pop / p.size) * (p.size / 200) | percent:3}%"></div> -->
+						</div>			
 					</div>
-				</div>-->
-				
-	<!--			<p class="physattr">
-					<span repeat.for="attr of p.physattr">${attr.name} </span>
-				</p>-->
-	<!-- 			<p class="bonus">[TODO:BONUSES]</p> -->
+						<p class="env_label">${p.gravDisplayName}  ${p.envDisplayName}</p>
+						
+	<!--				<div class="spending" if.bind="p.owner">
+						<div class="spending_stackbar">
+							<div class="m" css="width:${p.act.mine.pct | percent:3}%">${p.act.mine.output | round:1}${p.act.mine.output > p.act.mine.need ? '+' : '-'}</div>
+							<div class="p" css="width:${p.act.prod.pct | percent:3}%">${p.act.prod.output | round:1}</div>
+							<div class="s" css="width:${p.act.sci.pct | percent:3}%">${p.act.sci.output | round:1}</div>
+						</div>
+					</div>-->
+					
+		<!--			<p class="physattr">
+						<span repeat.for="attr of p.physattr">${attr.name} </span>
+					</p>-->
+		<!-- 			<p class="bonus">[TODO:BONUSES]</p> -->
+				</div>
 			</div>
 <!--			<p if.bind="star.Acct( app.game.iam )"><a href="#" click.delegate="ClickConstelLink()" class="button">Constellation</a></p>
 			<p if.bind="star.Acct( app.game.iam )">

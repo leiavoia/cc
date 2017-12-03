@@ -203,31 +203,42 @@ export default class Fleet {
 		}
 		
 	SendOnMission( galaxy, duration ) { 
-		// keep a reference to the star we were parked at, but detach from the list
 		if ( this.star ) { 
+			// keep a reference to the star we were parked at, but detach from the list
 			let pos = this.star.fleets.indexOf(this);
 			if ( pos !== -1 ) { 
 				this.star.fleets.splice( pos, 1 );
 				}
-			}
-		// find deepspace anomalies within range
-		let targets = [];
-		let myrange = this.owner.ship_range * this.owner.ship_range; // avoiding sqrt 
-		for ( let a of galaxy.anoms ) { 
-			if ( !a.onmap && !a.collected && !a.ResearchIsCompleted(this.owner) && a.vis_level <= this.owner.vis_level ) { 
-				let dist = 
-					Math.pow( Math.abs(a.xpos - this.xpos), 2) +
-					Math.pow( Math.abs(a.ypos - this.ypos), 2)
-					;
-				if ( myrange >= dist ) { 
-					targets.push( a );
+			// cancel all trips
+			this.dest = null;
+			// find deepspace anomalies within range
+			let targets = [];
+			let myrange = this.owner.ship_range * this.owner.ship_range; // avoiding sqrt 
+			for ( let a of galaxy.anoms ) { 
+				if ( !a.onmap && !a.collected && !a.ResearchIsCompleted(this.owner) && a.vis_level <= this.owner.vis_level ) { 
+					let dist = 
+						Math.pow( Math.abs(a.xpos - this.xpos), 2) +
+						Math.pow( Math.abs(a.ypos - this.ypos), 2)
+						;
+					if ( myrange >= dist ) { 
+						targets.push( a );
+						}
 					}
 				}
+			// sort targets by their prescribed order
+			targets.sort( (a,b) => { return (a.order < b.order) ? -1 : ((a.order > b.order) ? 1 : 0 ); } );
+			console.log(targets);
+			// create the mission. ("status": 0 = in progress / no report, -1 = failed, +1 = success )
+			let time = Math.max( duration, 3 );
+			this.mission = { 
+				targets, 
+				time,
+				bonus: ( ( ( Math.max(time,10) - 10 ) / 10 ) + 1.0 ),
+				status: 0, 
+				completed: 0, 
+				remaining: 0 
+				};
 			}
-		// sort targets by their prescribed order
-		targets.sort( (a,b) => { return (a.order < b.order) ? -1 : ((a.order > b.order) ? 1 : 0 ); } );
-		// create the mission. ("status": 0 = in progress / no report, -1 = failed, +1 = success )
-		this.mission = { targets, time: Math.max( duration, 1 ), status: 0, completed: 0, remaining: 0 };
 		}
 	
 	// returns a mission report for any completed deepspace missions
@@ -249,7 +260,7 @@ export default class Fleet {
 // 					console.log(`Fleet#${this.id} lost in space`);
 					}
 				else {
-					let completed = this.mission.targets[0].AddResearch( this.owner, this.research );
+					let completed = this.mission.targets[0].AddResearch( this.owner, this.research * this.mission.bonus );
 					console.log(`Fleet#${this.id} researched ${this.mission.targets[0].name}`);
 					if ( completed ) { 
 // 						console.log(`Fleet#${this.id} FINISHED researching ${this.mission.targets[0].name}`);

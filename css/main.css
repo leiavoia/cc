@@ -1703,13 +1703,26 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	max-height: 100%;
 	box-sizing: border-box;
 	}
-
+#layout_ui_side > .star H2 {
+	text-align:center;
+	margin-bottom: 1em;
+	}
+	
+#layout_ui_side > .star .hilite_wrapper {
+	margin: 0.5em -1rem;
+	padding: 0.5em 1em;
+	border-radius: 0.5em;
+	cursor: pointer;
+	}
+#layout_ui_side > .star .hilite_wrapper:hover {
+	background-image: radial-gradient(circle closest-corner at 50% 50% , transparent 0%, transparent 50%, #3C96BA 100%);
+	}
+	
 #layout_ui_side > .star .planet {
-	margin-top: 1.5em;
 	background: url(../img/planets/planet_00.png) 0% 0% no-repeat ;
+	background-color:none;
 	padding-left: 85px;
 	clear:both;
-	cursor: pointer;
 	min-height: 75px;
 	}
 
