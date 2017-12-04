@@ -32,7 +32,7 @@ export default class Game {
 			this.app.AddNote(
 				'neutral',
 				data.anom.name,
-				`Research teams finished investigating Anomaly ${data.anom.id}.`,
+				`Research team finished investigating Anomaly ${data.anom.id}.`,
 				() => { if ( !data.fleet.killme ) { this.app.SwitchSideBar(data.fleet); this.app.FocusMap(data.fleet); } } 
 				);	
 			}

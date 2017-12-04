@@ -109,7 +109,7 @@ We also link to Google Fonts:
 	0% { transform: scaleX(1.0) scaleY(1.0); opacity: 1.0; }
 	50% { transform: scaleX(1.0) scaleY(0.02); opacity: 1.0; }
 	99% { transform: scaleX(0.01) scaleY(0.02); opacity: 1.0; background-color: #6CE;}
-	100% { transform: scaleX(0.01) scaleY(0.02); opacity: 0.0; background-color: #6CE; }
+	100% { transform: scaleX(0.00) scaleY(0.00); opacity: 0.0; background-color: #6CE; }
 }
 @keyframes blink2 {
 	0% { opacity: 1; }
@@ -460,7 +460,6 @@ body,html {
 	display: flex;
 	flex-flow: row nowrap;
 	align-items: center;
-/* 	display: none; */
 	}
 	
 #layout_modal .dialog {	
@@ -482,7 +481,6 @@ body,html {
 	/* animations*/
 	transform-origin: 50% 50%;
 	animation: trekIn 0.25s linear;
-/* 	display: none; */
 	}
 	
 
