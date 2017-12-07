@@ -1037,6 +1037,17 @@ invisible when unexplored, dim when explored */
 	padding: 2px;
 /* 	filter: drop-shadow( 1px 1px 1px rgba(255,255,255,1) ); */
 	}
+.fleet_en_route .icon {
+	width: 22px;
+	height: 22px;
+	display:inline-block;
+	font-size: 22px;
+	line-height: 22px;
+	padding: 2px;
+	text-align:center;
+	vertical-align:middle;
+/* 	filter: drop-shadow( 1px 1px 1px rgba(255,255,255,1) ); */
+	}
 .dest_line {
 	position:absolute;
 	height: 2px; 

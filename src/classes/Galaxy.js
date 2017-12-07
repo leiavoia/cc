@@ -177,6 +177,7 @@ export default class Galaxy {
 				star_i--;
 				}
 			}
+		
 		return this.civs[0].homeworld.star;
 		}	
 		

@@ -21,6 +21,7 @@ export default class Anom {
 	size = 100; // measure of how much it takes to research this anom
 	collected = false; // NULL = not collectable, FALSE = not collected, TRUE = collected
 	researched = new Map();
+	// TODO: 'nature'. May need something to indicate the general nature of the anomoly: good, bad, neutral.
 	
 	// pre-discovery description. A hint of what lurks inside
 	pre_desc = 'A strange anomaly.';
@@ -66,7 +67,13 @@ export default class Anom {
 		this.xpos = xpos;
 		this.ypos = ypos;	
 		this.id = Anom.IncNextID();
-		this.name = 'Anomaly ' + this.id; //( name || /*utils.RandomName()*/'X' ).uppercaseFirst();
+		//this.name = 'Anomaly ' + this.id; //( name || /*utils.RandomName()*/'X' ).uppercaseFirst();
+		this.name = 'Abandoned Cargo';
+		this.collected = false; // collectable
+		this.onComplete = (fleet) => { 
+			fleet.owner.treasury += 50000;
+			};
+		this.post_desc	= 'In the vacuum of space we found a stream of valuable cargo apparently jetisoned from a convoy. Who were the owners? Smugglers? Thieves? Regardless, we recovered the cargo and sold it off for 50,000 credits.';
 		}
 		
 	static Random( x, y ) {

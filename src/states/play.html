@@ -93,7 +93,14 @@
 					<a href="#" click.trigger="app.SwitchSideBar(p,$event)" repeat.for="p of star.planets" class="${p.settled ? 'settled' : ''}" css="color: ${p.ui_color};"><svg class="icon icon-nature"><use xlink:href="#icon-nature"></use></svg></a>
 				</div>
 				<div if.bind="star.fleets.length" class="fleet_list">
-					<a href="#" click.trigger="app.SwitchSideBar(f,$event)" repeat.for="f of star.fleets" css="color: ${f.ui_color};"><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg><span if.bind="app.options.debug">F${f.colonize?'c':''}${f.id}</span></a>
+					<a href="#" click.trigger="app.SwitchSideBar(f,$event)" repeat.for="f of star.fleets" css="color: ${f.ui_color};">
+<!-- 					<svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg><span if.bind="app.options.debug">F${f.colonize?'c':''}${f.id}</span> -->
+						<svg class="icon icon-transport" if.bind="!f.owner.race.is_monster">
+							<use xlink:href="#icon-transport"></use>
+						</svg>
+						<span class="icon icon-transport" if.bind="f.owner.race.is_monster">✾</span>
+					
+					</a>
 				</div>
 			</div>
 			
@@ -110,7 +117,13 @@
 						${anom.size} / v${anom.vis_level} / o${anom.order} / r${app.game.turn_num*0 + anom.AmountResearched(app.game.myciv)} / ${ anom.collected===null ? '-' : ( anom.collected ? '☒' : '☐' ) }
 					</p>
 					<div if.bind="anom.fleets.length" class="fleet_list">
-						<a href="#" click.trigger="app.SwitchSideBar(f,$event)" repeat.for="f of anom.fleets" css="color: ${f.ui_color};"><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg><span if.bind="app.options.debug">F${f.colonize?'c':''}${f.id}</span></a>
+						<a href="#" click.trigger="app.SwitchSideBar(f,$event)" repeat.for="f of anom.fleets" css="color: ${f.ui_color};">
+							<svg class="icon icon-transport" if.bind="!f.owner.race.is_monster">
+								<use xlink:href="#icon-transport"></use>
+							</svg>
+							<span class="icon icon-transport" if.bind="f.owner.race.is_monster">✾</span>
+							<span if.bind="app.options.debug">F${f.colonize?'c':''}${f.id}</span>
+						</a>
 					</div>
 				</div>
 			</template>
@@ -126,7 +139,13 @@
 					<div if.bind="!app.state_obj.xtreme_zoom && app.options.see_all || f.owner == app.game.myciv" class="dest_line" css="left:${f.xpos}px; top:${f.ypos}px; width: ${f.dest_line_length}px; transform:  rotate(${f.dest_line_angle}deg) translateY(-5px); "></div>
 					<!-- show fleet icon -->
 					<div class="fleet_en_route" css="left:${f.xpos}px; top:${f.ypos}px; border-color: ${f.ui_color};">
-						<a href="#" click.delegate="app.SwitchSideBar(f,$event)" css="color: ${f.ui_color};"><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg><span if.bind="app.options.debug">F${f.colonize?'c':''}${f.id}</span></a>
+						<a href="#" click.delegate="app.SwitchSideBar(f,$event)" css="color: ${f.ui_color};">
+							<svg class="icon icon-transport" if.bind="!f.owner.race.is_monster">
+								<use xlink:href="#icon-transport"></use>
+							</svg>
+							<span class="icon icon-transport" if.bind="f.owner.race.is_monster">✾</span>
+							<span if.bind="app.options.debug">F${f.colonize?'c':''}${f.id}</span>
+						</a>
 					</div>
 				</template>
 			</template>

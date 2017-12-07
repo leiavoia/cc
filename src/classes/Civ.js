@@ -1,4 +1,4 @@
-import Fleet from './Fleet';
+ import Fleet from './Fleet';
 // import Star from './Star';
 import RandomName from '../util/RandomName';
 import * as utils from '../util/utils';
@@ -23,6 +23,7 @@ export default class Civ {
 			habitation: 1 // maximum bad planet we can settle
 			},
 		size: 1.0, // literal size of pop units
+		is_monster: false, // true for space monsters. changes some UI formating.
 		};
 	
 	homeworld = null; // a Planet
@@ -48,7 +49,11 @@ export default class Civ {
 	diplo_style = 0.5; // 0..1, what kind of communication type this race uses 
 	diplo_skill = 0.25; // 0..1, the range of communication skills this race has.
 	diplo_dispo = 0.5; // 0..1, lovenub starting disposition when we meet other races.
-	
+	// integrate this with above later
+	diplo = {
+		contactable: true
+		}
+		
 	CommOverlapWith( civ ) { 
 		let min1 = utils.Clamp( this.diplo_style - this.diplo_skill, 0, 1 );
 		let max1 = utils.Clamp( this.diplo_style + this.diplo_skill, 0, 1 );
@@ -255,9 +260,15 @@ export default class Civ {
 			} 
 		return Civ.colors;
 		}
+		
 	static PickNextStandardColor() {
-		return Civ.StandardColors()[ Civ.total_civs ];
+		let colors = Civ.StandardColors();
+		if ( Civ.total_civs < colors.length ) { 
+			return colors[ Civ.total_civs ];
+			}
+		else { return [255,255,255]; } // default white
 		}
+		
 	static IncTotalNumCivs( reset=false ) {
 		if( !this.total_civs && this.total_civs!==0 ){
 			this.total_civs=0;
@@ -283,7 +294,7 @@ export default class Civ {
 			for ( let i=0; i<=30; i++ ) { Civ.flag_id_roster.push(i); }
 			Civ.flag_id_roster.shuffle();
 			Civ.img_id_roster = [];
-			for ( let i=0; i<=414 ; i++ ) { Civ.img_id_roster.push(i); }
+			for ( let i=0; i<=454 ; i++ ) { Civ.img_id_roster.push(i); }
 			Civ.img_id_roster.shuffle();
 			}
 		this.flag_img = 'img/flags/flag_' + ("000" + Civ.flag_id_roster[this.id]).slice(-3) + '.png';

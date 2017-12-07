@@ -146,7 +146,7 @@ export default class Fleet {
 	ParkOnStar() { 
 		// check to see if we are merging into an existing fleet
 		for ( let f of this.star.fleets )  {
-			if ( f.owner == this.owner ) { 
+			if ( f != this && f.owner == this.owner ) { 
 				f.ships = f.ships.concat( this.ships );
 				f.ReevaluateStats();
 				this.ships = [];
@@ -163,7 +163,7 @@ export default class Fleet {
 		
 	SetDest( dest ) { 
 		// check to see if we're already there
-		if ( this.dest == this.star || dest == this.star ) { 
+		if ( this.star && this.dest == this.star || dest == this.star ) { 
 			this.dest = null;
 			this.xpos = 0;
 			this.ypos = 0;

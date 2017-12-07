@@ -8,7 +8,7 @@
 		
 		<div id="civ_list">
 			<template containerless repeat.for="c of app.game.galaxy.civs">
-				<div if.bind="app.game.myciv != c && ( c.InRangeOf(app.game.myciv) || app.options.see_all )" 
+				<div if.bind="c.diplo.contactable && app.game.myciv != c && ( c.InRangeOf(app.game.myciv) || app.options.see_all )" 
 					css="border-color: rgb( ${c.color_rgb[0]}, ${c.color_rgb[1]}, ${c.color_rgb[2]} ); 
 						background-color: rgba( ${c.color_rgb[0]}, ${c.color_rgb[1]}, ${c.color_rgb[2]}, 0.55 );">
 					<img class="flag" src.one-time="c.flag_img" />

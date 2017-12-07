@@ -7,7 +7,7 @@
 		<h1>Fleets</h1>
 		
 		<table>
-			<tr repeat.for="f of app.game.myciv.fleets" >
+			<tr repeat.for="f of app.game.galaxy.fleets" ><!--app.game.myciv.fleets-->
 				<td><a href="#" click.delegate="ClickObject(f)">FLEET #${f.id}</a></td>
 				<td>SHIPS: ${f.ships.length}</td>
 				<td>STAR: ${f.star ? f.star.name : '-'}</td>

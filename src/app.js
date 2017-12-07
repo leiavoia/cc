@@ -9,7 +9,7 @@ import Fleet from './classes/Fleet';
 import Civ from './classes/Civ';
 // import {Modlist,Mod} from './classes/Mods';
 import * as utils from './util/utils';
-
+import * as CrazyBox from './classes/Crazy';
 
 export class App {
 	version = '0.0.3';
@@ -66,8 +66,11 @@ export class App {
 		// create initial state
 		this.game.InitGalaxy();
 // 		this.ChangeState('title');
-		this.game.galaxy.Make( 12,7,50,0.5 );
+		this.game.galaxy.Make( 7,7,30,0.5 );
 		let mystar = this.game.galaxy.AddExploreDemo( 1 );
+		CrazyBox.AddGiantSpaceAmoeba(this);
+// 		CrazyBox.AddRedSpaceAmoeba(this);
+// 		CrazyBox.AddBlueSpaceAmoeba(this);
 		this.game.SetMyCiv( 0 ); // could switch using debug stuff
 		this.ChangeState('play');
 		this.hilite_star = mystar; // hint for playstate startup
