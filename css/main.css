@@ -465,7 +465,7 @@ body,html {
 #layout_modal .dialog {	
 	font-size: 150%;
 	color: #FFF;
-	text-align: center;
+/* 	text-align: center; */
 	padding: 2em;
 	min-height: 12em;
 	max-height: 90%;

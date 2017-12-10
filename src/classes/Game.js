@@ -8,23 +8,60 @@ import Constellation from './Constellation';
 import Fleet from './Fleet';
 import * as utils from '../util/utils';
 import * as Signals from '../util/signals';
+import FastPriorityQueue from 'fastpriorityqueue';
+import EventLibrary from './EventLibrary';
+
 
 export default class Game {
 	app = false;
 	galaxy = null;
-	avg_rich = 0;
-	avg_rarity = 0;
-	rare_count = [0,0,0,0,0];
 	planets = [];
 	turn_num = 0;
 	iam = 0;
 	myciv = null;
 	processing_turn = false;
 	autoplay = false;
+	eventcard = null; // the event card we are currently displaying to the player
+	eventcard_queue = new FastPriorityQueue( (a,b) => { return (a.turn < b.turn) ? -1 : (a.turn > b.turn ? 1 : 0); });
+	eventlib = null;
 	
+	DoEvent() { 
+		let e = this.eventlib.Checkout( 'TEST_0', this.myciv, null );
+		this.AddEventCard( e, 10 );
+		this.AddEventCard( e, -1 );
+		this.ProcessEventCardQueue();
+		}
+	AddEventCard( card, turn ) { 
+		this.eventcard_queue.add({card,turn});
+		}
+	ProcessEventCardQueue() {
+		if ( this.eventcard_queue.size > 0 ) { 
+			if ( this.eventcard_queue.peek().turn <= this.turn_num ) { 
+				this.eventcard = this.eventcard_queue.poll().card; // aka "pop"		
+				this.eventcard.Exec(); // do whatever its action is
+				}
+			else { this.eventcard = null; }
+			}
+		else { this.eventcard = null; }
+		}
+	ChooseEventCardOption ( option ) { 
+		// check for empty option which indicates "OK" for optionless events.
+		if ( option && this.eventcard.options ) {
+			// choosing an option can sometimes lead to a follow up event.
+			let newcarddata = this.eventcard.ChooseOption( option );
+			let newcard = this.eventlib.Checkout( newcarddata.label, newcarddata.civ, newcarddata.info );
+			if ( newcard ) { 
+				this.AddEventCard( newcard, this.turn_num + parseFloat(newcarddata.delay) );
+				}
+			}
+		// FX: may want to clear the card and add a lag for the window to close/open
+		this.ProcessEventCardQueue(); // next card
+		}
+		
 	constructor( app ) {
 		this.app = app;
 		Signals.Listen('anom_complete', data => this.AnomCompleted(data) );
+		this.eventlib = new EventLibrary(this.app);
 		}
 		
 	AnomCompleted( data ) { // data contains at `anom`
@@ -348,7 +385,6 @@ export default class Game {
 			this.app.state_obj.SetCaret( this.app.state_obj.caret.obj );
 			console.timeEnd('Ship Movement');
 			
-			
 			// RESEARCH
 			console.time('Research');
 			for ( let civ of this.galaxy.civs ) { 
@@ -372,6 +408,9 @@ export default class Game {
 			console.timeEnd('Recalc Fleet Range');
 				
 			this.turn_num++;
+			
+			// event queue needs the new turn number
+			this.ProcessEventCardQueue();
 			
 			} // foreach turn (in case of multiple).
 		
@@ -444,7 +483,12 @@ export default class Game {
 				let note = '';
 				// status portion
 				if ( report.status == 0 ) { 
-					note = 'Nothing of interest to report in this sector of space.';
+					if ( report.remaining ) {
+						note = note + ` Expedition leaders came back empty handed, but would like to continue the mission if possible. ${report.note}`;
+						}
+					else {
+						note = 'Nothing of interest to report in this sector of space.';
+						}				
 					}
 				else if ( report.status == -1 ) { 
 					note = `Fleet #${f.id} has not returned from its deep space mission. The crew is feared lost.`;

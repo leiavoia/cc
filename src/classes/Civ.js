@@ -52,7 +52,7 @@ export default class Civ {
 	// integrate this with above later
 	diplo = {
 		contactable: true
-		}
+		};
 		
 	CommOverlapWith( civ ) { 
 		let min1 = utils.Clamp( this.diplo_style - this.diplo_skill, 0, 1 );
@@ -224,8 +224,6 @@ export default class Civ {
 	planets = [];
 	constels = []; // list of connected constellations
 	fleets = [];
-	
-	diplo = []; // list of contacts. starts empty
 	
 	// well-chosen colors for other races:
 	static StandardColors() {

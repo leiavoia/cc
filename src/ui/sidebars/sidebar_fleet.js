@@ -273,6 +273,7 @@ export class FleetDetailPane {
 			}
 		}
 	StarClickCallback( star ) { 
+		console.log('CLICKBACK');
 		if ( this.mode == 'awaiting_star_click' && this.can_send==2 ) { 
 			// dont let fleet route to the planet its parked at
 			if ( !( star == this.fleet.star && !this.fleet.dest ) ) { 

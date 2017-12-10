@@ -28,7 +28,11 @@ export class PlanetDetailPane {
 		// NOTE: Numbers displayed are from the point of view of the
 		// race of the player, NOT the owner of the planet
 		//
-		if ( planet ) { 
+		
+		// NOTE 2: Aurelia has race conditions with switching dynamic 
+		// elements (the sidebar) and binding its data. 
+		// Sniff the "planet" to make sure it really is such.
+		if ( planet && 'sect' in planet ) { 
 			this.habitat = planet.Adaptation( this.app.game.myciv.race );
 			this.habitable = planet.Habitable( this.app.game.myciv.race );
 			this.habitat_bonus = planet.HabitationBonus( this.app.game.myciv.race );

@@ -86,6 +86,7 @@ export default class Anom {
 // 		else if ( color_index > 1/6 ) { color = 'cyan'; }
 		let a = new Anom( /*utils.RandomName()*/ 'X', 'normal', x, y );
 		a.onmap = !( Math.random() > 0.5 ); // 50% chance of being a map object
+		a.collected = a.onmap ? null : false; // on-map anoms cant be collectable
 		a.size = utils.RandomInt( 2, 50 ) * 10;
 		a.vis_level = 0; // utils.RandomInt(0,2);
 		a.order = utils.RandomInt( 0, 100 );

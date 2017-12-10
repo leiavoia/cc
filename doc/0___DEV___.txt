@@ -6,6 +6,27 @@
 =====================================================
 =====================================================
 
+https://github.com/lemire/FastPriorityQueue.js
+https://www.npmjs.com/package/astar-algorithm
+
+aurelia.jsonn:
+          "aurelia-animator-velocity",
+		{
+			"name": "velocity-animate",
+			"path": "../node_modules/velocity-animate",
+			"main": "velocity",
+			"deps": ["jquery"],
+			"resources": ["velocity.ui.js"]
+		},
+		{
+			"name": "velocity",
+			"path": "../scripts/velocity-shim"
+		},          
+
+		
+		
+		
+		
 https://forum.kde.org/viewtopic.php?f=18&t=135586
 
 import/export numbers on star systems dont change to zero if the system abstained.
@@ -110,6 +131,8 @@ http://sewer-pancake.deviantart.com/
 	
 BGM / SFX
 -----------------------------------------------------
+https://jajaouterspace.bandcamp.com/track/arcturus
+http://www.cyan-music.com/ -- free audio label, lots of space music
 https://soundcloud.com/deepwarmth
 lilmanjs - solar flare through a nebula
 http://cfmlabel.com/ 
@@ -121,7 +144,7 @@ north field axis - oophoi and paul vnuk jr
 ajna
 Mercury's Antennae: Serenade for Falling Stars (part II)
 http://nimanty.bandcamp.com/
-
+Pandora - Ignaeus Flame
 
 JS
 -----------------------------------------------------

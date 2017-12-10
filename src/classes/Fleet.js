@@ -272,7 +272,7 @@ export default class Fleet {
 				}
 			this.mission.time--;
 // 			console.log(`Fleet#${this.id} returns in T-${this.mission.time}`);
-			if ( this.mission.time <= 0 ) { 
+			if ( this.mission.time <= 0 ) {
 				// mission complete; wrap up and put back on star
 				if ( this.mission.status > -1 ) { this.mission.status = this.mission.completed ? 1 : 0 };
 				report = { 
@@ -280,8 +280,12 @@ export default class Fleet {
 					completed: this.mission.completed, 
 					remaining: this.mission.targets.length, 
 					status: this.mission.status,
-					// possibly add a captain's note here for flavor
+					note: '' // possibly add a captain's note here for flavor
 					};
+				// if there was more to research, put a tasty tidbit in
+				if ( this.mission.targets.length ) { 
+					report.note = `The team captain described their latest find: ${this.mission.targets[0].pre_desc}`;
+					}
 				let failed = this.mission.status == -1;
 				this.mission = null;
 				if ( !failed ) { this.ParkOnStar(); } // only the lucky ones come home

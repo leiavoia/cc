@@ -67,7 +67,7 @@ export class App {
 		this.game.InitGalaxy();
 // 		this.ChangeState('title');
 		this.game.galaxy.Make( 7,7,30,0.5 );
-		let mystar = this.game.galaxy.AddExploreDemo( 1 );
+		let mystar = this.game.galaxy.AddExploreDemo( 3 );
 		CrazyBox.AddGiantSpaceAmoeba(this);
 // 		CrazyBox.AddRedSpaceAmoeba(this);
 // 		CrazyBox.AddBlueSpaceAmoeba(this);
@@ -119,7 +119,7 @@ export class App {
 	ClickStar( star ) { 
 		// deepsace anomalies on map for debug only
 		if ( star.objtype == 'anom' && !star.onmap ) { return; }
-		if ( this.star_click_callback instanceof Function ) { 
+		if ( this.star_click_callback instanceof Function && this.sidebar_obj ) { 
 			this.star_click_callback( star );
 // 			this.star_click_callback = null;
 			}
@@ -135,7 +135,7 @@ export class App {
 		
 		// special exception if a planet is not explored
 		if ( obj instanceof Planet && !obj.star.explored && !this.options.see_all ) { return; }		
-		
+			
 		if ( obj instanceof Planet ) { this.sidebar_mode = 'planet'; this.state_obj.SetCaret(obj.star); }
 		else if ( obj instanceof Star ) { this.sidebar_mode = 'star';  this.state_obj.SetCaret(obj); }
 		else if ( obj instanceof Anom ) { this.sidebar_mode = 'anom';  this.state_obj.SetCaret(obj); }
@@ -143,6 +143,7 @@ export class App {
 // 		else if ( obj instanceof Constellation ) { this.sidebar_mode = 'constel'; }
 		else { this.sidebar_mode = false; }
 		this.sidebar_obj = obj;
+		
 		}
 	// exclusive means to hide all UI elements to trap the user in the screen.
 	SwitchMainPanel( mode, obj = null, data = null, exclusive = false ) {

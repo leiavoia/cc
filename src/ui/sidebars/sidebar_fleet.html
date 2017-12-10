@@ -25,6 +25,8 @@
 			<!-- not on a deep space mission -->
 			<template containerless if.bind="!fleet.mission">
 			
+				<p class="msg">Click a star to move fleet</p>
+				
 				<!-- Fleet Actions -->
 				<p class="button_rack" ><!--if.bind="mode=='fleet'"-->
 					<a href="#" click.delegate="ClickClose()" class="bad" >CLOSE</a>
