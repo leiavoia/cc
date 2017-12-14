@@ -108,7 +108,7 @@
 			<template containerless repeat.for="anom of app.game.galaxy.anoms">
 				<div if.bind="(anom.onmap && anom.vis_level <= app.game.myciv.vis_level) || app.options.see_all"
 					click.trigger="app.ClickStar(anom)" 
-					class="mapobj_container anom_${anom.type & oneTime} ${anom.settled ? 'settled' : ''} ${anom.in_range ? 'in_range' : ''} ${anom.explored || app.options.see_all ? 'explored' : 'unexplored'}" 
+					class="mapobj_container anom anom_${anom.type & oneTime} ${anom.settled ? 'settled' : ''} ${anom.in_range ? 'in_range' : ''} ${anom.explored || app.options.see_all ? 'explored' : 'unexplored'}" 
 					css="left:${anom.xpos & oneTime}px; top:${anom.ypos & oneTime}px;"
 					>
 					<h3>${(app.game.turn_num*0 + anom.ResearchIsCompleted(app.game.myciv)) ? anom.name : 'Anomaly' }</h3>
@@ -259,15 +259,11 @@
 	
 	<!-- events -->
 	<div class="dialog event" if.bind="app.game.eventcard">
-		<h2>${app.game.eventcard.title}</h2>
+		<h2 if.bind="app.game.eventcard.title" >${app.game.eventcard.title}</h2>
 		<div class="event_text" innerhtml.bind="app.game.eventcard.text"></div>
 		
-		<div class="event_option" 
-			style="border: 1px dotted cyan; padding: 0.5em; margin: 0.25em;" 
-			repeat.for="o of app.game.eventcard.options"
-			click.delegate="app.game.ChooseEventCardOption(o)"
-			>
-			<p><b><a href="#" click.delegate="">${o.title}</a></b></p>
+		<div class="event_option" repeat.for="o of app.game.eventcard.options" click.delegate="app.game.ChooseEventCardOption(o)" >
+			<p if.bind="o.title" >${o.title}</p>
 			<div innerhtml.bind="o.text"></div>
 		</div>
 		

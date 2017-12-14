@@ -128,7 +128,7 @@ let all_events = {
 				title: 'Let him be.',
 				text: 'His weird bucket fetish is none of our business.',
 				onSelect: null,
-				next: 'TEST_C'
+				next: { label:'TEST_C', delay: 3, chance: 1 }
 				}
 			]
 		},

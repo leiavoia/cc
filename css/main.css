@@ -465,7 +465,6 @@ body,html {
 #layout_modal .dialog {	
 	font-size: 150%;
 	color: #FFF;
-/* 	text-align: center; */
 	padding: 2em;
 	min-height: 12em;
 	max-height: 90%;
@@ -482,6 +481,32 @@ body,html {
 	transform-origin: 50% 50%;
 	animation: trekIn 0.25s linear;
 	}
+	
+#layout_modal .event_text {
+	margin: 1em 0;
+	}
+	
+#layout_modal .event_option {
+	padding: 0.5em; 
+	margin: 0.75em 0;
+	border-radius: 0.5em;
+	border: 1px outset #347490;
+/* 	background: #4BA5CC; */
+/* 	background: rgba(75,165,205,0.7); */
+	background: #347490;
+	cursor:pointer;
+	clear:right;
+	}
+#layout_modal .event_option:hover {
+	background: #54B848;
+	}
+#layout_modal .event_option > *:first-child {
+	margin-top: 0;
+	margin-bottom: 0.25em;
+	padding-top: 0;
+	font-weight: bold;
+	}
+
 	
 
 	
@@ -666,6 +691,7 @@ p {
 	display: inline-block;
 	color: #FFF;
 	background-color: #4BA5CC;
+/* 	background-color: #347490; */
 	border-radius: 0.25em;
 	margin-right: 0.25em;
 	padding: 0.25em 0.5em;
@@ -969,8 +995,8 @@ invisible when unexplored, dim when explored */
 .xtreme_zoom .mapobj_container {
 	background-size:120% 120%;
 	}
-.xtreme_zoom .mapobj_container.anom_normal {
-	background-size:100% 100%;
+.xtreme_zoom .mapobj_container.anom {
+	background-size:55% 55% !important;
 	}
 	
 /* turn this on if you want maximum bling. its hard on older machines */

@@ -28,10 +28,10 @@ export class App {
 		dim_unexplored: true,
 		show_sectors: false,
 		see_all: true,
-		show_range: true,
+		show_range: false,
 		show_xtreme_fleets: true,
-		debug: true,
-		announce_scouted_stars: true,
+		debug: false,
+		announce_scouted_stars: false,
 		ai: true
 		};
 		
