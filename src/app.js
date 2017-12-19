@@ -27,12 +27,13 @@ export class App {
 	options = {
 		dim_unexplored: true,
 		show_sectors: false,
-		see_all: true,
+		see_all: false,
 		show_range: false,
 		show_xtreme_fleets: true,
 		debug: false,
 		announce_scouted_stars: false,
-		ai: true
+		ai: true,
+		bg_bright: 1.0
 		};
 		
 	ResetEverything() { 

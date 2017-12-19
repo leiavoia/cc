@@ -48,17 +48,17 @@ export default class Galaxy {
 		// whichever is less.
 		let num_anoms = Math.min( Math.floor( remainder * 0.6 ), Math.floor( sectors * 0.4) );
 		remainder -= num_anoms;
-		let arr =  new Array( stars_wanted ).fill(1).concat(
-			new Array( num_anoms ).fill(2).concat( 
-				new Array( remainder ).fill(0)
+		let arr =  new Array( stars_wanted ).fill(1).concat( // stars
+			new Array( num_anoms ).fill(2).concat( // anomalies
+				new Array( remainder ).fill(0) // empty space
 				)
 			) ;
 	
-		// these is where the shape of the galaxy is determined. 
+		// this is where the shape of the galaxy is determined. 
 		// Most of the time just shuffling works fine.
 		arr.shuffle();
 		
- 		// loop over the array and create a star wherever we find a "true"
+ 		// loop over the array and create map objects
 		for ( let x = 0; x < map_size_x; x++ ) { 
 			for ( let y = 0; y < map_size_y; y++ ) { 
 				let cell = arr[ x*map_size_y + y ];

@@ -247,7 +247,7 @@ body,html {
 	}
 
 .xtreme_zoom #layout_viewport {
-	background-color: rgba(0,0,0,0.55);
+	background-color: rgba(0,0,0,0.55) !important;
 /* 	background-color: #000; */
 	}
 	
@@ -828,7 +828,7 @@ DIV.hyperlane {
 	background-image: url(../img/map/air_collect_sparkle_black.png);
 }
 .mapobj_container.anom_normal {
-	background-image: url(../img/workshop/icons/3dbox_64px_transp.png);
+	background-image: url(../img/map/3dbox_64px_transp.png);
 	background-size: 25% 25%;
 }
 

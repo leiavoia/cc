@@ -202,6 +202,8 @@ export default class Star {
 		let star = new Star( RandomName(), color, x, y );
 		// create planets
 		let num_planets = utils.BiasedRandInt(0,5,0.75,1.00);
+		// zero-planet stars get a 50% chance to become onesies
+		if ( !num_planets && Math.random() > 0.5 ) { num_planets = 1; } 
 		for ( let i=0; i < num_planets; i++ ) {
 			let planet = Planet.Random( star );
 			planet.name = star.name;

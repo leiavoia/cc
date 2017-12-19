@@ -11,20 +11,28 @@
 			<a href="#" click.delegate="app.ToggleOption('dim_unexplored')" class="button ${app.options.dim_unexplored ? 'alt' : 'cool'}">ON</a>
 			<a href="#" click.delegate="app.ToggleOption('dim_unexplored')" class="button ${app.options.dim_unexplored ? 'cool' : 'alt'}">OFF</a>
 		</p>
+		
 		<h3>Show Sector Lines</h3>
 		<p class="button_rack">
 			<a href="#" click.delegate="app.ToggleOption('show_sectors')" class="button ${app.options.show_sectors ? 'alt' : 'cool'}">ON</a>
 			<a href="#" click.delegate="app.ToggleOption('show_sectors')" class="button ${app.options.show_sectors ? 'cool' : 'alt'}">OFF</a>
 		</p>
+		
 		<h3>See Everything (Debug)</h3>
 		<p class="button_rack">
 			<a href="#" click.delegate="app.ToggleOption('see_all')" class="button ${app.options.see_all ? 'alt' : 'cool'}">ON</a>
 			<a href="#" click.delegate="app.ToggleOption('see_all')" class="button ${app.options.see_all ? 'cool' : 'alt'}">OFF</a>
 		</p>
+		
 		<h3>Show Ship Range Circles</h3>
 		<p class="button_rack">
 			<a href="#" click.delegate="app.ToggleOption('show_range')" class="button ${app.options.show_range ? 'alt' : 'cool'}">ON</a>
 			<a href="#" click.delegate="app.ToggleOption('show_range')" class="button ${app.options.show_range ? 'cool' : 'alt'}">OFF</a>
+		</p>
+		
+		<h3>Background Brightness</h3>
+		<p class="button_rack">
+			<input id="bg_bright" type="range" min="0.0" max="1.0" step="0.01" value.bind="app.options.bg_bright" /> 
 		</p>
 		
 	</div>

@@ -265,8 +265,9 @@ export default class Fleet {
 					if ( completed ) { 
 // 						console.log(`Fleet#${this.id} FINISHED researching ${this.mission.targets[0].name}`);
 						this.mission.completed++;
+						this.mission.targets.shift();
+						this.mission.targets[0].onComplete(this);
 						Signals.Send('anom_complete', {anom:this.mission.targets[0], fleet:this});
-						this.mission.targets.shift().onComplete(this);
 						}
 					}
 				}
@@ -299,8 +300,8 @@ export default class Fleet {
 				// TODO: Add danger/conflict
 				let completed = this.star.AddResearch( this.owner, this.research );
 				if ( completed ) { 
-					Signals.Send('anom_complete', {anom:this.star, fleet:this});
 					this.star.onComplete( this );
+					Signals.Send('anom_complete', {anom:this.star, fleet:this});
 					}
 				}
 			// if the ship is parked in a system, do orbital research

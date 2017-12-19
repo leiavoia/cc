@@ -21,7 +21,7 @@
 <div id="layout_pagewrap" css="background-image: url(${bg_img});"></div>
 
 <!-- map layer -->
-<div id="layout_viewport" class="dragscroll nochilddrag ${app.options.dim_unexplored ? 'option_dim_unexplored' : ''}">
+<div id="layout_viewport" class="dragscroll nochilddrag ${app.options.dim_unexplored ? 'option_dim_unexplored' : ''}" css="background-color: rgba(0,0,0,${1.0 - app.options.bg_bright});">
 		
 	<div id="layout_mapwrap" css="width: ${app.game.galaxy.width}px; height: ${app.game.galaxy.height}px;">
 		<div id="layout_map" class="${app.options.show_sectors ? 'sectors' : ''}" css="width: ${app.game.galaxy.width}px; height: ${app.game.galaxy.height}px">
