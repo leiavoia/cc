@@ -87,9 +87,9 @@ export default class Planet {
 		prod:{ pct: 0.35, relpct: 0.35, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 		sci:	{ pct: 0.20, relpct: 0.20, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 		gov:	{ pct: 0.15, relpct: 0.15, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
-		def:	{ pct: 0.15, relpct: 0.15, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 }
+		def:	{ pct: 0.15, relpct: 0.15, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
+		esp:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 // 		com:	{ pct: 0.00, relpct: 0.00, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 0 },
-// 		spy:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 // 		sup:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 // 		civ:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 		};
@@ -326,8 +326,8 @@ export default class Planet {
 		this.sect.sup.relpct = parseFloat(x);
 		this.RecalcSpendingSliders();
 		}
-	set slider_spy(x) { 
-		this.sect.spy.relpct = parseFloat(x);
+	set slider_esp(x) { 
+		this.sect.esp.relpct = parseFloat(x);
 		this.RecalcSpendingSliders();
 		}
 	set slider_taxrate(x) { 
@@ -358,8 +358,8 @@ export default class Planet {
 	@computedFrom('sect.sup.relpct')	
 	get slider_sup() { return this.sect.sup.relpct; }
 	
-	@computedFrom('sect.spy.relpct')	
-	get slider_spy() { return this.sect.spy.relpct; }
+	@computedFrom('sect.esp.relpct')	
+	get slider_esp() { return this.sect.esp.relpct; }
 	
 	@computedFrom('tax_rate')	
 	get slider_taxrate() { return this.tax_rate; }
@@ -810,6 +810,12 @@ export default class Planet {
 			planet.grav = utils.BiasedRandInt(0, 4, ((planet.size-30)/100)*4.0, 1.0);
 			}
 			
+		// for reasons beyond science, other market sectors have random powers
+		if ( Math.random() < 0.5 ) { planet.sect.sci.pow = parseFloat( (1.5 - utils.BiasedRand(0.0, 1.0, 0.75, 0.5)).toFixed(1) ); }
+		if ( Math.random() < 0.5 ) { planet.sect.gov.pow = parseFloat( (1.5 - utils.BiasedRand(0.0, 1.0, 0.75, 0.5)).toFixed(1) ); }
+		if ( Math.random() < 0.5 ) { planet.sect.def.pow = parseFloat( (1.5 - utils.BiasedRand(0.0, 1.0, 0.75, 0.5)).toFixed(1) ); }
+		if ( Math.random() < 0.5 ) { planet.sect.esp.pow = parseFloat( (1.5 - utils.BiasedRand(0.0, 1.0, 0.75, 0.5)).toFixed(1) ); }
+		
 		// special attributes
 		let selector = Planet.AttributeSelector();
 		let attr_randnum = Math.random();

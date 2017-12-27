@@ -14,5 +14,6 @@ export function configure(config) {
   	'./value-converters/LoveNubConverter',
   	'./value-converters/AnnoyometerConverter',
   	'./value-converters/CommunicationAbility',
+  	'./value-converters/PlanetSectPow',
   	]);
 }
