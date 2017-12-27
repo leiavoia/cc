@@ -9,6 +9,7 @@ import Fleet from './classes/Fleet';
 import Civ from './classes/Civ';
 // import {Modlist,Mod} from './classes/Mods';
 import * as utils from './util/utils';
+import * as Signals from './util/signals';
 import * as CrazyBox from './classes/Crazy';
 
 export class App {
@@ -18,7 +19,6 @@ export class App {
 	exclusive_ui = false; // if true, hides all UI except main content panel
 	sidebar_obj = null;
 	sidebar_mode = false;
-	star_click_callback = null;
 	state = 'title';
 	state_obj = null;
 	hilite_star = null;
@@ -42,7 +42,6 @@ export class App {
 		this.main_panel_mode = false;
 		this.sidebar_obj = null;
 		this.sidebar_mode = false;
-		this.star_click_callback = null;
 		this.hilite_star = null; // hint for playstate startup
 		Fleet.KillAll();
 		Fleet.all_fleets = [];
@@ -115,18 +114,15 @@ export class App {
 		this.state = state;
 		}
 		
-	RegisterStarClickCallback( callback ) {
-		this.star_click_callback = callback;
-		}
-	ClickStar( star ) { 
-		// deepsace anomalies on map for debug only
+	ClickStar( star, event ) { 
+		// deepsace anomalies not clickable. on map for debug only
 		if ( star.objtype == 'anom' && !star.onmap ) { return; }
-		if ( this.star_click_callback instanceof Function && this.sidebar_obj ) { 
-			this.star_click_callback( star );
-// 			this.star_click_callback = null;
+		// special action for right click
+		if ( event.which > 1 ) { 
+			Signals.Send('starclick',{star,event});
 			}
+		// regular left click
 		else {
-// 			this.FocusMap(star);
 			this.SwitchSideBar( star );
 			}
 		}

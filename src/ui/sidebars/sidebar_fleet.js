@@ -1,5 +1,6 @@
 import Fleet from '../../classes/Fleet';
 import {bindable} from 'aurelia-framework';
+import * as Signals from '../../util/signals';
 
 export class FleetDetailPane {
 	mode = 'fleet';
@@ -9,7 +10,7 @@ export class FleetDetailPane {
 	can_research = false;
 	can_invade = false;
 	mission_turns = 10;
-	
+	starclick_subsc = null;
 	@bindable fleet = null;
 	app = null;
 
@@ -19,17 +20,22 @@ export class FleetDetailPane {
 		// manually trigger our binding function because
 		// this element is normally built through <compose>
 		this.fleetChanged( this.fleet, null );
+		// listen for hotkeys
 		window.addEventListener('keypress', this.keypressCallback, false);
+		// listen for star clicks from the map
+		this.starclick_subsc = Signals.Listen('starclick', 
+			data => { if ( data.event.which > 1 ) { this.StarClickCallback(data.star) } }
+			);
 		}
 		
 	deactivate() {
+		// stop listening for hotkeys
 		window.removeEventListener('keypress', this.keypressCallback);
 		}
     
-    
 	unbind() { 
-		// stop leaking callbacks
-		this.StopCaptureStarClicks();
+		// stop listening for starclicks
+		this.starclick_subsc.dispose();
 		}
 				
 	constructor() { 
@@ -37,11 +43,9 @@ export class FleetDetailPane {
 		};
 		
 	CaptureStarClicks() { 
-		this.app.RegisterStarClickCallback( (star) => this.StarClickCallback(star) );
 		this.mode = 'awaiting_star_click';
 		}
 	StopCaptureStarClicks() { 
-		this.app.RegisterStarClickCallback( null );
 		}
 		
 	// aurelia automatic function called when fleet object gets changed

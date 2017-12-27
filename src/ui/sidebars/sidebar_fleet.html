@@ -12,7 +12,6 @@
 				<span if.bind="fleet.star">${fleet.star.name}</span>
 				<span if.bind="fleet.dest"><span>➠</span> ${fleet.dest.name}</span>
 			</p>
-<!-- 			<p style="font-weight:bold; color: #FAA;" if.bind="mode=='awaiting_star_click' && can_send==2">Click a star to relocate.</p> -->
 			
 			<span if.bind="fleet.research">Research Capacity: <b>${fleet.research}</b></span>
 			
@@ -25,7 +24,7 @@
 			<!-- not on a deep space mission -->
 			<template containerless if.bind="!fleet.mission">
 			
-				<p class="msg">Click a star to move fleet</p>
+				<p class="msg" style="font-weight:bold; color: #FAA;" if.bind="can_send==2">Right-click a star to move fleet</p>
 				
 				<!-- Fleet Actions -->
 				<p class="button_rack" ><!--if.bind="mode=='fleet'"-->

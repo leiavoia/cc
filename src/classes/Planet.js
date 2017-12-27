@@ -807,7 +807,7 @@ export default class Planet {
 			planet.grav = utils.RandomInt(0,4);
 			}
 		else {
-			planet.grav = utils.BiasedRandInt(0, 4, ((planet.size-30)/100)*4.0, 1.0);
+			planet.grav = utils.Clamp( utils.BiasedRandInt(0, 4, ((planet.size-30)/100)*4.0, 1.0), 0, 4);
 			}
 			
 		// for reasons beyond science, other market sectors have random powers

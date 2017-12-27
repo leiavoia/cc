@@ -6,6 +6,8 @@ export function Send(type,data=null) {
   bus.publish(type,data);
 }
 
-export function Listen( type, callback) {
+// returns a subscription. 
+// use subscription.dispose() to unsubscribe.
+export function Listen( type, callback ) {
   return bus.subscribe(type, callback);
 }
