@@ -15,5 +15,6 @@ export function configure(config) {
   	'./value-converters/AnnoyometerConverter',
   	'./value-converters/CommunicationAbility',
   	'./value-converters/PlanetSectPow',
+  	'./value-converters/MoraleToMoodIcon',
   	]);
 }

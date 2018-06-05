@@ -35,7 +35,10 @@
 				<span class="size">${planet.size}<br/><span class="size">SIZE</span></span>					
 				<span class="${habitable ? (habitat < 0 ? 'alert' : 'good') : 'bad'}">	
 					${(habitat >= 0 ? '+' : '')}${habitat}<br /> 
-					<span class="">${habitable ? "HABITABILITY" : "UNINHABITABLE"}
+					<span class="">${habitable ? "HABITABILITY" : "UNINHABITABLE"}</span>
+				</span>
+				<span if.bind="planet.owner !== false">
+					<img src.bind="planet.morale | moraleToMoodIcon"  style="width: 1.1em; height: 1.1em;" /><br/>
 				</span>
 			</div>
 <!--					<p class="bold ${habitable ? (habitat < 0 ? 'alert' : 'good') : 'bad'}">	
