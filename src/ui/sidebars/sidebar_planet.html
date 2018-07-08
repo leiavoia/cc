@@ -59,14 +59,9 @@
 					<svg class="icon icon-tool"><use xlink:href="#icon-tool"></use></svg>
 					${planet.sect.sci.pow|round:1}x
 				</span>
-				<br/>
 				<span>
 					<svg class="icon icon-tool"><use xlink:href="#icon-tool"></use></svg>
 					${planet.sect.sci.pow|round:1}x
-				</span>
-				<span>
-					<svg class="icon icon-building"><use xlink:href="#icon-building"></use></svg>
-					${planet.sect.gov.pow|round:1}x
 				</span>
 				<span>
 					<svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg>
@@ -209,7 +204,7 @@
 					<div class="m" css="width:${planet.sect.mine.pct | percent:3}%">M<!--${planet.sect.mine.output | round:1}--></div>
 					<div class="e" css="width:${planet.sect.esp.pct | percent:3}%">E<!--${planet.sect.esp.output | round:1}--></div>
 					<div class="s" css="width:${planet.sect.sci.pct | percent:3}%">S<!--${planet.sect.sci.output | round:1}--></div>
-					<div class="g" css="width:${planet.sect.gov.pct | percent:3}%">G<!--${planet.sect.gov.output | round:1}--></div>
+<!-- 					<div class="g" css="width:${planet.sect.gov.pct | percent:3}%">G</div> -->
 					<div class="d" css="width:${planet.sect.def.pct | percent:3}%">D<!--${planet.sect.def.output | round:1}--></div>
 	<!-- 				<div class="m" css="width:${planet.sect.com.pct | percent:3}%"></div> -->
 				</div>
@@ -217,13 +212,12 @@
 				<div class="m"><span>MINE</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_mine" /><span>${planet.sect.mine.output|round:1}➞${planet.sect.mine.work|round:1}&nbsp;${planet.sect.mine.growth > 0.01 ? '▲' : (planet.sect.mine.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
 				<div class="e"><span>ESP</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_esp" /><span>${planet.sect.esp.output|round:1}➞${planet.sect.esp.work|round:1}&nbsp;${planet.sect.esp.growth > 0.01 ? '▲' : (planet.sect.esp.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
 				<div class="s"><span>SCI</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_sci" /><span>${planet.sect.sci.output|round:1}➞${planet.sect.sci.work|round:1}&nbsp;${planet.sect.sci.growth > 0.01 ? '▲' : (planet.sect.sci.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
-				<div class="g"><span>GOV</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_gov" /><span>${planet.sect.gov.output|round:1}➞${planet.sect.gov.work|round:1}&nbsp;${planet.sect.gov.growth > 0.01 ? '▲' : (planet.sect.gov.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
+<!-- 				<div class="g"><span>GOV</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_gov" /><span>${planet.sect.gov.output|round:1}➞${planet.sect.gov.work|round:1}&nbsp;${planet.sect.gov.growth > 0.01 ? '▲' : (planet.sect.gov.growth < -0.01 ? '▼' : '\u2003')}</span></div>  -->
 				<div class="d"><span>DEF</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_def" /><span>${planet.sect.def.output|round:1}➞${planet.sect.def.work|round:1}&nbsp;${planet.sect.def.growth > 0.01 ? '▲' : (planet.sect.def.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
 	<!-- 			<div class="c"><span>COM</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_com" /><span>${planet.sect.com.output|round:1}➞${planet.sect.com.work|round:1}&nbsp;${planet.sect.com.growth > 0.01 ? '▲' : (planet.sect.com.growth < -0.01 ? '▼' : '\u2003')}</span></div>  -->
 				<br/>
 				<div class="t"><span>TAX</span><input type="range"  min="0" max="0.5" step="0.01" value.bind="planet.slider_taxrate" /><span>${planet.tax_rate | percent}%</span></div> 
 				<div class="th"><span>SPEND</span><input type="range" min="0" max.bind="planet.max_spending" step="0.01" value.bind="planet.slider_spending" /><span>${planet.spending | percent}%</span></div> 
-<!-- 				<div><span>MORALE</span><input type="range" min="0" max="2.0" step="0.01" value.bind="planet.morale" /><span>${planet.morale | percent}%</span></div>  -->
 			</div>
 			
 			<!-- Colony Data -->
@@ -237,6 +231,7 @@
 				<span>PCI: ${planet.econ.PCI|round:1} ➞ ${planet.econ.target_PCI|round:1} </span>
 	<!-- 			<span>GF: ${planet.econ.GF|round:4}</span> -->
 				<span>TradeGoods: ${planet.econ.tradegoods|round:1}</span>
+				<span>Morale: ${planet.morale|round:2}</span>
 				<br />
 				<br />
 				

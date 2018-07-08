@@ -85,3 +85,8 @@ export function BoxIntersect( a, b ) {
 export function BoxPointIntersect( b, px, py ) {
 	return px >= b.x1 && px <= b.x2 && py >= b.y1 && py <= b.y2;
 	}
+
+// maps a number from one range to a number from a different range
+export function MapToRange( n, min1, max1, min2, max2 ) { 
+  return ( (n - min1) * ( (max2 - min2) / (max1 - min1) ) ) + min2;
+  }

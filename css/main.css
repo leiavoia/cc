@@ -833,9 +833,13 @@ DIV.hyperlane {
 }
 
 
-.mapobj_container:hover/*, .mapobj_container.hilite*/ {
+.mapobj_container.in_range:hover/*, .mapobj_container.hilite*/ {
 	border-color:rgba(255,255,255,0.55);
 	border-width:10px;
+	}
+.mapobj_container.out_range {
+/*   pointer-events: none; */
+  cursor: not-allowed;
 	}
 .mapobj_container H2,
 .mapobj_container H3 {

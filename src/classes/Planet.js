@@ -22,7 +22,7 @@ export default class Planet {
 	name = 'UNKNOWN';
 	total_pop = 0;
 	pop = [];
-	morale = 1.0;	
+	morale = 1.0;	// multiplier, default 1.0, range 0-2
 	age = 0;
 	age_level = 0;
 	
@@ -83,12 +83,12 @@ export default class Planet {
 	//		growth = 0.2 * ( work - inf ) ^ 0.75
 	//		inf += growth
 	sect = {
-		mine:{ pct: 0.15, relpct: 0.15, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
+		mine:{ pct: 0.20, relpct: 0.20, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 		prod:{ pct: 0.35, relpct: 0.35, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
-		sci:	{ pct: 0.20, relpct: 0.20, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
-		gov:	{ pct: 0.15, relpct: 0.15, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
-		def:	{ pct: 0.15, relpct: 0.15, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
+		sci:	{ pct: 0.35, relpct: 0.35, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
+		def:	{ pct: 0.10, relpct: 0.10, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 		esp:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
+// 		gov:	{ pct: 0.15, relpct: 0.15, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 // 		com:	{ pct: 0.00, relpct: 0.00, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 0 },
 // 		sup:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 // 		civ:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
@@ -249,13 +249,14 @@ export default class Planet {
 	AgePlanet() { 
 		this.age_level = Math.min( Math.floor( ++this.age / 40 ), 5 );
 		}
-	// more is better
+  // returns an integer value which may be negative
 	Adaptation( race ) { 
 		return -( 
 			(Math.abs( this.atm - race.env.atm ) + Math.abs( this.temp - race.env.temp ) + Math.abs( this.grav - race.env.grav )  )
 	 		- race.env.adaptation 
 	 		) ;
 		}
+  // returns true if the planet can be settled by the race
 	Habitable( race ) { 
 		return ( (Math.abs( this.atm - race.env.atm ) + Math.abs( this.temp - race.env.temp )  + Math.abs( this.grav - race.env.grav ) )
 	 		- race.env.adaptation 
@@ -273,7 +274,7 @@ export default class Planet {
 	
 	_MaxPop( race ) {
 		let a = this.age_level * 0.05; // age bonus
-		let b = this.HabitationBonus( race );
+		let b = 0.0; // this.HabitationBonus( race );
 		return ( this.size * (1+b+a) ) / race.size;
 		}
 		
@@ -298,10 +299,10 @@ export default class Planet {
 		this.sect.mine.relpct = parseFloat(x);
 		this.RecalcSpendingSliders();
 		}
-	set slider_gov(x) { 
-		this.sect.gov.relpct = parseFloat(x);
-		this.RecalcSpendingSliders();
-		}
+// 	set slider_gov(x) { 
+// 		this.sect.gov.relpct = parseFloat(x);
+// 		this.RecalcSpendingSliders();
+// 		}
 	set slider_prod(x) { 
 		this.sect.prod.relpct = parseFloat(x);
 		this.RecalcSpendingSliders();
@@ -337,8 +338,8 @@ export default class Planet {
 	@computedFrom('sect.mine.relpct')	
 	get slider_mine() { return this.sect.mine.relpct; }
 	
-	@computedFrom('sect.gov.relpct')	
-	get slider_gov() { return this.sect.gov.relpct; }
+// 	@computedFrom('sect.gov.relpct')	
+// 	get slider_gov() { return this.sect.gov.relpct; }
 	
 	@computedFrom('sect.prod.relpct')	
 	get slider_prod() { return this.sect.prod.relpct; }
@@ -385,21 +386,6 @@ export default class Planet {
 			}
 		// recalc expenses
 		this.RecalcSectors();
-		}
-	ProcessSectors() { 
-// 		this.RecalcSectors();
-// 		// if our spending is not 1.0, we give or borrow money out of the global treasury
-// 		this.owner.treasury += this.treasury_contrib;
-// 		// grow or shrink the infrastructure of each sector
-// 		for ( let k in this.sect ) {
-// 			let s = this.sect[k];
-// 			s.inf += s.growth;
-// 			// !IMPORTANT! 1.0 is the minimum infrastructure.
-// 			// This avoids not being able to bootstrap a colony when mining goes to zero.
-// 			if ( s.inf < 1.0 ) { s.inf = 1.0 } 
-// 			}
-// 		// Update this again because infrastructure levels changed
-// 		this.RecalcSectors();
 		}
 	RecalcSectors() { 
 		let taxes = this.tax;
@@ -572,66 +558,94 @@ export default class Planet {
 // 		this.econ.GDP = this.total_pop * this.econ.PCI;
 // 		}
 
-	GrowEconomy() { 
-		
+  UpdateMorale() {
+    // each element outputs a number between 0..2
+    // and are then scaled against each other to
+    // vary the weighting of different factors.
+    // We then take the average of them.
+    
+    // TODO:
+    // gov type
+    // local culture
+    // at war
+    // recently conquered
+    // recently attacked
+    // enemy ships present
+    // defensive fleet present?
+    // spending? (employment)
+    
 		let factors = {};
-		
-		// tax
-		factors.tax = {
-			fx: (0.05 - (this.tax_rate * this.tax_rate)),
-			scale: 30.0
+		// economy (PCI)
+		factors.econ = {
+			fx: ( (this.econ.PCI > 14) ? utils.MapToRange(this.econ.PCI,14,60,1,2) : utils.MapToRange(this.econ.PCI,1,14,0,1) ),
+			weight: 10.0
 			};
-			
-		// morale
-		factors.morale = {
-			fx: (this.morale - 0.8), // slight positive over 80%
-			scale: 8.0
-			};
-			
-// 		// commerce improves growth factor a lot
-// 		factors.commerce = {
-// 			fx: this.sect.com.output,
-// 			scale: 0.25
-// 			};
-			
-		// technology
-		
-		// galactic economy
-		
-		// recent events
-		
-		// connectivity / hyperlanes
-		
-		// local resources
-		factors.rsc = {
-			fx: ((this.rich + this.energy) / 2),
-			scale: 7.0
-			};
-			
 		// environment
 		factors.env = {
-			fx: this.HabitationBonus( this.owner.race ),
-			scale: 7.0
+			fx: 1 + this.HabitationBonus( this.owner.race ),
+			weight: 5.0
 			};
-			
-					
-		let total = 0;
+		// crowding (sigmoid function)
+		// see: https://www.desmos.com/calculator/5uo3t7mqnj
+		// TODO: factor in multiracial
+		factors.crowding = { 
+			fx: ( 1.5 / ( 1 + Math.pow( Math.E, (-6 + (9*( this.total_pop/this.maxpop )) ) ) ) ) + 0.5,
+			weight: 4.0
+			};
+    // age level - TODO: might change this to just 'age' for more granularity
+		factors.age = { 
+			fx: ( 1 + ( this.age_level / 5 ) ),
+			weight: 5.0
+			};
+    // military defense - makes people feel safe
+		factors.age = { 
+			fx: ( 1 + ( utils.Clamp(this.sect.def.output,0,100) / 100 ) ),
+			weight: 5.0
+			};
+    let total_weight = 0;
+		let total_value = 0;
 		for ( let f in factors ) { 
-			total += factors[f].fx * factors[f].scale;
-			}
-		let ecoscale = 5;
+		  total_weight += factors[f].weight; 
+		  total_value += factors[f].fx * factors[f].weight; 
+		  }
+		let target_morale = total_value / total_weight;
+		// morale changes over time, not all at once
+		let diff = target_morale - this.morale;
+		let growth = diff ? (0.4 * Math.pow( Math.abs(diff), 0.75 ) ) : 0;
+		this.morale += ( diff > 0 ) ? growth : -growth ;	
+		this.morale = utils.Clamp( this.morale, 0, 2 );
+    }
+
+    
+	GrowEconomy() { 
+    // TODO:
+    // local culture
+		// technology
+		// galactic economy
+		// recent events
+		// connectivity / hyperlanes
+		
+    // we want PCI=10 for new vanilla colonies
+    let resource_mod = 20; 
+    // establish a base economic rate based on planet resources
+    let target_PCI = ((this.rich + this.energy) / 2) * resource_mod;
+    // adjust by the planet's age (doubles after 100 turns)
+    target_PCI *= 1 + (this.age/50);
+    // taxes modify the base rate
+    target_PCI *= Math.pow( utils.MapToRange( this.tax_rate, 0, 0.5, 2.0, 0.2 ), 1.5 );
+    
+// 		let ecoscale = 1.0; // for balancing
+// 		let base = total * ecoscale;
+// 		if ( base < 1 ) { base = 1; }
 		let min_PCI = 0.1; 
-		let base = total * ecoscale;
-		if ( base < 1 ) { base = 1; }
-		this.econ.target_PCI = Math.pow( base, 0.65 );
+    this.econ.target_PCI = Math.pow( target_PCI, 0.65 ); // diminishing returns
 		if ( this.econ.target_PCI < min_PCI ) { this.econ.target_PCI = min_PCI; }
 		
 		// grow economy in stages, like sector infrastructure, but faster
 		let diff = this.econ.target_PCI - this.econ.PCI;
-		let growth = diff ? (0.4 * Math.pow( Math.abs(diff), 0.75 ) ) : 0;
+		let growth = diff ? (0.4 * Math.pow( Math.abs(diff), 0.75 ) ) : 0; // rubber band growth
 		this.econ.PCI += ( diff > 0 ) ? growth : -growth ;	
-		this.econ.GDP = this.total_pop * this.econ.PCI;
-		this.econ.GF = 1.0; // not used
+		this.econ.GDP = this.total_pop * this.econ.PCI; // fun stat, does nothing
 		}
 		
 		
@@ -812,9 +826,9 @@ export default class Planet {
 			
 		// for reasons beyond science, other market sectors have random powers
 		if ( Math.random() < 0.5 ) { planet.sect.sci.pow = parseFloat( (1.5 - utils.BiasedRand(0.0, 1.0, 0.75, 0.5)).toFixed(1) ); }
-		if ( Math.random() < 0.5 ) { planet.sect.gov.pow = parseFloat( (1.5 - utils.BiasedRand(0.0, 1.0, 0.75, 0.5)).toFixed(1) ); }
 		if ( Math.random() < 0.5 ) { planet.sect.def.pow = parseFloat( (1.5 - utils.BiasedRand(0.0, 1.0, 0.75, 0.5)).toFixed(1) ); }
 		if ( Math.random() < 0.5 ) { planet.sect.esp.pow = parseFloat( (1.5 - utils.BiasedRand(0.0, 1.0, 0.75, 0.5)).toFixed(1) ); }
+// 		if ( Math.random() < 0.5 ) { planet.sect.gov.pow = parseFloat( (1.5 - utils.BiasedRand(0.0, 1.0, 0.75, 0.5)).toFixed(1) ); }
 		
 		// special attributes
 		let selector = Planet.AttributeSelector();
@@ -866,5 +880,5 @@ export default class Planet {
 		this.RecalcSectors();
 		this.owner.RecalcEmpireBox();			
 		} // end Settle
-		
+
 	}

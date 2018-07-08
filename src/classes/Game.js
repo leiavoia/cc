@@ -239,7 +239,7 @@ export default class Game {
 // 				civ.RecalcEmpireBox();
 				// reset some stuff
 				civ.research_income = 0;
-				civ.gov_pts_income = 0;
+// 				civ.gov_pts_income = 0;
 				civ.econ.income = 0;
 				civ.econ.mp_need = 0; // reset each turn loop;
 				for ( let p of civ.planets ) { 
@@ -294,8 +294,8 @@ export default class Game {
 						p.owner.research_income += p.sect.sci.output;
 						
 						// government
-						p.owner.gov_pts += p.sect.gov.output;
-						p.owner.gov_pts_income += p.sect.gov.output;
+// 						p.owner.gov_pts += p.sect.gov.output;
+// 						p.owner.gov_pts_income += p.sect.gov.output;
 						
 						// give or borrow money out of the civ treasury
 						p.owner.treasury += p.treasury_contrib;
@@ -323,6 +323,9 @@ export default class Game {
 		
 						// grow/shrink economy
 						p.GrowEconomy();
+            
+						// make me happy baby
+            p.UpdateMorale();
 						
 						// population growth ( returns true if max-pop reached )
 						if ( p.GrowPop() ) { 
