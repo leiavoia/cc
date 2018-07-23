@@ -33,7 +33,7 @@ export default class Galaxy {
 	
 		// for aesthetics and UI reasons, 
 		// we want an empty padded border.
-		this.width = ((map_size_x+2) * cell_size) + 401; // +400 to make room for sidebar
+		this.width = ((map_size_x+2) * cell_size) + 1; // leave room for sidebar
 		this.height = ((map_size_y+2) * cell_size) + 1; // +1 is to get the sector overlay graphic border
 		this.age = galaxy_age;
 		
@@ -44,9 +44,9 @@ export default class Galaxy {
 		let sectors = map_size_x * map_size_y;
 		if ( sectors < stars_wanted ) { stars_wanted = sectors; }
 		let remainder = sectors - stars_wanted;
-		// anomalies cover 60% of un-starred space or 40% of total space, 
+		// anomalies cover 50% of un-starred space or 30% of total space, 
 		// whichever is less.
-		let num_anoms = Math.min( Math.floor( remainder * 0.6 ), Math.floor( sectors * 0.4) );
+		let num_anoms = Math.min( Math.floor( remainder * 0.5 ), Math.floor( sectors * 0.3) );
 		remainder -= num_anoms;
 		let arr =  new Array( stars_wanted ).fill(1).concat( // stars
 			new Array( num_anoms ).fill(2).concat( // anomalies
@@ -59,40 +59,25 @@ export default class Galaxy {
 		arr.shuffle();
 		
  		// loop over the array and create map objects
+		let jitter = 135; // values 100..150 work well
 		for ( let x = 0; x < map_size_x; x++ ) { 
 			for ( let y = 0; y < map_size_y; y++ ) { 
 				let cell = arr[ x*map_size_y + y ];
 				if ( cell==1 ) {
 					this.stars.push( Star.Random( 
-						((x+1)*cell_size) + (Math.floor((Math.random() * 200)) + 100 ), 
-						((y+1)*cell_size) + (Math.floor((Math.random() * 200)) + 100 ),  
+						((x+1)*cell_size) + Math.floor((Math.random() * jitter * 2)) + jitter + (cell_size*0.5), 
+						((y+1)*cell_size) + Math.floor((Math.random() * jitter * 2)) + jitter + (cell_size*0.5),  
 						galaxy_age 
 						) );					
 					}
 				else if ( cell==2 ) {
 					this.anoms.push( Anom.Random( 
-						((x+1)*cell_size) + (Math.floor((Math.random() * 200)) + 100 ), 
-						((y+1)*cell_size) + (Math.floor((Math.random() * 200)) + 100 )
+						((x+1)*cell_size) + Math.floor((Math.random() * jitter * 2)) + jitter + (cell_size*0.5), 
+						((y+1)*cell_size) + Math.floor((Math.random() * jitter * 2)) + jitter + (cell_size*0.5) 
 						) );					
 					}
 				}
 			}
-
-
-		// OLD METHOD
-// 		let planet_ratio = stars_wanted / (((map_size_x-cell_size)/cell_size) * ((map_size_y-cell_size)/cell_size));
-// 		for ( let x = cell_size; x < map_size_x-(cell_size); x += cell_size ) { 
-// 			for ( let y = cell_size; y < map_size_y-(cell_size); y += cell_size ) { 
-// 				if ( Math.random() <= planet_ratio ) {
-// 					this.stars.push( Star.Random( 
-// 						x + (Math.floor((Math.random() * 250)) - 125 ), 
-// 						y + (Math.floor((Math.random() * 250)) - 125 ),  
-// 						galaxy_age 
-// 						) );				
-// 					}
-// 				}
-// 			}
-	
 		}
 	
 	MakeDemo() {

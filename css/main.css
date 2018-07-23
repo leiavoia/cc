@@ -839,7 +839,7 @@ DIV.hyperlane {
 	}
 .mapobj_container.out_range {
 /*   pointer-events: none; */
-  cursor: not-allowed;
+/*   cursor: not-allowed; */
 	}
 .mapobj_container H2,
 .mapobj_container H3 {

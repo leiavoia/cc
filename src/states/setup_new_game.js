@@ -61,6 +61,8 @@ export class SetupNewGameState {
 		this.app.hilite_star = mystar;
 		this.app.ChangeState('play');
 		console.log( 'total civs: ' + Civ.total_civs );
+		// small UI tweek
+		if ( this.settings.num_stars == 0.05 ) { this.settings.num_stars = 0; }
 		// at this point there is some fudge time until the PlayState
 		// widget actually gets created and placed into the layout.
 		// Trying to perform functions directly on the PlayState will
