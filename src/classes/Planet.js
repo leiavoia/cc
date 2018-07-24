@@ -6,6 +6,7 @@ import RandomPicker from '../util/RandomPicker';
 import RandomName from '../util/RandomName';
 import * as utils from '../util/utils';
 import {computedFrom} from 'aurelia-framework';
+import {Ship,ShipBlueprint} from './Ship';
 
 export default class Planet {
 	
@@ -104,29 +105,16 @@ export default class Planet {
 				name: 'Colony Ship',
 				unique: false,
 				ProduceMe: function ( planet ) {
-					let myfleet = null;
+					// find my fleet
+          let myfleet = null;
 					for ( let f of planet.star.fleets ) { 
 						if ( f.owner == planet.owner ) { 
 							myfleet = f;
 							break;
 							}
 						}
-					let ship = {
-						name: 'Colony Ship',
-						img: 'img/ships/ship3_mock.png',
-						hp: 85,
-						maxhp: 100,
-						armor: 20,
-						maxarmor: 28,
-						shield: 13,
-						maxshield: 20,
-						att: 14,
-						speed: planet.owner.ship_speed, // HACK
-						colonize: true,
-						research: 0,
-						offroad: true,
-						selected: true // default to selected for easier UI
-						};
+          let ship = new Ship( planet.owner.ship_blueprints[0] );
+          ship.speed = planet.owner.ship_speed; // HACK
 					if ( !myfleet ) { 
 						myfleet = new Fleet( planet.owner, planet.star );
 						}
@@ -143,7 +131,7 @@ export default class Planet {
 		{
 			type: 'ship',
 			obj: {
-				name: 'Research Vessel',
+				name: 'Fighter',
 				unique: false,
 				ProduceMe: function ( planet ) {
 					let myfleet = null;
@@ -153,22 +141,8 @@ export default class Planet {
 							break;
 							}
 						}
-					let ship = {
-						name: 'Research Vessel',
-						img: 'img/ships/ship1_mock.png',
-						hp: 85,
-						maxhp: 100,
-						armor: 20,
-						maxarmor: 28,
-						shield: 13,
-						maxshield: 20,
-						att: 14,
-						speed: planet.owner.ship_speed, // HACK
-						colonize: false,
-						research: 50,
-						offroad: true,
-						selected: true // default to selected for easier UI
-						};
+          let ship = new Ship( planet.owner.ship_blueprints[1] );
+          ship.speed = planet.owner.ship_speed; // HACK
 					if ( !myfleet ) { 
 						myfleet = new Fleet( planet.owner, planet.star );
 						}
@@ -199,53 +173,9 @@ export default class Planet {
 			quantity: -1,
 			turns_left: 0,
 			pct: 0
-			},
-		{
-			type: 'building',
-			obj: {
-				name: 'Orbital Defense Platform',
-				unique: true,
-				ProduceMe: function ( planet ) {
-					// TODO: make ship
-					}
-				},
-			labor: 60, // "cost" in hammers
-			mp: 10, // material points
-			spent: 0,
-			quantity: 1,
-			turns_left: 4,
-			pct: 0
-			},
-		{
-			type: 'ship',
-			obj: {
-				name: 'Defender mkIII',
-				unique: false,
-				ProduceMe: function ( planet ) {
-					// TODO: make ship
-					}
-				},
-			labor: 200, // "cost" in hammers
-			mp: 20, // material points
-			spent: 0,
-			quantity: 3,
-			turns_left: 3,
-			pct: 0
 			}
 		];
 
-	build_opts = [
-		{
-			name: "Thing 1",
-			},
-		{
-			name: "Thing 2",
-			},
-		{
-			name: "Thing 3",
-			},
-		];
-		
 	AgePlanet() { 
 		this.age_level = Math.min( Math.floor( ++this.age / 40 ), 5 );
 		}

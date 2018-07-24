@@ -12,6 +12,7 @@
 <require from="../tech_pane"></require>
 <require from="../colonize_pane"></require>
 <require from="../options_pane"></require>
+<require from="../shipcombat_pane"></require>
 <!--<require from="../planet_detail"></require>
 <require from="../fleet_detail"></require>
 <require from="../star_detail"></require>
@@ -199,6 +200,7 @@
 				<audience-pane if.bind="app.main_panel_mode == 'audience'" data.bind="app.main_panel_data" civ.bind="app.main_panel_obj" app.bind="app"  ></audience-pane>
 				<colonize-pane if.bind="app.main_panel_mode == 'colonize'" planet.bind="app.main_panel_obj" app.bind="app"  ></colonize-pane>
 				<options-pane if.bind="app.main_panel_mode == 'options'" app.bind="app"  ></options-pane>
+				<ship-combat-pane if.bind="app.main_panel_mode == 'shipcombat'" app.bind="app"  ></ship-combat-pane>
 			</div>
 
 		</div>

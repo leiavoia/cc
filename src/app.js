@@ -15,6 +15,7 @@ import * as CrazyBox from './classes/Crazy';
 export class App {
 	version = '0.0.3';
 	main_panel_obj = null;
+// 	main_panel_mode = 'shipcombat';
 	main_panel_mode = false;
 	exclusive_ui = false; // if true, hides all UI except main content panel
 	sidebar_obj = null;
@@ -70,8 +71,8 @@ export class App {
 		this.game.galaxy.Make( 7,7,30,0.5 );
 		let mystar = this.game.galaxy.AddExploreDemo( 3 );
 		CrazyBox.AddGiantSpaceAmoeba(this);
-// 		CrazyBox.AddRedSpaceAmoeba(this);
-// 		CrazyBox.AddBlueSpaceAmoeba(this);
+		CrazyBox.AddRedSpaceAmoeba(this);
+		CrazyBox.AddBlueSpaceAmoeba(this);
 		this.game.SetMyCiv( 0 ); // could switch using debug stuff
 		this.ChangeState('play');
 		this.hilite_star = mystar; // hint for playstate startup

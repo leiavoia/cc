@@ -55,7 +55,7 @@ export class PlayState {
 			this.caret.x = obj.xpos; 
 			this.caret.y = obj.ypos; 
 			// HACK: if we are updating the caret and following the same fleet,
-			// update the the class from 'fleet' to 'fleet_follow'. This prevents
+			// update the class from 'fleet' to 'fleet_follow'. This prevents
 			// the caret from floating around the screen when switching from 
 			// any other object to this fleet. We also want to switch coords to
 			// star if the fleet is parked.

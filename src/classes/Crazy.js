@@ -1,9 +1,11 @@
 import Civ from './Civ';
 import Fleet from './Fleet';
 import * as utils from '../util/utils';
-	
+import {Ship,ShipBlueprint} from './Ship';
+
+
 export function AddBlueSpaceAmoeba( app ) { 
-	let civ = Civ.Random();
+  let civ = Civ.Random();
 	civ.race.is_monster = true;
 	civ.diplo.contactable = false;
 	civ.name = 'Space Amoeba';
@@ -16,22 +18,14 @@ export function AddBlueSpaceAmoeba( app ) {
 	// not parked on another civ's HW
 	let star = app.game.galaxy.stars[ 0 ];
 	let fleet = new Fleet( civ, star );
-	let ship = {
-		name: 'Space Amoeba',
-		img: 'img/ships/monsters/space_amoeba_blue.png',
-		hp: 200,
-		maxhp: 200,
-		armor: 0,
-		maxarmor: 0,
-		shield: 0,
-		maxshield: 0,
-		att: 20,
-		speed: 75,
-		colonize: false,
-		research: false,
-		selected: true
-		};
-	fleet.AddShip(ship);	
+  let bp = new ShipBlueprint();
+  bp.name = 'Space Amoeba';
+  bp.hull = 400;
+  bp.armor = 100;
+  bp.speed = 200;
+  bp.img = 'img/ships/monsters/space_amoeba_blue.png';
+  bp.AddWeapon('AMOEBASLIME1',8);   
+  fleet.AddShip( new Ship(bp) );
 	// new AI routine to subdivide dem Amoybas
 	civ.TurnAI = function ( app ) { 
 		// on every 8th turn, subdivide all amoeba fleets
@@ -39,24 +33,9 @@ export function AddBlueSpaceAmoeba( app ) {
 		if ( app.game.turn_num % 8 == 0 ) { 
 			for ( let f of this.fleets ) { 
 				if ( f.star && !f.dest ) { // only parked fleets subdivide
-					ship = {
-						name: 'Space Amoeba',
-						img: 'img/ships/monsters/space_amoeba_blue.png',
-						hp: 200,
-						maxhp: 200,
-						armor: 0,
-						maxarmor: 0,
-						shield: 0,
-						maxshield: 0,
-						att: 20,
-						speed: 75,
-						colonize: false,
-						research: false,
-						selected: true
-						};
 					// stay
 					if ( Math.random() < (1 / f.ships.length) + 0.25 ) { 
-						f.AddShip(ship);	
+						f.AddShip(new Ship(bp));	
 						}
 					// go 
 					else {
@@ -70,7 +49,7 @@ export function AddBlueSpaceAmoeba( app ) {
 								;
 							if ( dist < 1000000 ) { 
 								fleet = new Fleet( this, f.star );
-								fleet.AddShip(ship);	
+								fleet.AddShip(new Ship(bp));	
 								fleet.SetDest( s );
 								gotcha = true;
 								break;
@@ -78,7 +57,7 @@ export function AddBlueSpaceAmoeba( app ) {
 							}
 						if ( !gotcha ) { 
 							// if nothing available, just join the herd
-							f.AddShip(ship);	
+							f.AddShip(new Ship(bp));	
 							}
 						}
 					}
@@ -103,44 +82,24 @@ export function AddGiantSpaceAmoeba( app ) {
 	let fleet = new Fleet( civ, null );
 	fleet.xpos = star.xpos + 500;
 	fleet.ypos = star.ypos + 500;
-	let ship = {
-		name: 'Giant Space Amoeba',
-		img: 'img/ships/monsters/space_amoeba_yellow.png',
-		hp: 800,
-		maxhp: 800,
-		armor: 0,
-		maxarmor: 0,
-		shield: 0,
-		maxshield: 0,
-		att: 10,
-		speed: 80,
-		colonize: false,
-		research: false,
-		selected: true
-		};
-	fleet.AddShip(ship);	
+	
+  let bp = new ShipBlueprint();
+  bp.name = 'Giant Space Amoeba';
+  bp.hull = 800;
+  bp.armor = 0;
+  bp.speed = 80;
+  bp.img = 'img/ships/monsters/space_amoeba_yellow.png';
+  bp.AddWeapon('AMOEBASLIME3',12);   
+  fleet.AddShip( new Ship(bp) );	
 	fleet.SetDest(star);
+	
 	// new AI routine to subdivide dem Amoybas
 	civ.TurnAI = function ( app ) { 	
 		for ( let f of this.fleets ) { 
 			if ( f.star && !f.dest ) { // only parked fleets subdivide
 				// possibly reproduce 
 				if ( Math.random() <= 0.05 ) { 
-					f.AddShip({
-						name: 'Giant Space Amoeba',
-						img: 'img/ships/monsters/space_amoeba_yellow.png',
-						hp: 800,
-						maxhp: 800,
-						armor: 0,
-						maxarmor: 0,
-						shield: 0,
-						maxshield: 0,
-						att: 10,
-						speed: 80,
-						colonize: false,
-						research: false,
-						selected: true
-						});
+					f.AddShip( new Ship(bp) );
 					}
 				if ( Math.random() <= 0.2 ) { 
 					// find the first star within 1500px 
@@ -179,49 +138,53 @@ export function AddRedSpaceAmoeba( app ) {
 	// including other amoebas. If the male ever
 	// finds the female, all hell breaks loose.
 	
-	// male
+	// adult male
+	
+  let bpam = new ShipBlueprint();
+  bpam.name = 'Adult Red Space Amoeba (M)';
+  bpam.hull = 600;
+  bpam.speed = 400;
+  bpam.sex = 'M';
+  bpam.adult = true;
+  bpam.img = 'img/ships/monsters/space_amoeba_red.png';
+  bpam.AddWeapon('AMOEBASLIME2',12);   
 	let star = app.game.galaxy.stars[ 0 ];
 	let fleet = new Fleet( civ, star );
-	let ship = {
-		name: 'Adult Red Space Amoeba (M)',
-		img: 'img/ships/monsters/space_amoeba_red.png',
-		hp: 600,
-		maxhp: 600,
-		armor: 0,
-		maxarmor: 0,
-		shield: 0,
-		maxshield: 0,
-		att: 22,
-		speed: 400,
-		colonize: false,
-		research: false,
-		selected: true,
-		sex: 'M', // custom
-		adult: true // custom
-		};
-	fleet.AddShip(ship);
-	
-	// female
-	star = app.game.galaxy.stars[ 1 ];
+  fleet.AddShip( new Ship(bpam) );	
+  
+  // adult female
+  let bpaf = new ShipBlueprint();
+  bpaf.name = 'Adult Red Space Amoeba (F)';
+  bpaf.hull = 900;
+  bpaf.speed = 300;
+  bpaf.sex = 'F';
+  bpaf.adult = true;
+  bpaf.img = 'img/ships/monsters/space_amoeba_red.png';
+  bpaf.AddWeapon('AMOEBASLIME2',12);   
+  bpaf.AddWeapon('AMOEBASLIME3',4);   
+  star = app.game.galaxy.stars[ 1 ];
 	fleet = new Fleet( civ, star );
-	ship = {
-		name: 'Adult Red Space Amoeba (F)',
-		img: 'img/ships/monsters/space_amoeba_red.png',
-		hp: 900,
-		maxhp: 900,
-		armor: 0,
-		maxarmor: 0,
-		shield: 0,
-		maxshield: 0,
-		att: 16,
-		speed: 300,
-		colonize: false,
-		research: false,
-		selected: true,
-		sex: 'F', // custom
-		adult: true // custom
-		};
-	fleet.AddShip(ship);
+  fleet.AddShip( new Ship(bpaf) );	
+	
+	// baby male
+  let bpbm = new ShipBlueprint();
+  bpbm.name = 'Baby Red Space Amoeba (M)';
+  bpbm.hull = 35;
+  bpbm.speed = 100;
+  bpbm.sex = 'M';
+  bpbm.adult = false;
+  bpbm.img = 'img/ships/monsters/space_amoeba_red.png';
+  bpbm.AddWeapon('AMOEBASLIME1',2);   
+  
+  // baby female
+  let bpbf = new ShipBlueprint();
+  bpbf.name = 'Baby Red Space Amoeba (F)';
+  bpbf.hull = 45;
+  bpbf.speed = 100;
+  bpbf.sex = 'F';
+  bpbf.adult = false;
+  bpbf.img = 'img/ships/monsters/space_amoeba_red.png';
+  bpbf.AddWeapon('AMOEBASLIME1',4);   
 
 	// custom AI routine
 	civ.TurnAI = function ( app ) { 
@@ -230,16 +193,13 @@ export function AddRedSpaceAmoeba( app ) {
 				// are adults present? will they mate?
 				let mate = 0; // 1 = male, 2 = female, 3 = lets do it
 				for ( let ship of f.ships ) { 
-					if ( ship.adult ) { 
-						mate = mate | (ship.sex == 'M' ? 1 : 2);
+					if ( ship.bp.adult ) { 
+						mate = mate | (ship.bp.sex == 'M' ? 1 : 2);
 						}
 					// every turn, there is a 1/1000 chance a baby will be promoted to an adult
 					else if ( Math.random() <= 1/1000 ) {
-						ship.adult = true;
-						ship.maxhp = (ship.sex=='M' ? 500 : 800);
-						ship.hp = (ship.sex=='M' ? 500 : 800);
-						ship.att = (ship.sex=='M' ? 20 : 15);
-						ship.name = `Adult Red Space Amoeba (${ship.sex})`;
+            ship.bp = ( ship.bp.sex=='M' ? bpam : bpaf );
+            ship.hull = ship.bp.hull;
 						}
 					}
 				// get it on
@@ -251,24 +211,7 @@ export function AddRedSpaceAmoeba( app ) {
 						let i = utils.RandomInt(3,12);
 						let newfleet = new Fleet(this,f.star);
 						while ( i-- ) { 
-							let sex = (Math.random() > 0.5 ? 'M' : 'F');
-							newfleet.AddShip( {
-								name: `Baby Red Space Amoeba (${sex})`,
-								img: 'img/ships/monsters/space_amoeba_red.png',
-								hp: (sex=='M' ? 35 : 45),
-								maxhp: (sex=='M' ? 35 : 45),
-								armor: 0,
-								maxarmor: 0,
-								shield: 0,
-								maxshield: 0,
-								att: (sex=='M' ? 10 : 8),
-								speed: 550,
-								colonize: false,
-								research: false,
-								selected: true,
-								sex, // custom
-								adult: false // custom
-								} );	
+							newfleet.AddShip( new Ship( (Math.random() > 0.5) ? bpbm : bpbf ) );	
 							}
 						fleets.push(newfleet);
 						}
@@ -299,15 +242,15 @@ export function AddRedSpaceAmoeba( app ) {
 				if ( mate ) { // i.e. "adults present" 
 					let kill_list = [];
 					for ( let ship of f.ships ) { 
-						if ( ship.adult ) { 
+						if ( ship.bp.adult ) { 
 							// recently mated males die
-							if ( mate >= 3 && ship.sex=='M' ) { 
+							if ( mate >= 3 && ship.bp.sex=='M' ) { 
 								kill_list.push(ship);
 								continue;
 								}
 							// Males move a lot. Females tend to stay in place waiting for the male.
 							// Recently mated amoebas will go literally anywhere.
-							if ( ship.sex=='M' || mate >= 3 || Math.random() > 0.8 ) {
+							if ( ship.bp.sex=='M' || mate >= 3 || Math.random() > 0.8 ) {
 								// move to a randomish nearby star within 1500px
 								app.game.galaxy.stars.shuffle(); // very inefficient
 								for ( let s of app.game.galaxy.stars ) { 

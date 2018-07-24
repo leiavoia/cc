@@ -5,6 +5,7 @@ import Civ from './Civ';
 import Hyperlane from './Hyperlane';
 import Fleet from './Fleet';
 import * as utils from '../util/utils';
+import {Ship,ShipBlueprint} from './Ship';
 
 export default class Galaxy {
 	fleets = []; // maps to Fleet.all_fleets
@@ -187,54 +188,10 @@ export default class Galaxy {
 	AssignStartingFleet( owner, star ) { 
 		let f = new Fleet( owner, star );
 		f.ships = [
-			{
-				name: 'Colony Ship',
-				img: 'img/ships/ship3_mock.png',
-				hp: 85,
-				maxhp: 100,
-				armor: 20,
-				maxarmor: 28,
-				shield: 13,
-				maxshield: 20,
-				att: 14,
-				speed: 50,
-				colonize: true,
-				research: 0,
-				offroad: true,
-				selected: true // default to selected for easier UI
-				},
-			{
-				name: 'Research Vessel',
-				img: 'img/ships/ship1_mock.png',
-				hp: 62,
-				maxhp: 100,
-				armor: 20,
-				maxarmor: 28,
-				shield: 13,
-				maxshield: 20,
-				att: 14,
-				speed: 100,
-				colonize: false,
-				research: 50,
-				offroad: true,
-				selected: true // default to selected for easier UI
-				},
-			{
-				name: 'Bomber',
-				img: 'img/ships/ship2_mock.png',
-				hp: 62,
-				maxhp: 100,
-				armor: 20,
-				maxarmor: 28,
-				shield: 13,
-				maxshield: 20,
-				att: 14,
-				speed: 200,
-				colonize: false,
-				research: 0,
-				offroad: true,
-				selected: true // default to selected for easier UI
-				},
+			new Ship( owner.ship_blueprints[0] ),
+			new Ship( owner.ship_blueprints[1] ),
+			new Ship( owner.ship_blueprints[1] ),
+			new Ship( owner.ship_blueprints[2] ),
 			];
 		f.ReevaluateStats();	
 		return f;

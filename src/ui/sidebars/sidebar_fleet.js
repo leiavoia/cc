@@ -96,7 +96,7 @@ export class FleetDetailPane {
 		this.Recalc();
 		}
 	GetHealthClass(ship) {
-		let pct = ship.hp / ship.maxhp;
+		let pct = ship.hull / ship.bp.hull;
 		if ( pct >= 0.7 ) { return 'h'; }
 		else if ( pct >= 0.35 ) { return 'm'; }
 		else { return 'l'; }

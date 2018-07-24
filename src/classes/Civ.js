@@ -5,6 +5,7 @@ import * as utils from '../util/utils';
 import * as Tech from './Tech';
 import Constellation from './Constellation';
 import Planet from './Planet';
+import {Ship,ShipBlueprint} from './Ship';
 
 export default class Civ {
 	
@@ -30,6 +31,7 @@ export default class Civ {
 	
 	ship_range = 750; // px
 	ship_speed = 200; // HACK
+	ship_blueprints = [];
 	vis_level = 0; // HACK : 0 = space, 1 = hyperspace, 2 = subspace
 	empire_box = {x1:0,x2:0,y1:0,y2:0};
 	
@@ -299,6 +301,36 @@ export default class Civ {
 		this.diplo_img = 'img/races/alien_' + ("000" + Civ.img_id_roster[this.id]).slice(-3) + '.jpg';
 		this.diplo_img_small = 'img/races/alien_' + ("000" + Civ.img_id_roster[this.id]).slice(-3) + '.jpg';
 		this.InitResearch();
+    
+    // default ship set
+    let colonizer = new ShipBlueprint();
+    colonizer.name = 'Colony Ship';
+    colonizer.colonize = true;
+    colonizer.hull = 50;
+    colonizer.speed = 300;
+    colonizer.img = 'img/ships/ship3_mock.png';
+    this.ship_blueprints.push(colonizer);
+   
+    let fighter = new ShipBlueprint();
+    fighter.name = 'Fighter';
+    fighter.hull = 200;
+    fighter.speed = 300;
+    fighter.armor = 50;
+    fighter.drive = 2;
+    fighter.img = 'img/ships/ship2_mock.png';
+    fighter.AddWeapon( 'LASER', 2 );
+    this.ship_blueprints.push(fighter);
+   
+    let bomber = new ShipBlueprint();
+    bomber.name = 'Bomber'; 
+    bomber.hull = 300;
+    bomber.speed = 300;
+    bomber.armor = 100;
+    bomber.drive = 1;
+    bomber.img = 'img/ships/ship1_mock.png';
+    bomber.AddWeapon( 'MISSILE', 2 );
+    bomber.AddWeapon( 'RAYGUN', 1 );
+    this.ship_blueprints.push(bomber);
 		}
 	
 	static Random( difficulty = 0.5 ) {
@@ -338,7 +370,7 @@ export default class Civ {
 				if ( f.colonize && f.star && !f.dest && f.star.objtype == 'star' && !f.mission ) { 
 					next_ship:
 					for ( let s of f.ships ) {
-						if ( s.colonize ) { 
+						if ( s.bp.colonize ) { 
 							// can i settle anything where i am?
 							for ( let p of f.star.planets ) { 
 								if ( !p.owner && p.Habitable( this.race ) ) { 

@@ -147,22 +147,17 @@ let anom_list = [
 		post_desc: 'Drifting in deep space, we discovered an abandoned spacecraft of unknown origin. The reseach team will tow it back for follow up examination and retrofitting for use in our fleet.',		
 		onComplete: function (fleet) {
 			this.name = 'Lost Spacecraft';
-			fleet.AddShip({
-				name: 'Lost Fighter',
-				img: 'img/ships/ship2_mock.png',
-				hp: 75,
-				maxhp: 100,
-				armor: 20,
-				maxarmor: 28,
-				shield: 13,
-				maxshield: 20,
-				att: 14,
-				speed: 200,
-				colonize: false,
-				research: 0,
-				offroad: true,
-				selected: true // default to selected for easier UI			
-				});
+      let bp = new ShipBlueprint();
+      bp.name = 'Lost Fighter';
+      bp.colonize = true;
+      bp.hull = 400;
+      bp.armor = 100;
+      bp.speed = 200;
+      bp.img = 'img/ships/ship2_mock.png';
+      bp.AddWeapon('RAYGUN',5);
+      bp.AddWeapon('LASER',3);
+      bp.AddWeapon('MISSILE',5);      
+      fleet.AddShip( new Ship(bp) );
 			}
 		}
 	];

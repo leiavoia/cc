@@ -60,11 +60,11 @@ export default class Fleet {
 		this.speed = 1000000;
 		for ( let ship of this.ships ) { 
 			// check if there are colony ships
-			if ( ship.colonize ) { this.colonize = true; }
+			if ( ship.bp.colonize ) { this.colonize = true; }
 			// check if there are research ships
-			if ( ship.research ) { this.research += ship.research; }
+			if ( ship.bp.research ) { this.research += ship.bp.research; }
 			// find our lowest speed
-			if ( ship.speed < this.speed ) { this.speed = ship.speed; }
+			if ( ship.bp.speed < this.speed ) { this.speed = ship.bp.speed; }
 			}
 		this.FireOnUpdate();
 		}
