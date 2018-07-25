@@ -1,5 +1,5 @@
 /* CSS RESET - http://meyerweb.com/eric/tools/css/reset/  */
-
+/*
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -20,7 +20,6 @@ time, mark, audio, video {
 	font: inherit;
 	vertical-align: baseline;
 	}
-/* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure, 
 footer, header, hgroup, menu, nav, section {
 	display: block;
@@ -37,8 +36,16 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0;
 	}
+*/
 
-
+h1,h2, h3, h4, h5, h6 { 
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+	}
 	
 /* FONTS */
 @font-face {
@@ -687,39 +694,58 @@ p {
 
 
 /* BUTTONS */	
-.button_rack A, A.button {
+button, .button_rack A, A.button {
 	display: inline-block;
 	color: #FFF;
 	background-color: #4BA5CC;
 /* 	background-color: #347490; */
 	border-radius: 0.25em;
+	border:none;
 	margin-right: 0.25em;
 	padding: 0.25em 0.5em;
 	text-decoration:none;
 	}
-.button_rack A.bad, A.button.bad {
-	background-color: #FAA;
-	}
-.button_rack A.alt, A.button.alt {
+button.good, A.button.good, .button_rack A.good {
 	background-color: #54B848;
+	color: #FFF;
 	}
-.button_rack A.cool, A.button.cool {
+button.bad, A.button.bad, .button_rack A.bad {
+	background-color: #FAA;
+	color: #FFF;
+	}
+button.alt, A.button.alt, .button_rack A.alt {
+	background-color: #54B848;
+	color: #FFF;
+	}
+button.cool, .button_rack A.cool, A.button.cool {
 	background-color: #999;
+	color: #FFF;
 	}
-.button_rack A.ghost, A.button.ghost {
+button.active, .button_rack A.active, A.button.active {
+	text-shadow: 1px 1px 1px #000;
+	box-shadow: 
+		0.15em 0.15em 0.15em inset rgba(255,255,255,0.65), 
+		-0.15em -0.15em 0.15em inset rgba(0,0,0,0.65); 
+	}
+button.ghost, .button_rack A.ghost, A.button.ghost {
 	opacity: 0.35;
 	pointer-events:none;
 	cursor: default;
 	}
-.button_rack.big A, .button_rack A.big, A.button.big {
+button.big, .button_rack.big A, .button_rack A.big, A.button.big, .button_rack.big button {
 	font-size: 150%;
 	}
-.button_rack.small A, .button_rack A.small, A.button.small {
+button.small, .button_rack.small A, .button_rack A.small, A.button.small, .button_rack.small button {
 	font-size: 80%; 
 	}
 	
-	
-	
+.button_rack.button_rack_fill {
+	display:flex;
+	flex-flow: row wrap;
+	}
+.button_rack.button_rack_fill > * {
+	flex: 1;
+	}
 	
 	
 	

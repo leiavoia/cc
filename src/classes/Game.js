@@ -509,7 +509,7 @@ export default class Game {
 							},
 						{ 
 							text: "Auto Resolve", 
-							class: "",
+							class: "alt",
 							cb: btn => { 
 								let combat = new ShipCombat( sc.attacker, sc.defender, sc.planet );
 								combat.ProcessQueue( 1000 ); // 1000 = fight to the death if possible

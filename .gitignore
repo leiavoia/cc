@@ -33,3 +33,5 @@ node_modules/
 .directory
 .editorconfig
 favicon.ico
+
+local/

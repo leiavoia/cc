@@ -257,8 +257,8 @@
 	<div class="dialog" if.bind="app.modal">
 		<h2>${app.modal.header}</h2>
 		<div innerhtml.bind="app.modal.content"></div>
-		<p class="button_rack ${app.modal.buttons.length > 1 ? 'button_rack fill' : ''}" repeat.for="btn of app.modal.buttons">
-			<button click.delegate="app.ClickDialogButton(btn)" class="btn.class">${btn.text}</a>
+		<p class="button_rack ${app.modal.buttons.length > 1 ? 'button_rack_fill' : ''}" >
+			<button click.delegate="app.ClickDialogButton(btn)" repeat.for="btn of app.modal.buttons" class="${btn.class}">${btn.text}</button>
     	</p>
 	</div>
 	
