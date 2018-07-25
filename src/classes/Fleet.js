@@ -80,6 +80,17 @@ export default class Fleet {
 		this.ReevaluateStats();
 		}
 		
+	ReloadAllShipWeapons() { 
+		this.ships.forEach( s => {
+			s.weapons.forEach( w => w.shotsleft = w.shots );
+			});
+		}
+		
+	RemoveDeadShips() { 
+		this.ships = this.ships.filter( ship => ship.hull );
+		this.ReevaluateStats();
+		}
+		
 	// removes this fleet from all fleet lists,
 	// because javascript does not have a formal destructor()
 	Kill() {
@@ -94,7 +105,9 @@ export default class Fleet {
 		this.dest = null;
 		this.xpos = -1000;
 		this.ypos = -1000;
-		this.killme = true;
+		// signal to other processes to ignore/cleanup 
+		// if they still have references to this fleet
+		this.killme = true; 
 		this.owner.fleets.splice( this.owner.fleets.indexOf(this), 1 );
 		Fleet.all_fleets.splice( Fleet.all_fleets.indexOf(this), 1 );
 		this.FireOnUpdate();
@@ -241,6 +254,12 @@ export default class Fleet {
 			}
 		}
 	
+	AIWantToAttackFleet( fleet ) {
+		// TODO / AI HACK
+		// AI always fights, human player gets option
+		return !this.owner.is_player; 
+    	}
+	    
 	// returns a mission report for any completed deepspace missions
 	DoResearch() {
 		if ( !this.research ) { return; }

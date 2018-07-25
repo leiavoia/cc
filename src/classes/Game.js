@@ -10,6 +10,7 @@ import * as utils from '../util/utils';
 import * as Signals from '../util/signals';
 import FastPriorityQueue from 'fastpriorityqueue';
 import EventLibrary from './EventLibrary';
+import ShipCombat from './ShipCombat';
 
 
 export default class Game {
@@ -24,6 +25,7 @@ export default class Game {
 	eventcard = null; // the event card we are currently displaying to the player
 	eventcard_queue = new FastPriorityQueue( (a,b) => { return (a.turn < b.turn) ? -1 : (a.turn > b.turn ? 1 : 0); });
 	eventlib = null;
+	shipcombats = [];
 	
 	DoEvent() { 
 		let e = this.eventlib.Checkout( 'TEST_0', this.myciv, null );
@@ -395,6 +397,11 @@ export default class Game {
 				}	
 			console.timeEnd('Research');
 			
+			// find potential ship combats
+			console.time('Finding ship combats');
+			this.FindShipCombats();
+			console.timeEnd('Finding ship combats');
+			
 			// [!]OPTIMIZE we can optimize this out of the loop if 
 			// we limit it to events that change planets or ship ranges
 			console.time('Recalc Civ Contact');
@@ -415,11 +422,115 @@ export default class Game {
 			// event queue needs the new turn number
 			this.ProcessEventCardQueue();
 			
+			this.PresentNextPlayerShipCombat();
+			
 			} // foreach turn (in case of multiple).
 		
 		this.processing_turn = false;
 		} // end process turn
 		
+	FindShipCombats() {
+		// find all combats
+		this.galaxy.stars.forEach( star => {
+			if ( star.fleets.length > 1 ) { 
+				for ( let fleet_a=0; fleet_a < star.fleets.length-1; fleet_a++ ) {
+					for ( let fleet_b=1; fleet_b < star.fleets.length; fleet_b++ ) {
+					if ( star.fleets[fleet_a].AIWantToAttackFleet(star.fleets[fleet_b]) ||
+						star.fleets[fleet_b].AIWantToAttackFleet(star.fleets[fleet_a]) 
+						) {
+						// NOTE: fleet may want to attack planet, not just the fleet
+						this.shipcombats.push({
+							attacker: star.fleets[fleet_a],
+							defender: star.fleets[fleet_b],
+							planet: null, // TODO some day
+							label: `${star.fleets[fleet_a].owner.name} attacks ${star.fleets[fleet_b].owner.name} at ${star.name}`
+							});
+						}
+					}
+				}
+			}
+		});
+// 		// sort all player-involved combats to the back
+// 		this.shipcombats.sort( (a,b) => {
+// 			if ( a.owner == this.myciv || b.owner == this.myciv ) { return 1; }
+// 			return 0;
+// 		});
+
+		// TODO sort out duplicates - lower CIV ID goes first (a-b, b-a)
+
+		// TODO: we need to make a separare list of "proposed" combats 
+		// for the player to accept or decline
+
+		// Fight!
+		for ( let c = this.shipcombats.length-1; c >= 0; c-- ) { 
+			let sc = this.shipcombats[c];
+			// fleet may have been destroyed in previous battle.
+			if ( sc.attacker.killme || sc.defender.killme ) { 
+				this.shipcombats.splice( c, 1 ); // delete
+				continue; 
+				}
+			// if fleet involves player, save for later
+			if ( sc.attacker.owner.is_player || sc.defender.owner.is_player ) { 
+				continue; 
+				}
+			// otherwise autoresolve in background
+			console.log('Auto-resolving AI combat: ' + sc.label);
+			let combat = new ShipCombat( sc.attacker, sc.defender, sc.planet );
+			combat.ProcessQueue( 1000 ); // 1000 = fight to the death if possible
+			combat.End();
+			};
+		}
+    
+    // this will look through the shipcombats queue for 
+    // player-involved combat and present them to the player.
+    // The queue drains by having the ship combat screen call
+    // this function again on exit. If the queue has no player
+    // involved combats, nothing happens.
+    PresentNextPlayerShipCombat( previous_combat = null ) { 
+ 		for ( let c=this.shipcombats.length-1; c >= 0; c-- ) { 
+			let sc = this.shipcombats[c];
+			this.shipcombats.splice( c, 1 ); // delete
+			// fleet may have been destroyed in previous battle.
+			if ( sc.attacker.killme || sc.defender.killme ) { 
+				continue; 
+				}
+			// if player is the defender, present mandatory battle
+			else if ( sc.defender.owner.is_player ) { 
+				console.log(sc.label);
+				this.app.ShowDialog(
+					`Attack on ${sc.defender.star.name}`,
+					sc.label,
+					// buttons
+					[
+						{ 
+							text: "Command Battle", 
+							class: "",
+							cb: btn => { this.LaunchPlayerShipCombat(sc); }
+							},
+						{ 
+							text: "Auto Resolve", 
+							class: "",
+							cb: btn => { 
+								let combat = new ShipCombat( sc.attacker, sc.defender, sc.planet );
+								combat.ProcessQueue( 1000 ); // 1000 = fight to the death if possible
+								combat.End();
+								}
+							}
+						]
+					);
+				break;
+				}
+			// if player is the attacker, launch directly to attack screen
+			else if ( sc.attacker.owner.is_player ) { 
+				this.LaunchPlayerShipCombat(sc);
+				break;
+				}
+			};   
+    	}
+    	
+	LaunchPlayerShipCombat( combat ) {
+		this.app.SwitchMainPanel( 'shipcombat', combat );
+		}
 		
 	RecalcStarRanges() { 
 		// recalculate which planets are in range of my systems
@@ -600,8 +711,12 @@ export default class Game {
 		return this.galaxy.civs[ this.iam ];
 		}
 	SetMyCiv( id ) { 
+		// unset old one
+		this.galaxy.civs[ this.iam ].is_player = false;
+		// set new one
 		this.iam = id;
 		this.myciv = this.galaxy.civs[ this.iam ];
+		this.galaxy.civs[ this.iam ].is_player = true;
 		}
 	}
 

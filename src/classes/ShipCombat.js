@@ -10,22 +10,33 @@ export default class ShipCombat {
 		this.status = null; // null = stalemate, 1 = attacker victory, 2 = defender victory
 		// set up teams
 		this.teams = [ 
-			{ label: 'ATTACKER', owner: 1, ships: attacker, targets: [], stats:{} },
-			{ label: 'DEFENDER', owner: 2, ships: defender, targets: [], stats:{} },
+			{ label: 'ATTACKER', fleet: attacker, targets: [], stats:{} },
+			{ label: 'DEFENDER', fleet: defender, targets: [], stats:{} },
 			];
 		// make a list of targets
-		this.teams[0].targets = this.teams[1].ships.slice(); // clone array
-		this.teams[1].targets = this.teams[0].ships.slice(); // clone array
+		this.teams[0].targets = this.teams[1].fleet.ships.slice(); // clone array
+		this.teams[1].targets = this.teams[0].fleet.ships.slice(); // clone array
 		// set up combat queue
 		this.PreloadQueue(this.teams);
 		}
 		
 	End() { 
-// 		this.CalcStats();
+		// this.CalcStats();
 		console.log(this.status);
 		console.log(this.log);
 		console.dir(this.stats);
-// 		console.log(this.teams);
+		// console.log(this.teams);
+		// clean up dead ships
+		this.teams[0].fleet.RemoveDeadShips();
+		this.teams[1].fleet.RemoveDeadShips();
+		// clean up dead fleets and reload survivors
+		this.teams.forEach( team => {
+			if ( team.fleet.ships.length ) { 
+				console.log('WINNER: ' + team.fleet.owner.name );
+				team.fleet.ReloadAllShipWeapons();
+				}
+			else { team.fleet.Kill(); }
+			});
 		}		
 		
 	// item: { ship, weapon, team }
@@ -78,7 +89,7 @@ export default class ShipCombat {
 	PreloadQueue( teams ) { 
 		// queue up the attacks
 		teams.forEach( t => {
-			t.ships.forEach( s => {
+			t.fleet.ships.forEach( s => {
 				for ( const w of s.weapons ) {  
 					if ( w.online && w.shotsleft ) {
 						this.AddAttack( { ship:s, weapon:w, team:t }, s.bp.drive + w.reload );

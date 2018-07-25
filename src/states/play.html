@@ -200,7 +200,7 @@
 				<audience-pane if.bind="app.main_panel_mode == 'audience'" data.bind="app.main_panel_data" civ.bind="app.main_panel_obj" app.bind="app"  ></audience-pane>
 				<colonize-pane if.bind="app.main_panel_mode == 'colonize'" planet.bind="app.main_panel_obj" app.bind="app"  ></colonize-pane>
 				<options-pane if.bind="app.main_panel_mode == 'options'" app.bind="app"  ></options-pane>
-				<ship-combat-pane if.bind="app.main_panel_mode == 'shipcombat'" app.bind="app"  ></ship-combat-pane>
+				<ship-combat-pane if.bind="app.main_panel_mode == 'shipcombat'" combatdata.bind="app.main_panel_obj" app.bind="app"  ></ship-combat-pane>
 			</div>
 
 		</div>
@@ -251,13 +251,15 @@
 
 
 <!-- modal layer -->
-<div id="layout_modal" class="${(app.modal_header || app.modal_content || app.game.eventcard ) ? 'trekIn' : 'trekOut'}">
+<div id="layout_modal" class="${(app.modal || app.game.eventcard ) ? 'trekIn' : 'trekOut'}">
 	
 	<!-- messages -->
-	<div class="dialog" if.bind="app.modal_header">
-		<h2>${app.modal_header}</h2>
-		<div innerhtml.bind="app.modal_content"></div>
-		<p><a href="#" click.delegate="app.CloseDialog()" class="button">OK</a>
+	<div class="dialog" if.bind="app.modal">
+		<h2>${app.modal.header}</h2>
+		<div innerhtml.bind="app.modal.content"></div>
+		<p class="button_rack ${app.modal.buttons.length > 1 ? 'button_rack fill' : ''}" repeat.for="btn of app.modal.buttons">
+			<button click.delegate="app.ClickDialogButton(btn)" class="btn.class">${btn.text}</a>
+    	</p>
 	</div>
 	
 	<!-- events -->

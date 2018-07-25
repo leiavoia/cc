@@ -28,7 +28,7 @@ export class App {
 	options = {
 		dim_unexplored: true,
 		show_sectors: false,
-		see_all: false,
+		see_all: true,
 		show_range: false,
 		show_xtreme_anoms: true,
 		show_xtreme_fleets: true,
@@ -69,7 +69,7 @@ export class App {
 		this.game.InitGalaxy();
 // 		this.ChangeState('title');
 		this.game.galaxy.Make( 7,7,30,0.5 );
-		let mystar = this.game.galaxy.AddExploreDemo( 3 );
+		let mystar = this.game.galaxy.AddExploreDemo( 8 );
 		CrazyBox.AddGiantSpaceAmoeba(this);
 		CrazyBox.AddRedSpaceAmoeba(this);
 		CrazyBox.AddBlueSpaceAmoeba(this);
@@ -174,13 +174,19 @@ export class App {
 		this.CloseMainPanel();
 		this.CloseSideBar();
 		}
-	ShowDialog( header, content ) { 
-		this.modal_header = header;
-		this.modal_content = content;
+	ShowDialog( header, content, buttons = null ) { 
+		this.modal = { header, content, buttons };
+		if ( !buttons ) { // default OK button to close dialog
+		   this.modal.buttons = [{ text: 'OK', cb: (()=>this.CloseDialog()) }];
+		   }
 		}
 	CloseDialog() {
-		this.modal_header = null;
-		this.modal_content = null;
+		this.modal = null;
+		}
+	ClickDialogButton( btn ) {
+		// window always closes regardless of what is clicked.
+		this.modal = null;
+	    btn.cb();
 		}
 		
 	// type: good, bad, neutral

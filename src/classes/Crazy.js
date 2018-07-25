@@ -8,7 +8,7 @@ export function AddBlueSpaceAmoeba( app ) {
   let civ = Civ.Random();
 	civ.race.is_monster = true;
 	civ.diplo.contactable = false;
-	civ.name = 'Space Amoeba';
+	civ.name = 'Blue Space Amoebas';
 	civ.diplo_img = 'img/races/space_amoeba_blue.jpg';
 	civ.diplo_img_small = 'img/races/space_amoeba_blue.jpg';
 	civ.color_rgb = [20,100,230];
@@ -72,7 +72,7 @@ export function AddGiantSpaceAmoeba( app ) {
 	let civ = Civ.Random();
 	civ.race.is_monster = true;
 	civ.diplo.contactable = false;
-	civ.name = 'Space Amoeba';
+	civ.name = 'Giant Space Amoebas';
 	civ.diplo_img = 'img/races/space_amoeba_yellow.jpg';
 	civ.diplo_img_small = 'img/races/space_amoeba_yellow.jpg';
 	civ.color_rgb = [240,240,50];
@@ -127,7 +127,7 @@ export function AddRedSpaceAmoeba( app ) {
 	let civ = Civ.Random();
 	civ.race.is_monster = true;
 	civ.diplo.contactable = false;
-	civ.name = 'Space Amoeba';
+	civ.name = 'Red Space Amoebas';
 	civ.diplo_img = 'img/races/space_amoeba_red.jpg';
 	civ.diplo_img_small = 'img/races/space_amoeba_red.jpg';
 	civ.color_rgb = [230,40,10];

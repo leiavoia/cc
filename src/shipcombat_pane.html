@@ -1,22 +1,19 @@
 <template>
-	<div id="tech_pane" class="pane">
-
-		<h1>Combat at {Some Star}</h1>
+	<div id="shipcombat_pane" class="pane" if.bind="combatdata && combat">
 	
-		<div id="inner_wrapper">
-			<div id="available" class="techlist">
+			<div id="attacker-column">
 			
 			</div>
 			
-			<div id="completed" class="techlist">
-
+			<div id="center-column">
+				<h1>Combat at ${combatdata.defender.star.name}</h1>
+				<p>${combatdata.attacker.owner.name} attack ${combatdata.defender.owner.name}</p>
+				<button click.delegate="ClosePanel()">END COMBAT</button>
 			</div>
 			
-			<div id="featured">
+			<div id="defender-column">
 			
 			</div>
 			
 		</div>
-	</div>
-
 </template>

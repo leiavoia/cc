@@ -14,6 +14,8 @@ export default class Civ {
 	name = 'RACE';
 	name_plural = 'RACITES';
 	
+	is_player = false; // set to true to indicate who the human is
+  
 	// we'll flesh this out later
 	race = {
 		env: { // natural habitat
