@@ -486,7 +486,7 @@ export default class Game {
     // The queue drains by having the ship combat screen call
     // this function again on exit. If the queue has no player
     // involved combats, nothing happens.
-    PresentNextPlayerShipCombat( previous_combat = null ) { 
+    PresentNextPlayerShipCombat() { 
  		for ( let c=this.shipcombats.length-1; c >= 0; c-- ) { 
 			let sc = this.shipcombats[c];
 			this.shipcombats.splice( c, 1 ); // delete
@@ -529,7 +529,7 @@ export default class Game {
     	}
     	
 	LaunchPlayerShipCombat( combat ) {
-		this.app.SwitchMainPanel( 'shipcombat', combat );
+		this.app.SwitchMainPanel( 'shipcombat', combat, null, true ); // true = exclusive UI
 		}
 		
 	RecalcStarRanges() { 

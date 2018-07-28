@@ -5,9 +5,13 @@ export default class ShipCombat {
 	constructor( attacker, defender, planet ) { 
 		this.queue = [];
 		this.time = 0;
-		this.log = []; // battle log
-		this.stats = {}; //
-		this.status = null; // null = stalemate, 1 = attacker victory, 2 = defender victory
+		// battle log.
+		// NOTE: log is in reverse chronological order, because
+		// it works better for UI display and because the log
+		// is for the benfit of the player, not the system.
+		this.log = []; 
+		this.stats = {}; 
+		this.status = null;
 		// set up teams
 		this.teams = [ 
 			{ label: 'ATTACKER', fleet: attacker, targets: [], stats:{} },
@@ -18,29 +22,26 @@ export default class ShipCombat {
 		this.teams[1].targets = this.teams[0].fleet.ships.slice(); // clone array
 		// set up combat queue
 		this.PreloadQueue(this.teams);
+		this.winner = null; // will be set to a team.label if victory
 		}
 		
 	End() { 
 		// this.CalcStats();
-		console.log(this.status);
-		console.log(this.log);
-		console.dir(this.stats);
-		// console.log(this.teams);
 		// clean up dead ships
 		this.teams[0].fleet.RemoveDeadShips();
 		this.teams[1].fleet.RemoveDeadShips();
 		// clean up dead fleets and reload survivors
 		this.teams.forEach( team => {
 			if ( team.fleet.ships.length ) { 
-				console.log('WINNER: ' + team.fleet.owner.name );
 				team.fleet.ReloadAllShipWeapons();
 				}
 			else { team.fleet.Kill(); }
 			});
 		}		
 		
-	// item: { ship, weapon, team }
+	// item: { ship, weapon, team, qty }
 	AddAttack( item, priority ) { 
+		item.qty = item.weapon.qty; // full load
 		if ( !this.queue.length ) { this.queue.push({i:item,p:priority}); }
 		else {
 			for ( let x = this.queue.length-1; x >= 0; x-- ) { 
@@ -52,38 +53,66 @@ export default class ShipCombat {
 			}
 		}
 		
-	ProcessQueue( delta = 5 ) {
+	ProcessQueue( delta = 5, only_one_item = false ) {
 		if ( this.status ) { return ; }
 		this.time += delta;
-		let turnlog = [];
+		let turnlogs = [];
 		while ( this.queue.length && this.queue[0].p <= this.time ) { 
-			let next = this.queue.shift();
+			let next = this.queue[0];
 			let priority = next.p; // object's priority
 			next = next.i; // the object itself
+			next.qty--;
 			// dead ships do not attack
-			if ( next.ship.hull && next.team.targets.length ) {
-				// attack!
-// 				console.log('@'+priority);
-				let turnlog = next.ship.Attack( next.team.targets, next.weapon );
-				// reschedule the weapon
-				if ( next.weapon.shotsleft && next.team.targets.length ) {
-					this.AddAttack( { ship:next.ship, weapon:next.weapon, team:next.team }, priority + next.weapon.reload );
+			if ( !next.ship.hull || !next.team.targets.length || next.qty < 0 ) {
+				this.queue.shift();
+				continue;
+				}
+			// attack!
+			else {
+				// TODO: choose a target
+				let turnlog = next.ship.Attack( next.team.targets[0], next.weapon );
+				// update weapon stats
+				if ( next.qty<=0 ) { next.weapon.shotsleft--; }
+				if ( !next.team.targets[0].hull ) { next.team.targets.shift(); }
+				// we went through all quantity
+				if ( next.qty <= 0 ) {
+					this.queue.shift();
+					// reschedule the weapon if shots left
+					if ( next.weapon.shotsleft && next.team.targets.length ) { 
+						this.AddAttack( 
+							{ ship:next.ship, weapon:next.weapon, team:next.team }, 
+							priority + next.weapon.reload 
+							);
+						}
 					}
 				// add the attack logs to the running list with some additional info
-				turnlog = turnlog.map( i => {i.time=priority; i.team=next.team; return i;} );
-				this.log.push(...turnlog);
+				if ( turnlog ) { 
+					turnlog.time=priority; 
+					turnlog.team=next.team;
+					this.log.unshift( turnlog ); // master log
+					turnlogs.unshift( turnlog ); // function log
+					}
 				}
 			// we're done, son
 			if ( !next.team.targets.length ) { 
 				this.status = 'VICTORY: ' + next.team.label;
+				this.winner = next.team.label;
+				break;
+				}
+			// break early
+			if ( only_one_item ) { 
 				break;
 				}
 			}	
 		if ( !this.status && !this.queue.length ) {
 			this.status = 'STALEMATE!';
 			}
-		this.CalcStats(turnlog);
-		return turnlog;
+		// empty the queue if we're done
+		if ( this.status ) { 
+			this.queue = [];
+			}
+		this.CalcStats(turnlogs);
+		return turnlogs;
 		}
 		
 	PreloadQueue( teams ) { 

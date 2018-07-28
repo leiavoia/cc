@@ -34,7 +34,7 @@ export default class Galaxy {
 	
 		// for aesthetics and UI reasons, 
 		// we want an empty padded border.
-		this.width = ((map_size_x+2) * cell_size) + 1; // leave room for sidebar
+		this.width = ((map_size_x+2) * cell_size) + 1 + cell_size; // leave room for sidebar
 		this.height = ((map_size_y+2) * cell_size) + 1; // +1 is to get the sector overlay graphic border
 		this.age = galaxy_age;
 		
@@ -191,6 +191,10 @@ export default class Galaxy {
 			new Ship( owner.ship_blueprints[0] ),
 			new Ship( owner.ship_blueprints[1] ),
 			new Ship( owner.ship_blueprints[1] ),
+			new Ship( owner.ship_blueprints[1] ),
+			new Ship( owner.ship_blueprints[1] ),
+			new Ship( owner.ship_blueprints[1] ),
+			new Ship( owner.ship_blueprints[2] ),
 			new Ship( owner.ship_blueprints[2] ),
 			];
 		f.ReevaluateStats();	

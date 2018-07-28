@@ -165,6 +165,8 @@ export class App {
 	CloseMainPanel() {
 		this.main_panel_mode = false;
 		this.main_panel_obj = null;
+		this.main_panel_data = null;
+		this.exclusive_ui = false;
 		}
 	CloseSideBar() {
 		this.sidebar_mode = false;

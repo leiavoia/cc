@@ -49,10 +49,10 @@
 		</template>
 			
 		
-		<div class="shiplist">
-			<div class="ship ${ship.selected ? 'selected' : ''}" click.delegate="SelectShip(ship)" repeat.for="ship of fleet.ships" >
+		<div class="shipgrid">
+			<div class="ship ${ship.selected ? 'selected' : ''} health_${ship.health_class}" click.delegate="SelectShip(ship)" repeat.for="ship of fleet.ships" >
 				<img src.one-time="ship.bp.img" />
-				<progress max="100" value="${((ship.hull / ship.bp.hull)*100)|round}" class="${GetHealthClass(ship)}"></progress>
+				<progress max="100" value="${((ship.hull / ship.bp.hull)*100)|round}" class="${ship.health_class}"></progress>
 				<p class="name">${ship.bp.name}</p>
 				<!--<p class="hp">325</p>
 				<p class="size">Big</p>

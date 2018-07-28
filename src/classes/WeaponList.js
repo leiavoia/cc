@@ -2,6 +2,7 @@
 export const WeaponList = {
 	MISSILE: {
 		name: 'Missile',
+    type: 'missile',
 		desc: 'Self-powered vehicle delivers explosion on contact.',
 		mindmg: 40,
 		maxdmg: 60,
@@ -11,6 +12,7 @@ export const WeaponList = {
 		},
 	RAYGUN: {
 		name: 'Ray Gun',
+    type: 'beam',
 		desc: 'Heat ray fries targets.',
 		mindmg: 10,
 		maxdmg: 20,
@@ -20,6 +22,7 @@ export const WeaponList = {
 		},
 	LASER: {
 		name: 'Laser',
+    type: 'beam',
 		desc: 'Focused beam attack lacerates target.',
 		mindmg: 15,
 		maxdmg: 24,
@@ -29,6 +32,7 @@ export const WeaponList = {
 		},
 	AMOEBASLIME1: {
 		name: 'Amoeba Slime',
+    type: 'missile',
 		desc: 'Caustic attack that disintigrates metal.',
 		mindmg: 20,
 		maxdmg: 30,
@@ -38,6 +42,7 @@ export const WeaponList = {
 		},
 	AMOEBASLIME2: {
 		name: 'Heavy Amoeba Slime',
+    type: 'missile',
 		desc: 'Caustic attack that disintigrates metal.',
 		mindmg: 40,
 		maxdmg: 70,
@@ -47,6 +52,7 @@ export const WeaponList = {
 		},
 	AMOEBASLIME3: {
 		name: 'Terrible Amoeba Slime',
+    type: 'missile',
 		desc: 'Caustic attack that disintigrates metal.',
 		mindmg: 100,
 		maxdmg: 200,

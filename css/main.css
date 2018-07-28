@@ -604,12 +604,31 @@ h3 { font-size: 135%; }
 
 A {color:white;}
 
-TD { padding: 0.2em; }
+TD,TH { padding: 0.2em; }
 
 
 TABLE {
 	margin: 1em 0;
 }
+
+TABLE.full {
+	width:100%;
+	
+	}
+	
+TABLE.tight TD, TABLE.tight TH {
+	padding: 0.15em;
+	}
+	
+TABLE.borderless, TABLE.borderless TD, TABLE.borderless TH {
+	border:none;
+	}
+TABLE.centered {
+	width: auto;
+	margin-left: auto;
+	margin-right: auto;
+	}
+	
 TABLE.env TD {
 	background-color: #000;
 	border:#666 1px solid;	
@@ -635,6 +654,8 @@ TABLE.env TD.ideal {
 
 .bold { font-weight:bold; }
 
+.small { font-size: 80%; }
+.big { font-size: 120%; }
 
 
 
@@ -2022,7 +2043,7 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	padding: 1.5em;
 	}
 
-#layout_ui_side .fleet .shiplist {
+.shipgrid {
 	display: flex;
 	flex-flow: row wrap;
 /* 	justify-content: space-between; */
@@ -2030,7 +2051,7 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	clear:right;
 	}
 	
-#layout_ui_side .fleet .ship {
+.shipgrid .ship {
 /* 	background-color: #000; */
 /* 	border: #444 solid 1px; */
 	border: 1px solid transparent;
@@ -2047,15 +2068,21 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	flex-flow: row wrap;*/
 	}
 	
-#layout_ui_side .fleet .ship.selected {
+.shipgrid .ship.selected {
 /* 	background-color: #3C96BA; */
 /* 	background-image: linear-gradient( to bottom, #3C96BA 0%, transparent 33%, transparent 66%, #195182 100% ); */
 	background-image: radial-gradient(circle closest-corner at 50% 50% , transparent 0%, transparent 50%, #3C96BA 100%);
 	border: #777 outset 1px;
 	}
+.shipgrid .ship.hilite {
+/* 	background-color: #3C96BA; */
+/* 	background-image: linear-gradient( to bottom, #3C96BA 0%, transparent 33%, transparent 66%, #195182 100% ); */
+	background-image: radial-gradient(circle closest-corner at 50% 50% , transparent 0%, transparent 50%, #AEA 100%);
+	border: #AEA solid 1px;
+	}
 
 
-#layout_ui_side .fleet .ship > * {
+.shipgrid .ship > * {
 	padding: 0;
 	margin: 0;
 	font-size: 80%;
@@ -2063,31 +2090,31 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 /* 	border: 1px solid red; */
 /* 	width: 100%; */
 	}
-#layout_ui_side .fleet .ship > .hp {
+.shipgrid .ship > .hp {
 	text-align: right;
 	width: 40%;
 	display: inline-block;
 	}	
-#layout_ui_side .fleet .ship > .size {
+.shipgrid .ship > .size {
 	text-align: left;
 	width: 40%;
 	display: inline-block;
 	}	
-#layout_ui_side .fleet .ship > .decor {
+.shipgrid .ship > .decor {
 	text-align: right;
 	width: 40%;
 	display: inline-block;
 	}	
-#layout_ui_side .fleet .ship > .exp {
+.shipgrid .ship > .exp {
 	text-align: left;
 	width: 40%;
 	display: inline-block;
 	}	
-#layout_ui_side .fleet .ship > .name {
+.shipgrid .ship > .name {
 	text-align: center;
 	margin-top: 0.2em
 	}	
-#layout_ui_side .fleet .ship IMG {
+.shipgrid .ship IMG {
 	height: 70px;
 	max-height: 70px;
 /* 	max-width: 100%; */
@@ -2096,7 +2123,7 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 /* 	transform: rotate(-90deg); */
 	}
 	
-#layout_ui_side .fleet .ship progress[value] {
+.shipgrid .ship progress[value] {
 	position: relative;
 	margin: 0;
 	padding: 0;
@@ -2109,32 +2136,35 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	border-radius: 2px;
 	background-color: #385441;
 	}
-#layout_ui_side .fleet .ship progress[value]::-webkit-progress-bar {
+.shipgrid .ship progress[value]::-webkit-progress-bar {
 	border-radius: 2px;
 	background-color: #385441;
 	}
-#layout_ui_side .fleet .ship progress[value]::-webkit-progress-value {
+.shipgrid .ship progress[value]::-webkit-progress-value {
 	background-image: linear-gradient( to bottom, #29994D 0%, #42C76C 33%, #42C76C 66%, #29994D 100%);
 	position: relative;
 	border-radius:2px;
 	}
-#layout_ui_side .fleet .ship progress[value]::-moz-progress-bar {
+.shipgrid .ship progress[value]::-moz-progress-bar {
 	background-image: linear-gradient( to bottom, #29994D 0%, #42C76C 33%, #42C76C 66%, #29994D 100%);
 	border-radius:2px;
 	}
-#layout_ui_side .fleet .ship progress[value].m::-webkit-progress-value {
+.shipgrid .ship.health_m progress[value]::-webkit-progress-value {
 	background-image: linear-gradient( to bottom, #C9C72A 0%, #FAF619 33%, #FAF619 66%, #C9C72A 100%);
 	}
-#layout_ui_side .fleet .ship progress[value].m::-moz-progress-bar {
+.shipgrid .ship.health_m progress[value]::-moz-progress-bar {
 	background-image: linear-gradient( to bottom, #C9C72A 0%, #FAF619 33%, #FAF619 66%, #C9C72A 100%);
 	}
-#layout_ui_side .fleet .ship progress[value].l::-webkit-progress-value {
+.shipgrid .ship.health_l progress[value]::-webkit-progress-value {
 	background-image: linear-gradient( to bottom, #BF3A37 0%, #FF6B69 33%, #FF6B69 66%, #BF3A37 100%);
 	}
-#layout_ui_side .fleet .ship progress[value].l::-moz-progress-bar {
+.shipgrid .ship.health_l progress[value]::-moz-progress-bar {
 	background-image: linear-gradient( to bottom, #BF3A37 0%, #FF6B69 33%, #FF6B69 66%, #BF3A37 100%);
 	}
-	
+.shipgrid .ship.health_d {
+	background-image: radial-gradient(circle closest-corner at 50% 50% , #E11 0%, transparent 50%, transparent 100%);
+	opacity: 0.4;
+	}	
 	
 	
 	
@@ -2452,6 +2482,80 @@ DIV.annoyometer .nub {
 		}
 	}
 
+	
+
+/* SHIP COMBAT PANE */
+#shipcombat_pane {
+	height:100%;
+	background: url(../img/map/bg/stars.jpg) 50% 50% no-repeat;
+	background-size: cover;
+	display: flex;
+	flex-flow: row nowrap;
+	position:relative; /* needed for absolutely positioned FX */
+	overflow: hidden;
+	}
+#shipcombat_pane > * {
+	flex: 2;
+	display:flex;
+	flex-flow: column nowrap;
+	margin: 1em;
+	}
+#shipcombat_pane #center-column {
+	flex: 3;
+	padding: 0 1em;
+	order: 2;
+	}
+#shipcombat_pane #defender-column {
+	order: 3;
+	}
+#shipcombat_pane #defender-column,
+#shipcombat_pane #attacker-column {
+	border: 1px solid transparent;
+	}
+	
+#shipcombat_pane .column-header {
+	flex: 1 1 content;
+	text-align: center;
+	}
+#shipcombat_pane .fleet-container {
+	flex: 30 2;
+	overflow-y: auto;
+	}
+#shipcombat_pane .controlpanel {
+	flex: 1 1 ;
+	text-align:center;
+	}
+#shipcombat_pane .log {
+	flex: 10 1 ;
+	overflow-y: auto;
+	text-align:center;
+	}
+#shipcombat_pane .statsbox {
+	flex: 2 2;
+	overflow-y: auto;
+	min-height: 12em;
+	text-align:center;
+	}
+#shipcombat_pane .statsbox TD:first-child {
+	text-align:right;
+	}
+#shipcombat_pane .statsbox TH {
+	text-align:center;
+	padding-right: 2em;
+	padding-left: 2em;
+	}
+#shipcombat_pane > .winner {
+/* 	background-color: rgba( 10, 230, 100, 0.5 ); */
+	background-image: radial-gradient(circle closest-corner at 50% 50% , transparent 0%, transparent 50%, rgba( 10, 230, 100, 0.5 ) 100%);
+	border-radius: 1em;
+	border-color: rgba( 10, 255, 180, 0.5 ) !important;
+	transition: border-color 0.75s ease-in;
+	}
+#shipcombat_pane > .winner H2 {
+	text-shadow: 1px 1px 0px #FFF;
+	transition: text-shadow 0.75s ease-in;
+	}
+	
 /* SETUP PANE */
 #setup_pane {
 	padding: 3em;
@@ -2580,17 +2684,18 @@ DIV.annoyometer .nub {
 	
 	
 	
-/*.explosion {
+.explosion {
 	background-image: url(../img/anim/explosion_128px_sheet_row.png);
 	mix-blend-mode: screen;
 	height: 128px;
 	width: 128px;
-	animation: xplay 1.25s steps(16) infinite;	
+	animation: explosion 0.5s steps(16);	
+  transform-origin: 50% 50% 0; 
 	}
-@keyframes xplay {
+@keyframes explosion {
    from { background-position:    0px; transform: rotate(0deg);}
      to { background-position: -2048px; transform: rotate(60deg);}
-}*/
+}
 
 
 
