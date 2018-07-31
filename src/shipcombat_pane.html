@@ -9,20 +9,28 @@
 				</div>
 				<div class="controlpanel">
 					<p class="button_rack big">
-						<button click.delegate="PlayTurn()" if.bind="!combat.status">Start Combat</button>
+						<button click.delegate="PlayTurn()" if.bind="!combat.status" class="${processing?'ghost':''}">Start Combat</button>
 						<button click.delegate="FinishCombat()"if.bind="!combat.status" class="bad">Auto-Resolve</button>
 						<button click.delegate="ClosePanel()" if.bind="combat.status">Close</button>
-					</p>
-					<p>Combat Speed:</p>
-					<p class="button_rack ">
-						<button click.trigger="combat_speed=5.0" class="${combat_speed==8.0 ? 'alt' : ''}">1/4</button>
-						<button click.trigger="combat_speed=2.0" class="${combat_speed==2.0 ? 'alt' : ''}">1/2</button>
-						<button click.trigger="combat_speed=1.0" class="${combat_speed==1.0 ? 'alt' : ''}">1x</button>
-						<button click.trigger="combat_speed=0.5" class="${combat_speed==0.5 ? 'alt' : ''}">2x</button>
-						<button click.trigger="combat_speed=0.2" class="${combat_speed==0.2 ? 'alt' : ''}">5x</button>
-						<button click.trigger="combat_speed=0.1" class="${combat_speed==0.1 ? 'alt' : ''}">10x</button>
-						<button click.trigger="combat_speed=0.0" class="${combat_speed==0.0 ? 'alt' : ''}">Instant</button>
-					</p>
+					</p> 
+					<template if.bind="!combat.status" containerless>
+						<p>Targetting Priority:</p>
+						<p class="button_rack">
+							<button click.trigger="ChangeTargetPriority('size_desc')" class="${player_target_priority=='size_desc' ? 'alt' : ''}">Larger Ships</button>
+							<button click.trigger="ChangeTargetPriority('easy_desc')" class="${player_target_priority=='easy_desc' ? 'alt' : ''}">Easy Targets</button>
+							<button click.trigger="ChangeTargetPriority('firepower_desc')" class="${player_target_priority=='firepower_desc' ? 'alt' : ''}">High Firepower</button>
+						</p>
+						<p>Combat Speed:</p>
+						<p class="button_rack ">
+							<button click.trigger="combat_speed=2.0" class="${combat_speed==2.0 ? 'alt' : ''}">1/2</button>
+							<button click.trigger="combat_speed=1.0" class="${combat_speed==1.0 ? 'alt' : ''}">1x</button>
+							<button click.trigger="combat_speed=0.5" class="${combat_speed==0.5 ? 'alt' : ''}">2x</button>
+							<button click.trigger="combat_speed=0.2" class="${combat_speed==0.2 ? 'alt' : ''}">5x</button>
+							<button click.trigger="combat_speed=0.1" class="${combat_speed==0.1 ? 'alt' : ''}">10x</button>
+							<button click.trigger="combat_speed=0.05" class="${combat_speed==0.05 ? 'alt' : ''}">20x</button>
+							<button click.trigger="combat_speed=0.0" class="${combat_speed==0.0 ? 'alt' : ''}">Instant</button>
+						</p>
+					</template>
 				</div>
 				<div class="statsbox">
 					<!--		
@@ -41,7 +49,8 @@
 					attacks_missed:0,
 					attacks_dodged:0
 					-->
-					<table if.bind="combat.log.length" class="pure-table centered tight borderless">
+					<!-- Duplicating the table to change the order of fleets is silly, but gets job done. -->
+					<table if.bind="combat.log.length && combatdata.attacker.owner.is_player" class="pure-table centered tight borderless">
 						<tr>
 							<td>${combat.stats.ATTACKER.kills}</td>
 							<th>Kills</th>
@@ -53,9 +62,14 @@
 							<td>${combat.stats.DEFENDER.losses}</td>
 						</tr>
 						<tr>
-							<td>${combat.stats.ATTACKER.total_dmg_in}</td>
-							<th>Damage Received</th>
-							<td>${combat.stats.DEFENDER.total_dmg_in}</td>
+							<td>${combat.stats.ATTACKER.total_dmg_out}</td>
+							<th>Damage Inflicted</th>
+							<td>${combat.stats.DEFENDER.total_dmg_out}</td>
+						</tr>
+						<tr>
+							<td>${combat.stats.ATTACKER.shield_dmg_in}</td>
+							<th>Blocked by Shields</th>
+							<td>${combat.stats.DEFENDER.shield_dmg_in}</td>
 						</tr>
 						<tr>
 							<td>${combat.stats.ATTACKER.attacks_made}</td>
@@ -67,10 +81,37 @@
 							<th>Shots Missed</th>
 							<td>${combat.stats.DEFENDER.attacks_missed}</td>
 						</tr>
+					</table>					
+					<table if.bind="combat.log.length && combatdata.defender.owner.is_player" class="pure-table centered tight borderless">
 						<tr>
-							<td>${combat.stats.ATTACKER.attacks_dodged}</td>
-							<th>Shots Dodged</th>
-							<td>${combat.stats.DEFENDER.attacks_dodged}</td>
+							<td>${combat.stats.DEFENDER.kills}</td>
+							<th>Kills</th>
+							<td>${combat.stats.ATTACKER.kills}</td>
+						</tr>
+						<tr>
+							<td>${combat.stats.DEFENDER.losses}</td>
+							<th>Losses</th>
+							<td>${combat.stats.ATTACKER.losses}</td>
+						</tr>
+						<tr>
+							<td>${combat.stats.DEFENDER.total_dmg_out}</td>
+							<th>Damage Inflicted</th>
+							<td>${combat.stats.ATTACKER.total_dmg_out}</td>
+						</tr>
+						<tr>
+							<td>${combat.stats.DEFENDER.shield_dmg_in}</td>
+							<th>Blocked by Shields</th>
+							<td>${combat.stats.ATTACKER.shield_dmg_in}</td>
+						</tr>
+						<tr>
+							<td>${combat.stats.DEFENDER.attacks_made}</td>
+							<th>Shots Fired</th>
+							<td>${combat.stats.ATTACKER.attacks_made}</td>
+						</tr>
+						<tr>
+							<td>${combat.stats.DEFENDER.attacks_missed}</td>
+							<th>Shots Missed</th>
+							<td>${combat.stats.ATTACKER.attacks_missed}</td>
 						</tr>
 					</table>					
 				</div>
@@ -103,13 +144,13 @@
 			</div>
 			
 	
-			<div id="attacker-column" class="${combat.winner == 'ATTACKER' ? 'winner' : ''}">
+			<div id="attacker-column" class="${combat.winner == 'ATTACKER' ? 'winner' : ''} ${combatdata.attacker.owner.is_player ? 'is_player' : 'not_player'}">
 				<div class="column-header">
 					<h2 css="color: rgb( ${combatdata.attacker.owner.color_rgb[0]}, ${combatdata.attacker.owner.color_rgb[1]}, ${combatdata.attacker.owner.color_rgb[2]} ); ">
 						<span class="small">ATTACKER<span><br/>
 						${combatdata.attacker.owner.name}
 					</h2>
-					<p if.bind="!combat.winner">${combatdata.attacker.ships.length} ships in combat</p>
+					<p>${combatdata.attacker.ships.length} ships in combat</p>
 				</div>
 				<div class="fleet-container">
 					<div class="shipgrid">
@@ -122,10 +163,12 @@
 							click.delegate="SelectShip(ship)" 
 							repeat.for="ship of combatdata.attacker.ships" 
 							>
+							<p class="infobar top"><span>${'🟊'.repeat(ship.xplevel)}</span><span>&nbsp;<span if.bind="ship.bp.shield">${ship.bp.shield}</span></span></p>
 							<img src.one-time="ship.bp.img" />
-							<progress max="100" value="${((ship.hull / ship.bp.hull)*100)|round}" class="ship.health_class"></progress>
-							<p class="name">${ship.bp.name}</p>
-							<p>
+							<p class="infobar hp"><span>${ship.hull}</span><span>${ship.armor}</span></p>
+							<progress if.bind="ship.armor" max="100" value="${((ship.armor / ship.bp.armor)*100)|round}" class="${ship.health_class}"></progress>
+							<progress if.bind="!ship.armor" max="100" value="${((ship.hull / ship.bp.hull)*100)|round}" class="${ship.health_class}"></progress>
+							<p class="name">${ship.bp.name} </p>
 							<span repeat.for="w of ship.weapons" style="padding: 2px; background: #555; margin: 3px; display: inline-block; border-radius: 2px;">${w.shotsleft}</span>
 							</p>
 						</div>
@@ -133,13 +176,13 @@
 				</div>
 			</div>
 			
-			<div id="defender-column" class="${combat.winner == 'DEFENDER' ? 'winner' : ''}">
+			<div id="defender-column" class="${combat.winner == 'DEFENDER' ? 'winner' : ''} ${combatdata.defender.owner.is_player ? 'is_player' : 'not_player'}">
 				<div class="column-header">
 					<h2 css="color: rgb( ${combatdata.defender.owner.color_rgb[0]}, ${combatdata.defender.owner.color_rgb[1]}, ${combatdata.defender.owner.color_rgb[2]} ); ">
 						<span class="small">DEFENDER<span><br/>
 						${combatdata.defender.owner.name}
 					</h2>
-					<p if.bind="!combat.winner">${combatdata.defender.ships.length} ships in combat</p>			
+					<p>${combatdata.defender.ships.length} ships in combat</p>			
 				</div>
 				<div class="fleet-container">
 					<div class="shipgrid">
@@ -152,10 +195,12 @@
 							click.delegate="SelectShip(ship)" 
 							repeat.for="ship of combatdata.defender.ships" 
 							>
+							<p class="infobar top"><span>${'🟊'.repeat(ship.xplevel)}</span><span>&nbsp;<span if.bind="ship.bp.shield">${ship.bp.shield}</span></span></p>
 							<img src.one-time="ship.bp.img" />
-							<progress max="100" value="${((ship.hull / ship.bp.hull)*100)|round}" class="ship.health_class"></progress>
-							<p class="name">${ship.bp.name}</p>
-							<p>
+							<p class="infobar hp"><span>${ship.hull}</span><span>${ship.armor}</span></p>
+							<progress if.bind="ship.armor" max="100" value="${((ship.armor / ship.bp.armor)*100)|round}" class="${ship.health_class}"></progress>
+							<progress if.bind="!ship.armor" max="100" value="${((ship.hull / ship.bp.hull)*100)|round}" class="${ship.health_class}"></progress>
+							<p class="name">${ship.bp.name} </p>
 							<span repeat.for="w of ship.weapons" style="padding: 2px; background: #555; margin: 3px; display: inline-block; border-radius: 2px;">${w.shotsleft}</span>
 							</p>					
 						</div>

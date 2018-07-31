@@ -13,7 +13,7 @@ import * as Signals from './util/signals';
 import * as CrazyBox from './classes/Crazy';
 
 export class App {
-	version = '0.0.3';
+	version = '0.0.4';
 	main_panel_obj = null;
 // 	main_panel_mode = 'shipcombat';
 	main_panel_mode = false;

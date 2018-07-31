@@ -2090,11 +2090,22 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 /* 	border: 1px solid red; */
 /* 	width: 100%; */
 	}
-.shipgrid .ship > .hp {
+.shipgrid .ship > .infobar {
 	text-align: right;
-	width: 40%;
-	display: inline-block;
+	width: 100%;
+	margin: 0.1em 0 -0.7em 0;
+	padding: 0;
+	display: flex;
 	}	
+.shipgrid .ship > .infobar > * {
+	flex: 1;
+	text-align:left;	
+	color: yellow;
+	}
+.shipgrid .ship > .infobar > *:last-child {
+	text-align:right;
+	color: cyan;
+	}
 .shipgrid .ship > .size {
 	text-align: left;
 	width: 40%;
@@ -2160,6 +2171,12 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	}
 .shipgrid .ship.health_l progress[value]::-moz-progress-bar {
 	background-image: linear-gradient( to bottom, #BF3A37 0%, #FF6B69 33%, #FF6B69 66%, #BF3A37 100%);
+	}
+.shipgrid .ship.health_a progress[value]::-webkit-progress-value {
+	background-image: linear-gradient( to bottom, #0872CF 0%, #50ABFA 33%, #50ABFA 66%, #0872CF 100%);
+	}
+.shipgrid .ship.health_a progress[value]::-moz-progress-bar {
+	background-image: linear-gradient( to bottom, #0872CF 0%, #50ABFA 33%, #50ABFA 66%, #0872CF 100%);
 	}
 .shipgrid .ship.health_d {
 	background-image: radial-gradient(circle closest-corner at 50% 50% , #E11 0%, transparent 50%, transparent 100%);
@@ -2499,14 +2516,17 @@ DIV.annoyometer .nub {
 	display:flex;
 	flex-flow: column nowrap;
 	margin: 1em;
+	order: 3;
 	}
 #shipcombat_pane #center-column {
 	flex: 3;
 	padding: 0 1em;
 	order: 2;
 	}
-#shipcombat_pane #defender-column {
-	order: 3;
+/* whichever column is the player goes first */
+#shipcombat_pane #defender-column.is_player,
+#shipcombat_pane #attacker-column.is_player {
+	order: 1 !important;
 	}
 #shipcombat_pane #defender-column,
 #shipcombat_pane #attacker-column {
@@ -2545,16 +2565,17 @@ DIV.annoyometer .nub {
 	padding-left: 2em;
 	}
 #shipcombat_pane > .winner {
-/* 	background-color: rgba( 10, 230, 100, 0.5 ); */
-	background-image: radial-gradient(circle closest-corner at 50% 50% , transparent 0%, transparent 50%, rgba( 10, 230, 100, 0.5 ) 100%);
+	background-color: rgba( 10, 230, 100, 0.2 );
+/* 	background-image: radial-gradient(circle closest-corner at 50% 50% , transparent 0%, transparent 50%, rgba( 10, 230, 100, 0.25 ) 100%); */
 	border-radius: 1em;
 	border-color: rgba( 10, 255, 180, 0.5 ) !important;
-	transition: border-color 0.75s ease-in;
+	transition: border-color 0.75s ease-in, background-color 0.75s ease-in;
 	}
 #shipcombat_pane > .winner H2 {
-	text-shadow: 1px 1px 0px #FFF;
-	transition: text-shadow 0.75s ease-in;
+	color: #FFF !important;
+	transition: color 0.75s ease-in;
 	}
+	
 	
 /* SETUP PANE */
 #setup_pane {

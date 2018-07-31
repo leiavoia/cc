@@ -491,7 +491,7 @@ export default class Game {
 			let sc = this.shipcombats[c];
 			this.shipcombats.splice( c, 1 ); // delete
 			// fleet may have been destroyed in previous battle.
-			if ( sc.attacker.killme || sc.defender.killme ) { 
+			if ( sc.attacker.killme || sc.defender.killme || !sc.attacker.ships.length || !sc.defender.ships.length ) { 
 				continue; 
 				}
 			// if player is the defender, present mandatory battle

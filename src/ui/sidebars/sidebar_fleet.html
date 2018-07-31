@@ -51,13 +51,12 @@
 		
 		<div class="shipgrid">
 			<div class="ship ${ship.selected ? 'selected' : ''} health_${ship.health_class}" click.delegate="SelectShip(ship)" repeat.for="ship of fleet.ships" >
+				<p class="infobar top"><span>${'🟊'.repeat(ship.xplevel)}</span><span>&nbsp;<span if.bind="ship.bp.shield">${ship.bp.shield}</span></span></p>
 				<img src.one-time="ship.bp.img" />
-				<progress max="100" value="${((ship.hull / ship.bp.hull)*100)|round}" class="${ship.health_class}"></progress>
-				<p class="name">${ship.bp.name}</p>
-				<!--<p class="hp">325</p>
-				<p class="size">Big</p>
-				<p class="decor">F,D</p>
-				<p class="exp">***</p>-->
+				<p class="infobar hp"><span>${ship.hull}</span><span>${ship.armor}</span></p>
+				<progress if.bind="ship.armor" max="100" value="${((ship.armor / ship.bp.armor)*100)|round}" class="${ship.health_class}"></progress>
+				<progress if.bind="!ship.armor" max="100" value="${((ship.hull / ship.bp.hull)*100)|round}" class="${ship.health_class}"></progress>
+				<p class="name">${ship.bp.name} </p>
 			</div>
 		</div>
 	</div>

@@ -191,11 +191,11 @@ export default class Galaxy {
 			new Ship( owner.ship_blueprints[0] ),
 			new Ship( owner.ship_blueprints[1] ),
 			new Ship( owner.ship_blueprints[1] ),
-			new Ship( owner.ship_blueprints[1] ),
-			new Ship( owner.ship_blueprints[1] ),
-			new Ship( owner.ship_blueprints[1] ),
 			new Ship( owner.ship_blueprints[2] ),
-			new Ship( owner.ship_blueprints[2] ),
+			new Ship( owner.ship_blueprints[3] ),
+			new Ship( owner.ship_blueprints[3] ),
+			new Ship( owner.ship_blueprints[4] ),
+			new Ship( owner.ship_blueprints[5] )
 			];
 		f.ReevaluateStats();	
 		return f;

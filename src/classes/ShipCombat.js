@@ -10,26 +10,82 @@ export default class ShipCombat {
 		// it works better for UI display and because the log
 		// is for the benfit of the player, not the system.
 		this.log = []; 
-		this.stats = {}; 
+		this.max_log_length = 50;
+		this.stats = null; 
 		this.status = null;
 		// set up teams
 		this.teams = [ 
-			{ label: 'ATTACKER', fleet: attacker, targets: [], stats:{} },
-			{ label: 'DEFENDER', fleet: defender, targets: [], stats:{} },
+			{ label: 'ATTACKER', fleet: attacker, targets: [], target_priority: 'size_desc', strategy: 'normal' },
+			{ label: 'DEFENDER', fleet: defender, targets: [], target_priority: 'size_desc', strategy: 'normal' },
 			];
 		// make a list of targets
+		// NOTE: we use a shadow array that we can resort and
+		// prioritize in the background without messing up visual representation.
 		this.teams[0].targets = this.teams[1].fleet.ships.slice(); // clone array
 		this.teams[1].targets = this.teams[0].fleet.ships.slice(); // clone array
+		this.SortTargets( this.teams[0] );
+		this.SortTargets( this.teams[1] );
 		// set up combat queue
 		this.PreloadQueue(this.teams);
 		this.winner = null; // will be set to a team.label if victory
 		}
 		
+	SortTargets( team ) {
+		let sort_funcs = {
+			size_desc: (a,b) => {
+				if ( a.bp.hull > b.bp.hull ) { return  -1; }
+				if ( a.bp.hull < b.bp.hull ) { return  1; }
+				return 0;
+				},
+			easy_desc: (a,b) => {
+				if ( a.bp.hull > b.bp.hull ) { return  1; }
+				if ( a.bp.hull < b.bp.hull ) { return  -1; }
+				return 0;
+				},
+			firepower_desc: (a,b) => {
+				let reducer = ( accum, weapon ) => {
+					// average firepower of weapon
+					let fp = ((weapon.maxdmg - weapon.mindmg)/2) + weapon.mindmg;
+					// with number of shots, assuming it may not live long enough to use them all
+					fp = Math.pow( fp, 0.65 ); // yes, magic number
+					// times number of weapons equiped on ship
+					fp *= weapon.qty;
+					accum += fp;
+					};
+				let afp = a.weapons.reduce( reducer, 0 );
+				let bfp = b.weapons.reduce( reducer, 0 );
+				if ( afp > bfp ) { return  -1; }
+				if ( afp < bfp ) { return  1; }
+				return 0;
+				},
+			};
+		team.targets.sort( sort_funcs[team.target_priority] );
+		}
+		
 	End() { 
-		// this.CalcStats();
+		// calculate experience:
+		// 100 pts per battle, each side, modified by damage ratio and size ratio
+		let t0_size = this.teams[0].fleet.ships.reduce( (v,s) => {return v + s.bp.hull + s.bp.armor;}, 0 );
+		let t1_size = this.teams[1].fleet.ships.reduce( (v,s) => {return v + s.bp.hull + s.bp.armor;}, 0 );
+		console.log(`size: t0:${t0_size}, t1:${t1_size} `);
+		let t0_dmg = this.stats[this.teams[0].label].total_dmg_out;
+		let t1_dmg = this.stats[this.teams[1].label].total_dmg_out;
+		console.log(`dmg: t0:${t0_dmg}, t1:${t1_dmg} `);
+		let t0_xp = 100 
+			* ( (Math.min( 3.0, Math.max( 0.33, ( t1_size / t0_size ) ) )
+				+ Math.min( 3.0, Math.max( 0.33, ( t1_dmg ? ( t0_dmg / t1_dmg ) : 0.33 ) ) )
+				) / 2);
+		let t1_xp = 100
+			* (( Math.min( 3.0, Math.max( 0.33, ( t0_size / t1_size )  ) )
+				+ Math.min( 3.0, Math.max( 0.33, ( t0_dmg ? ( t1_dmg / t0_dmg ) : 0.33 ) ) )
+				) / 2);
+		console.log(`awarding xp: t0:${this.teams[0].label}:${t0_xp}, t1:${this.teams[1].label}:${t1_xp} `);
 		// clean up dead ships
 		this.teams[0].fleet.RemoveDeadShips();
 		this.teams[1].fleet.RemoveDeadShips();
+		// award experince to survivors
+		this.teams[0].fleet.ships.forEach( s => s.AwardXP(t0_xp) );
+		this.teams[1].fleet.ships.forEach( s => s.AwardXP(t1_xp) );
 		// clean up dead fleets and reload survivors
 		this.teams.forEach( team => {
 			if ( team.fleet.ships.length ) { 
@@ -112,6 +168,10 @@ export default class ShipCombat {
 			this.queue = [];
 			}
 		this.CalcStats(turnlogs);
+		// trim our internal log if too big
+		if ( this.log.length > this.max_log_length ) { 
+			this.log.splice( this.max_log_length-1, this.log.length - this.max_log_length ); 
+			}
 		return turnlogs;
 		}
 		
@@ -121,7 +181,7 @@ export default class ShipCombat {
 			t.fleet.ships.forEach( s => {
 				for ( const w of s.weapons ) {  
 					if ( w.online && w.shotsleft ) {
-						this.AddAttack( { ship:s, weapon:w, team:t }, s.bp.drive + w.reload );
+						this.AddAttack( { ship:s, weapon:w, team:t }, s.bp.drive + w.reload + Math.random() /* jitter */ );
 						}
 					}
 				})
@@ -131,7 +191,10 @@ export default class ShipCombat {
 	// providing log as a param allows you to 
 	// incrementally update stats as the battle progresses.
 	CalcStats( log = null ) { 
-		if ( !this.stats.length || !log ) { 
+		log = log || this.log;
+		if ( !log ) { return; }
+		// first time setup
+		if ( !this.stats ) { 
 			let blank = {
 				losses:0,
 				kills:0,
@@ -148,10 +211,11 @@ export default class ShipCombat {
 				attacks_missed:0,
 				attacks_dodged:0
 				};
+			this.stats = {};
 			this.stats[this.teams[0].label] = Object.assign({}, blank);
 			this.stats[this.teams[1].label] = Object.assign({}, blank);
 			}
-		this.log.forEach( x => {
+		log.forEach( x => {
 			// tabulate
 			let teamdata = this.stats[x.team.label];
 			teamdata.hull_dmg_out += x.hull;

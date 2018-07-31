@@ -2,29 +2,29 @@ import {WeaponList} from './WeaponList';
 import {computedFrom} from 'aurelia-framework';
 
 export class ShipBlueprint {
-constructor() {
-	this.id = ++ShipBlueprint.next_id;
-	this.name = 'Ship';
-	this.weapons = [];
-	this.comps = [];
-	this.hull = 1;
-	this.armor = 1;
-	this.shield = 0;
-	this.drive = 1;
-	this.img = 'img/ships/ship1_mock.png';
-	this.speed = 100; // [!]HACK see: owner.ship_speed
-	this.colonize = false;
-	this.research = 50;    
-}
-
-AddWeapon( tag, qty = 1 ) {
-	let o = Object.create( WeaponList[tag] );
-	o.qty = qty; // default, user can change later
-	this.weapons.push(o);
-}
-//   AddComponant( c ) { 
-//     this.comps.push( c );	
-//   }
+	constructor() {
+		this.id = ++ShipBlueprint.next_id;
+		this.name = 'Ship';
+		this.weapons = [];
+		this.comps = [];
+		this.hull = 1;
+		this.armor = 1;
+		this.shield = 0;
+		this.drive = 1;
+		this.img = 'img/ships/ship1_mock.png';
+		this.speed = 100; // [!]HACK see: owner.ship_speed
+		this.colonize = false;
+		this.research = 0;    
+	}
+		
+	AddWeapon( tag, qty = 1 ) {
+		let o = Object.create( WeaponList[tag] );
+		o.qty = qty; // default, user can change later
+		this.weapons.push(o);
+	}
+	//   AddComponant( c ) { 
+	//     this.comps.push( c );	
+	//   }
 };
 ShipBlueprint.next_id = 0;
 
@@ -35,8 +35,8 @@ export class Ship {
 		this.bp = blueprint;
 		this.hull = blueprint.hull;
 		this.armor = blueprint.armor;
-		this.xp = 1; // crew experience
-		this.xplevel = 1; // crew experience level
+		this.xp = 0; // crew experience
+		this.xplevel = 0; // crew experience level
 		this.kills = 0;
 		this.weapons = [];
 		this.selected = true; // for UI
@@ -48,6 +48,16 @@ export class Ship {
 			this.weapons.push(o);
 			}
 		}
+
+	AwardXP( xp ) {
+		this.xp += xp;
+		if 		( this.xp > 1000 ) { this.xplevel = 5; } 
+		else if ( this.xp > 800 ) { this.xplevel = 4; } 
+		else if ( this.xp > 500 ) { this.xplevel = 3; } 
+		else if ( this.xp > 200 ) { this.xplevel = 2; } 
+		else if ( this.xp > 100 ) { this.xplevel = 1; } 
+		else { this.xplevel = 0; } 
+		}
 		
 	// returns combat log
 	Attack( target, weapon  ) {
@@ -58,7 +68,7 @@ export class Ship {
 		if ( to_hit < 0 ) { to_hit = 0; }
 		if ( Math.random() <= to_hit ) { 
 			// damage roll
-			let dmg = Math.ceil( Math.random() * ( weapon.maxdmg - weapon.mindmg ) + weapon.mindmg );
+			let dmg = Math.ceil( (Math.random() * ( weapon.maxdmg - weapon.mindmg )) + weapon.mindmg );
 			// damage reduced by shielding
 			dmg -= target.bp.shield;
 			log.shield = target.bp.shield;
@@ -92,9 +102,11 @@ export class Ship {
 		return log;
 		}
 		
+	// [D]ead, [A]rmor Remaining, [H]igh, [M]edium, [L]ow
 	@computedFrom('hull','bp.hull')
 	get health_class() {
 		if ( !this.hull ) { return 'd'; }
+		if ( this.armor ) { return 'a'; }
 		let pct = this.hull / this.bp.hull;
 		if ( pct >= 0.7 ) { return 'h'; }
 		else if ( pct >= 0.35 ) { return 'm'; }

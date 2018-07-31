@@ -14,22 +14,25 @@ export class ShipCombatPane {
 		this.combat_speed = 1.0; // multiplier
 		this.turn = 0;
 		this.winner = '';
+		this.player_target_priority = 'size_desc';
+		this.player_team = null;
 	    }
 	   
 	bind() { 
-		if ( this.combatdata ) { 
-			this.combat = new ShipCombat( this.combatdata.attacker, this.combatdata.defender, this.combatdata.planet );
-			this.turn = 0;
-			// deselect all ships
-			for ( let ship of this.combatdata.attacker.ships ) { ship.selected = false; }			
-			for ( let ship of this.combatdata.defender.ships ) { ship.selected = false; }			
-			}
+		this.onChangeCombatdata();
 		}
 		
 	onChangeCombatdata() { 
 		if ( this.combatdata ) { 
 			this.combat = new ShipCombat( this.combatdata.attacker, this.combatdata.defender, this.combatdata.planet );
-			this.turn = 0;
+			this.turn = 0;		
+			// deselect all ships
+			for ( let ship of this.combatdata.attacker.ships ) { ship.selected = false; }			
+			for ( let ship of this.combatdata.defender.ships ) { ship.selected = false; }
+			// which team is the human playing?
+			this.player_team = this.combat.teams[0].fleet.owner.is_player ? this.combat.teams[0] : this.combat.teams[1];
+			this.player_target_priority = this.player_team.target_priority;
+			this.combat.SortTargets(this.player_team);
 			}
 		}
 		
@@ -52,10 +55,15 @@ export class ShipCombatPane {
 		this.FormatResolutionLabel();
 		}
 
+	ChangeTargetPriority( p ) { 
+		this.player_target_priority = p;
+		this.player_team.target_priority = p;
+		this.combat.SortTargets(this.player_team);
+		}
+		
 	FormatResolutionLabel() { 
 		// reformat the combat status to be from the player's point of view
 		if ( this.combat.status && this.combat.winner ) {
-			console.log('formatting status');
 			let i_win = 
 				( this.combat.winner == 'ATTACKER' && this.combatdata.attacker.owner.is_player ) 
 				|| ( this.combat.winner == 'DEFENDER' && this.combatdata.defender.owner.is_player ) 
@@ -96,7 +104,7 @@ export class ShipCombatPane {
 		}
 		
 	DoWeaponFX() { 
-		if ( !this.last_turnlog || !this.combat_speed ) { return; }
+		if ( !this.last_turnlog || this.combat_speed <= 0.05 ) { return; }
 		
 		// origin and target points on screen
 		let attacker_el = document.getElementById( 'ship-' + this.last_turnlog.ship.id.toString() );
@@ -115,7 +123,7 @@ export class ShipCombatPane {
 		el.style.transformOrigin = '0 50%';
 	    el.style.transform = `rotate(${angle}deg)`;
 		el.style.height = '5px';
-		el.style.width = '100px'; // '100px';
+		el.style.width = '175px'; // '100px';
 		el.style.position = 'absolute';
 		el.style.top = y1 + 'px';
 		el.style.left = x1 + 'px';
@@ -123,20 +131,20 @@ export class ShipCombatPane {
 	    el.style.transition = ( (this.turn_delay / 1000) * this.combat_speed) + "s transform linear";		
 		// weapon specific colors
 		if ( this.last_turnlog.weapon.type == 'missile' ) {
-			el.style.backgroundColor = "#FF4";
+			el.style.background = "linear-gradient( to right, rgba(255,255,80,0) 0%, rgba(255,255,80,1) 100% )";
 			}
 		else if ( this.last_turnlog.weapon.type == 'kinetic' ) {
-			el.style.backgroundColor = "#39E;";
+			el.style.background = "linear-gradient( to right, rgba(50,120,240,0) 0%, rgba(50,120,240,1) 100% )";
 			}
 		else {
-			el.style.backgroundColor = "red";
+			el.style.background = "linear-gradient( to right, rgba(255,30,15,0) 0%, rgba(255,30,15,1) 100% )";
 			}
 			
 		let pane = document.getElementById('shipcombat_pane');
 		pane.appendChild(el); 
 		el.focus();
 		
-	    el.style.transform = `rotate(${angle}deg) translateX(${length-100}px) `;
+	    el.style.transform = `rotate(${angle}deg) translateX(${length-175}px) `;
 	    
 	    // remove element after animation runs
 	    setTimeout( () => el.remove(), this.turn_delay * this.combat_speed );
