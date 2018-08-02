@@ -38,24 +38,11 @@ export default class ShipCombat {
 				return 0;
 				},
 			easy_desc: (a,b) => {
-				if ( a.bp.hull > b.bp.hull ) { return  1; }
-				if ( a.bp.hull < b.bp.hull ) { return  -1; }
 				return 0;
 				},
 			firepower_desc: (a,b) => {
-				let reducer = ( accum, weapon ) => {
-					// average firepower of weapon
-					let fp = ((weapon.maxdmg - weapon.mindmg)/2) + weapon.mindmg;
-					// with number of shots, assuming it may not live long enough to use them all
-					fp = Math.pow( fp, 0.65 ); // yes, magic number
-					// times number of weapons equiped on ship
-					fp *= weapon.qty;
-					accum += fp;
-					};
-				let afp = a.weapons.reduce( reducer, 0 );
-				let bfp = b.weapons.reduce( reducer, 0 );
-				if ( afp > bfp ) { return  -1; }
-				if ( afp < bfp ) { return  1; }
+				if ( a.bp.fp > b.bp.fp ) { return  -1; }
+				if ( a.bp.fp < b.bp.fp ) { return  1; }
 				return 0;
 				},
 			};

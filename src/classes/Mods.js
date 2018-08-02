@@ -1,7 +1,27 @@
-// import * as utils from '../util/utils';
+//////////  Value Mods  ////////////
+/*
+Value Mods ("mods") perform specific mathmatical 
+operations on a value supplied as a parameter. Mods
+can be collected into a Mod List to perform many 
+operations in a chain with a single evaluation call.
+Mod Lists themselves can be chained together into a
+parent-child relationship for a cascade of operations.
 
+Example: Ships have a Modlist full of Mods that can 
+augment the ship's natural stats. A Fleet can also 
+have a Modlist that augments all ships in the Fleet.
 
-	
+Usage: 
+	let ship = new Ship(...);
+	let modlist = Modlist;
+	modlist.Add( new Mod('attack', '*', 2, 'Super Power Upgrade', ship) );
+	modlist.Add( new Mod('attack', '+', 0.5, 'Laser Amp', ship) );
+	let modded_attack_pow = modlist( ship.attack_pow, 'attack' );
+	// consider adding adding a fleet, planet, or race parent modlist:
+	let parent_list = Modlist;
+	modlist.parent = parent_list;
+*/
+
 export class Modlist {
 	mods = [];
 	parent = null;
@@ -37,10 +57,15 @@ export class Modlist {
 		return mods;
 		}
 		
-	// modify a value by all applicable mods in the list
-	Apply( value, ability, include_parent = true ) { 
+	// modify a value by all applicable mods in the list.
+	// use_parent: if TRUE, uses builtin this.parent.
+	// 	if set to Modlist object, uses that object directly :-)
+	Apply( value, ability, use_parent = true ) { 
 		// if i have a parent modlist, apply those first
-		if ( this.parent && include_parent ) { 
+		if ( use_parent instanceof Modlist ) { 
+			value = use_parent.Apply( value, ability );
+			}
+		else if ( use_parent && this.parent ) { 
 			value = this.parent.Apply( value, ability );
 			}
 		for ( let m of this.mods ) {
@@ -70,11 +95,11 @@ export class Modlist {
 	};
 
 export class Mod { 
-	abil = null;
-	label = '';
-	val = 0;
-	op = '=';
-	prov = null;
+	abil = null; // (string) what this mod affects
+	label = ''; // (string)
+	val = 0; // (number) value to operate on
+	op = '='; // (char) operator
+	prov = null; // reference to object which is providing this mod (e.g. a technology)
 	constructor( ability, op, value, label, provider ) {
 		this.abil = ability;
 		this.val = parseFloat(value);

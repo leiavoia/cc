@@ -8,7 +8,9 @@ export const WeaponList = {
 		maxdmg: 75,
 		shots: 3,
 		reload: 5,
-		accu: 0.8
+		accu: 0.8,
+		labor: 10,
+		mass: 5
 		},
 	RAYGUN: {
 		name: 'Ray Gun',
@@ -18,7 +20,9 @@ export const WeaponList = {
 		maxdmg: 150,
 		shots: 1,
 		reload: 15,
-		accu: 0.6
+		accu: 0.6,
+		labor: 10,
+		mass: 10
 		},
 	LASER: {
 		name: 'Laser',
@@ -28,7 +32,9 @@ export const WeaponList = {
 		maxdmg: 20,
 		shots: 8,
 		reload: 4,
-		accu: 0.9
+		accu: 0.9,
+		labor: 10,
+		mass: 4
 		},
 	HEAVYLASER: {
 		name: 'Heavy Laser',
@@ -38,7 +44,9 @@ export const WeaponList = {
 		maxdmg: 80,
 		shots: 3,
 		reload: 4,
-		accu: 0.8
+		accu: 0.8,
+		labor: 10,
+		mass: 6
 		},
 	TURBOLASER: {
 		name: 'Turbo Laser',
@@ -48,7 +56,9 @@ export const WeaponList = {
 		maxdmg: 21,
 		shots: 16,
 		reload: 2,
-		accu: 0.6
+		accu: 0.6,
+		labor: 10,
+		mass: 6
 		},
 	SPACECANNON: {
 		name: 'Space Cannon',
@@ -58,7 +68,9 @@ export const WeaponList = {
 		maxdmg: 35,
 		shots: 9,
 		reload: 6,
-		accu: 0.6
+		accu: 0.6, 
+		labor: 10,
+		mass: 20
 		},
 	BUCKSHOT: {
 		name: 'Buckshot Blaster',
@@ -68,7 +80,9 @@ export const WeaponList = {
 		maxdmg: 45,
 		shots: 5,
 		reload: 9,
-		accu: 0.9
+		accu: 0.9,
+		labor: 10,
+		mass: 18
 		},
 	AMOEBASLIME1: {
 		name: 'Amoeba Slime',
@@ -78,7 +92,9 @@ export const WeaponList = {
 		maxdmg: 30,
 		shots: 8,
 		reload: 8,
-		accu: 0.7
+		accu: 0.7,
+		labor: 10,
+		mass: 30
 		},
 	AMOEBASLIME2: {
 		name: 'Heavy Amoeba Slime',
@@ -88,7 +104,9 @@ export const WeaponList = {
 		maxdmg: 70,
 		shots: 10,
 		reload: 8,
-		accu: 0.7
+		accu: 0.7,
+		labor: 10,
+		mass: 40
 		},
 	AMOEBASLIME3: {
 		name: 'Terrible Amoeba Slime',
@@ -98,6 +116,15 @@ export const WeaponList = {
 		maxdmg: 200,
 		shots: 12,
 		reload: 8,
-		accu: 0.7
+		accu: 0.7,
+		labor: 10,
+		mass: 50
 		}
 	};
+
+// add keys to objects themselves for later self-reference
+for ( let k in WeaponList ) {
+	if ( WeaponList.hasOwnProperty(k) ) {
+		WeaponList[k].tag = k;
+		}
+	}

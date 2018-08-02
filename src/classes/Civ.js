@@ -307,70 +307,59 @@ export default class Civ {
 		// default ship set
 		let colonizer = new ShipBlueprint();
 		colonizer.name = 'Colony Ship';
-		colonizer.colonize = true;
-		colonizer.hull = 50;
-		colonizer.speed = 300;
 		colonizer.img = 'img/ships/ship003_mock.png';
+		colonizer.AddComponent( 'ENGINE1' );
+		colonizer.AddComponent( 'RESEARCHLAB1' );
+		colonizer.AddComponent( 'COLONY1' );
 		this.ship_blueprints.push(colonizer);
 	
 		let fighter = new ShipBlueprint();
 		fighter.name = 'Fighter';
-		fighter.hull = 100;
-		fighter.speed = 300;
-		fighter.armor = 50;
-		fighter.drive = 2;
 		fighter.img = 'img/ships/ship002_mock.png';
+		fighter.AddComponent( 'ENGINE1' );
 		fighter.AddWeapon( 'LASER', 2 );
+		fighter.AddComponent( 'ARMOR1' );
 		this.ship_blueprints.push(fighter);
 	
 		let bomber = new ShipBlueprint();
 		bomber.name = 'Bomber'; 
-		bomber.hull = 200;
-		bomber.speed = 300;
-		bomber.armor = 100;
-		bomber.drive = 1;
-		bomber.shield = 1;
 		bomber.img = 'img/ships/ship001_mock.png';
 		bomber.AddWeapon( 'MISSILE', 2 );
 		bomber.AddWeapon( 'RAYGUN', 1 );
+		bomber.AddComponent( 'ENGINE1' );
+		bomber.AddComponent( 'SHIELD1' );
+		bomber.AddComponent( 'ARMOR2' );
 		this.ship_blueprints.push(bomber);
 			
 		let hfighter = new ShipBlueprint();
 		hfighter.name = 'Heavy Figher'; 
-		hfighter.hull = 150;
-		hfighter.speed = 300;
-		hfighter.armor = 100;
-		hfighter.drive = 1;
-		hfighter.shield = 1;
 		hfighter.img = 'img/ships/ship034_mock.png';
+		hfighter.AddComponent( 'ENGINE1' );
 		hfighter.AddWeapon( 'TURBOLASER', 4 );
+		hfighter.AddComponent( 'ARMOR1' );
 		this.ship_blueprints.push(hfighter);
 		
 		let battleship = new ShipBlueprint();
 		battleship.name = 'Battleship'; 
-		battleship.hull = 500;
-		battleship.speed = 300;
-		battleship.armor = 300;
-		battleship.drive = 1;
-		battleship.shield = 3;
 		battleship.img = 'img/ships/ship025_mock.png';
 		battleship.AddWeapon( 'HEAVYLASER', 2 );
 		battleship.AddWeapon( 'TURBOLASER', 3 );
 		battleship.AddWeapon( 'MISSILE', 2 );
 		battleship.AddWeapon( 'BUCKSHOT', 2 );
+		battleship.AddComponent( 'ARMOR2' );
+		battleship.AddComponent( 'ENGINE1' );
+		battleship.AddComponent( 'SHIELD2' );
 		this.ship_blueprints.push(battleship);
 			
 	
 		let cruiser = new ShipBlueprint();
 		cruiser.name = 'Cruiser'; 
-		cruiser.hull = 200;
-		cruiser.speed = 300;
-		cruiser.armor = 100;
-		cruiser.drive = 1;
-		cruiser.shield = 1;
 		cruiser.img = 'img/ships/ship035_mock.png';
 		cruiser.AddWeapon( 'BUCKSHOT', 3 );
 		cruiser.AddWeapon( 'SPACECANNON', 2 );
+		cruiser.AddComponent( 'ENGINE1' );
+		cruiser.AddComponent( 'ARMOR1' );
+		cruiser.AddComponent( 'SHIELD2' );
 		this.ship_blueprints.push(cruiser);
 			
 		}
