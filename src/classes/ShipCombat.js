@@ -17,23 +17,30 @@ export default class ShipCombat {
 		this.teams = [ 
 			{ 
 				label: 'ATTACKER', 
+				role: 'attacker',
 				fleet: attacker, 
 				targets: [], 
 				target_priority: 'size_desc', 
 				strategy: 'normal', 
 				ships_retreated: 0, 
-				retreating: false 
+				retreating: false,
+				status: null
 				},
 			{ 
 				label: 'DEFENDER', 
+				role: 'defender',
 				fleet: defender, 
 				targets: [], 
 				target_priority: 'size_desc', 
 				strategy: 'normal', 
 				ships_retreated: 0, 
-				retreating: false 
+				retreating: false,
+				status: null
 				},
 			];
+		// handy crosslinks
+		this.teams[0].otherteam = this.teams[1];
+		this.teams[1].otherteam = this.teams[0];
 		// when combat begins, each ship is given a "retreat" flag
 		// to show if it is in battle or has fled. Clean up afterward.
 		this.teams[0].fleet.ships.forEach( s => { s.retreat = false; } );
@@ -53,17 +60,23 @@ export default class ShipCombat {
 	SortTargets( team ) {
 		let sort_funcs = {
 			size_desc: (a,b) => {
-				if ( a.bp.hull > b.bp.hull ) { return  -1; }
+				if ( a.selected && !b.selected ) { return -1; }
+				if ( !a.selected && b.selected ) { return  1; }
+				if ( a.bp.hull > b.bp.hull ) { return -1; }
 				if ( a.bp.hull < b.bp.hull ) { return  1; }
 				return 0;
 				},
 			easy_desc: (a,b) => {
+				if ( a.selected && !b.selected ) { return -1; }
+				if ( !a.selected && b.selected ) { return  1; }
 				if ( a.bp.hull > b.bp.hull ) { return  1; }
-				if ( a.bp.hull < b.bp.hull ) { return  -1; }
+				if ( a.bp.hull < b.bp.hull ) { return -1; }
 				return 0;
 				},
 			firepower_desc: (a,b) => {
-				if ( a.bp.fp > b.bp.fp ) { return  -1; }
+				if ( a.selected && !b.selected ) { return -1; }
+				if ( !a.selected && b.selected ) { return  1; }
+				if ( a.bp.fp > b.bp.fp ) { return -1; }
 				if ( a.bp.fp < b.bp.fp ) { return  1; }
 				return 0;
 				},
@@ -203,6 +216,8 @@ export default class ShipCombat {
 			if ( !next.team.targets.length ) { 
 				this.status = 'VICTORY: ' + next.team.label;
 				this.winner = next.team.label;
+				next.team.status = 'victory';
+				next.team.otherteam.status = 'defeat';
 				break;
 				}
 			// break early
@@ -214,11 +229,15 @@ export default class ShipCombat {
 			// difference between retreat and stalemate
 			if ( this.teams[0].retreating ) { 
 				this.status = 'RETREATED: ' + this.teams[0].label;
+				this.teams[0].status = 'retreated';
 				}
 			else if ( this.teams[1].retreating ) { 
 				this.status = 'RETREATED: ' + this.teams[1].label;
+				this.teams[1].status = 'retreated';
 				}
 			else { 
+				this.teams[0] = 'depleted';
+				this.teams[1] = 'depleted';
 				this.status = 'STALEMATE!';
 				}
 			}

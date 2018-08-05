@@ -36,6 +36,14 @@ export class ShipCombatPane {
 			}
 		}
 		
+	ClickShip( ship, team ) { 
+		// only click enemy ships between turns
+		if ( !this.processing && team != this.player_team ) { 
+			ship.selected = !ship.selected;
+			// sort targets only between turns
+			}
+		}
+		
 	ClosePanel() {
 		this.app.CloseSideBar();
 		this.app.CloseMainPanel();
@@ -88,6 +96,8 @@ export class ShipCombatPane {
 	PlayTurn( manual_turn_delta = 0 ) { 
 		if ( this.combat && !this.processing ) {
 			this.processing = true;
+			// resort in case player did any target selection
+			this.combat.SortTargets(this.player_team);
 			this.turn++;
 			this.PlayNextAttack( manual_turn_delta || this.turn_delta );
 			this.FormatResolutionLabel();

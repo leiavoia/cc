@@ -21,6 +21,7 @@
 							<button click.trigger="ChangeTargetPriority('easy_desc')" class="${player_target_priority=='easy_desc' ? 'alt' : ''}">Easy Targets</button>
 							<button click.trigger="ChangeTargetPriority('firepower_desc')" class="${player_target_priority=='firepower_desc' ? 'alt' : ''}">High Firepower</button>
 						</p>
+						<p if.bind="!processing">Click on ships for manual targetting.</p>
 						<p>Combat Speed:</p>
 						<p class="button_rack ">
 							<button click.trigger="combat_speed=2.0" class="${combat_speed==2.0 ? 'alt' : ''}">1/2</button>
@@ -145,13 +146,17 @@
 			</div>
 			
 	
-			<div id="attacker-column" class="${combat.winner == 'ATTACKER' ? 'winner' : ''} ${combatdata.attacker.owner.is_player ? 'is_player' : 'not_player'}">
+			<div repeat.for="team of combat.teams" 
+				id="${team.role}-column" 
+				class="${team.status=='victory' ? 'winner' : ''} 
+				${team==player_team ? 'is_player' : 'not_player'}
+				">
 				<div class="column-header">
-					<h2 css="color: rgb( ${combatdata.attacker.owner.color_rgb[0]}, ${combatdata.attacker.owner.color_rgb[1]}, ${combatdata.attacker.owner.color_rgb[2]} ); ">
-						<span class="small">ATTACKER<span><br/>
-						${combatdata.attacker.owner.name}
+					<h2 css="color: rgb( ${team.fleet.owner.color_rgb[0]}, ${team.fleet.owner.color_rgb[1]}, ${team.fleet.owner.color_rgb[2]} ); ">
+						<span class="small">${team.role}<span><br/>
+						${team.fleet.owner.name}
 					</h2>
-					<p>${combatdata.attacker.ships.length} ships in combat</p>
+					<p>${team.fleet.ships.length} ships in combat</p>
 				</div>
 				<div class="fleet-container">
 					<div class="shipgrid">
@@ -162,8 +167,8 @@
 							health_${ship.health_class}
 							${ship == last_turnlog.ship || ship == last_turnlog.target ? 'hilite' : ''}
 							"
-							click.delegate="SelectShip(ship)" 
-							repeat.for="ship of combatdata.attacker.ships" 
+							click.delegate="ClickShip(ship,team)" 
+							repeat.for="ship of team.fleet.ships" 
 							>
 							<p class="infobar top"><span>${'🟊'.repeat(ship.xplevel)}</span><span>&nbsp;<span if.bind="ship.bp.shield">${ship.bp.shield}</span></span></p>
 							<img src.one-time="ship.bp.img" />
@@ -176,39 +181,6 @@
 						</div>
 					</div>	
 				</div>
-			</div>
-			
-			<div id="defender-column" class="${combat.winner == 'DEFENDER' ? 'winner' : ''} ${combatdata.defender.owner.is_player ? 'is_player' : 'not_player'}">
-				<div class="column-header">
-					<h2 css="color: rgb( ${combatdata.defender.owner.color_rgb[0]}, ${combatdata.defender.owner.color_rgb[1]}, ${combatdata.defender.owner.color_rgb[2]} ); ">
-						<span class="small">DEFENDER<span><br/>
-						${combatdata.defender.owner.name}
-					</h2>
-					<p>${combatdata.defender.ships.length} ships in combat</p>			
-				</div>
-				<div class="fleet-container">
-					<div class="shipgrid">
-						<div id="ship-${ship.id}"
-							class="ship 
-							${ship.selected ? 'selected' : ''} 
-							${ship.retreat ? 'retreat' : ''} 
-							health_${ship.health_class}
-							${ship == last_turnlog.ship || ship == last_turnlog.target ? 'hilite' : ''}
-							"
-							click.delegate="SelectShip(ship)" 
-							repeat.for="ship of combatdata.defender.ships" 
-							>
-							<p class="infobar top"><span>${'🟊'.repeat(ship.xplevel)}</span><span>&nbsp;<span if.bind="ship.bp.shield">${ship.bp.shield}</span></span></p>
-							<img src.one-time="ship.bp.img" />
-							<p class="infobar hp"><span>${ship.hull}</span><span>${ship.armor}</span></p>
-							<progress if.bind="ship.armor" max="100" value="${((ship.armor / ship.bp.armor)*100)|round}" class="${ship.health_class}"></progress>
-							<progress if.bind="!ship.armor" max="100" value="${((ship.hull / ship.bp.hull)*100)|round}" class="${ship.health_class}"></progress>
-							<p class="name">${ship.bp.name} </p>
-							<span repeat.for="w of ship.weapons" style="padding: 2px; background: #555; margin: 3px; display: inline-block; border-radius: 2px;">${w.shotsleft}</span>
-							</p>					
-						</div>
-					</div>	
-				<div class="fleet-container">
 			</div>
 			
 		</div>
