@@ -106,15 +106,15 @@ export default class Planet {
 				unique: false,
 				ProduceMe: function ( planet ) {
 					// find my fleet
-          let myfleet = null;
+          			let myfleet = null;
 					for ( let f of planet.star.fleets ) { 
 						if ( f.owner == planet.owner ) { 
 							myfleet = f;
 							break;
 							}
 						}
-          let ship = new Ship( planet.owner.ship_blueprints[0] );
-          ship.speed = planet.owner.ship_speed; // HACK
+         			let ship = planet.owner.ship_blueprints[0].Make();
+         			ship.speed = planet.owner.ship_speed; // HACK
 					if ( !myfleet ) { 
 						myfleet = new Fleet( planet.owner, planet.star );
 						}
@@ -141,8 +141,8 @@ export default class Planet {
 							break;
 							}
 						}
-          let ship = new Ship( planet.owner.ship_blueprints[1] );
-          ship.speed = planet.owner.ship_speed; // HACK
+					let ship = planet.owner.ship_blueprints[1].Make();
+					ship.speed = planet.owner.ship_speed; // HACK
 					if ( !myfleet ) { 
 						myfleet = new Fleet( planet.owner, planet.star );
 						}

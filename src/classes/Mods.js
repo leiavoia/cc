@@ -31,11 +31,17 @@ export class Modlist {
 		this.mods.sort( Modlist.SortMods );
 		}
 		
-	Remove( ability, op, value ) { 
+	// It MUST match ability.
+	// It MAY match operator, specific value, or provider.
+	// NULL values match anything. 
+	Remove( ability, op = null, provider = null, value = null ) { 
 		let k = this.mods.length;
 		while ( k-- ) { 
 			let m = this.mods[k];
-			if ( m.abil == ability && m.val == value && m.op == op ) {
+			if ( m.abil == ability ) {
+				if ( op && op == m.op ) { continue; }
+				if ( provider && provider == m.prov ) { continue; }
+				if ( value && value == m.val ) { continue; }
 				this.mods.splice( k, 1 );
 				// do not break; there may be duplicates
 				}
@@ -112,6 +118,7 @@ export class Mod {
 			case 'H': { return this.val > value ? this.val : value; } // highest of
 			case 'L': { return this.val < value ? this.val : value; } // lowest of
 			case '^': { return Math.pow( value, this.val ); } // to the power of (i.e. "exponent")
+			case '%': { return value * (this.val / 100); }
 			case '*': { return value * this.val; }
 			case '/': { return value / this.val; }
 			case '+': { return value + this.val; }
