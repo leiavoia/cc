@@ -2500,7 +2500,36 @@ DIV.annoyometer .nub {
 	}
 
 	
+/* SHIP DESIGN PANE */
+#ship_des_pane {
+	height:100%;
+	background: url(../img/workshop/technic1.png) repeat;
+	}
+#ship_des_pane #ship_des_pane_wrapper {
+	display:flex;
+	align-items: stretch;
+	}
+#ship_des_pane #bp_list { 
+	flex: 1 1 20em;
+	min-width: 20em;
+	max-width: 20em;
+	}
+#ship_des_pane #bp_detail { 
+	flex: 20;
+	}
 
+DIV.offset {
+	box-sizing: border-box;
+	border: 5px #11436B outset;
+	border-radius: 1.0em;
+	padding: 1.5em;
+	margin: 1em;
+	flex: 1 1;
+	background: rgb( 17, 67, 107);
+	background: rgba( 17, 67, 107, 0.95);
+/* 	background: rgba( 0,0,0, 0.65); */
+	}	
+	
 /* SHIP COMBAT PANE */
 #shipcombat_pane {
 	height:100%;
@@ -2711,12 +2740,31 @@ DIV.annoyometer .nub {
 	height: 128px;
 	width: 128px;
 	animation: explosion 0.5s steps(16);	
-  transform-origin: 50% 50% 0; 
+	transform-origin: 50% 50% 0; 
 	}
 @keyframes explosion {
    from { background-position:    0px; transform: rotate(0deg);}
      to { background-position: -2048px; transform: rotate(60deg);}
-}
+	}
+
+.shipcombat_hit_stat {
+	height: 30px;
+	width: 150px;
+	color: #FFA;
+	font-weight:bold;
+	text-align:center;
+	font-size: 150%;
+	text-shadow: 1px 1px 0px #000;
+	animation: shipcombat_hit_stat 1s ease-out;	
+	}
+.shipcombat_hit_stat.hull { color: #FFA; } 
+.shipcombat_hit_stat.armor { color: #3BF; } 
+.shipcombat_hit_stat.missed { color: rgba(255,255,255,0.6); text-shadow: none;} 
+.shipcombat_hit_stat.killed { color: #F22; background: linear-gradient( to right, rgba(255,255,255,0) 0%, rgba(255,255,255,1.0) 30%, rgba(255,255,255,1.0) 70%, rgba(255,255,255,0) 100%); } 
+@keyframes shipcombat_hit_stat {
+   from { transform: translateX(-75px) translateY(0px); opacity: 1.0;}
+     to { transform: translateX(-75px) translateY(-100px); opacity: 0.5; }
+	}
 
 
 

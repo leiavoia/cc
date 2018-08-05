@@ -1,4 +1,61 @@
 
+// for internal use
+const WeaponFX = {
+	DEFAULT: { // AKA "laser"
+		bg: 'linear-gradient( to right, rgba(255,30,15,0) 0%, rgba(255,30,15,1) 100% )',
+		borderRadius: '50%',
+		w: 175,
+		h: 6 
+		},
+	MEGARED: {
+		bg: 'radial-gradient(closest-side, #FFF 0%, #FFF 30%, transparent 50%, transparent 100%), radial-gradient(closest-side, rgb(255,30,15) 0%, rgb(255,30,15) 40%, transparent 100%)',
+		w: 500,
+		h: 66 
+		},
+	LASERSMALL: {
+		bg: 'linear-gradient( to right, rgba(255,30,15,0) 0%, rgba(255,30,15,1) 100% )',
+		borderRadius: '50%',
+		w: 125,
+		h: 4 
+		},
+	LASERBIG: {
+		bg: 'linear-gradient( to right, rgba(255,30,15,0) 0%, rgba(255,30,15,1) 100% )',
+		borderRadius: '50%',
+		w: 225,
+		h: 8 
+		},
+	WIDEBEAM: {
+		bg: 'linear-gradient( to right, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 75%, rgba(255,255,255,1) 100% )',
+		borderRadius: '30%',
+		w: 400,
+		h: 20 
+		},
+	KINETIC: {
+		bg: 'rgb(50,120,240)',
+		borderRadius: '50%',
+		w: 30,
+		h: 15 
+		},
+	SLIME: {
+		bg: 'radial-gradient( closest-side at 80%, rgba(200,230,100,1) 0%,  rgba(200,230,100,1) 50%, transparent 60%, transparent 100% ), radial-gradient( rgba(100,230,100,0), rgba(100,230,100,1) )',
+		borderRadius: '50%',
+		w: 50,
+		h: 35 
+		},
+	SLIMEBIG: {
+		bg: 'radial-gradient( closest-side at 80%, rgba(200,230,100,1) 0%,  rgba(200,230,100,1) 50%, transparent 65%, transparent 100% ), radial-gradient( rgba(100,230,100,0), rgba(100,230,100,1) )',
+		borderRadius: '50%',
+		w: 70,
+		h: 50 
+		},
+	MISSILE: { 
+		bg: 'linear-gradient( to right, rgba(255,255,80,0) 0%, rgba(255,255,80,1) 100% )',
+		w: 50,
+		h: 12,
+		borderRadius: '120%'
+		},
+	}
+	
 export const WeaponList = {
 	MISSILE: {
 		name: 'Missile',
@@ -10,7 +67,8 @@ export const WeaponList = {
 		reload: 5,
 		accu: 0.8,
 		labor: 10,
-		mass: 5
+		mass: 5,
+		fx: WeaponFX.MISSILE
 		},
 	RAYGUN: {
 		name: 'Ray Gun',
@@ -22,7 +80,8 @@ export const WeaponList = {
 		reload: 15,
 		accu: 0.6,
 		labor: 10,
-		mass: 10
+		mass: 10,
+		fx: WeaponFX.WIDEBEAM
 		},
 	LASER: {
 		name: 'Laser',
@@ -34,7 +93,8 @@ export const WeaponList = {
 		reload: 4,
 		accu: 0.9,
 		labor: 10,
-		mass: 4
+		mass: 4,
+		fx: WeaponFX.DEFAULT
 		},
 	HEAVYLASER: {
 		name: 'Heavy Laser',
@@ -46,7 +106,8 @@ export const WeaponList = {
 		reload: 4,
 		accu: 0.8,
 		labor: 10,
-		mass: 6
+		mass: 6,
+		fx: WeaponFX.LASERBIG
 		},
 	TURBOLASER: {
 		name: 'Turbo Laser',
@@ -58,7 +119,8 @@ export const WeaponList = {
 		reload: 2,
 		accu: 0.6,
 		labor: 10,
-		mass: 6
+		mass: 6,
+		fx: WeaponFX.LASERSMALL
 		},
 	SPACECANNON: {
 		name: 'Space Cannon',
@@ -70,7 +132,8 @@ export const WeaponList = {
 		reload: 6,
 		accu: 0.6, 
 		labor: 10,
-		mass: 20
+		mass: 20,
+		fx: WeaponFX.KINETIC
 		},
 	BUCKSHOT: {
 		name: 'Buckshot Blaster',
@@ -82,7 +145,8 @@ export const WeaponList = {
 		reload: 9,
 		accu: 0.9,
 		labor: 10,
-		mass: 18
+		mass: 18,
+		fx: WeaponFX.KINETIC
 		},
 	AMOEBASLIME1: {
 		name: 'Amoeba Slime',
@@ -94,7 +158,8 @@ export const WeaponList = {
 		reload: 8,
 		accu: 0.7,
 		labor: 10,
-		mass: 30
+		mass: 30,
+		fx: WeaponFX.SLIME
 		},
 	AMOEBASLIME2: {
 		name: 'Heavy Amoeba Slime',
@@ -106,7 +171,8 @@ export const WeaponList = {
 		reload: 8,
 		accu: 0.7,
 		labor: 10,
-		mass: 40
+		mass: 40,
+		fx: WeaponFX.SLIME
 		},
 	AMOEBASLIME3: {
 		name: 'Terrible Amoeba Slime',
@@ -118,13 +184,16 @@ export const WeaponList = {
 		reload: 8,
 		accu: 0.7,
 		labor: 10,
-		mass: 50
+		mass: 50,
+		fx: WeaponFX.SLIMEBIG
 		}
 	};
 
 // add keys to objects themselves for later self-reference
 for ( let k in WeaponList ) {
-	if ( WeaponList.hasOwnProperty(k) ) {
 		WeaponList[k].tag = k;
-		}
+		// also set a default effect
+		if ( !WeaponList[k].hasOwnProperty('fx') ) { 
+			WeaponList[k].fx = WeaponFX.DEFAULT;
+			}
 	}

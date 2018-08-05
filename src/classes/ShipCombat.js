@@ -38,6 +38,8 @@ export default class ShipCombat {
 				return 0;
 				},
 			easy_desc: (a,b) => {
+				if ( a.bp.hull > b.bp.hull ) { return  1; }
+				if ( a.bp.hull < b.bp.hull ) { return  -1; }
 				return 0;
 				},
 			firepower_desc: (a,b) => {

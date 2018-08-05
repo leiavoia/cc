@@ -105,16 +105,17 @@ export class ShipCombatPane {
 		
 	DoWeaponFX() { 
 		if ( !this.last_turnlog || this.combat_speed <= 0.05 ) { return; }
+		let log = Object.assign( {}, this.last_turnlog ); // can't rely on this with setTimeouts
 		
 		// origin and target points on screen
-		let attacker_el = document.getElementById( 'ship-' + this.last_turnlog.ship.id.toString() );
-		let defender_el = document.getElementById( 'ship-' + this.last_turnlog.target.id.toString() );
+		let attacker_el = document.getElementById( 'ship-' + log.ship.id.toString() );
+		let defender_el = document.getElementById( 'ship-' + log.target.id.toString() );
 		let rect = attacker_el.getBoundingClientRect();
 		let x1 = rect.left + ( attacker_el.offsetWidth / 2 );
 		let y1 = rect.top + ( attacker_el.offsetHeight / 2 );
 		rect = defender_el.getBoundingClientRect();
-		let x2 = rect.left + ( defender_el.offsetWidth / 2 );
-		let y2 = rect.top + ( defender_el.offsetHeight / 2 );
+		let x2 = rect.left + ( defender_el.offsetWidth / 2 ) - 24;
+		let y2 = rect.top + ( defender_el.offsetHeight / 2 ) - 24;
 		let length = Math.sqrt( Math.pow( Math.abs( x1 - x2 ), 2 ) + Math.pow( Math.abs( y1 - y2 ), 2 ) );
 		let angle = Math.atan2( (y2-y1),(x2-x1)) * (180/Math.PI);		
 
@@ -122,34 +123,28 @@ export class ShipCombatPane {
 		let el = document.createElement("div"); 
 		el.style.transformOrigin = '0 50%';
 	    el.style.transform = `rotate(${angle}deg)`;
-		el.style.height = '5px';
-		el.style.width = '175px'; // '100px';
 		el.style.position = 'absolute';
 		el.style.top = y1 + 'px';
 		el.style.left = x1 + 'px';
 		el.style.zIndex = '1000';
 	    el.style.transition = ( (this.turn_delay / 1000) * this.combat_speed) + "s transform linear";		
-		// weapon specific colors
-		if ( this.last_turnlog.weapon.type == 'missile' ) {
-			el.style.background = "linear-gradient( to right, rgba(255,255,80,0) 0%, rgba(255,255,80,1) 100% )";
-			}
-		else if ( this.last_turnlog.weapon.type == 'kinetic' ) {
-			el.style.background = "linear-gradient( to right, rgba(50,120,240,0) 0%, rgba(50,120,240,1) 100% )";
-			}
-		else {
-			el.style.background = "linear-gradient( to right, rgba(255,30,15,0) 0%, rgba(255,30,15,1) 100% )";
-			}
-			
+		// weapon specific goodies
+		el.style.background = log.weapon.fx.bg;
+		el.style.height = log.weapon.fx.h + 'px';
+		el.style.width = log.weapon.fx.w + 'px';
+		if ( 'borderRadius' in log.weapon.fx ) {  el.style.borderRadius = log.weapon.fx.borderRadius; }
+		
 		let pane = document.getElementById('shipcombat_pane');
 		pane.appendChild(el); 
 		el.focus();
 		
-	    el.style.transform = `rotate(${angle}deg) translateX(${length-175}px) `;
+	    el.style.transform = `rotate(${angle}deg) translateX(${length-log.weapon.fx.w}px) `;
 	    
 	    // remove element after animation runs
 	    setTimeout( () => el.remove(), this.turn_delay * this.combat_speed );
-	    // optional explosion
-	    if ( !this.last_turnlog.missed ) { 
+	   
+	   // optional explosion
+	    if ( !log.missed ) { 
 			setTimeout( () => {
 				let x = document.createElement("div"); 
 				x.className = 'explosion';
@@ -161,7 +156,44 @@ export class ShipCombatPane {
 				setTimeout( () => { x.remove();}, 500 ); // 500 is hard set by explosion class
 				}, this.turn_delay * this.combat_speed );
 			}
+			
+		// headsup hit stat
+		if ( this.combat_speed > 0.1 ) {
 		
+			let MakeHitStat = (msg,classname) => {
+				let x = document.createElement("div"); 
+				x.appendChild( document.createTextNode( msg ) );
+				x.className = 'shipcombat_hit_stat ' + classname;
+				x.style.position = 'absolute';
+				x.style.top = (y2-50) + 'px';
+				x.style.left = x2 + 'px';
+				x.style.zIndex = '1010';
+				pane.appendChild(x);
+				setTimeout( () => { x.remove();}, 1000 ); // 1000 is hard set by class
+				};
+				
+			setTimeout( () => {
+				// missed
+				if ( log.missed ) {
+					MakeHitStat('missed','missed');
+					}
+				// hull and/or armor damage
+				else if ( log.killed ) { 
+					MakeHitStat('destroyed!','killed');
+					}
+				else {
+					// hull
+					if ( log.hull ) {
+						MakeHitStat( log.hull.toString(), 'hull' );
+						}
+					// armor
+					if ( log.armor ) {
+						MakeHitStat( log.armor.toString(), 'armor' );		
+						}
+					}
+				}, this.turn_delay * this.combat_speed 
+				);
+			}
 		}
 				
 	}
