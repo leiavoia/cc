@@ -337,15 +337,13 @@ body,html {
 	}
 	
 #layout_ui_visor {
-/* 	flex: 5; */
-/* 	height:  */
 	box-sizing:border-box;
 	overflow: auto;
 	background-color: rgba(0,0,0,0.3);
 	color: #FFF;
 	text-shadow: 1px 1px 1px #000;
 	padding: 0.3em 1.5em 0.3em 0.5em ;
-	/*pointer-events: auto; capture click events */
+	pointer-events: auto; /* capture click events */
 	}
 #layout_ui_footer {
 	box-sizing:border-box;
@@ -416,7 +414,39 @@ body,html {
 	pointer-events: auto; /* capture click events */
 /* 	min-height: 100%; */
 	}
-#layout_ui_side { 
+/* 
+flex panes are designed to have wrappers to 
+evenly space headers and body elements
++----- .pane.flex -----+
+| <==== <header> ====> |
+| +----- <main> -----+ |
+| |                  | |
+| +------------------+ |
++----------------------|
+*/
+#layout_ui_main .pane.flex {
+	display:flex;
+	flex-flow: column nowrap;
+	}
+#layout_ui_main .pane.flex HEADER {
+	flex: 1;
+	padding-bottom: 1em;
+	}
+#layout_ui_main .pane.flex MAIN {
+	flex: 20;
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: stretch;
+	}
+#layout_ui_main .pane.flex MAIN > * {
+	margin: 0 0 0 1em;
+	}
+#layout_ui_main .pane.flex MAIN > *:first-child {
+	margin-left: 0;
+	}
+
+
+	#layout_ui_side { 
 	order: 20;
 	flex: 30;
 	width: 30%;
@@ -648,9 +678,10 @@ TABLE.env TD.ideal {
 .bad { color: #C40000; }
 .alert { color: #FCF742; }
 
-.topless {margin-top: 0;}
-.bottomless {margin-bottom: 0;}
-.marginless {margin: 0;}
+.topless {margin-top: 0 !important;}
+.bottomless {margin-bottom: 0 !important;}
+.marginless {margin: 0 !important;}
+.unpadded {padding: 0 !important;}
 
 .bold { font-weight:bold; }
 
@@ -766,6 +797,22 @@ button.small, .button_rack.small A, .button_rack A.small, A.button.small, .butto
 	}
 .button_rack.button_rack_fill > * {
 	flex: 1;
+	}
+	
+	
+	
+	
+/* OFFSET BOXES */
+DIV.offset {
+	box-sizing: border-box;
+	border: 5px #11436B outset;
+	border-radius: 1.0em;
+	padding: 1.5em;
+	margin: 1em;
+	flex: 1 1;
+	background: rgb( 17, 67, 107);
+	background: rgba( 17, 67, 107, 0.95);
+/* 	background: rgba( 0,0,0, 0.65); */
 	}
 	
 	
@@ -2506,10 +2553,6 @@ DIV.annoyometer .nub {
 	height:100%;
 	background: url(../img/workshop/technic1.png) repeat;
 	}
-#ship_des_pane #ship_des_pane_wrapper {
-	display:flex;
-	align-items: stretch;
-	}
 #ship_des_pane #bp_list { 
 	flex: 1 1 20em;
 	min-width: 20em;
@@ -2518,18 +2561,7 @@ DIV.annoyometer .nub {
 #ship_des_pane #bp_detail { 
 	flex: 20;
 	}
-
-DIV.offset {
-	box-sizing: border-box;
-	border: 5px #11436B outset;
-	border-radius: 1.0em;
-	padding: 1.5em;
-	margin: 1em;
-	flex: 1 1;
-	background: rgb( 17, 67, 107);
-	background: rgba( 17, 67, 107, 0.95);
-/* 	background: rgba( 0,0,0, 0.65); */
-	}	
+	
 	
 /* SHIP COMBAT PANE */
 #shipcombat_pane {

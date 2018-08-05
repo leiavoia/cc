@@ -6,6 +6,8 @@ import * as Tech from './Tech';
 import Constellation from './Constellation';
 import Planet from './Planet';
 import {Ship,ShipBlueprint} from './Ship';
+import {WeaponList} from './WeaponList';
+import {ShipComponentList} from './ShipComponentList';
 
 export default class Civ {
 	
@@ -34,6 +36,10 @@ export default class Civ {
 	ship_range = 750; // px
 	ship_speed = 200; // HACK
 	ship_blueprints = [];
+	
+	avail_ship_comps = []; // components we can equip on ships
+	avail_ship_weapons = []; // weapons we can equip on ships
+	
 	vis_level = 0; // HACK : 0 = space, 1 = hyperspace, 2 = subspace
 	empire_box = {x1:0,x2:0,y1:0,y2:0};
 	
@@ -304,6 +310,20 @@ export default class Civ {
 		this.diplo_img_small = 'img/races/alien_' + ("000" + Civ.img_id_roster[this.id]).slice(-3) + '.jpg';
 		this.InitResearch();
 		
+		// starting ship bits:
+		this.avail_ship_comps = [
+			ShipComponentList.ENGINE1,
+			ShipComponentList.ARMOR1,
+			ShipComponentList.SHIELD1,
+			ShipComponentList.COLONY1,
+			ShipComponentList.RESEARCHLAB1,
+			];
+		this.avail_ship_weapons = [
+			WeaponList.LASER,
+			WeaponList.RAYGUN,
+			WeaponList.MISSILE
+			];
+	
 		// default ship set
 		let colonizer = new ShipBlueprint();
 		colonizer.name = 'Colony Ship';
@@ -332,7 +352,7 @@ export default class Civ {
 		this.ship_blueprints.push(bomber);
 			
 		let hfighter = new ShipBlueprint();
-		hfighter.name = 'Heavy Figher'; 
+		hfighter.name = 'Heavy Fighter'; 
 		hfighter.img = 'img/ships/ship034_mock.png';
 		hfighter.AddComponent( 'ENGINE1' );
 		hfighter.AddWeapon( 'TURBOLASER', 4 );

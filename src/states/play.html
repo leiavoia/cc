@@ -1,23 +1,5 @@
 <template>
 
-<require from="../planets_pane"></require>
-<require from="../planetinfo_pane"></require>
-<require from="../audience_pane"></require>
-<require from="../gov_pane"></require>
-<require from="../econ_pane"></require>
-<require from="../diplo_pane"></require>
-<require from="../ship_des_pane"></require>
-<require from="../fleets_pane"></require>
-<require from="../spy_pane"></require>
-<require from="../tech_pane"></require>
-<require from="../colonize_pane"></require>
-<require from="../options_pane"></require>
-<require from="../shipcombat_pane"></require>
-<!--<require from="../planet_detail"></require>
-<require from="../fleet_detail"></require>
-<require from="../star_detail"></require>
-<require from="../constel_detail"></require>-->
-
 <!-- base layer / nebula background -->
 <div id="layout_pagewrap" css="background-image: url(${bg_img});"></div>
 
@@ -164,16 +146,13 @@
 			<span class="turn">TURN: ${app.game.turn_num}</span>
 			<span class="planets">PLANETS: ${app.game.myciv.planets.length}</span>
 			<span class="treasury">TREASURY: $${app.game.myciv.treasury|round:0} ${app.game.myciv.econ.income > 0 ?'+':''}${app.game.myciv.econ.income|round:0}</span>
-<!-- 			<span class="gov">GOV: ${app.game.myciv.gov_pts|round:0} +${app.game.myciv.gov_pts_income|round:0}</span> -->
 			<span class="sci">RESEARCH: <!--${app.game.myciv.research|round}--> +${app.game.myciv.research_income|round:0}</span>
-			<span class="sci" if.bind="app.game.myciv.tech.current_project">
+			<span class="sci" if.bind="app.game.myciv.tech.current_project" click.delegate="app.SwitchMainPanel('tech')">
 				${( app.game.myciv.tech.current_project.rp / app.game.myciv.tech.current_project.node.rp) | percent}% of 	
 				${app.game.myciv.tech.current_project.node.name}  
 			</span>
 			<span>HAB: ${app.game.myciv.race.env.habitation}</span>
 			<span>ADAPT: ${app.game.myciv.race.env.adaptation}</span>
-	<!-- 		<span class="turn">MODE: ${app.main_panel_mode}</span>			 -->
-	<!-- 		<span class="turn">SIDEMODE: ${app.sidebar_mode}</span>			 -->
 		</div>
 		
 		<div id="layout_ui_center">
@@ -188,19 +167,10 @@
 			</div>
 			
 			<div id="layout_ui_content" class="${app.main_panel_mode ? 'active trekIn' : 'trekOut'}">
-				<spy-pane if.bind="app.main_panel_mode == 'spy'"  app.bind="app"  ></spy-pane>
-				<planets-pane if.bind="app.main_panel_mode == 'planets'"  ></planets-pane>
-				<econ-pane if.bind="app.main_panel_mode == 'econ'"  app.bind="app"  ></econ-pane>
-				<gov-pane if.bind="app.main_panel_mode == 'gov'"  app.bind="app"  ></gov-pane>
-				<tech-pane if.bind="app.main_panel_mode == 'tech'"  app.bind="app"  ></tech-pane>
-				<ship-design-pane if.bind="app.main_panel_mode == 'shipdes'"  app.bind="app"  ></ship-design-pane>
-				<fleets-pane if.bind="app.main_panel_mode == 'fleets'"  app.bind="app"  ></fleets-pane>
-				<diplo-pane if.bind="app.main_panel_mode == 'diplo'"  app.bind="app"  ></diplo-pane>
-				<planetinfo-pane if.bind="app.main_panel_mode == 'planetinfo'" planet.bind="app.main_panel_obj" app.bind="app"  ></planetinfo-pane>
-				<audience-pane if.bind="app.main_panel_mode == 'audience'" data.bind="app.main_panel_data" civ.bind="app.main_panel_obj" app.bind="app"  ></audience-pane>
-				<colonize-pane if.bind="app.main_panel_mode == 'colonize'" planet.bind="app.main_panel_obj" app.bind="app"  ></colonize-pane>
-				<options-pane if.bind="app.main_panel_mode == 'options'" app.bind="app"  ></options-pane>
-				<ship-combat-pane if.bind="app.main_panel_mode == 'shipcombat'" combatdata.bind="app.main_panel_obj" app.bind="app"  ></ship-combat-pane>
+				<compose if.bind="app.main_panel_mode" 
+					model.bind="{app: app, obj: app.main_panel_obj, data: app.main_panel_data}"  
+					view-model="../ui/panes/${app.main_panel_mode}_pane" containerless>
+				</compose>
 			</div>
 
 		</div>
@@ -239,6 +209,7 @@
 		<a href="#" id="nav_button_spy" click.delegate="app.SwitchMainPanel('spy')"><svg class="icon icon-medical"><use xlink:href="#icon-medical"></use></svg></a>
 		<a href="#" id="nav_button_tech" click.delegate="app.SwitchMainPanel('tech')"><svg class="icon icon-tool"><use xlink:href="#icon-tool"></use></svg></a>
 		<a href="#" id="nav_button_diplo" click.delegate="app.SwitchMainPanel('diplo')"><svg class="icon icon-shapes-2"><use xlink:href="#icon-shapes-2"></use></svg></a>
+		<a href="#" id="nav_button_ship_des" click.delegate="app.SwitchMainPanel('shipdes')"><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 		<a href="#" id="nav_button_fleets" click.delegate="app.SwitchMainPanel('fleets')"><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
 		<a href="#" id="nav_button_victory" click.delegate="app.ToggleOption('dim_unexplored')" ><svg class="icon icon-black"><use xlink:href="#icon-black"></use></svg></a>
 		<a href="#" id="nav_button_opt" click.delegate="app.SwitchMainPanel('options')" ><svg class="icon icon-gear"><use xlink:href="#icon-gear"></use></svg></a>

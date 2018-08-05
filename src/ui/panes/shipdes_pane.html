@@ -1,0 +1,120 @@
+<template>
+	<div id="ship_des_pane" class="pane flex">
+	
+		<header>
+			<div class="button_rack big" style="float:right;">
+				<button click.delegate="ClosePanel()">CLOSE</button>
+			</div>
+			<h1>Ship Design</h1>
+		</header>
+		
+		<main id="ship_des_pane_wrapper">
+			
+			<!-- ship list -->
+			<div id="bp_list" class="offset">
+				<table>
+					<tr repeat.for="bp of app.game.myciv.ship_blueprints" >
+						<td><a href="#" click.delegate="ClickBlueprint(bp)">${bp.name}</a></td>
+					</tr>
+				</table>
+				<div class="button_rack button_rack_fill">
+					<button click.delegate="">NEW</button>
+					<button click.delegate="">COPY</button>
+					<button click.delegate="" class="bad">DELETE</button>
+				</div>
+			</div>
+			
+			<!-- add weapon pane -->
+			<div id="add_weapon_pane" class="offset" if.bind="bp && mode=='add_weapon'">
+				<p class="button_rack topless" style="float:right;">
+					<button class="big bad" click.delegate="mode=null">CANCEL</button>
+				</p>
+				<h3>Add Weapons:</h3>
+				<table>
+					<tr repeat.for="w of app.game.myciv.avail_ship_weapons">
+						<td>
+							<button class="" click.delegate="ClickAddWeapon(w)">Add</button>
+						</td>
+						<td><b>${w.name}</b></td>
+						<td>${w.type}</td>
+						<td>${w.mindmg}-${w.maxdmg}</td>
+						<td>${w.shots}</td>
+						<td>^${w.reload}</td>
+						<td>~${w.accu}</td>
+					</tr>
+				</table>
+			</div>
+			
+			<!-- add component pane -->
+			<div id="add_component_pane" class="offset" if.bind="bp && mode=='add_comp'">
+				<p class="button_rack topless" style="float:right;">
+					<button class="big bad" click.delegate="mode=null">CANCEL</button>
+				</p>
+				<h3>Add Components:</h3>
+				<table>
+					<tr repeat.for="c of app.game.myciv.avail_ship_comps">
+						<td>
+							<button class="" click.delegate="ClickAddComponent(c)">Add</button>
+						</td>
+						<td><b>${c.name}</b></td>
+						<td>${c.desc}</td>
+						<td><span repeat.for="m of c.mods">${m.op}${m.val} ${m.abil} </span> </td>
+					</tr>
+				</table>
+			</div>
+			
+			<!-- ship details pane -->
+			<div id="bp_detail" class="offset" if.bind="bp && !mode">
+				<img src.bind="bp.img" style="float:right; max-width: 20em; width: 20%; min-width: 100px; margin: 2em;" />
+				<h2>${bp.name} <span style="color:#4BA5CC;">${bp.sizeclass}-Class</span></h2>
+				<p>Structure: ${bp.hull} Hull, ${bp.armor} Armor,  ${bp.shield} Shielding</p>
+				<p>Manufacture: ${bp.mass} Mass, ${bp.labor} Labor, ${bp.num_built} Made (${bp.bulk_discount}% discount)</p>
+				<p>Firepower: ${bp.fp}</p>
+				<p>Map Speed: ${bp.drive}</p>
+				<p>Combat Speed: ${bp.speed}</p>
+				<p>Colony Ship: ${bp.colonize ? 'YES' : 'NO'}</p>
+				<p>Research Capacity: ${bp.research}</p>
+			
+				<h3>Weapons</h3>
+				<table if.bind="bp.weapons.length">
+					<tr repeat.for="w of bp.weapons">
+						<td>
+							<button class="bad bold" click.delegate="bp.RemoveWeapon(w)">X</button>
+							<button class="cool bold" click.delegate="DecWeaponQty(bp,w)">-</button>
+							<button class="cool bold" click.delegate="IncWeaponQty(bp,w)">+</button>
+						</td>
+						<td>x${w.qty}</td>
+						<td>${w.name}</td>
+						<td>${w.type}</td>
+						<td>${w.mindmg}-${w.maxdmg}</td>
+						<td>${w.shots}</td>
+						<td>^${w.reload}</td>
+						<td>~${w.accu}</td>
+					</tr>
+				</table>
+				<p class="button_rack">
+					<button click.delegate="mode='add_weapon'">Add Weapon</button>
+				</p>
+			
+				<h3>Components</h3>
+				<table if.bind="bp.comps.length">
+					<tr repeat.for="c of bp.comps">
+						<td>
+							<button class="bad bold" click.delegate="bp.RemoveComponent(c)">X</button>
+						</td>
+						<td><b>${c.name}</b></td>
+						<td>${c.desc}</td>
+						<td><span repeat.for="m of c.mods">${m.op}${m.val} ${m.abil} </span> </td>
+					</tr>
+				</table>
+				<p class="button_rack">
+					<button click.delegate="mode='add_comp'">Add Component</button>
+				</p>
+				
+			</div>
+		</main>	
+	</div>
+
+
+
+</template>

@@ -144,7 +144,18 @@ export class ShipBlueprint {
 		this.RecalcStats(); // TODO: parent?
 		return true;
 		}
-		
+	
+	// returns true on success, false on failure
+	RemoveWeapon( w ) {
+		let i = this.weapons.indexOf(w);
+		if ( i >= 0 ) { 
+			this.weapons.splice( i, 1 );
+			this.RecalcStats(); // TODO: parent?
+			return true;
+			}
+		return false;
+		}
+				
 	// returns true on success, false on failure
 	AddComponent( tag ) { 
 		// Because we are not adding data, no need to clone object like weapons.
@@ -166,6 +177,17 @@ export class ShipBlueprint {
 		this.RecalcStats(); // TODO: parent?
 		return true;
 		}	
+		
+	// returns true on success, false on failure
+	RemoveComponent( c ) {
+		let i = this.comps.indexOf(c);
+		if ( i >= 0 ) { 
+			this.comps.splice( i, 1 );
+			this.RecalcStats(); // TODO: parent?
+			return true;
+			}
+		return false;
+		}
 		
 	RecalcStats( parent = null ) { 
 		this.mass = 0;

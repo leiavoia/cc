@@ -1,22 +1,23 @@
-import {bindable} from 'aurelia-framework';
-import * as utils from 'util/utils';
+import * as utils from '../../util/utils';
 
 export class AudiencePane {
-	@bindable app = null;
-	@bindable civ = null;
-	@bindable data = null; // extra data in case we need to set up a situation
-	@bindable on_exit = 'diplo'; // can be '' or 'diplo' or any other main panel 
-	
-	comm = 0; // communication skills overlap with other civ;
-	
-	text_response = ''; // what they say to us
-	our_response = ''; // our text to them, if any
-	
-	ambassador_present = true;
-	
-	options = [];
-	constructor() { 
 		
+	constructor() {
+		this.comm = 0; // communication skills overlap with other civ;
+		this.text_response = ''; // what they say to us
+		this.our_response = ''; // our text to them, if any
+		this.ambassador_present = true;
+		this.options = [];	
+		this.app = null;
+		this.civ = null;
+		this.data = null; // extra data in case we need to set up a situation
+		this.on_exit = 'diplo'; // can be '' or 'diplo' or any other main panel 
+		}
+
+	activate(data) {
+		this.app = data.app;
+		this.civ = data.obj;
+		this.data = data.data;
 		}
 		
 	ClosePanel() {

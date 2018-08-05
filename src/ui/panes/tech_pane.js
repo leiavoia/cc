@@ -1,9 +1,11 @@
-import * as Tech from './classes/Tech';
-import {bindable} from 'aurelia-framework';
+import * as Tech from '../../classes/Tech';
 
 export class TechPane {
-	 @bindable app = null;
-
+	
+	activate(data) {
+		this.app = data.app;
+		}
+		
 	 ClosePanel() {
 		this.app.CloseSideBar();
 		this.app.CloseMainPanel();

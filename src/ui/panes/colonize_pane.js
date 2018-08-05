@@ -1,9 +1,10 @@
-import {bindable} from 'aurelia-framework';
-
 export class ColonizePane {
-	 @bindable app = null;
-	 @bindable planet = null;
 
+	activate(data) {
+		this.app = data.app;
+		this.planet = data.obj;
+		}
+		
 	 ClickDone() {
 		this.app.CloseMainPanel();
 		this.app.SwitchSideBar(this.planet);

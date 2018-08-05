@@ -1,10 +1,12 @@
-import {bindable} from 'aurelia-framework';
-
 export class SpyPane {
-	 @bindable app = null;
 
+	activate(data) {
+		this.app = data.app;
+		}
+		
 	 ClosePanel() {
 		this.app.CloseSideBar();
 		this.app.CloseMainPanel();
 		}
+		
 	}

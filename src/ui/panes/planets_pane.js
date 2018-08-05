@@ -1,8 +1,4 @@
-// import {bindable} from 'aurelia-framework';
-import {inject} from 'aurelia-framework';
-import {App} from 'app';
 
-@inject(App)
 export class PlanetsPane {
 	app = null;
 	myciv = null;
@@ -11,9 +7,9 @@ export class PlanetsPane {
 	show_mine = true;
 	show_foreign = false;
 	show_unclaimed	= false;
-
-	constructor( app ) {
-		this.app = app;
+	
+	activate(data) {
+		this.app = data.app;
 		// build planet list
 		this.myciv = this.app.game.myciv;
 		for ( let star of this.app.game.galaxy.stars ) { 
@@ -22,6 +18,7 @@ export class PlanetsPane {
 				}
 			}
 		}
+		
 	ClosePanel() {
 		this.app.CloseSideBar();
 		this.app.CloseMainPanel();

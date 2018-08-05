@@ -15,7 +15,7 @@ import * as CrazyBox from './classes/Crazy';
 export class App {
 	version = '0.0.4';
 	main_panel_obj = null;
-// 	main_panel_mode = 'shipcombat';
+// 	main_panel_mode = 'shipdes';
 	main_panel_mode = false;
 	exclusive_ui = false; // if true, hides all UI except main content panel
 	sidebar_obj = null;
@@ -37,7 +37,7 @@ export class App {
 		ai: true,
 		bg_bright: 1.0
 		};
-		
+	
 	ResetEverything() { 
 		this.main_panel_obj = null;
 		this.main_panel_mode = false;
@@ -111,7 +111,6 @@ export class App {
 		
 	// returns promise
 	ChangeState( state ) { 
-		console.log(`changing to ${state}`);
 		this.state = state;
 		}
 		

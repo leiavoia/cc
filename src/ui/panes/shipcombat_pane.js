@@ -1,9 +1,6 @@
-import {bindable} from 'aurelia-framework';
-import ShipCombat from './classes/ShipCombat';
+import ShipCombat from '../../classes/ShipCombat';
 
 export class ShipCombatPane {
-	@bindable app = null;
-	@bindable combatdata = null; // { attacker, defender, planet }
 
 	constructor() { 
 		this.combat = null;
@@ -18,6 +15,12 @@ export class ShipCombatPane {
 		this.player_team = null;
 	    }
 	   
+	activate(data) {
+		this.app = data.app;
+		this.combatdata = data.obj;
+		this.onChangeCombatdata();
+		}
+		
 	bind() { 
 		this.onChangeCombatdata();
 		}
