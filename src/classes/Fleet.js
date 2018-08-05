@@ -17,6 +17,8 @@ export default class Fleet {
 	in_range = false; // UI hint for visibility - only matters for player perspective
 	ships = [];
 	research = false;
+	fp = 0; // firepower
+	bulk = 0; // combined "bodyweight" of all ships
 	
 	onUpdate = null; // callback
 	SetOnUpdate( callback ) { 
@@ -58,6 +60,8 @@ export default class Fleet {
 		this.colonize = false;
 		this.research = 0;
 		this.speed = 1000000;
+		this.fp = 0;
+		this.bulk = 0;
 		for ( let ship of this.ships ) { 
 			// check if there are colony ships
 			if ( ship.bp.colonize ) { this.colonize = true; }
@@ -65,6 +69,9 @@ export default class Fleet {
 			if ( ship.bp.research ) { this.research += ship.bp.research; }
 			// find our lowest speed
 			if ( ship.bp.speed < this.speed ) { this.speed = ship.bp.speed; }
+			// cumulative firepower and bulk stats
+			this.fp += ship.bp.fp;
+			this.bulk += ship.bp.hull + ship.bp.armor;
 			}
 		this.FireOnUpdate();
 		}
@@ -257,7 +264,7 @@ export default class Fleet {
 	AIWantToAttackFleet( fleet ) {
 		// TODO / AI HACK
 		// AI always fights, human player gets option
-		return !this.owner.is_player; 
+		return !this.owner.is_player && this.fp; // need guns to attack 
     	}
 	    
 	// returns a mission report for any completed deepspace missions

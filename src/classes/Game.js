@@ -327,7 +327,7 @@ export default class Game {
 						p.GrowEconomy();
             
 						// make me happy baby
-            p.UpdateMorale();
+            			p.UpdateMorale();
 						
 						// population growth ( returns true if max-pop reached )
 						if ( p.GrowPop() ) { 
@@ -503,15 +503,25 @@ export default class Game {
 					// buttons
 					[
 						{ 
-							text: "Command Battle", 
+							text: "Command", 
 							class: "",
 							cb: btn => { this.LaunchPlayerShipCombat(sc); }
 							},
 						{ 
-							text: "Auto Resolve", 
+							text: "Auto‑Resolve", // note nonbreaking hyphen
 							class: "alt",
 							cb: btn => { 
 								let combat = new ShipCombat( sc.attacker, sc.defender, sc.planet );
+								combat.ProcessQueue( 1000 ); // 1000 = fight to the death if possible
+								combat.End();
+								}
+							},
+						{ 
+							text: "Flee", 
+							class: "bad",
+							cb: btn => { 
+								let combat = new ShipCombat( sc.attacker, sc.defender, sc.planet );
+								combat.RetreatTeam( combat.teams[1] ); // team 1 is always the defender
 								combat.ProcessQueue( 1000 ); // 1000 = fight to the death if possible
 								combat.End();
 								}

@@ -55,6 +55,13 @@ export class ShipCombatPane {
 		this.FormatResolutionLabel();
 		}
 
+	Retreat() { 
+		if ( !this.combat.status && !this.player_team.retreating ) { 
+			this.combat.RetreatTeam(this.player_team);
+			this.PlayTurn(10000000000);
+			}
+		}
+		
 	ChangeTargetPriority( p ) { 
 		this.player_target_priority = p;
 		this.player_team.target_priority = p;
@@ -68,12 +75,18 @@ export class ShipCombatPane {
 				( this.combat.winner == 'ATTACKER' && this.combatdata.attacker.owner.is_player ) 
 				|| ( this.combat.winner == 'DEFENDER' && this.combatdata.defender.owner.is_player ) 
 				;
-			this.combat.status = i_win ? 'VICTORY!' : 'DEFEAT!' ;
+			// if i "lost" but technically have retreating ships, it's not really "Defeat"
+			if ( !i_win && this.player_team.ships_retreated ) { 
+				this.combat.status = 'ESCAPED' ;
+				}
+			else {
+				this.combat.status = i_win ? 'VICTORY!' : 'DEFEAT!' ;
+				}
 			}	
 		}
 		
 	PlayTurn( manual_turn_delta = 0 ) { 
-		if ( this.combat ) {
+		if ( this.combat && !this.processing ) {
 			this.processing = true;
 			this.turn++;
 			this.PlayNextAttack( manual_turn_delta || this.turn_delta );
@@ -112,10 +125,10 @@ export class ShipCombatPane {
 		let defender_el = document.getElementById( 'ship-' + log.target.id.toString() );
 		let rect = attacker_el.getBoundingClientRect();
 		let x1 = rect.left + ( attacker_el.offsetWidth / 2 );
-		let y1 = rect.top + ( attacker_el.offsetHeight / 2 );
+		let y1 = rect.top + ( attacker_el.offsetHeight / 2 ) - 25;
 		rect = defender_el.getBoundingClientRect();
-		let x2 = rect.left + ( defender_el.offsetWidth / 2 ) - 24;
-		let y2 = rect.top + ( defender_el.offsetHeight / 2 ) - 24;
+		let x2 = rect.left + ( defender_el.offsetWidth / 2 ) - 25;
+		let y2 = rect.top + ( defender_el.offsetHeight / 2 ) - 25;
 		let length = Math.sqrt( Math.pow( Math.abs( x1 - x2 ), 2 ) + Math.pow( Math.abs( y1 - y2 ), 2 ) );
 		let angle = Math.atan2( (y2-y1),(x2-x1)) * (180/Math.PI);		
 

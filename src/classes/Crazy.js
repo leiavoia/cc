@@ -83,14 +83,14 @@ export function AddGiantSpaceAmoeba( app ) {
 	fleet.xpos = star.xpos + 500;
 	fleet.ypos = star.ypos + 500;
 	
-  let bp = new ShipBlueprint();
-  bp.name = 'Giant Space Amoeba';
-  bp.hull = 800;
-  bp.armor = 0;
-  bp.speed = 80;
-  bp.img = 'img/ships/monsters/space_amoeba_yellow.png';
-  bp.AddWeapon('AMOEBASLIME3',12);   
-  fleet.AddShip( new Ship(bp) );	
+	let bp = new ShipBlueprint();
+	bp.name = 'Giant Space Amoeba';
+	bp.hull = 800;
+	bp.armor = 0;
+	bp.speed = 80;
+	bp.img = 'img/ships/monsters/space_amoeba_yellow.png';
+	bp.AddWeapon('AMOEBASLIME3',12);   
+	fleet.AddShip( new Ship(bp) );	
 	fleet.SetDest(star);
 	
 	// new AI routine to subdivide dem Amoybas

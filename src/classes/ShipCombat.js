@@ -15,9 +15,29 @@ export default class ShipCombat {
 		this.status = null;
 		// set up teams
 		this.teams = [ 
-			{ label: 'ATTACKER', fleet: attacker, targets: [], target_priority: 'size_desc', strategy: 'normal' },
-			{ label: 'DEFENDER', fleet: defender, targets: [], target_priority: 'size_desc', strategy: 'normal' },
+			{ 
+				label: 'ATTACKER', 
+				fleet: attacker, 
+				targets: [], 
+				target_priority: 'size_desc', 
+				strategy: 'normal', 
+				ships_retreated: 0, 
+				retreating: false 
+				},
+			{ 
+				label: 'DEFENDER', 
+				fleet: defender, 
+				targets: [], 
+				target_priority: 'size_desc', 
+				strategy: 'normal', 
+				ships_retreated: 0, 
+				retreating: false 
+				},
 			];
+		// when combat begins, each ship is given a "retreat" flag
+		// to show if it is in battle or has fled. Clean up afterward.
+		this.teams[0].fleet.ships.forEach( s => { s.retreat = false; } );
+		this.teams[1].fleet.ships.forEach( s => { s.retreat = false; } );
 		// make a list of targets
 		// NOTE: we use a shadow array that we can resort and
 		// prioritize in the background without messing up visual representation.
@@ -56,10 +76,10 @@ export default class ShipCombat {
 		// 100 pts per battle, each side, modified by damage ratio and size ratio
 		let t0_size = this.teams[0].fleet.ships.reduce( (v,s) => {return v + s.bp.hull + s.bp.armor;}, 0 );
 		let t1_size = this.teams[1].fleet.ships.reduce( (v,s) => {return v + s.bp.hull + s.bp.armor;}, 0 );
-		console.log(`size: t0:${t0_size}, t1:${t1_size} `);
+// 		console.log(`size: t0:${t0_size}, t1:${t1_size} `);
 		let t0_dmg = this.stats[this.teams[0].label].total_dmg_out;
 		let t1_dmg = this.stats[this.teams[1].label].total_dmg_out;
-		console.log(`dmg: t0:${t0_dmg}, t1:${t1_dmg} `);
+// 		console.log(`dmg: t0:${t0_dmg}, t1:${t1_dmg} `);
 		let t0_xp = 100 
 			* ( (Math.min( 3.0, Math.max( 0.33, ( t1_size / t0_size ) ) )
 				+ Math.min( 3.0, Math.max( 0.33, ( t1_dmg ? ( t0_dmg / t1_dmg ) : 0.33 ) ) )
@@ -68,20 +88,44 @@ export default class ShipCombat {
 			* (( Math.min( 3.0, Math.max( 0.33, ( t0_size / t1_size )  ) )
 				+ Math.min( 3.0, Math.max( 0.33, ( t0_dmg ? ( t1_dmg / t0_dmg ) : 0.33 ) ) )
 				) / 2);
-		console.log(`awarding xp: t0:${this.teams[0].label}:${t0_xp}, t1:${this.teams[1].label}:${t1_xp} `);
+// 		console.log(`awarding xp: t0:${this.teams[0].label}:${t0_xp}, t1:${this.teams[1].label}:${t1_xp} `);
 		// clean up dead ships
 		this.teams[0].fleet.RemoveDeadShips();
 		this.teams[1].fleet.RemoveDeadShips();
-		// award experince to survivors
+		// award experience to survivors
 		this.teams[0].fleet.ships.forEach( s => s.AwardXP(t0_xp) );
 		this.teams[1].fleet.ships.forEach( s => s.AwardXP(t1_xp) );
 		// clean up dead fleets and reload survivors
 		this.teams.forEach( team => {
 			if ( team.fleet.ships.length ) { 
 				team.fleet.ReloadAllShipWeapons();
+				// yellow bellied cowards get out of Dodge
+				if ( team.retreating && team.ships_retreated ) {
+					let f = team.fleet;
+					let closest = f.owner.planets.reduce( (closest,planet) => { 
+						if ( !closest || closest == planet.star ) { return planet.star; }
+						let dist_a = 
+							Math.pow( Math.abs(f.star.xpos - closest.star.xpos), 2 ) 
+							+ Math.pow( Math.abs(f.star.ypos - closest.star.ypos), 2 ) 
+							;
+						let dist_b = 
+							Math.pow( Math.abs(f.star.xpos - planet.star.xpos), 2 ) 
+							+ Math.pow( Math.abs(f.star.ypos - planet.star.ypos), 2 ) 
+							;
+						return ( dist_a < dist_b ) ? closest : planet;
+						}, null );
+					// can't retreat to self
+					if ( closest != f.star ) { 
+						f.SetDest(closest);
+						f.star = null; // prevent circling back
+						}
+					}
 				}
 			else { team.fleet.Kill(); }
 			});
+		// clean up battle-specific stuff
+		this.teams[0].fleet.ships.forEach( s => { delete s.retreat; } );
+		this.teams[1].fleet.ships.forEach( s => { delete s.retreat; } );
 		}		
 		
 	// item: { ship, weapon, team, qty }
@@ -106,14 +150,31 @@ export default class ShipCombat {
 			let next = this.queue[0];
 			let priority = next.p; // object's priority
 			next = next.i; // the object itself
-			next.qty--;
-			// dead ships do not attack
-			if ( !next.ship.hull || !next.team.targets.length || next.qty < 0 ) {
+			// dead/absent/useless ships do not attack
+			if ( next.ship.retreat || !next.ship.hull || !next.team.targets.length || next.qty < 0 ) {
+				this.queue.shift();
+				continue;
+				}
+			// if my team is retreating, i forfeit my turn
+			else if ( next.team.retreating && next.weapon !== 'retreat' ) { 
+				this.queue.shift();
+				continue;
+				}
+			// skip retreated targets... you had your chance, Gorman.
+			else if ( next.team.targets[0].retreat ) { 
+				next.team.targets.shift();
+				continue;
+				}
+			// retreat token - get out of combat free card
+			else if ( next.weapon === 'retreat' ) { 
+				next.ship.retreat = true;
+				next.team.ships_retreated++;
 				this.queue.shift();
 				continue;
 				}
 			// attack!
 			else {
+				next.qty--;
 				// TODO: choose a target
 				let turnlog = next.ship.Attack( next.team.targets[0], next.weapon );
 				// update weapon stats
@@ -150,7 +211,16 @@ export default class ShipCombat {
 				}
 			}	
 		if ( !this.status && !this.queue.length ) {
-			this.status = 'STALEMATE!';
+			// difference between retreat and stalemate
+			if ( this.teams[0].retreating ) { 
+				this.status = 'RETREATED: ' + this.teams[0].label;
+				}
+			else if ( this.teams[1].retreating ) { 
+				this.status = 'RETREATED: ' + this.teams[1].label;
+				}
+			else { 
+				this.status = 'STALEMATE!';
+				}
 			}
 		// empty the queue if we're done
 		if ( this.status ) { 
@@ -175,6 +245,18 @@ export default class ShipCombat {
 					}
 				})
 			});	
+		}
+		
+	RetreatTeam( team ) { 
+		if ( !team.retreating ) { 
+			team.retreating = true;		
+			team.fleet.ships.forEach( s => {
+				this.AddAttack( 
+					{ ship:s, weapon:'retreat', team:team }, 
+					this.time + s.bp.drive + Math.random() /* jitter */ 
+					);
+				});
+			}
 		}
 	
 	// providing log as a param allows you to 

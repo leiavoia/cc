@@ -9,8 +9,9 @@
 				</div>
 				<div class="controlpanel">
 					<p class="button_rack big">
-						<button click.delegate="PlayTurn()" if.bind="!combat.status" class="${processing?'ghost':''}">Start Combat</button>
-						<button click.delegate="FinishCombat()"if.bind="!combat.status" class="bad">Auto-Resolve</button>
+						<button click.delegate="PlayTurn()" if.bind="!combat.status" class="${processing?'ghost':''}">${turn ? 'Resume' : 'Begin'}</button>
+						<button click.delegate="FinishCombat()"if.bind="!combat.status" class="alt">Auto-Resolve</button>
+						<button click.delegate="Retreat()" if.bind="!combat.status" class="${player_team.retreating || processing ?'ghost':''} bad">Retreat</button>
 						<button click.delegate="ClosePanel()" if.bind="combat.status">Close</button>
 					</p> 
 					<template if.bind="!combat.status" containerless>
@@ -157,6 +158,7 @@
 						<div id="ship-${ship.id}"
 							class="ship 
 							${ship.selected ? 'selected' : ''} 
+							${ship.retreat ? 'retreat' : ''} 
 							health_${ship.health_class}
 							${ship == last_turnlog.ship || ship == last_turnlog.target ? 'hilite' : ''}
 							"
@@ -189,6 +191,7 @@
 						<div id="ship-${ship.id}"
 							class="ship 
 							${ship.selected ? 'selected' : ''} 
+							${ship.retreat ? 'retreat' : ''} 
 							health_${ship.health_class}
 							${ship == last_turnlog.ship || ship == last_turnlog.target ? 'hilite' : ''}
 							"

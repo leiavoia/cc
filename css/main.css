@@ -475,8 +475,8 @@ body,html {
 	padding: 2em;
 	min-height: 12em;
 	max-height: 90%;
-	min-width: 25%;
-	max-width: 35em;
+	min-width: 30%;
+	max-width: 45em;
 	margin: auto;
 	box-sizing: border-box;
 	background: #000;
@@ -2069,16 +2069,17 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	}
 	
 .shipgrid .ship.selected {
-/* 	background-color: #3C96BA; */
-/* 	background-image: linear-gradient( to bottom, #3C96BA 0%, transparent 33%, transparent 66%, #195182 100% ); */
 	background-image: radial-gradient(circle closest-corner at 50% 50% , transparent 0%, transparent 50%, #3C96BA 100%);
 	border: #777 outset 1px;
 	}
 .shipgrid .ship.hilite {
-/* 	background-color: #3C96BA; */
-/* 	background-image: linear-gradient( to bottom, #3C96BA 0%, transparent 33%, transparent 66%, #195182 100% ); */
 	background-image: radial-gradient(circle closest-corner at 50% 50% , transparent 0%, transparent 50%, #AEA 100%);
 	border: #AEA solid 1px;
+	}
+.shipgrid .ship.retreat {
+	background: #000;
+	opacity: 0.35;
+	transition: opacity 0.8s;
 	}
 
 
