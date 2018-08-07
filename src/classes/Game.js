@@ -487,55 +487,53 @@ export default class Game {
     // this function again on exit. If the queue has no player
     // involved combats, nothing happens.
     PresentNextPlayerShipCombat() { 
- 		for ( let c=this.shipcombats.length-1; c >= 0; c-- ) { 
-			let sc = this.shipcombats[c];
-			this.shipcombats.splice( c, 1 ); // delete
-			// fleet may have been destroyed in previous battle.
-			if ( sc.attacker.killme || sc.defender.killme || !sc.attacker.ships.length || !sc.defender.ships.length ) { 
-				continue; 
-				}
-			// if player is the defender, present mandatory battle
-			else if ( sc.defender.owner.is_player ) { 
-				console.log(sc.label);
-				this.app.ShowDialog(
-					`Attack on ${sc.defender.star.name}`,
-					sc.label,
-					// buttons
-					[
-						{ 
-							text: "Command", 
-							class: "",
-							cb: btn => { this.LaunchPlayerShipCombat(sc); }
-							},
-						{ 
-							text: "Auto‑Resolve", // note nonbreaking hyphen
-							class: "alt",
-							cb: btn => { 
-								let combat = new ShipCombat( sc.attacker, sc.defender, sc.planet );
-								combat.ProcessQueue( 1000 ); // 1000 = fight to the death if possible
-								combat.End();
-								}
-							},
-						{ 
-							text: "Flee", 
-							class: "bad",
-							cb: btn => { 
-								let combat = new ShipCombat( sc.attacker, sc.defender, sc.planet );
-								combat.RetreatTeam( combat.teams[1] ); // team 1 is always the defender
-								combat.ProcessQueue( 1000 ); // 1000 = fight to the death if possible
-								combat.End();
-								}
+ 		if ( !this.shipcombats.length ) { return false; }
+		let sc = this.shipcombats.shift();
+		// fleet may have been destroyed in previous battle.
+		if ( sc.attacker.killme || sc.defender.killme || !sc.attacker.ships.length || !sc.defender.ships.length ) { 
+			this.PresentNextPlayerShipCombat();
+			}
+		// if player is the defender, present mandatory battle
+		else if ( sc.defender.owner.is_player ) { 
+			console.log(sc.label);
+			this.app.ShowDialog(
+				`Attack on ${sc.defender.star.name}`,
+				sc.label,
+				// buttons
+				[
+					{ 
+						text: "Command", 
+						class: "",
+						cb: btn => { this.LaunchPlayerShipCombat(sc); }
+						},
+					{ 
+						text: "Auto‑Resolve", // note nonbreaking hyphen
+						class: "alt",
+						cb: btn => { 
+							let combat = new ShipCombat( sc.attacker, sc.defender, sc.planet );
+							combat.ProcessQueue( 1000 ); // 1000 = fight to the death if possible
+							combat.End();
+							this.PresentNextPlayerShipCombat();
 							}
-						]
-					);
-				break;
-				}
-			// if player is the attacker, launch directly to attack screen
-			else if ( sc.attacker.owner.is_player ) { 
-				this.LaunchPlayerShipCombat(sc);
-				break;
-				}
-			};   
+						},
+					{ 
+						text: "Flee", 
+						class: "bad",
+						cb: btn => { 
+							let combat = new ShipCombat( sc.attacker, sc.defender, sc.planet );
+							combat.RetreatTeam( combat.teams[1] ); // team 1 is always the defender
+							combat.ProcessQueue( 1000 ); // 1000 = fight to the death if possible
+							combat.End();
+							this.PresentNextPlayerShipCombat();
+							}
+						}
+					]
+				);
+			}
+		// if player is the attacker, launch directly to attack screen
+		else if ( sc.attacker.owner.is_player ) { 
+			this.LaunchPlayerShipCombat(sc);
+			}
     	}
     	
 	LaunchPlayerShipCombat( combat ) {
