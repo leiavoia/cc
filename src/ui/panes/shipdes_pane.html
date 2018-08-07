@@ -18,16 +18,24 @@
 					</tr>
 				</table>
 				<div class="button_rack button_rack_fill">
-					<button click.delegate="">NEW</button>
-					<button click.delegate="">COPY</button>
-					<button click.delegate="" class="bad">DELETE</button>
+					<button click.delegate="StartNewBlueprint()" if.bind="mode!='new'">NEW</button>
+					<button click.delegate="CommitNewBlueprint()" if.bind="mode=='new'">COMMIT DESIGN</button>
+<!-- 					<button click.delegate="">COPY</button> -->
+<!-- 					<button click.delegate="" class="bad">DELETE</button> -->
+				</div>
+			</div>
+			
+			<!-- image selector -->
+			<div id="img_sel" class="offset" if.bind="newbp && mode=='img_sel'">
+				<div repeat.for="img of avail_imgs" click.delegate="SelectShipImg(img)" class="${img == newbp.img ? 'selected' : ''}">
+					<img src="img" />
 				</div>
 			</div>
 			
 			<!-- add weapon pane -->
 			<div id="add_weapon_pane" class="offset" if.bind="bp && mode=='add_weapon'">
 				<p class="button_rack topless" style="float:right;">
-					<button class="big bad" click.delegate="mode=null">CANCEL</button>
+					<button class="big bad" click.delegate="mode='new'">CANCEL</button>
 				</p>
 				<h3>Add Weapons:</h3>
 				<table>
@@ -48,7 +56,7 @@
 			<!-- add component pane -->
 			<div id="add_component_pane" class="offset" if.bind="bp && mode=='add_comp'">
 				<p class="button_rack topless" style="float:right;">
-					<button class="big bad" click.delegate="mode=null">CANCEL</button>
+					<button class="big bad" click.delegate="mode='new'">CANCEL</button>
 				</p>
 				<h3>Add Components:</h3>
 				<table>
@@ -65,7 +73,9 @@
 			
 			<!-- ship details pane -->
 			<div id="bp_detail" class="offset" if.bind="bp && !mode">
-				<img src.bind="bp.img" style="float:right; max-width: 20em; width: 20%; min-width: 100px; margin: 2em;" />
+				<div style="float:right; max-width: 20em; width: 20%; min-width: 100px; margin:0;" >
+					<img src.bind="bp.img"  style="width: 100%; min-width: 100px;"/>
+				</div>
 				<h2>${bp.name} <span style="color:#4BA5CC;">${bp.sizeclass}-Class</span></h2>
 				<p>Structure: ${bp.hull} Hull, ${bp.armor} Armor,  ${bp.shield} Shielding</p>
 				<p>Manufacture: ${bp.mass} Mass, ${bp.labor} Labor, ${bp.num_built} Made (${bp.bulk_discount}% discount)</p>
@@ -78,11 +88,69 @@
 				<h3>Weapons</h3>
 				<table if.bind="bp.weapons.length">
 					<tr repeat.for="w of bp.weapons">
+						<td>x${w.qty}</td>
+						<td>${w.name}</td>
+						<td>${w.type}</td>
+						<td>${w.mindmg}-${w.maxdmg}</td>
+						<td>${w.shots}</td>
+						<td>^${w.reload}</td>
+						<td>~${w.accu}</td>
+					</tr>
+				</table>
+				
+				<h3>Components</h3>
+				<table if.bind="bp.comps.length">
+					<tr repeat.for="c of bp.comps">
+						<td><b>${c.name}</b></td>
+						<td>${c.desc}</td>
+						<td><span repeat.for="m of c.mods">${m.op}${m.val} ${m.abil} </span> </td>
+					</tr>
+				</table>				
+			</div>
+			
+			
+			<!-- new blueprint pane -->
+			<div id="newbp" class="offset" if.bind="newbp && mode=='new'">
+				<p>
+					<input type="text" name="shipname" value.bind="newbp.name" />
+				</p>
+				<div style="float:right; max-width: 20em; width: 20%; min-width: 100px; margin:0;" >
+					<p class="button_rack button_rack_fill topless" style="text-align:center;">
+						<button click.delegate="ClickPrevImg()">&nbsp;&nbsp;&nbsp;◀&nbsp;&nbsp;&nbsp;</button>
+						<button click.delegate="ClickNextImg()">&nbsp;&nbsp;&nbsp;▶&nbsp;&nbsp;&nbsp;</button>
+					</p>
+					<img src.bind="newbp.img"  style="width: 100%; min-width: 100px;"/>
+				</div>
+				<h2>
+					<span style="color:#4BA5CC;">${newbp.sizeclass}-Class</span>
+				</h2>
+				<p>
+					<progress max.one-time="max_hull_size" value.bind="newbp.mass"></progress>
+					<b>${(((newbp.mass||1) / max_hull_size ) * 100) | round}%</b> Maximum Capacity
+					
+				</p> 
+				<p>Structure: ${newbp.hull} Hull, ${newbp.armor} Armor,  ${newbp.shield} Shielding</p>
+				<p>Manufacture: ${newbp.mass} Mass, ${newbp.labor} Labor, ${newbp.num_built} Made (${newbp.bulk_discount}% discount)</p>
+				<p>Firepower: ${newbp.fp}</p>
+				<p>Map Speed: ${newbp.drive}</p>
+				<p>Combat Speed: ${newbp.speed}</p>
+				<p>Colony Ship: ${newbp.colonize ? 'YES' : 'NO'}</p>
+				<p>Research Capacity: ${newbp.research}</p>
+			
+				<h3>Weapons</h3>
+				<table if.bind="newbp.weapons.length">
+					<tr repeat.for="w of newbp.weapons">
 						<td>
-							<button class="bad bold" click.delegate="bp.RemoveWeapon(w)">X</button>
-							<button class="cool bold" click.delegate="DecWeaponQty(bp,w)">-</button>
-							<button class="cool bold" click.delegate="IncWeaponQty(bp,w)">+</button>
+							<button class="bad bold" click.delegate="newbp.RemoveWeapon(w)">X</button>
+							<button class="cool bold" click.delegate="DecWeaponQty(newbp,w)">-</button>
+							<button class="cool bold" click.delegate="IncWeaponQty(newbp,w)">+</button>
 						</td>
+						<!-- 
+							BUG: Aurelia doesn't rebind to weapons that are added, 
+							removed, and re-added. Symptom: qty does not change
+							even if +/- buttons are used, however, the actual data
+							does change. Maybe there will be a fix one day.							
+						-->
 						<td>x${w.qty}</td>
 						<td>${w.name}</td>
 						<td>${w.type}</td>
@@ -97,10 +165,10 @@
 				</p>
 			
 				<h3>Components</h3>
-				<table if.bind="bp.comps.length">
-					<tr repeat.for="c of bp.comps">
+				<table if.bind="newbp.comps.length">
+					<tr repeat.for="c of newbp.comps">
 						<td>
-							<button class="bad bold" click.delegate="bp.RemoveComponent(c)">X</button>
+							<button class="bad bold" click.delegate="newbp.RemoveComponent(c)">X</button>
 						</td>
 						<td><b>${c.name}</b></td>
 						<td>${c.desc}</td>
@@ -111,7 +179,9 @@
 					<button click.delegate="mode='add_comp'">Add Component</button>
 				</p>
 				
-			</div>
+			</div>			
+			
+			
 		</main>	
 	</div>
 

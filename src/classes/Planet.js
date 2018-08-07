@@ -95,7 +95,37 @@ export default class Planet {
 // 		civ:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 		};
 
-
+	AddBuildQueueShipBlueprint( bp ) { 
+		let item = {
+			type: 'ship',
+			obj: {
+				name: bp.name,
+				ProduceMe: function ( planet ) {
+					// find my fleet
+          			let myfleet = null;
+					for ( let f of planet.star.fleets ) { 
+						if ( f.owner == planet.owner ) { 
+							myfleet = f;
+							break;
+							}
+						}
+					if ( !myfleet ) { 
+						myfleet = new Fleet( planet.owner, planet.star );
+						}
+					// make the ship
+         			let ship = bp.Make();
+					myfleet.AddShip(ship);
+					}
+				},
+			labor: bp.labor, // "cost" in hammers
+			mp: bp.mass, // material points
+			spent: 0,
+			quantity: 1,
+			turns_left: 0,
+			pct: 0
+			};
+		this.prod_q.push(item);
+		}
 
 	// PRODUCTION --------------------------	
 	prod_q = [

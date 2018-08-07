@@ -137,8 +137,10 @@ export default class ShipCombat {
 			else { team.fleet.Kill(); }
 			});
 		// clean up battle-specific stuff
-		this.teams[0].fleet.ships.forEach( s => { delete s.retreat; } );
-		this.teams[1].fleet.ships.forEach( s => { delete s.retreat; } );
+		// NOTE: deleting the property break's Aurelia binding 
+		// for reasons unknown, so better just to leave it in.
+// 		this.teams[0].fleet.ships.forEach( s => { delete s.retreat; } );
+// 		this.teams[1].fleet.ships.forEach( s => { delete s.retreat; } );
 		}		
 		
 	// item: { ship, weapon, team, qty }
@@ -168,6 +170,13 @@ export default class ShipCombat {
 				this.queue.shift();
 				continue;
 				}
+			// retreat token - get out of combat free card
+			else if ( next.weapon === 'retreat' ) { 
+				next.ship.retreat = true;
+				next.team.ships_retreated++;
+				this.queue.shift();
+				continue;
+				}
 			// if my team is retreating, i forfeit my turn
 			else if ( next.team.retreating && next.weapon !== 'retreat' ) { 
 				this.queue.shift();
@@ -176,13 +185,6 @@ export default class ShipCombat {
 			// skip retreated targets... you had your chance, Gorman.
 			else if ( next.team.targets[0].retreat ) { 
 				next.team.targets.shift();
-				continue;
-				}
-			// retreat token - get out of combat free card
-			else if ( next.weapon === 'retreat' ) { 
-				next.ship.retreat = true;
-				next.team.ships_retreated++;
-				this.queue.shift();
 				continue;
 				}
 			// attack!
@@ -272,7 +274,7 @@ export default class ShipCombat {
 			team.fleet.ships.forEach( s => {
 				this.AddAttack( 
 					{ ship:s, weapon:'retreat', team:team }, 
-					this.time + s.bp.drive + Math.random() /* jitter */ 
+					this.time + ( s.bp.drive * 5 ) + Math.random() /* jitter */ 
 					);
 				});
 			}

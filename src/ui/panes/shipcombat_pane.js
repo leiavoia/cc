@@ -114,7 +114,7 @@ export class ShipCombatPane {
 		this.last_turnlog = this.last_turnlog.length ? this.last_turnlog[0] : null;
 		this.DoWeaponFX();
 		// if combat resolved or no more items to play this round, stop
-		if ( this.combat.status || !this.last_turnlog ) { 
+		if ( this.combat.status || !this.last_turnlog ) {
 			this.processing = false;
 			this.last_turnlog = null; // ends hiliting
 			this.FormatResolutionLabel();

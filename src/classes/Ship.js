@@ -100,8 +100,9 @@ Ship.next_id = 0;
 export class ShipBlueprint {
 	constructor() {
 		this.id = ++ShipBlueprint.next_id;
-		this.name = 'Ship';
+		this.name = 'Ship Name';
 		this.weapons = [];
+		this.mass = 0;
 		this.hull = 1;
 		this.armor = 1;
 		this.shield = 0;
@@ -137,7 +138,12 @@ export class ShipBlueprint {
 				this.RecalcStats(); // TODO: parent?
 				return true;
 				}
-			}
+			}			
+		// NOTE: BUG: using object.assign avoids aurelia binding bugs
+		// but also radically increases memory usage for ships. Switch 
+		// these lines if memory performance isn't a problem and we
+		// still can't find a solution for aurelia bugs.
+// 		let o = Object.assign( {}, WeaponList[tag] );
 		let o = Object.create( WeaponList[tag] );
 		o.qty = qty; // default, user can change later
 		this.weapons.push(o);
@@ -182,6 +188,7 @@ export class ShipBlueprint {
 	RemoveComponent( c ) {
 		let i = this.comps.indexOf(c);
 		if ( i >= 0 ) { 
+			this.mods.RemoveMatching( null, null, c, null ); 
 			this.comps.splice( i, 1 );
 			this.RecalcStats(); // TODO: parent?
 			return true;
@@ -230,7 +237,7 @@ export class ShipBlueprint {
 	IncNumBuilt() { 
 		this.num_built++;
 		// retract our previous mod
-		this.mods.Remove('labor', null, 'bulk_discount');
+		this.mods.RemoveMatching('labor', null, 'bulk_discount');
 		// add a new one
 		let rate = 1.0
 		for ( let max=5; this.num_built >= max && rate > 0.05; max*=2, rate-=0.05 ) { ;; }

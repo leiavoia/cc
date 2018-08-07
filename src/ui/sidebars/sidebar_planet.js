@@ -1,13 +1,12 @@
 // import {bindable} from 'aurelia-framework';
 
 export class PlanetDetailPane {
-	planet = null;
-	app = null;
-
+	
 	activate(data) {
 		this.app = data.app;
 		this.planet = data.obj;
 		this.planetChanged( this.planet );
+		this.sel_build_item = null;
 		}
 
 	prod_q_repeat_vals = [
@@ -103,5 +102,8 @@ export class PlanetDetailPane {
 		}
 	BuildQueueRemoveItem( index ) {
 		this.planet.prod_q.splice( index, 1 );
+		}
+	AddSelectedShipToBuildQueue() { 
+		this.planet.AddBuildQueueShipBlueprint( this.sel_build_item );
 		}
 	}

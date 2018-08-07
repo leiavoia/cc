@@ -34,18 +34,21 @@ export class Modlist {
 	// It MUST match ability.
 	// It MAY match operator, specific value, or provider.
 	// NULL values match anything. 
-	Remove( ability, op = null, provider = null, value = null ) { 
+	RemoveMatching( ability = null, op = null, provider = null, value = null ) { 
 		let k = this.mods.length;
 		while ( k-- ) { 
 			let m = this.mods[k];
-			if ( m.abil == ability ) {
-				if ( op && op == m.op ) { continue; }
-				if ( provider && provider == m.prov ) { continue; }
-				if ( value && value == m.val ) { continue; }
-				this.mods.splice( k, 1 );
-				// do not break; there may be duplicates
-				}
+			if ( ability && m.abil != ability ) { continue; }
+			if ( op && op != m.op ) { continue; }
+			if ( provider && provider != m.prov ) { continue; }
+			if ( value && value != m.val ) { continue; }
+			this.mods.splice( k, 1 );
 			}
+		}
+		
+	Remove( m ) { 
+		let i = this.mods.indexOf(m);
+		if ( i >= 0 ) { this.mods.splice( i, 1 ); }
 		}
 		
 	// get a list of mods

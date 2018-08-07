@@ -36,7 +36,7 @@ export default class Civ {
 	ship_range = 750; // px
 	ship_speed = 200; // HACK
 	ship_blueprints = [];
-	
+	max_hull_size = 800; // HACK HARDSET FOR DEVELOPMENT
 	avail_ship_comps = []; // components we can equip on ships
 	avail_ship_weapons = []; // weapons we can equip on ships
 	

@@ -250,10 +250,12 @@
 						<td><a href="#" click.delegate="BuildQueueRemoveItem($index)" class="bad">X</a></td>
 					</tr>
 				</table>
-				<p>Built:</p>
-				<ul>
-					<li repeat.for="bdg of planet.buildings">${bdg.obj.name}</li>				
-				</ul>
+				<p>
+					<select value.bind="sel_build_item">
+						<option repeat.for="bp of planet.owner.ship_blueprints" model.bind="bp">${bp.name}</option>
+					</select>
+					<button click.delegate="AddSelectedShipToBuildQueue()">Add</button>
+				</p>
 				
 			</div>
 		</template>

@@ -28,14 +28,11 @@ export class FleetDetailPane {
 			);
 		}
 		
-	deactivate() {
-		// stop listening for hotkeys
-		window.removeEventListener('keypress', this.keypressCallback);
-		}
-    
 	unbind() { 
 		// stop listening for starclicks
 		this.starclick_subsc.dispose();
+		// stop listening for hotkeys
+		window.removeEventListener('keypress', this.keypressCallback);
 		}
 				
 	constructor() { 
