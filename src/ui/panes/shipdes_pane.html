@@ -3,6 +3,9 @@
 	
 		<header>
 			<div class="button_rack big" style="float:right;">
+				<button click.delegate="StartNewBlueprint()" if.bind="mode!='new'" class="alt">NEW DESIGN</button>	
+				<button click.delegate="CommitNewBlueprint()" if.bind="mode=='new'" class="alt">COMMIT DESIGN</button>
+				<button click.delegate="CancelNewBlueprint()" if.bind="mode=='new'" class="bad">CANCEL DESIGN</button>
 				<button click.delegate="ClosePanel()">CLOSE</button>
 			</div>
 			<h1>Ship Design</h1>
@@ -11,70 +14,32 @@
 		<main id="ship_des_pane_wrapper">
 			
 			<!-- ship list -->
-			<div id="bp_list" class="offset">
-				<table>
-					<tr repeat.for="bp of app.game.myciv.ship_blueprints" >
-						<td><a href="#" click.delegate="ClickBlueprint(bp)">${bp.name}</a></td>
-					</tr>
-				</table>
-				<div class="button_rack button_rack_fill">
-					<button click.delegate="StartNewBlueprint()" if.bind="mode!='new'">NEW</button>
-					<button click.delegate="CommitNewBlueprint()" if.bind="mode=='new'">COMMIT DESIGN</button>
-<!-- 					<button click.delegate="">COPY</button> -->
-<!-- 					<button click.delegate="" class="bad">DELETE</button> -->
+			<div id="bp_list" class="offset unpadded iconlist" if.bind="!mode">
+				<div repeat.for="shipbp of bps" 
+					click.delegate="ClickBlueprint(shipbp)"
+					class="item clickable ${bp==shipbp ? 'selected' : ''}"> 
+					<img src.bind="shipbp.img" />
+					<div class="info">
+						<p>${shipbp.name}</p>
+						<p class="subtext">
+							${shipbp.sizeclass}-Class,  
+							${shipbp.research ? 'Research' : ''}
+							${shipbp.colonize ? 'Colonizer' : ''} 
+							<span containerless if.bind="shipbp.fp">${shipbp.fp} Firepower</span>
+						</p>
+					</div>
 				</div>
 			</div>
-			
-			<!-- image selector -->
-			<div id="img_sel" class="offset" if.bind="newbp && mode=='img_sel'">
-				<div repeat.for="img of avail_imgs" click.delegate="SelectShipImg(img)" class="${img == newbp.img ? 'selected' : ''}">
-					<img src="img" />
-				</div>
-			</div>
-			
-			<!-- add weapon pane -->
-			<div id="add_weapon_pane" class="offset" if.bind="bp && mode=='add_weapon'">
-				<p class="button_rack topless" style="float:right;">
-					<button class="big bad" click.delegate="mode='new'">CANCEL</button>
-				</p>
-				<h3>Add Weapons:</h3>
-				<table>
-					<tr repeat.for="w of app.game.myciv.avail_ship_weapons">
-						<td>
-							<button class="" click.delegate="ClickAddWeapon(w)">Add</button>
-						</td>
-						<td><b>${w.name}</b></td>
-						<td>${w.type}</td>
-						<td>${w.mindmg}-${w.maxdmg}</td>
-						<td>${w.shots}</td>
-						<td>^${w.reload}</td>
-						<td>~${w.accu}</td>
-					</tr>
-				</table>
-			</div>
-			
-			<!-- add component pane -->
-			<div id="add_component_pane" class="offset" if.bind="bp && mode=='add_comp'">
-				<p class="button_rack topless" style="float:right;">
-					<button class="big bad" click.delegate="mode='new'">CANCEL</button>
-				</p>
-				<h3>Add Components:</h3>
-				<table>
-					<tr repeat.for="c of app.game.myciv.avail_ship_comps">
-						<td>
-							<button class="" click.delegate="ClickAddComponent(c)">Add</button>
-						</td>
-						<td><b>${c.name}</b></td>
-						<td>${c.desc}</td>
-						<td><span repeat.for="m of c.mods">${m.op}${m.val} ${m.abil} </span> </td>
-					</tr>
-				</table>
-			</div>
-			
+
 			<!-- ship details pane -->
 			<div id="bp_detail" class="offset" if.bind="bp && !mode">
 				<div style="float:right; max-width: 20em; width: 20%; min-width: 100px; margin:0;" >
-					<img src.bind="bp.img"  style="width: 100%; min-width: 100px;"/>
+					<div class="button_rack button_rack_fill">
+						<button click.delegate="CopyBlueprint()" if.bind="bp && !newbp && mode!='upgrade'" class="">COPY</button>
+						<button click.delegate="mode='scrap'" if.bind="bp && !newbp && mode!='scrap'" class="bad">SCRAP</button>
+					</div>
+					<br/>
+					<img src.bind="bp.img" class="zoomzoom" style="width: 100%; min-width: 100px;"/>
 				</div>
 				<h2>${bp.name} <span style="color:#4BA5CC;">${bp.sizeclass}-Class</span></h2>
 				<p>Structure: ${bp.hull} Hull, ${bp.armor} Armor,  ${bp.shield} Shielding</p>
@@ -97,6 +62,7 @@
 						<td>~${w.accu}</td>
 					</tr>
 				</table>
+				<p if.bind="!bp.weapons.length">None</p>
 				
 				<h3>Components</h3>
 				<table if.bind="bp.comps.length">
@@ -105,12 +71,13 @@
 						<td>${c.desc}</td>
 						<td><span repeat.for="m of c.mods">${m.op}${m.val} ${m.abil} </span> </td>
 					</tr>
-				</table>				
+				</table>			
+				<p if.bind="!bp.comps.length">None</p>
 			</div>
 			
 			
 			<!-- new blueprint pane -->
-			<div id="newbp" class="offset" if.bind="newbp && mode=='new'">
+			<div id="newbp" class="offset" if.bind="newbp">
 				<p>
 					<input type="text" name="shipname" value.bind="newbp.name" />
 				</p>
@@ -119,7 +86,7 @@
 						<button click.delegate="ClickPrevImg()">&nbsp;&nbsp;&nbsp;◀&nbsp;&nbsp;&nbsp;</button>
 						<button click.delegate="ClickNextImg()">&nbsp;&nbsp;&nbsp;▶&nbsp;&nbsp;&nbsp;</button>
 					</p>
-					<img src.bind="newbp.img"  style="width: 100%; min-width: 100px;"/>
+					<img src.bind="newbp.img" class="zoomzoom" style="width: 100%; min-width: 100px;"/>
 				</div>
 				<h2>
 					<span style="color:#4BA5CC;">${newbp.sizeclass}-Class</span>
@@ -161,7 +128,7 @@
 					</tr>
 				</table>
 				<p class="button_rack">
-					<button click.delegate="mode='add_weapon'">Add Weapon</button>
+					<button click.delegate="subpanel='add_weapon'">Add Weapon</button>
 				</p>
 			
 				<h3>Components</h3>
@@ -176,11 +143,64 @@
 					</tr>
 				</table>
 				<p class="button_rack">
-					<button click.delegate="mode='add_comp'">Add Component</button>
+					<button click.delegate="subpanel='add_comp'">Add Component</button>
 				</p>
 				
 			</div>			
+
+			<!-- scrap ship pane -->
+			<div class="offset big" if.bind="mode=='scrap'" >			
+				<h2>Scrap ${bp.name}</h2>
+				<div style="float:right; max-width: 20em; width: 20%; min-width: 100px; margin:0;" >
+					<img src.bind="bp.img"  style="width: 100%; min-width: 100px;"/>
+				</div>
+				<p><input type="checkbox" checked.bind="scrap_delete_all" /> Scrap all existing ships?
+				<p><input type="checkbox" checked.bind="scrap_remove_from_queues" /> Remove from planetary build queues?
+				<p>This will permanently remove this blueprint. Are you sure?</p>
+				<p class="button_rack">
+					<button class="" click.delegate="ScrapBlueprint()">SCRAP</button>
+					<button class="bad" click.delegate="mode=null">CANCEL</button>
+				</p>
+			</div>
 			
+			<!-- add weapon pane -->
+			<div id="add_weapon_pane" class="offset" if.bind="subpanel=='add_weapon'">
+				<p class="button_rack topless" style="float:right;">
+					<button class="big" click.delegate="subpanel=null">CLOSE</button>
+				</p>
+				<h3>Add Weapons:</h3>
+				<table>
+					<tr repeat.for="w of app.game.myciv.avail_ship_weapons">
+						<td>
+							<button class="" click.delegate="ClickAddWeapon(w)">Add</button>
+						</td>
+						<td><b>${w.name}</b></td>
+						<td>${w.type}</td>
+						<td>${w.mindmg}-${w.maxdmg}</td>
+						<td>${w.shots}</td>
+						<td>^${w.reload}</td>
+						<td>~${w.accu}</td>
+					</tr>
+				</table>
+			</div>
+			
+			<!-- add component pane -->
+			<div id="add_component_pane" class="offset" if.bind="subpanel=='add_comp'">
+				<p class="button_rack topless" style="float:right;">
+					<button class="big" click.delegate="subpanel=null">CLOSE</button>
+				</p>
+				<h3>Add Components:</h3>
+				<table>
+					<tr repeat.for="c of app.game.myciv.avail_ship_comps">
+						<td>
+							<button class="" click.delegate="ClickAddComponent(c)">Add</button>
+						</td>
+						<td><b>${c.name}</b></td>
+						<td>${c.desc}</td>
+						<td><span repeat.for="m of c.mods">${m.op}${m.val} ${m.abil} </span> </td>
+					</tr>
+				</table>
+			</div>
 			
 		</main>	
 	</div>

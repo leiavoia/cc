@@ -27,6 +27,8 @@ export default class Planet {
 	age = 0;
 	age_level = 0;
 	
+	prod_q = [];
+	
 	// PHYSICAL ATTRIBUTES -------------------------------
 	energy = 1.0; // represents production bonus
 	rich = 0;
@@ -95,27 +97,34 @@ export default class Planet {
 // 		civ:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 		};
 
+	ProduceBuildQueueItem( item ) {
+		if ( item.type == 'ship' ) { 
+			// find my fleet
+			let myfleet = null;
+			for ( let f of this.star.fleets ) { 
+				if ( f.owner == this.owner ) { 
+					myfleet = f;
+					break;
+					}
+				}
+			if ( !myfleet ) { 
+				myfleet = new Fleet( this.owner, this.star );
+				}
+			myfleet.AddShip( item.obj.bp.Make() );
+			}
+		// NOTE: custom functions will not serialize to a save format.
+		// clean this up later.
+		else if ( item.obj.hasOwnProperty('ProduceMe') ) { 
+			item.obj.ProduceMe( this );
+			}
+		}
+		
 	AddBuildQueueShipBlueprint( bp ) { 
 		let item = {
 			type: 'ship',
 			obj: {
 				name: bp.name,
-				ProduceMe: function ( planet ) {
-					// find my fleet
-          			let myfleet = null;
-					for ( let f of planet.star.fleets ) { 
-						if ( f.owner == planet.owner ) { 
-							myfleet = f;
-							break;
-							}
-						}
-					if ( !myfleet ) { 
-						myfleet = new Fleet( planet.owner, planet.star );
-						}
-					// make the ship
-         			let ship = bp.Make();
-					myfleet.AddShip(ship);
-					}
+				bp: bp
 				},
 			labor: bp.labor, // "cost" in hammers
 			mp: bp.mass, // material points
@@ -126,85 +135,6 @@ export default class Planet {
 			};
 		this.prod_q.push(item);
 		}
-
-	// PRODUCTION --------------------------	
-	prod_q = [
-		{
-			type: 'ship',
-			obj: {
-				name: 'Colony Ship',
-				unique: false,
-				ProduceMe: function ( planet ) {
-					// find my fleet
-          			let myfleet = null;
-					for ( let f of planet.star.fleets ) { 
-						if ( f.owner == planet.owner ) { 
-							myfleet = f;
-							break;
-							}
-						}
-         			let ship = planet.owner.ship_blueprints[0].Make();
-         			ship.speed = planet.owner.ship_speed; // HACK
-					if ( !myfleet ) { 
-						myfleet = new Fleet( planet.owner, planet.star );
-						}
-					myfleet.AddShip(ship);
-					}
-				},
-			labor: 10, // "cost" in hammers
-			mp: 5, // material points
-			spent: 0,
-			quantity: -1,
-			turns_left: 0,
-			pct: 0
-			},
-		{
-			type: 'ship',
-			obj: {
-				name: 'Fighter',
-				unique: false,
-				ProduceMe: function ( planet ) {
-					let myfleet = null;
-					for ( let f of planet.star.fleets ) { 
-						if ( f.owner == planet.owner ) { 
-							myfleet = f;
-							break;
-							}
-						}
-					let ship = planet.owner.ship_blueprints[1].Make();
-					ship.speed = planet.owner.ship_speed; // HACK
-					if ( !myfleet ) { 
-						myfleet = new Fleet( planet.owner, planet.star );
-						}
-					myfleet.AddShip(ship);
-					}
-				},
-			labor: 10, // "cost" in hammers
-			mp: 5, // material points
-			spent: 0,
-			quantity: -1,
-			turns_left: 0,
-			pct: 0
-			},
-		{
-			type: 'makework',
-			obj: {
-				name: 'Trade Goods',
-				unique: false,
-				ProduceMe: function ( planet ) {
-					// TODO: add to accounting records
-					planet.owner.treasury += 10;	
-					planet.econ.tradegoods += 10;
-					}
-				},
-			labor: 3, // "cost" in hammers
-			mp: 1, // material points
-			spent: 0,
-			quantity: -1,
-			turns_left: 0,
-			pct: 0
-			}
-		];
 
 	AgePlanet() { 
 		this.age_level = Math.min( Math.floor( ++this.age / 40 ), 5 );
@@ -451,7 +381,7 @@ export default class Planet {
 					// did something get built?
 					if ( item.spent >= (item.mp - 0.0001) ) { // slop room
 // 						console.log(`item completed.`);
-						item.obj.ProduceMe(this);
+						this.ProduceBuildQueueItem( item );
 						// reset
 						item.spent = 0;
 						item.pct = 0;
@@ -836,6 +766,39 @@ export default class Planet {
 			this.star.AddAccount( this.owner );
 			Constellation.Refactor( this.owner ); 
 			}
+					
+		this.prod_q = [
+			{
+				type: 'ship',
+				obj: {
+					name: this.owner.ship_blueprints[0].name,
+					bp: this.owner.ship_blueprints[0],
+					},
+				labor: 10, // "cost" in hammers
+				mp: 5, // material points
+				spent: 0,
+				quantity: -1,
+				turns_left: 0,
+				pct: 0
+				},
+			{
+				type: 'makework',
+				obj: {
+					name: 'Trade Goods',
+					ProduceMe: function ( planet ) {
+						// TODO: add to accounting records
+						planet.owner.treasury += 10;	
+						planet.econ.tradegoods += 10;
+						}
+					},
+				labor: 3, // "cost" in hammers
+				mp: 1, // material points
+				spent: 0,
+				quantity: -1,
+				turns_left: 0,
+				pct: 0
+				}
+			];
 			
 		this.RecalcSectors();
 		this.owner.RecalcEmpireBox();			

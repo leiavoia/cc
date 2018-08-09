@@ -427,6 +427,9 @@ evenly space headers and body elements
 #layout_ui_main .pane.flex {
 	display:flex;
 	flex-flow: column nowrap;
+	height:100vh;
+	max-height: 100vh;
+	overflow: hidden;
 	}
 #layout_ui_main .pane.flex HEADER {
 	flex: 1;
@@ -437,9 +440,12 @@ evenly space headers and body elements
 	display: flex;
 	flex-flow: row nowrap;
 	align-items: stretch;
+/* 	max-height: 50%; */
+	overflow: hidden;
 	}
 #layout_ui_main .pane.flex MAIN > * {
 	margin: 0 0 0 1em;
+	overflow-y: auto;
 	}
 #layout_ui_main .pane.flex MAIN > *:first-child {
 	margin-left: 0;
@@ -448,6 +454,78 @@ evenly space headers and body elements
 	margin-top: 0;
 	}
 
+	
+/* 
+ICONLISTS
+
+Use these if you need a column of items
+where each item has an icon and some text data.
+
++----- .iconlist ------+
+| +----- .item ------+ |
+| |IMG +-- .info ----+ |
+| |    + <P>         + |
+| |    + <P.subtext> + |
+| |    +-------------+ |
+| +------------------+ |
++----------------------|
+*/
+.iconlist {
+	display: flex;
+	flex-flow: column nowrap;
+	padding: 0;
+	}
+.iconlist .item { 
+	display: flex;
+	flex-flow: row nowrap;
+	vertical-align: middle;
+	}	
+.iconlist .item > .icon { 
+	box-sizing: border-box;
+	min-height: 3em;
+	min-width: 3em;
+	flex: 1 1 3em;
+	margin: 0;
+	padding: 0;
+	}
+.iconlist .item IMG { 
+	box-sizing: border-box;
+	min-height: 3em;
+	min-width: 3em;
+	max-height: 5em;
+	flex: 1 1 3em;
+	margin: 0;
+	padding: 0.25em;
+	object-fit: contain;
+	}
+.iconlist .item > .info { 
+	box-sizing: border-box;
+	flex: 7;
+	margin: 0;
+	padding: 0.5em;
+	}
+.iconlist .item P { 
+	font-size: 150%;
+	margin: 0 0 0.25em 0;
+	padding: 0;
+	}
+.iconlist .item .subtext {
+	font-size: 1rem;
+	color:  #3C96BA;
+	}	
+.iconlist .item.selected { 
+	background: #3C96BA;
+	}		
+.iconlist .item:hover { 
+	background: #54B848;
+	}		
+.iconlist .item.selected .subtext {
+	color: #11436b;
+	}
+	
+
+
+	
 #layout_ui_side { 
 	order: 20;
 	flex: 30;
@@ -684,6 +762,7 @@ TABLE.env TD.ideal {
 .bottomless {margin-bottom: 0 !important;}
 .marginless {margin: 0 !important;}
 .unpadded {padding: 0 !important;}
+.clickable { cursor: pointer; }
 
 .bold { font-weight:bold; }
 
@@ -2297,21 +2376,8 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	width: 90%;
 	margin: 0;
 	}
-/*  */
-/*#colonize_pane.star_red 		{ background-image: url(../img/map/air_collect_sparkle_red.png), url(../img/map/bg/space_003.jpg); }
-#colonize_pane.star_orange 	{ background-image: url(../img/map/air_collect_sparkle_orange.png), url(../img/map/bg/space_006b.jpg); }
-#colonize_pane.star_yellow 	{ background-image: url(../img/map/air_collect_sparkle_yellow.png), url(../img/map/bg/tarantula_dark.jpg); }
-#colonize_pane.star_green 	{ background-image: url(../img/map/air_collect_sparkle_green.png), url(../img/map/bg/space_003.jpg); }
-#colonize_pane.star_blue 	{ background-image: url(../img/map/air_collect_sparkle_blue_dark.png), url(../img/map/bg/space_006b.jpg); }
-#colonize_pane.star_cyan 	{ background-image: url(../img/map/air_collect_sparkle_cyan.png), url(../img/map/bg/tarantula_dark.jpg); }
-#colonize_pane.star_purple 	{ background-image: url(../img/map/air_collect_sparkle_purple.png), url(../img/map/bg/space_003.jpg); }
-#colonize_pane.star_white 	{ background-image: url(../img/map/air_collect_sparkle_white.png), url(../img/map/bg/space_006b.jpg); }
-#colonize_pane.star_black 	{ background-image: url(../img/map/air_collect_sparkle_black.png), url(../img/map/bg/tarantula_dark.jpg); }*/
 
-
-
-
-
+	
 
 /* DIPLOMACY PANE */
 #diplo_pane #civ_list {
@@ -2558,12 +2624,14 @@ DIV.annoyometer .nub {
 /* SHIP DESIGN PANE */
 #ship_des_pane {
 	height:100%;
+	max-height: 100%;
 	background: url(../img/workshop/technic1.png) repeat;
 	}
 #ship_des_pane #bp_list { 
 	flex: 1 1 20em;
 	min-width: 20em;
 	max-width: 20em;
+	overflow-y: auto;
 	}
 #ship_des_pane INPUT[name='shipname'] {
 	box-sizing: border-box;
@@ -2577,6 +2645,15 @@ DIV.annoyometer .nub {
 	margin: 0;
 	border-radius: 0.25em;
 	}	
+
+/*#ship_des_pane IMG.zoomzoom {
+	opacity: 1;
+	animation: shipdes_zoomzoom 0.75s linear;
+	}
+@keyframes shipdes_zoomzoom {
+	from { transform: translateY(300px); opacity: 0; }
+	100% { transform: translateY(0); opacity: 1; }
+	}*/	
 	
 /* SHIP COMBAT PANE */
 #shipcombat_pane {

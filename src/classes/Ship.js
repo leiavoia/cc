@@ -245,5 +245,13 @@ export class ShipBlueprint {
 		this.mods.Add( new Mod( 'labor', '*', rate, 'Mass Production Discount', 'bulk_discount' ) );
 		}
 		
+	Copy() { 
+		let newbp = new ShipBlueprint();
+		newbp.name = this.name + ' Copy';
+		newbp.img = this.img;
+		this.weapons.forEach( w => { newbp.AddWeapon( w.tag, w.qty ); });
+		this.comps.forEach( c => { newbp.AddComponent( c.tag ); });
+		return newbp;
+		}
 	};
 ShipBlueprint.next_id = 0;
