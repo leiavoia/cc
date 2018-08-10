@@ -11,6 +11,7 @@ import * as Signals from '../util/signals';
 import FastPriorityQueue from 'fastpriorityqueue';
 import EventLibrary from './EventLibrary';
 import ShipCombat from './ShipCombat';
+import {VictoryRecipes,VictoryIngredients} from './VictoryRecipes';
 
 
 export default class Game {
@@ -26,7 +27,70 @@ export default class Game {
 	eventcard_queue = new FastPriorityQueue( (a,b) => { return (a.turn < b.turn) ? -1 : (a.turn > b.turn ? 1 : 0); });
 	eventlib = null;
 	shipcombats = [];
-	
+	victory_recipes = [];	
+	victory_achieved = false;
+		
+	constructor( app ) {
+		this.app = app;
+		Signals.Listen('anom_complete', data => this.AnomCompleted(data) );
+		this.eventlib = new EventLibrary(this.app);
+		}
+		
+	CheckForVictory() { 
+		if ( this.victory_achieved ) { return false; }
+		for ( let civ of this.galaxy.civs ) { 
+			for ( let r of this.victory_recipes ) { 
+				let gotcha = true;
+				if ( !civ.victory_ingredients.length ) {
+					gotcha = false;
+					}
+				else {
+					for ( let i of civ.victory_ingredients )  { 
+						// not found - recipe is incomplete
+						if ( r.requires.indexOf(i.tag) == -1 ) {
+							gotcha = false;
+							break; 
+							}
+						}
+					}
+				if ( gotcha ) { 
+					this.victory_achieved = true;
+					console.log( 'VICTORY ACHIEVED: ' + r.name );
+					if ( civ == this.myciv ) { 
+						this.app.AddNote(
+							'good',
+							`YOU WINNEDED!`,
+							`"${r.name}" victory achieved.`,
+							function(){ this.app.SwitchMainPanel( 'victory', r ); }
+							);
+						}
+					else {
+						this.app.AddNote(
+							'bad',
+							`YOU LOSEDED!`,
+							`"${r.name}" victory achieved by the ${civ.name} civilization. This means YOU LOSE. You get NOTHING!`,
+							function(){ this.app.SwitchMainPanel( 'victory', r ); }
+							);	
+						}			
+					return true;
+					}
+				}
+			}
+		return false;
+		}
+		
+	DeployVictoryIngredients( ) { 
+		// TODO: we might opt to filter which victory conditions are added to the game
+		// either by direct selection or level of crazyness.
+		// HACK HARDCODE: 
+		this.victory_recipes = [
+			VictoryRecipes.TEST1
+			];
+		let ingr = [];
+		this.victory_recipes.forEach( r => ingr = ingr.concat( r.requires, r.provides ) );
+		ingr.unique().forEach( i => VictoryIngredients[i].AddToGame(this) );
+		}
+		
 	DoEvent() { 
 		let e = this.eventlib.Checkout( 'TEST_0', this.myciv, null );
 		this.AddEventCard( e, 10 );
@@ -58,12 +122,6 @@ export default class Game {
 			}
 		// FX: may want to clear the card and add a lag for the window to close/open
 		this.ProcessEventCardQueue(); // next card
-		}
-		
-	constructor( app ) {
-		this.app = app;
-		Signals.Listen('anom_complete', data => this.AnomCompleted(data) );
-		this.eventlib = new EventLibrary(this.app);
 		}
 		
 	AnomCompleted( data ) { // data contains at `anom`
@@ -419,11 +477,15 @@ export default class Game {
 				
 			this.turn_num++;
 			
-			// event queue needs the new turn number
-			this.ProcessEventCardQueue();
-			
-			this.PresentNextPlayerShipCombat();
-			
+			if ( !this.CheckForVictory() ) { 
+				
+				// event queue needs the new turn number
+				this.ProcessEventCardQueue();
+				
+				this.PresentNextPlayerShipCombat();
+				
+				}
+				
 			} // foreach turn (in case of multiple).
 		
 		this.processing_turn = false;
@@ -704,13 +766,15 @@ export default class Game {
 			}
 		}
 		
-	RegenerateGalaxy () {
+	RegenerateGalaxy() {
 		this.app.sidebar_obj = null;
 		this.app.sidebar_mode = false;
 		// let there be light
 // 		this.galaxy = new Galaxy();
 		this.galaxy.Make( 20, 10, 65, Math.random() );
 		this.RefactorPlanetList();
+		this.DeployVictoryIngredients();
+		this.victory_achieved = false;
 		Fleet.KillAll();
 		}
 	

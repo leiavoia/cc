@@ -32,6 +32,7 @@ export default class Civ {
 		};
 	
 	homeworld = null; // a Planet
+	victory_ingredients = []; // list of VictoryIngredient objects
 	
 	ship_range = 750; // px
 	ship_speed = 200; // HACK

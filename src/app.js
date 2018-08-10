@@ -68,8 +68,9 @@ export class App {
 		// create initial state
 		this.game.InitGalaxy();
 // 		this.ChangeState('title');
-		this.game.galaxy.Make( 7,7,30,0.5 );
-		let mystar = this.game.galaxy.AddExploreDemo( 8 );
+		this.game.galaxy.Make( 4,4,10,0.5 );
+		this.game.DeployVictoryIngredients();
+		let mystar = this.game.galaxy.AddExploreDemo( 2 );
 		CrazyBox.AddGiantSpaceAmoeba(this);
 		CrazyBox.AddRedSpaceAmoeba(this);
 		CrazyBox.AddBlueSpaceAmoeba(this);

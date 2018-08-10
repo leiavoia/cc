@@ -72,6 +72,17 @@ export default class Anom {
 		this.collected = false; // collectable
 		}
 		
+	static CreateFrom( anomdata, x, y ) { 
+		let a = new Anom( 'normal', x, y );
+		Object.assign( a, anomdata );
+		a.onmap = true;
+		a.collected = false;
+		a.vis_level = 0; // 0..2
+		a.size = 1;
+		a.order = utils.RandomInt( 0, 100 );
+		return a;
+		}
+		
 	static Random( x, y ) {
 		let list_i = utils.RandomInt( 0, anom_list.length-1 );
 		let a = new Anom( 'normal', x, y );
@@ -147,17 +158,16 @@ let anom_list = [
 		post_desc: 'Drifting in deep space, we discovered an abandoned spacecraft of unknown origin. The reseach team will tow it back for follow up examination and retrofitting for use in our fleet.',		
 		onComplete: function (fleet) {
 			this.name = 'Lost Spacecraft';
-      let bp = new ShipBlueprint();
-      bp.name = 'Lost Fighter';
-      bp.colonize = true;
-      bp.hull = 400;
-      bp.armor = 100;
-      bp.speed = 200;
-      bp.img = 'img/ships/ship2_mock.png';
-      bp.AddWeapon('RAYGUN',5);
-      bp.AddWeapon('LASER',3);
-      bp.AddWeapon('MISSILE',5);      
-      fleet.AddShip( new Ship(bp) );
+			let bp = new ShipBlueprint();
+			bp.name = 'Lost Fighter';
+			bp.img = 'img/ships/ship005_mock.png';
+			bp.AddWeapon('RAYGUN',5);
+			bp.AddWeapon('LASER',3);
+			bp.AddWeapon('MISSILE',5);      
+			bp.hull = 400;
+			bp.armor = 100;
+			bp.speed = 200;
+			fleet.AddShip( new Ship(bp) );
 			}
 		}
 	];
