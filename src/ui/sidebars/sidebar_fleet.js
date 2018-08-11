@@ -123,7 +123,7 @@ export class FleetDetailPane {
 		let first = null;
 		if ( this.fleet && this.fleet.ships.length ) { 
 			for ( let ship of this.fleet.ships ) { 
-				if ( ship.colonize ) { 
+				if ( ship.bp.colonize ) { 
 					if ( !first ) { first = ship; }
 					if ( ship.selected && !selected ) { selected = ship; }
 					}
@@ -184,16 +184,16 @@ export class FleetDetailPane {
 			if ( this.can_send !== false && this.can_send < 2 ) 				{ 
 				this.can_send = Math.max( this.can_send, (s.selected ? 2 : 1) ); 
 				}
-			if ( this.can_colonize !== false && this.can_colonize < 2 && s.colonize )	{ 
+			if ( this.can_colonize !== false && this.can_colonize < 2 && s.bp.colonize )	{ 
 				this.can_colonize = Math.max( this.can_colonize, (s.selected ? 2 : 1) ); 
 				}
-			if ( this.can_bomb !== false && this.can_bomb < 2 && s.bomb_pow )		{ 
+			if ( this.can_bomb !== false && this.can_bomb < 2 && s.bp.bomb_pow )		{ 
 				this.can_bomb = Math.max( this.can_bomb, (s.selected ? 2 : 1) ); 
 				}
-			if ( this.can_research !== false && this.can_research < 2 && s.research )	{ 
+			if ( this.can_research !== false && this.can_research < 2 && s.bp.research )	{ 
 				this.can_research = Math.max( this.can_research, (s.selected ? 2 : 1) ); 
 				}
-			if ( this.can_invade !== false && this.can_invade < 2 && s.invade )		{ 
+			if ( this.can_invade !== false && this.can_invade < 2 && s.bp.invade )		{ 
 				this.can_invade = Math.max( this.can_invade, (s.selected ? 2 : 1) ); 
 				}
 			if ( s.selected ) { this.num_selected++; }

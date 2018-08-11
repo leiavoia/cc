@@ -27,21 +27,23 @@
 				<p class="msg" style="font-weight:bold; color: #FAA;" show.bind="can_send==2">Right-click a star to move fleet</p>
 				
 				<!-- Fleet Actions -->
-				<p class="button_rack button_rack_fill" ><!--if.bind="mode=='fleet'"-->
-					<button click.delegate="ClickClose()" class="" >CLOSE</button>
+				<p class="button_rack button_rack_fill" >
+				</p>
+				<p class="button_rack button_rack_fill" >
 					<button click.delegate="ClickAttack()" class="alt" if.bind="fleet.fp && fleet.star && fleet.star.fleets.length > 1"">ATTACK</button>
 					<button click.delegate="ClickColonize()" if.bind="can_colonize" class="${can_colonize==2 ? 'alt' : 'ghost'}">COLONIZE</button>
 					<button click.delegate="ClickChooseMission()" if.bind="can_research" class="${can_research==2 ? 'alt' : 'ghost'}">MISSION</button>
 					<button click.delegate="ClickBomb()" if.bind="can_bomb" class="${can_bomb==2 ? 'alt' : 'ghost'}">BOMBARD</button>
 					<button click.delegate="ClickInvade()" if.bind="can_invade" class="${can_invade==2 ? 'alt' : 'ghost'}" >INVADE</button>
-					<button click.delegate="ClickScrap()" class="${num_selected ? 'bad' : 'ghost'}" >SCRAP</button>
 				</p>
 				
 				<!-- Ship Selection --> 
 				<p class="button_rack button_rack_fill">
-					<button click.delegate="SelectAll()" >ALL</button>
-					<button click.delegate="SelectNone()" >NONE</button>
-					<button click.delegate="SelectInvert()" >INVERT</button>
+					<button click.delegate="ClickClose()" class="" >CLOSE</button>
+					<button click.delegate="SelectAll()" class="${num_selected==fleet.ships.length ? 'ghost' : ''}">ALL</button>
+					<button click.delegate="SelectNone()" class="${num_selected ? '' : 'ghost'}">NONE</button>
+					<button click.delegate="SelectInvert()" class="${num_selected ? '' : 'ghost'}">INVERT</button>
+					<button click.delegate="ClickScrap()" class="${num_selected ? '' : 'ghost'}" >SCRAP</button>
 <!-- 					<span>${num_selected}/${fleet.ships.length}</span> -->
 				</p>
 			
