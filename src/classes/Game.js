@@ -491,6 +491,12 @@ export default class Game {
 		this.processing_turn = false;
 		} // end process turn
 		
+	QueueShipCombat( attacker, defender, planet ) {
+		this.shipcombats.push({ attacker, defender, planet,
+			label: `${attacker.owner.name} attacks ${defender.owner.name} at ${attacker.star.name}`
+			});	
+		}
+		
 	FindShipCombats() {
 		// find all combats
 		this.galaxy.stars.forEach( star => {
@@ -501,12 +507,7 @@ export default class Game {
 						star.fleets[fleet_b].AIWantToAttackFleet(star.fleets[fleet_a]) 
 						) {
 						// NOTE: fleet may want to attack planet, not just the fleet
-						this.shipcombats.push({
-							attacker: star.fleets[fleet_a],
-							defender: star.fleets[fleet_b],
-							planet: null, // TODO some day
-							label: `${star.fleets[fleet_a].owner.name} attacks ${star.fleets[fleet_b].owner.name} at ${star.name}`
-							});
+						this.QueueShipCombat( star.fleets[fleet_a], star.fleets[fleet_b], null );
 						}
 					}
 				}
@@ -527,7 +528,7 @@ export default class Game {
 		for ( let c = this.shipcombats.length-1; c >= 0; c-- ) { 
 			let sc = this.shipcombats[c];
 			// fleet may have been destroyed in previous battle.
-			if ( sc.attacker.killme || sc.defender.killme ) { 
+			if ( sc.attacker.killme || sc.defender.killme || !sc.attacker.ships.length || !sc.defender.ships.length ) { 
 				this.shipcombats.splice( c, 1 ); // delete
 				continue; 
 				}
@@ -554,6 +555,12 @@ export default class Game {
 		// fleet may have been destroyed in previous battle.
 		if ( sc.attacker.killme || sc.defender.killme || !sc.attacker.ships.length || !sc.defender.ships.length ) { 
 			this.PresentNextPlayerShipCombat();
+			return;
+			}
+		// neither fleet has weapons
+		else if ( !sc.attacker.fp && !sc.defender.fp ) { 
+			this.PresentNextPlayerShipCombat();
+			return;
 			}
 		// if player is the defender, present mandatory battle
 		else if ( sc.defender.owner.is_player ) { 

@@ -259,6 +259,36 @@ export class FleetDetailPane {
 		this.StopCaptureStarClicks();
 		this.app.CloseSideBar();
 		}
+	ClickAttack() {
+		if ( this.fleet.fp && this.fleet.star && this.fleet.star.fleets.length > 1 ) {
+			this.mode = "attack";
+			}
+		}
+	// for clicking attack target from player fleet
+	SelectAttackTarget( target ) {
+		// TODO: check if we have treaties, etc. in the future
+		this.app.game.QueueShipCombat( this.fleet, target, null /* TODO:planet*/ );
+		this.app.game.PresentNextPlayerShipCombat();
+		}
+	ClickCancelChooseAttackTarget() {
+		this.mode = 'fleet'; 
+		}
+	// for clicking attack fleet from star with a local player fleet
+	AttackTargetWithLocalFleet() { 
+		if ( !this.fleet || !this.fleet.star ) { return false; } 
+		// TODO: check if we have treaties, etc. in the future
+		// find my local fleet
+		let myfleet = null;
+		for ( let f of this.fleet.star.fleets ) { 
+			if ( f.owner.is_player ) {
+				myfleet = f; 
+				break;
+				}
+			}
+		if ( !myfleet ) { return false; } 
+		this.app.game.QueueShipCombat( myfleet, this.fleet, null /* TODO:planet*/ );
+		this.app.game.PresentNextPlayerShipCombat();
+		}
 	ClickCancel() {
 		// revert to move-fleet mode
 		this.CaptureStarClicks();

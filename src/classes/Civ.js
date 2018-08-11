@@ -416,7 +416,6 @@ export default class Civ {
 			}
 		// have colony ships?
 		if ( targets )  {
-// 			console.log(`[${targets.length}] targets`);
 			for ( let f of this.fleets ) {
 				// parked and not on mission
 				if ( f.colonize && f.star && !f.dest && f.star.objtype == 'star' && !f.mission ) { 
@@ -426,7 +425,6 @@ export default class Civ {
 							// can i settle anything where i am?
 							for ( let p of f.star.planets ) { 
 								if ( !p.owner && p.Habitable( this.race ) ) { 
-// 									console.log(`F${f.id}: i'm already here, so i'm going to settle ${p.name}`);
 									p.Settle( this );
 									f.RemoveShip( s );
 									if ( !f.ships.length ) { f.Kill(); }
@@ -435,12 +433,6 @@ export default class Civ {
 									if ( this == app.game.myciv ) { 
 // 										app.AddNote( 'good',`${p.name} Settled`,'',function(){app.FocusMap(p);});	
 										}
-	// 								this.mode = 'fleet';
-	// 								this.app.CloseSideBar();
-	// 								this.app.SwitchMainPanel('colonize',p);	
-									//
-									// TODO: destroy all refs to the ship
-									//	
 									break next_ship;
 									}
 								}
@@ -460,20 +452,16 @@ export default class Civ {
 									else { return 1; }
 									} );
 								let t = targets.pop();
-// 								console.log(`F${f.id}: chose target ${t.name}`);
 								let myfleet = null;
 								// split fleet if more than 1 ship in fleet
 								if ( f.ships.length > 1 ) { 
-// 									console.log(`F${f.id}: i'm splitting off and headed for ${t.name}`);
 									f.RemoveShip(s); // old fleet
 									myfleet = new Fleet( f.owner, f.star );
-									myfleet.ships = []; // TODO: remove this debug junk
 									myfleet.AddShip(s);
-// 									console.log(`sending fleet ${myfleet.id} from ${f.star.name} to ${t.name} `);
 									myfleet.SetDest(t.star);
 									}
+								// otherwise send on its way
 								else {
-// 									console.log(`F${f.id}: i'm on my own and headed for ${t.name}`);
 									f.SetDest(t.star);
 									}
 								}

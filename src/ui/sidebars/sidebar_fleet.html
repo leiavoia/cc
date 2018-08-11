@@ -5,7 +5,7 @@
 	<!-- FLEET DISPLAY MODE -->
 	<div class="fleet" if.bind="mode == 'fleet' || mode == 'awaiting_star_click'">
 		<h2 css="color: ${fleet.ui_color};">${fleet.owner.name} Fleet #${fleet.id}</h2>
-		<template containerless if.bind="app.options.see_all || fleet.owner == app.game.myciv">
+		<template containerless if.bind="app.options.see_all || fleet.owner.is_player">
 			
 			<p style="font-size: 150%;" class="big" if.bind="fleet.mission">On Mission. Back in [${fleet.mission.time}] turns.</p>
 			<p style="font-size: 150%;" class="big" if.bind="!fleet.mission">Location: 
@@ -21,34 +21,40 @@
 				<progress value.bind="(app.game.turn_num*0) + fleet.star.AmountResearched( fleet.owner ) / fleet.star.size" />
 			</p>
 			
-			<!-- not on a deep space mission -->
+			<!-- show fleet actions if not on a deep space mission -->
 			<template containerless if.bind="!fleet.mission">
 			
-				<p class="msg" style="font-weight:bold; color: #FAA;" if.bind="can_send==2">Right-click a star to move fleet</p>
+				<p class="msg" style="font-weight:bold; color: #FAA;" show.bind="can_send==2">Right-click a star to move fleet</p>
 				
 				<!-- Fleet Actions -->
-				<p class="button_rack" ><!--if.bind="mode=='fleet'"-->
-					<a href="#" click.delegate="ClickClose()" class="bad" >CLOSE</a>
-					<a href="#" click.delegate="ClickColonize()" if.bind="can_colonize" class="${can_colonize==2 ? 'alt' : 'ghost'}">COLONIZE</a>
-					<a href="#" click.delegate="ClickChooseMission()" if.bind="can_research" class="${can_research==2 ? 'alt' : 'ghost'}">MISSION</a>
-					<a href="#" click.delegate="ClickBomb()" if.bind="can_bomb" class="${can_bomb==2 ? 'alt' : 'ghost'}">BOMBARD</a>
-					<a href="#" click.delegate="ClickInvade()" if.bind="can_invade" class="${can_invade==2 ? 'alt' : 'ghost'}" >INVADE</a>
-					<a href="#" click.delegate="ClickScrap()" class="${num_selected ? 'alt' : 'ghost'}" >SCRAP</a>
+				<p class="button_rack button_rack_fill" ><!--if.bind="mode=='fleet'"-->
+					<button click.delegate="ClickClose()" class="" >CLOSE</button>
+					<button click.delegate="ClickAttack()" class="alt" if.bind="fleet.fp && fleet.star && fleet.star.fleets.length > 1"">ATTACK</button>
+					<button click.delegate="ClickColonize()" if.bind="can_colonize" class="${can_colonize==2 ? 'alt' : 'ghost'}">COLONIZE</button>
+					<button click.delegate="ClickChooseMission()" if.bind="can_research" class="${can_research==2 ? 'alt' : 'ghost'}">MISSION</button>
+					<button click.delegate="ClickBomb()" if.bind="can_bomb" class="${can_bomb==2 ? 'alt' : 'ghost'}">BOMBARD</button>
+					<button click.delegate="ClickInvade()" if.bind="can_invade" class="${can_invade==2 ? 'alt' : 'ghost'}" >INVADE</button>
+					<button click.delegate="ClickScrap()" class="${num_selected ? 'bad' : 'ghost'}" >SCRAP</button>
 				</p>
 				
 				<!-- Ship Selection --> 
-				<p class="button_rack">
-					<a href="#" click.delegate="SelectAll()" >ALL</a>
-					<a href="#" click.delegate="SelectNone()" >NONE</a>
-					<a href="#" click.delegate="SelectInvert()" >INVERT</a>
-					<span>${num_selected}/${fleet.ships.length}</span>
+				<p class="button_rack button_rack_fill">
+					<button click.delegate="SelectAll()" >ALL</button>
+					<button click.delegate="SelectNone()" >NONE</button>
+					<button click.delegate="SelectInvert()" >INVERT</button>
+<!-- 					<span>${num_selected}/${fleet.ships.length}</span> -->
 				</p>
 			
 			</template>
 			
 		</template>
 			
+		<!-- enemy fleet attack option --> 
+		<p class="button_rack button_rack_fill" if.bind="!fleet.owner.is_player && fleet.star && fleet.star.PlayerHasLocalFleet">
+			<button class="alt" click.delegate="AttackTargetWithLocalFleet()">ATTACK</button>
+		</p>
 		
+		<!-- ship list -->
 		<div class="shipgrid">
 			<div class="ship ${ship.selected ? 'selected' : ''} health_${ship.health_class}" click.delegate="SelectShip(ship)" repeat.for="ship of fleet.ships" >
 				<p class=" top">
@@ -74,10 +80,33 @@
 		<p>How long should the mission last?</p>
 		<p><input type="range" min="3" max="50" step="1" value.bind="mission_turns" /> ${mission_turns} turns</p>
 		<p class="button_rack">
-			<a href="#" click.delegate="ClickStartMission()" class="good" >START MISSION</a>
-			<a href="#" click.delegate="ClickCancel()" class="bad" >CANCEL</a>
+			<button click.delegate="ClickStartMission()" class="good" >START MISSION</button>
+			<button click.delegate="ClickCancel()" class="bad" >CANCEL</button>
 		</p>
-
+	</div>
+		
+	<!-- CHOOSE ATTACK TARGET MODE -->
+	<div class="" if.bind="mode=='attack' && !fleet.mission">
+		<h2>Choose Target:</h2>
+		<div repeat.for="f of fleet.star.fleets" 
+			if.bind="!f.owner.is_player && f.ships.length && !f.killme"
+			click.delegate="SelectAttackTarget(f)" >
+			<p>
+				<img src.bind="f.owner.flag_img" style="max-height: 3em; float: right;"/>
+				<b>${f.owner.name} Fleet</b><br/>
+				<span class="green">${f.ships.length}</span> ships
+				<span class="green">${f.fp}</span> firepower
+				<span class="green">${f.bulk}</span> mass
+			</p>
+			<div>
+				<div repeat.for="[bp,count] of f.ListUniqueModels()" style="display:inline-block;">
+					<img src.one-time="bp.img" style="height:2em; width:2em; object-fit: contain;"  />x${count}&nbsp;
+				</div>
+			</div>
+		</div>
+		<p>
+			<button class="bad" click.delegate="ClickCancelChooseAttackTarget()">CANCEL</button>
+		</p>
 	</div>
 		
 	<!-- CHOOSE-PLANET MODE -->
@@ -105,7 +134,7 @@
 			</div>
 		</div>
 		<p class="button_rack">
-			<a href="#" click.delegate="ClickCancel()" class="bad">CANCEL</a>
+			<button  click.delegate="ClickCancel()" class="bad">CANCEL</button>
 		</p>		
 	</div>
 	

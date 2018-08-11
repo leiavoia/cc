@@ -222,6 +222,16 @@ export default class Fleet {
 			}
 		}
 		
+	// returns a Map of [ ShipBlueprint => count ]
+	ListUniqueModels() { 
+		let data = new Map;
+		for ( let s of this.ships ) { 
+			let v = data.get(s.bp) || 0;
+			data.set(s.bp,v+1);
+			}
+		return data;
+		}
+		
 	SendOnMission( galaxy, duration ) { 
 		if ( this.star ) { 
 			// keep a reference to the star we were parked at, but detach from the list
@@ -262,9 +272,10 @@ export default class Fleet {
 		}
 	
 	AIWantToAttackFleet( fleet ) {
+		return false;
 		// TODO / AI HACK
 		// AI always fights, human player gets option
-		return !this.owner.is_player && this.fp; // need guns to attack 
+		return !this.owner.is_player && this.fp && this.ships.length; // need guns to attack 
     	}
 	    
 	// returns a mission report for any completed deepspace missions

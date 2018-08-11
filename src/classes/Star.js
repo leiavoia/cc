@@ -5,7 +5,7 @@ import Hyperlane from './Hyperlane';
 import RandomPicker from '../util/RandomPicker';
 import RandomName from '../util/RandomName';
 import * as utils from '../util/utils';
-// import {computedFrom} from 'aurelia-framework';
+import {computedFrom} from 'aurelia-framework';
 
 
 export default class Star {
@@ -50,6 +50,14 @@ export default class Star {
 		this.accts = new Map();
 		}
 	
+	@computedFrom('fleets')
+	get PlayerHasLocalFleet() { 
+		for ( let f of this.fleets ) { 
+			if ( f.owner.is_player ) { return true; }
+			}
+		return false;
+		}
+		
 	ConnectLane( to, owner ) { 
 		let l = new Hyperlane( this, to, owner );
 		this.lanes.push(l);
