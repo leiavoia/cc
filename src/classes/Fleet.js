@@ -19,6 +19,8 @@ export default class Fleet {
 	research = false;
 	fp = 0; // firepower
 	bulk = 0; // combined "bodyweight" of all ships
+	troopcap = 0;
+	troops = 0;
 	
 	onUpdate = null; // callback
 	SetOnUpdate( callback ) { 
@@ -62,6 +64,8 @@ export default class Fleet {
 		this.speed = 1000000;
 		this.fp = 0;
 		this.bulk = 0;
+		this.troops = 0;
+		this.troopcap = 0;
 		for ( let ship of this.ships ) { 
 			// check if there are colony ships
 			if ( ship.bp.colonize ) { this.colonize = true; }
@@ -72,6 +76,9 @@ export default class Fleet {
 			// cumulative firepower and bulk stats
 			this.fp += ship.bp.fp;
 			this.bulk += ship.bp.hull + ship.bp.armor;
+			// troops and carriers
+			this.troops += ship.troops.length;
+			this.troopcap += ship.bp.troopcap;
 			}
 		this.FireOnUpdate();
 		}
@@ -228,6 +235,29 @@ export default class Fleet {
 		for ( let s of this.ships ) { 
 			let v = data.get(s.bp) || 0;
 			data.set(s.bp,v+1);
+			}
+		return data;
+		}
+		
+	// returns a Map of [ GroundUnitBlueprint => count ]
+	ListUniqueGroundUnits() { 
+		let data = new Map;
+		for ( let s of this.ships ) { 
+			for ( let t of s.troops ) { 
+				let v = data.get(t.bp) || 0;
+				data.set(t.bp,v+1);
+				}
+			}
+		return data;
+		}
+		
+	// returns a Map of [ GroundUnitBlueprint => count ]
+	ListGroundUnits() { 
+		let data = [];
+		for ( let s of this.ships ) { 
+			for ( let t of s.troops ) { 
+				data.push(t);
+				}
 			}
 		return data;
 		}

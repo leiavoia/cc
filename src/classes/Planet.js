@@ -7,6 +7,7 @@ import RandomName from '../util/RandomName';
 import * as utils from '../util/utils';
 import {computedFrom} from 'aurelia-framework';
 import {Ship,ShipBlueprint} from './Ship';
+import {GroundUnit,GroundUnitBlueprint} from './GroundUnit';
 
 export default class Planet {
 	
@@ -26,7 +27,7 @@ export default class Planet {
 	morale = 1.0;	// multiplier, default 1.0, range 0-2
 	age = 0;
 	age_level = 0;
-	
+	troops = []; // list of GroundUnits defending planet.
 	prod_q = [];
 	
 	// PHYSICAL ATTRIBUTES -------------------------------
@@ -98,6 +99,7 @@ export default class Planet {
 		};
 
 	ProduceBuildQueueItem( item ) {
+		// ships
 		if ( item.type == 'ship' ) { 
 			// find my fleet
 			let myfleet = null;
@@ -112,6 +114,10 @@ export default class Planet {
 				}
 			myfleet.AddShip( item.obj.bp.Make() );
 			}
+		// ground units
+		else if ( item.type == 'groundunit' ) { 
+			this.troops.push( item.obj.bp.Make() );
+			}
 		// NOTE: custom functions will not serialize to a save format.
 		// clean this up later.
 		else if ( item.obj.hasOwnProperty('ProduceMe') ) { 
@@ -122,6 +128,23 @@ export default class Planet {
 	AddBuildQueueShipBlueprint( bp ) { 
 		let item = {
 			type: 'ship',
+			obj: {
+				name: bp.name,
+				bp: bp
+				},
+			labor: bp.labor, // "cost" in hammers
+			mp: bp.mass, // material points
+			spent: 0,
+			quantity: 1,
+			turns_left: 0,
+			pct: 0
+			};
+		this.prod_q.push(item);
+		}
+		
+	AddBuildQueueGroundUnitBlueprint( bp ) { 
+		let item = {
+			type: 'groundunit',
 			obj: {
 				name: bp.name,
 				bp: bp
@@ -764,9 +787,15 @@ export default class Planet {
 		// start by finding all connected systems to this one.
 		if ( !had_prev_acct ) { 
 			this.star.AddAccount( this.owner );
-			Constellation.Refactor( this.owner ); 
+			// Constellation.Refactor( this.owner ); 
 			}
-					
+		
+		// HACK - TESTING
+		this.troops.push( this.owner.groundunit_blueprints[0].Make() );
+		this.troops.push( this.owner.groundunit_blueprints[0].Make() );
+		this.troops.push( this.owner.groundunit_blueprints[0].Make() );
+		
+		// HACK - TESTING
 		this.prod_q = [
 			{
 				type: 'ship',

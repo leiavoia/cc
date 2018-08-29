@@ -88,6 +88,24 @@ export const ShipComponentList = {
 			new Mod( 'labor', '+', 600, '', null )
 			]
 		},
+	CARRIER1: {
+		name: 'Troop Carrier Module',
+		desc: 'Allows the transport of one ground combat unit.',
+		mods: [
+			new Mod( 'troopcap', 'H', 1, '', null ),
+			new Mod( 'mass', '+', 80, '', null ),
+			new Mod( 'labor', '+', 60, '', null )
+			]
+		},
+	CARRIER2: {
+		name: 'Heavy Troop Carrier Module',
+		desc: 'Allows the transport of two ground combat units.',
+		mods: [
+			new Mod( 'troopcap', 'H', 1, '', null ),
+			new Mod( 'mass', '+', 150, '', null ),
+			new Mod( 'labor', '+', 140, '', null )
+			]
+		},
 	RESEARCHLAB1: {
 		name: 'Space Lab',
 		desc: 'Allows our fleet to conduct research in space, investigate anomalies, and study new worlds.',

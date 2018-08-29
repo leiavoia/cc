@@ -253,10 +253,31 @@
 				<p>
 					<select value.bind="sel_build_item">
 						<option repeat.for="bp of planet.owner.ship_blueprints" model.bind="bp">${bp.name}</option>
+						<option repeat.for="bp of planet.owner.groundunit_blueprints" model.bind="bp">${bp.name}</option>
 					</select>
-					<button click.delegate="AddSelectedShipToBuildQueue()">Add</button>
+					<button click.delegate="AddSelectedItemToBuildQueue()">Add</button>
 				</p>
 				
+			</div>
+			
+			<div class="defenses">
+				<h3>Defenses:</h3>
+				<div class="trooplist">
+					<img src="img/ground/tank_transp.png" 
+						style="
+							height: 32px; 
+							width: 32px; 
+							display: inline-block; 
+							border: 1px solid white; 
+							border-radius: 0.25em; 
+							overflow: hidden; 
+							padding: 0.25em; 
+							margin: 0 0.5em 0.5em 0;
+							"
+						repeat.for="t of planet.troops"
+						click.delegate="t.selected = !t.selected";
+					/>
+				</div>
 			</div>
 		</template>
 		

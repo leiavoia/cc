@@ -19,6 +19,7 @@ export class Ship {
 		this.xplevel = 0; // crew experience level
 		this.kills = 0;
 		this.weapons = [];
+		this.troops = []; // list of GroundUnits onboard
 		this.selected = true; // for UI
 		for ( const w of blueprint.weapons ) { 
 			// use weapon itself as prototype. saves memory.
@@ -113,6 +114,7 @@ export class ShipBlueprint {
 		this.mods = new Modlist; // value modifiers, often from components
 		this.colonize = false;
 		this.research = 0;    
+		this.troopcap = 0; // number of ground units we can carry    
 		this.fp = 0; // calculated firepower
 		// Calculated size class makes it easier to relate to humans.
 		// Uses letters 'A','B','C' ...
@@ -217,6 +219,7 @@ export class ShipBlueprint {
 		this.speed = Math.floor( this.mods.Apply( 100, 'speed', parent ) );
 		this.colonize = Math.floor( this.mods.Apply( 0, 'colonize', parent ) );
 		this.research = Math.floor( this.mods.Apply( 0, 'research', parent ) ); 
+		this.troopcap = Math.floor( this.mods.Apply( 0, 'troopcap', parent ) ); 
 		this.fp = Math.floor( this.weapons.reduce( ( accum, weapon ) => {
 			// average firepower of weapon
 			let fp = ((weapon.maxdmg - weapon.mindmg)/2) + weapon.mindmg;

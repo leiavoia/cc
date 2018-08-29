@@ -3,17 +3,21 @@ import {bindable} from 'aurelia-framework';
 import * as Signals from '../../util/signals';
 
 export class FleetDetailPane {
-	mode = 'fleet';
+	mode = 'fleet'; // 'fleet' for display only, 'awaiting_star_click' to be able to move fleet with rightclick.
 	can_colonize = false;
 	can_send = false;
 	can_bomb = false;
 	can_research = false;
 	can_invade = false;
+	can_pickup_troops = false;
 	mission_turns = 10;
+	selected_planet = null; // used for UI interaction
 	starclick_subsc = null;
 	@bindable fleet = null;
 	app = null;
 
+	trooplist = []; // temporary array when in troop-transfer UI
+	
 	activate(data) {
 		this.app = data.app;
 		this.fleet = data.obj;
@@ -28,7 +32,7 @@ export class FleetDetailPane {
 			);
 		}
 		
-	unbind() { 
+	unbind() { 	
 		// stop listening for starclicks
 		this.starclick_subsc.dispose();
 		// stop listening for hotkeys
@@ -167,6 +171,8 @@ export class FleetDetailPane {
 		this.can_invade = false;
 		this.can_research = this.fleet.star ? 0 : false; // is parked
 		this.can_send = this.fleet.star ? 1 : false; // is parked
+		this.can_pickup_troops = false;
+		this.can_drop_troops = false;
 		// some abilities depend on what we might be parked over.
 		// mark abilites with ===0 as a signal to look further
 		if ( this.fleet.star && 'planets' in this.fleet.star && this.fleet.star.planets.length ) {
@@ -174,12 +180,19 @@ export class FleetDetailPane {
 				if ( p.owner === false && p.Habitable( this.fleet.owner.race ) ) { 
 					this.can_colonize = 0; 
 					}
-				else if ( p.owner != this.fleet.owner.race ) { 
+				else if ( !p.owner.is_player ) { 
 					this.can_bomb = 0; 
 					this.can_invade = 0; 
 					}
+				else if ( p.owner.is_player ) {
+					this.can_drop_troops = 0;
+					if ( p.troops.length ) { 
+						this.can_pickup_troops = 0; 
+						}
+					}
 				}
 			}
+		// scan each ship to make a per-ship determination
 		for ( let s of this.fleet.ships ) { 
 			if ( this.can_send !== false && this.can_send < 2 ) 				{ 
 				this.can_send = Math.max( this.can_send, (s.selected ? 2 : 1) ); 
@@ -193,11 +206,19 @@ export class FleetDetailPane {
 			if ( this.can_research !== false && this.can_research < 2 && s.bp.research )	{ 
 				this.can_research = Math.max( this.can_research, (s.selected ? 2 : 1) ); 
 				}
-			if ( this.can_invade !== false && this.can_invade < 2 && s.bp.invade )		{ 
+			if ( this.can_invade !== false && this.can_invade < 2 && s.troops.length )		{ 
 				this.can_invade = Math.max( this.can_invade, (s.selected ? 2 : 1) ); 
+				}
+			if ( this.can_drop_troops !== false && this.can_drop_troops < 2 && s.troops.length )		{ 
+				this.can_drop_troops = Math.max( this.can_drop_troops, (s.selected ? 2 : 1) ); 
 				}
 			if ( s.selected ) { this.num_selected++; }
 			}
+		// finally, see if we have room for troops as a whole
+		this.can_pickup_troops = 
+			this.can_pickup_troops === 0 
+			&& (this.fleet.troops < this.fleet.troopcap) 
+			? true : false;
 		}
 	AnomalyResearch() { 
 		if ( this.fleet.star && !this.fleet.dest && this.fleet.star.objtype == 'anom' ) { 
@@ -271,7 +292,7 @@ export class FleetDetailPane {
 		this.app.game.PresentNextPlayerShipCombat();
 		}
 	ClickCancelChooseAttackTarget() {
-		this.mode = 'fleet'; 
+		this.mode = 'awaiting_star_click';
 		}
 	// for clicking attack fleet from star with a local player fleet
 	AttackTargetWithLocalFleet() { 
@@ -303,8 +324,102 @@ export class FleetDetailPane {
 			// TODO
 			}
 		}
+	ClickInvade() {
+		if ( this.can_invade ) { 
+		
+			}
+		}
+	// closes the troop transfer subscreen
+	ClickAcceptTroopTransfer() { 
+		this.mode = 'awaiting_star_click';
+		}
+	// switches into troop transfer mode
+	ClickTransferTroops() {
+		if ( this.can_pickup_troops || this.can_drop_troops ) { 
+			this.trooplist = this.fleet.ListGroundUnits();
+			// automatically select the first friendly planet as a move target,
+			// and deselect all other friendly planets
+			for ( let p of this.fleet.star.planets ) { 
+				if ( p.owner.is_player ) { 
+					this.selected_planet = p;
+					}
+				}
+			this.mode = 'troopswap';
+			}
+		}
+	// selects a planet
+	ClickPlanetForTroops(target) {
+		this.selected_planet = target;
+		}
+	// moves a specific troop
+	ClickTroop( troop, objfrom ) { 
+		// if `objfrom` is our fleet, move to planet, no size restrictions.
+		if ( objfrom == this.fleet ) { 
+			// remove unit from ship it rides on.
+			for ( let s of this.fleet.ships ) { 
+				let i = s.troops.indexOf(troop);
+				if ( i >= 0 ) { 
+					s.troops.splice(i,1);
+					break;
+					}
+				}
+			// remove from UI troop list
+			let i = this.trooplist.indexOf(troop);
+			if ( i >= 0 ) { this.trooplist.splice(i,1); }
+			// move to selected planet
+			this.selected_planet.troops.push(troop);
+			}
+		// if the objfrom is a planet, move into fleet, check capacity first
+		else { 
+			if ( this.fleet.troopcap > this.fleet.troops ) { 
+				// find a ship that can hold this unit
+				for ( let s of this.fleet.ships ) { 
+					if ( s.bp.troopcap > s.troops.length ) { 
+						s.troops.push( troop );
+						// remove from planet
+						let i = objfrom.troops.indexOf(troop);
+						if ( i >= 0 ) { objfrom.troops.splice(i,1); }
+						// add to UI troop list
+						this.trooplist.push(troop);
+						break;
+						}
+					}
+				}
+			}
+		this.fleet.ReevaluateStats();
+		}
+	// dumps all troops from a planet into the fleet
+	TransferTroopsFromPlanet() {
+		while ( this.selected_planet.troops.length && this.fleet.troopcap > this.fleet.troops ) { 
+			let t = this.selected_planet.troops[0];
+			// find a ship that can hold this unit
+			for ( let s of this.fleet.ships ) {
+				if ( s.bp.troopcap > s.troops.length ) { 
+					s.troops.push( t );
+					// remove from planet
+					this.selected_planet.troops.shift();
+					// add to UI troop list
+					this.trooplist.push(t);
+					this.fleet.ReevaluateStats();
+					}
+				}
+			}
+		}
+	// dumps all troops from a fleet onto a planet
+	TransferTroopsToPlanet() {
+		for ( let s of this.fleet.ships ) {
+			if ( s.troops.length ) { 
+				while ( s.troops.length ) { 
+					this.selected_planet.troops.push(
+						s.troops.pop()
+						);
+					}
+				}
+			}
+		this.trooplist.splice(0,this.trooplist.length);
+		this.fleet.ReevaluateStats();
+		}
 	StarClickCallback( star ) { 
-		console.log('CLICKBACK');
 		if ( this.mode == 'awaiting_star_click' && this.can_send==2 ) { 
 			// dont let fleet route to the planet its parked at
 			if ( !( star == this.fleet.star && !this.fleet.dest ) ) { 

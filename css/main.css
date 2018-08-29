@@ -823,7 +823,9 @@ p {
 .clearfix:after {
     clear: both;
 }
-
+P.centered, DIV.centered {
+	text-align:center;
+	}
 
 
 /* BUTTONS */	
@@ -914,8 +916,48 @@ A#nav_button_turn {color: #FFF; border-color: #FFF; margin-top:auto; }*/
 	
 	
 	
-	
-	
+/* FORMS */
+progress[value] {
+	position: relative;
+	margin: 0;
+	padding: 0;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+		appearance: none;
+	border: none;
+	width: 100%;
+	height: 1.25em;
+	/* FF container defaults */
+	border-radius: 3px;
+	background-color: #172936;	  
+	}
+progress[value]::-webkit-progress-bar {
+	border-radius: 3px;
+	background-color: #172936;
+	}
+progress[value]::-webkit-progress-value {
+	background-image: linear-gradient( to bottom, #45708F 0%, #6693B3 33%, #6693B3 66%, #45708F 100%);
+	position: relative;
+	border-radius:3px;
+	}
+progress[value]::-moz-progress-bar {
+	background-image: linear-gradient( to bottom, #45708F 0%, #6693B3 33%, #6693B3 66%, #45708F 100%);
+	border-radius:3px;
+	}
+progress::-moz-progress-bar,
+progress::-webkit-progress-value {
+	transition : width 0.5s ease-out; /* NOTE: doesn't seem to work :-( */
+	}
+
+progress.full[value]::-moz-progress-bar {
+	background-image: linear-gradient( to bottom, #54B848 0%, #00DC00 33%, #00DC00 66%, #54B848 100%);
+	}
+progress.short {
+	height:0.5em;
+	}
+progress.skinny {
+	height:0.25em;
+	}
 
 
 
@@ -1977,6 +2019,7 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	border-radius: 0.5em;
 	cursor: pointer;
 	}
+#layout_ui_side > .star .hilite_wrapper.selected,
 #layout_ui_side > .star .hilite_wrapper:hover {
 	background-image: radial-gradient(circle closest-corner at 50% 50% , transparent 0%, transparent 50%, #3C96BA 100%);
 	}

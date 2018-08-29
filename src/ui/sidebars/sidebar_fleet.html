@@ -13,7 +13,8 @@
 				<span if.bind="fleet.dest"><span>➠</span> ${fleet.dest.name}</span>
 			</p>
 			
-			<span if.bind="fleet.research">Research Capacity: <b>${fleet.research}</b></span>
+			<p if.bind="fleet.research">Research Capacity: <b>${fleet.research}</b></p>
+			<p if.bind="fleet.troops">Ground Units: <b>${fleet.troops}</b></p>
 			
 			<!-- local anomoly research info -->
 			<p if.bind="fleet.star && !fleet.dest && fleet.star.objtype == 'anom'">
@@ -35,6 +36,8 @@
 					<button click.delegate="ClickChooseMission()" if.bind="can_research" class="${can_research==2 ? 'alt' : 'ghost'}">MISSION</button>
 					<button click.delegate="ClickBomb()" if.bind="can_bomb" class="${can_bomb==2 ? 'alt' : 'ghost'}">BOMBARD</button>
 					<button click.delegate="ClickInvade()" if.bind="can_invade" class="${can_invade==2 ? 'alt' : 'ghost'}" >INVADE</button>
+					<button click.delegate="ClickTransferTroops()" if.bind="can_pickup_troops || can_drop_troops" >TROOPS</button>
+<!-- 					<button click.delegate="ClickDropTroops()" if.bind="troops" class="${can_invade==2 ? 'alt' : 'ghost'}" >DROP TROOPS</button> -->
 				</p>
 				
 				<!-- Ship Selection --> 
@@ -138,6 +141,73 @@
 		<p class="button_rack">
 			<button  click.delegate="ClickCancel()" class="bad">CANCEL</button>
 		</p>		
+	</div>
+		
+	<!-- TROOP TRANSFER MODE -->
+	<div class="star star_${fleet.star.color}" if.bind="mode == 'troopswap'">
+		<h2>Transfer Troops</h2>
+		
+		<p class="button_rack button_rack_fill">
+			<button click.delegate="ClickCancel()" class="">DONE</button>
+		</p>	
+		
+		<template containerless if.bind="fleet.star">
+			
+			<progress min="0" max.bind="fleet.troopcap" value.bind="fleet.troops" 
+				style="width: 100%;" 
+				class="short topless ${fleet.troops==fleet.troopcap ? 'full' : ''}">
+			</progress>
+			<p if.bind="!trooplist.length" class="centered">No Troops In Fleet</p>
+			<div class="trooplist">
+				<img src="img/ground/tank_transp.png" 
+					style="
+						height: 32px; 
+						width: 32px; 
+						display: inline-block; 
+						border: 1px solid white; 
+						border-radius: 0.25em; 
+						overflow: hidden; 
+						padding: 0.25em; 
+						margin: 0 0.5em 0.5em 0;
+						"
+					repeat.for="t of trooplist"
+					click.trigger="ClickTroop(t,fleet)"
+				/>
+			</div>
+			
+			<p class="button_rack button_rack_fill"> 
+				<button class="" click.delegate="TransferTroopsFromPlanet()">▲</button>
+				<button class="" click.delegate="TransferTroopsToPlanet()">▼</button>
+			</p>
+			
+			<div repeat.for="p of fleet.star.planets" 
+				class="hilite_wrapper ${p==selected_planet ? 'selected' : ''}" 
+				if.bind="p.owner.is_player"
+				click.delegate="ClickPlanetForTroops(p)"
+				>
+				<div class="planet atm${p.atm} tmp${p.temp}" css.one-time="PlanetSizeCSS(p)">
+					<p css="color: ${p.ui_color}; font-weight:bold;">${p.name}</p>
+					<div class="trooplist">
+						<img src="img/ground/tank_transp.png" 
+							style="
+								height: 32px; 
+								width: 32px; 
+								display: inline-block; 
+								border: 1px solid white; 
+								border-radius: 0.25em; 
+								overflow: hidden; 
+								padding: 0.25em; 
+								margin: 0 0.5em 0.5em 0;
+								"
+							repeat.for="t of p.troops"
+							click.trigger="ClickTroop(t,p)"
+						/>
+					</div>
+					
+				</div>
+			</div>
+		</template>
+		
 	</div>
 	
 </template>

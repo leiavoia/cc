@@ -66,15 +66,15 @@ export default class Galaxy {
 				let cell = arr[ x*map_size_y + y ];
 				if ( cell==1 ) {
 					this.stars.push( Star.Random( 
-						((x+1)*cell_size) + Math.floor((Math.random() * jitter * 2)) + jitter + (cell_size*0.5), 
-						((y+1)*cell_size) + Math.floor((Math.random() * jitter * 2)) + jitter + (cell_size*0.5),  
+						((x+1)*cell_size) + (cell_size*0.5) + Math.floor((Math.random() * jitter * 2) - jitter), 
+						((y+1)*cell_size) + (cell_size*0.5) + Math.floor((Math.random() * jitter * 2) - jitter),  
 						galaxy_age 
 						) );					
 					}
 				else if ( cell==2 ) {
 					this.anoms.push( Anom.Random( 
-						((x+1)*cell_size) + Math.floor((Math.random() * jitter * 2)) + jitter + (cell_size*0.5), 
-						((y+1)*cell_size) + Math.floor((Math.random() * jitter * 2)) + jitter + (cell_size*0.5) 
+						((x+1)*cell_size) + (cell_size*0.5) + Math.floor((Math.random() * jitter * 2) - jitter), 
+						((y+1)*cell_size) + (cell_size*0.5) + Math.floor((Math.random() * jitter * 2) - jitter)
 						) );					
 					}
 				}
@@ -195,7 +195,10 @@ export default class Galaxy {
 			new Ship( owner.ship_blueprints[3] ),
 			new Ship( owner.ship_blueprints[3] ),
 			new Ship( owner.ship_blueprints[4] ),
-			new Ship( owner.ship_blueprints[5] )
+			new Ship( owner.ship_blueprints[5] ),
+			new Ship( owner.ship_blueprints[6] ),
+			new Ship( owner.ship_blueprints[6] ),
+			new Ship( owner.ship_blueprints[6] )
 			];
 		f.ReevaluateStats();	
 		return f;

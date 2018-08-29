@@ -1,4 +1,5 @@
-// import {bindable} from 'aurelia-framework';
+import {Ship,ShipBlueprint} from '../../classes/Ship';
+import {GroundUnit,GroundUnitBlueprint} from '../../classes/GroundUnit';
 
 export class PlanetDetailPane {
 	
@@ -103,7 +104,14 @@ export class PlanetDetailPane {
 	BuildQueueRemoveItem( index ) {
 		this.planet.prod_q.splice( index, 1 );
 		}
-	AddSelectedShipToBuildQueue() { 
-		this.planet.AddBuildQueueShipBlueprint( this.sel_build_item );
+	AddSelectedItemToBuildQueue() { 
+		// ships
+		if ( this.sel_build_item instanceof ShipBlueprint ) {
+			this.planet.AddBuildQueueShipBlueprint( this.sel_build_item );
+			}
+		else if ( this.sel_build_item instanceof GroundUnitBlueprint ) {
+			this.planet.AddBuildQueueGroundUnitBlueprint( this.sel_build_item );
+			}
+		
 		}
 	}

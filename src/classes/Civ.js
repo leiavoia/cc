@@ -6,6 +6,7 @@ import * as Tech from './Tech';
 import Constellation from './Constellation';
 import Planet from './Planet';
 import {Ship,ShipBlueprint} from './Ship';
+import {GroundUnit,GroundUnitBlueprint} from './GroundUnit';
 import {WeaponList} from './WeaponList';
 import {ShipComponentList} from './ShipComponentList';
 
@@ -37,6 +38,7 @@ export default class Civ {
 	ship_range = 750; // px
 	ship_speed = 200; // HACK
 	ship_blueprints = [];
+	groundunit_blueprints = [];
 	max_hull_size = 800; // HACK HARDSET FOR DEVELOPMENT
 	avail_ship_comps = []; // components we can equip on ships
 	avail_ship_weapons = []; // weapons we can equip on ships
@@ -382,7 +384,25 @@ export default class Civ {
 		cruiser.AddComponent( 'ARMOR1' );
 		cruiser.AddComponent( 'SHIELD2' );
 		this.ship_blueprints.push(cruiser);
+	
+		let carrier = new ShipBlueprint();
+		carrier.name = 'Troop Carrier'; 
+		carrier.img = 'img/ships/ship021_mock.png';
+		carrier.AddComponent( 'CARRIER1' );
+		carrier.AddComponent( 'ENGINE1' );
+		carrier.AddComponent( 'ARMOR1' );
+		carrier.AddComponent( 'SHIELD2' );
+		this.ship_blueprints.push(carrier);
 			
+		// ground unit hack
+		let troop1 = new GroundUnitBlueprint();
+		troop1.name = 'Basic Infantry';
+		troop1.mindmg = 0;
+		troop1.maxdmg = 5;
+		troop1.mass = 5;
+		troop1.labor = 5;
+		troop1.hp = 1;
+		this.groundunit_blueprints.push( troop1 );
 		}
 	
 	static Random( difficulty = 0.5 ) {
