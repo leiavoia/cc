@@ -238,8 +238,8 @@ export default class ShipCombat {
 				this.teams[1].status = 'retreated';
 				}
 			else { 
-				this.teams[0] = 'depleted';
-				this.teams[1] = 'depleted';
+				this.teams[0].status = 'depleted';
+				this.teams[1].status = 'depleted';
 				this.status = 'STALEMATE!';
 				}
 			}
@@ -310,13 +310,15 @@ export default class ShipCombat {
 		log.forEach( x => {
 			// tabulate
 			let teamdata = this.stats[x.team.label];
-			teamdata.hull_dmg_out += x.hull;
-			teamdata.armor_dmg_out += x.armor;
-			teamdata.shield_dmg_out += x.shield;
-			teamdata.total_dmg_out += x.hull + x.armor + x.shield;
-			teamdata.attacks_made++;
-			if ( x.missed ) { teamdata.attacks_missed++; } 
-			if ( x.killed ) { teamdata.kills++; } 
+			if ( teamdata ) { 
+				teamdata.hull_dmg_out += x.hull;
+				teamdata.armor_dmg_out += x.armor;
+				teamdata.shield_dmg_out += x.shield;
+				teamdata.total_dmg_out += x.hull + x.armor + x.shield;
+				teamdata.attacks_made++;
+				if ( x.missed ) { teamdata.attacks_missed++; } 
+				if ( x.killed ) { teamdata.kills++; } 
+				}
 			});
 		// swap records
 		let keys = Object.keys( this.stats );

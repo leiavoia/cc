@@ -1,7 +1,6 @@
 <template>
 <!--	<require from="./converters/percent"></require>
 	<require from="./converters/round"></require>-->
-
 	<!-- FLEET DISPLAY MODE -->
 	<div class="fleet" if.bind="mode == 'fleet' || mode == 'awaiting_star_click'">
 		<h2 css="color: ${fleet.ui_color};">${fleet.owner.name} Fleet #${fleet.id}</h2>
@@ -37,7 +36,6 @@
 					<button click.delegate="ClickBomb()" if.bind="can_bomb" class="${can_bomb==2 ? 'alt' : 'ghost'}">BOMBARD</button>
 					<button click.delegate="ClickInvade()" if.bind="can_invade" class="${can_invade==2 ? 'alt' : 'ghost'}" >INVADE</button>
 					<button click.delegate="ClickTransferTroops()" if.bind="can_pickup_troops || can_drop_troops" >TROOPS</button>
-<!-- 					<button click.delegate="ClickDropTroops()" if.bind="troops" class="${can_invade==2 ? 'alt' : 'ghost'}" >DROP TROOPS</button> -->
 				</p>
 				
 				<!-- Ship Selection --> 
@@ -115,7 +113,7 @@
 	</div>
 		
 	<!-- CHOOSE-PLANET MODE -->
-	<div class="star star_${fleet.star.color}" if.bind="mode == 'colonize' || mode == 'bomb' || mode == 'invade'">
+	<div class="star star_${fleet.star.color}" if.bind="mode == 'colonize'">
 		<h2>Colonize ${fleet.star.name}</h2>
 		<p style="font-weight:bold; color: #FAA;" >Choose a planet to colonize:</p>
 		<div repeat.for="p of fleet.star.planets" class="hilite_wrapper" if.bind="p.owner === false && p.Habitable(fleet.owner.race)" click.delegate="ChoosePlanetToColonize(p)">
@@ -201,6 +199,63 @@
 								"
 							repeat.for="t of p.troops"
 							click.trigger="ClickTroop(t,p)"
+						/>
+					</div>
+					
+				</div>
+			</div>
+		</template>	
+	</div>
+	
+	<!-- INVASION PLANET SELECTOR -->
+	<div class="star star_${fleet.star.color}" if.bind="mode=='invade'">
+		
+		<p class="button_rack button_rack_fill">
+			<button click.delegate="ClickCancel()" class="bad">CANCEL</button>
+		</p>	
+		
+		<template containerless if.bind="fleet.star">
+			<p>Our Forces:</p>
+			<div class="trooplist">
+				<img src="img/ground/tank_transp.png" 
+					style="
+						height: 32px; 
+						width: 32px; 
+						display: inline-block; 
+						border: 1px solid white; 
+						border-radius: 0.25em; 
+						overflow: hidden; 
+						padding: 0.25em; 
+						margin: 0 0.5em 0.5em 0;
+						"
+					repeat.for="t of trooplist"
+				/>
+			</div>
+			
+			<h2>Invade Which?</h2>
+			<div repeat.for="p of fleet.star.planets" 
+				class="hilite_wrapper ${p==selected_planet ? 'selected' : ''}" 
+				if.bind="p.owner && !p.owner.is_player"
+				click.delegate="ClickPlanetToInvade(p)"
+				>
+				<div class="planet atm${p.atm} tmp${p.temp}" css.one-time="PlanetSizeCSS(p)">
+					<p>
+						<span css="color: ${p.ui_color}; font-weight:bold;">${p.name}</span> 
+						Odds: <b>${CalculateChanceOfGroundVictory(p) * 100 | round}%</b>
+					</p>
+					<div class="trooplist">
+						<img src="img/ground/tank_transp.png" 
+							style="
+								height: 32px; 
+								width: 32px; 
+								display: inline-block; 
+								border: 1px solid white; 
+								border-radius: 0.25em; 
+								overflow: hidden; 
+								padding: 0.25em; 
+								margin: 0 0.5em 0.5em 0;
+								"
+							repeat.for="t of p.troops"
 						/>
 					</div>
 					

@@ -37,16 +37,16 @@ export class GroundUnit {
 		log.target_roll = roll2;
 		// damage
 		if ( roll1 > roll2 ) { 
-			target.hp = Clamp(target.hp,0,null); 
+			target.hp--; 
 			log.target_dmg++;
 			} 
 		else if ( roll1 < roll2 ) { 
-			this.hp = Clamp(this.hp,0,null); 
+			this.hp--; 
 			log.dmg_received++;
 			} 
-		else if ( roll1 == roll2 ) { 
-			this.hp = Clamp(this.hp,0,null); 
-			target.hp = Clamp(target.hp,0,null); 
+		else { 
+			this.hp--; 
+			target.hp--; 
 			log.target_dmg++;
 			log.dmg_received++;
 			} 

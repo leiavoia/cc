@@ -27,6 +27,7 @@ export default class Game {
 	eventcard_queue = new FastPriorityQueue( (a,b) => { return (a.turn < b.turn) ? -1 : (a.turn > b.turn ? 1 : 0); });
 	eventlib = null;
 	shipcombats = [];
+	groundcombats = [];
 	victory_recipes = [];	
 	victory_achieved = false;
 		
@@ -484,6 +485,7 @@ export default class Game {
 				
 				this.PresentNextPlayerShipCombat();
 				
+				this.PresentNextPlayerGroundCombat()
 				}
 				
 			} // foreach turn (in case of multiple).
@@ -494,6 +496,12 @@ export default class Game {
 	QueueShipCombat( attacker, defender, planet ) {
 		this.shipcombats.push({ attacker, defender, planet,
 			label: `${attacker.owner.name} attacks ${defender.owner.name} at ${attacker.star.name}`
+			});	
+		}
+		
+	QueueGroundCombat( attacker, planet ) {
+		this.groundcombats.push({ attacker, planet,
+			label: `${attacker.owner.name} attacks planet ${planet.name}`
 			});	
 		}
 		
@@ -521,7 +529,7 @@ export default class Game {
 
 		// TODO sort out duplicates - lower CIV ID goes first (a-b, b-a)
 
-		// TODO: we need to make a separare list of "proposed" combats 
+		// TODO: we need to make a separate list of "proposed" combats 
 		// for the player to accept or decline
 
 		// Fight!
@@ -541,10 +549,18 @@ export default class Game {
 			let combat = new ShipCombat( sc.attacker, sc.defender, sc.planet );
 			combat.ProcessQueue( 1000 ); // 1000 = fight to the death if possible
 			combat.End();
+			// if the attacker was successfull and has troops onboard, offer option to invade
+			if ( combat.teams[0].status == 'victory' && combat.teams[0].fleet.troops ) { 
+				// choose a juicy target
+				let planet = combat.teams[0].fleet.AIWantsToInvade();
+				if ( planet ) { 
+					this.QueueGroundCombat( combat.teams[0].fleet, planet );
+					}
+				}
 			};
 		}
     
-    // this will look through the shipcombats queue for 
+    // this will look through the shipcombats queued for 
     // player-involved combat and present them to the player.
     // The queue drains by having the ship combat screen call
     // this function again on exit. If the queue has no player
@@ -564,7 +580,6 @@ export default class Game {
 			}
 		// if player is the defender, present mandatory battle
 		else if ( sc.defender.owner.is_player ) { 
-			console.log(sc.label);
 			this.app.ShowDialog(
 				`Attack on ${sc.defender.star.name}`,
 				sc.label,
@@ -580,7 +595,7 @@ export default class Game {
 						class: "alt",
 						cb: btn => { 
 							let combat = new ShipCombat( sc.attacker, sc.defender, sc.planet );
-							combat.ProcessQueue( 1000 ); // 1000 = fight to the death if possible
+							combat.ProcessQueue( 100000, false ); // 1000 = fight to the death if possible
 							combat.End();
 							this.PresentNextPlayerShipCombat();
 							}
@@ -591,7 +606,7 @@ export default class Game {
 						cb: btn => { 
 							let combat = new ShipCombat( sc.attacker, sc.defender, sc.planet );
 							combat.RetreatTeam( combat.teams[1] ); // team 1 is always the defender
-							combat.ProcessQueue( 1000 ); // 1000 = fight to the death if possible
+							combat.ProcessQueue( 100000, false ); // 1000 = fight to the death if possible
 							combat.End();
 							this.PresentNextPlayerShipCombat();
 							}
@@ -604,6 +619,53 @@ export default class Game {
 			this.LaunchPlayerShipCombat(sc);
 			}
     	}
+    
+    // this will look through the groundcombats queued for 
+    // player-involved combat and present them to the player.
+    // The queue drains by having the ground combat screen call
+    // this function again on exit. If the queue has no player
+    // involved combats, nothing happens.
+    PresentNextPlayerGroundCombat() { 
+ 		if ( !this.groundcombats.length ) { return false; }
+		let c = this.groundcombats.shift();
+		// fleet may have been destroyed in previous battle.
+		if ( c.attacker.killme || !c.attacker.troops ) { 
+			this.PresentNextPlayerGroundCombat();
+			return;
+			}
+		// if player is the defender, present mandatory battle
+		else if ( c.planet.owner.is_player ) { 
+			this.app.ShowDialog(
+				`Attack on ${c.planet.star.name}`,
+				c.label,
+				// buttons
+				[
+					{ 
+						text: "Command", 
+						class: "",
+						cb: btn => { this.LaunchPlayerGroundCombat(c); }
+						},
+					{ 
+						text: "Auto‑Resolve", // note nonbreaking hyphen
+						class: "alt",
+						cb: btn => { 
+							let combat = new GroundCombat( c.attacker, c.planet );
+							combat.Run( true ); // true = fight to the death
+							this.PresentNextPlayerGroundCombat();
+							}
+						}
+					]
+				);
+			}
+		// if player is the attacker, launch directly to attack creen
+		else if ( c.attacker.owner.is_player ) { 
+			this.LaunchPlayerGroundCombat(c);
+			}
+    	}
+    	
+	LaunchPlayerGroundCombat( combat ) {
+		this.app.SwitchMainPanel( 'groundcombat', combat, null, true ); // true = exclusive UI
+		}
     	
 	LaunchPlayerShipCombat( combat ) {
 		this.app.SwitchMainPanel( 'shipcombat', combat, null, true ); // true = exclusive UI

@@ -7,6 +7,7 @@ import Hyperlane from './classes/Hyperlane';
 import Constellation from './classes/Constellation';
 import Fleet from './classes/Fleet';
 import Civ from './classes/Civ';
+import GroundCombat from './classes/GroundCombat';
 // import {Modlist,Mod} from './classes/Mods';
 import * as utils from './util/utils';
 import * as Signals from './util/signals';
@@ -81,13 +82,23 @@ export class App {
 		this.game.RecalcFleetRanges();
 		this.game.RecalcCivContactRange();
 		let app = this; // needed for callback
-// 		this.AddNote(
-// 			'neutral',
-// 			`${this.game.galaxy.civs[1].name} Audience`,
-// 			`The ${this.game.galaxy.civs[1].name} ambassador would like a moment of your time`,
-// 			function(){app.SwitchMainPanel( 'audience', app.game.galaxy.civs[1] );}
-// 			);
-
+		
+// 		// GROUND COMBAT DEMO
+// 		// create an enemy fleet around player's home planet
+// 		let fleet = new Fleet( this.game.galaxy.civs[1], this.game.galaxy.civs[1].planets[0].star );
+// 		for ( let i = 0; i < 3; i++ ) { 
+// 			let ship = this.game.galaxy.civs[1].ship_blueprints[6].Make();
+// 			ship.troops.push( 
+// 				this.game.galaxy.civs[1].groundunit_blueprints[0].Make()
+// 				);
+// 			fleet.AddShip( ship );
+// 			}
+// 		// attack the player
+// 		let gc = new GroundCombat( fleet, this.game.galaxy.civs[0].planets[0] );
+// 		let log = gc.Run();
+// 		console.log( log ) ;
+// 		console.log( gc.stats ) ;
+		
 		}
 		
 	ToggleOption( o ) { 

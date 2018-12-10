@@ -312,6 +312,7 @@ export class FleetDetailPane {
 		}
 	ClickCancel() {
 		// revert to move-fleet mode
+		this.selected_planet = null;
 		this.CaptureStarClicks();
 		}
 	ClickScrap() {
@@ -326,9 +327,25 @@ export class FleetDetailPane {
 		}
 	ClickInvade() {
 		if ( this.can_invade ) { 
-		
+			this.trooplist = this.fleet.ListGroundUnits();
+			this.mode = 'invade';
 			}
 		}
+	ClickPlanetToInvade(p) { 
+		console.log(`clicked to invade ${p.name}`);
+		this.app.game.QueueGroundCombat( this.fleet, p );
+		this.app.game.PresentNextPlayerGroundCombat();	
+		}
+	CalculateChanceOfGroundVictory( p ) { 
+		let trooplist = this.fleet.ListGroundUnits();
+		let f = ( a, b ) => a + ( b.bp.maxdmg * b.bp.hp );			
+		let our_avg = trooplist.length ? (trooplist.reduce( f, 0 ) / trooplist.length) : 0;
+		let their_avg = p.troops.length ? (p.troops.reduce( f, 0 ) / p.troops.length) : 0;
+		let total = our_avg + their_avg;
+// 		console.log(`${our_avg} ${their_avg}`);
+		return total ? ( our_avg / total ) : 1; 
+		}
+		
 	// closes the troop transfer subscreen
 	ClickAcceptTroopTransfer() { 
 		this.mode = 'awaiting_star_click';

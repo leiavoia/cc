@@ -19,8 +19,8 @@ export default class Fleet {
 	research = false;
 	fp = 0; // firepower
 	bulk = 0; // combined "bodyweight" of all ships
-	troopcap = 0;
-	troops = 0;
+	troopcap = 0; // max capacity
+	troops = 0; // current total
 	
 	onUpdate = null; // callback
 	SetOnUpdate( callback ) { 
@@ -102,6 +102,13 @@ export default class Fleet {
 		
 	RemoveDeadShips() { 
 		this.ships = this.ships.filter( ship => ship.hull );
+		this.ReevaluateStats();
+		}
+		
+	RemoveDeadTroops() { 
+		for ( let s of this.ships ) { 
+			s.troops = s.troops.filter( t => t.hp );
+			}
 		this.ReevaluateStats();
 		}
 		
@@ -306,6 +313,28 @@ export default class Fleet {
 		// TODO / AI HACK
 		// AI always fights, human player gets option
 		return !this.owner.is_player && this.fp && this.ships.length; // need guns to attack 
+    	}
+	    
+	// any juicy planets?
+	AIWantsToInvade( planet ) {
+		if ( !this.troops ) { return false; } 
+		let best_planet = null;
+		let high_score = -1;
+		for ( let p of this.star.planets ) { 
+			if ( this.troops >= p.troops.length ) { 
+				let score = this.troops - p.troops.length;
+				if ( score > high_score ) { 
+					best_planet = p;
+					high_score = score;
+					}
+				}
+			}
+		return best_planet; 
+    	}
+    	
+	// invade a specific planet?
+	AIWantToInvadePlanet( planet ) {
+		return this.troops && this.troops >= planet.troops.length; 
     	}
 	    
 	// returns a mission report for any completed deepspace missions

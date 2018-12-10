@@ -48,11 +48,11 @@ export class ShipCombatPane {
 		}
 		
 	ClosePanel() {
-		this.app.CloseSideBar();
-		this.app.CloseMainPanel();
 		// finish up the battles
 		this.FinishCombat();
 		this.combat.End(); // cleanup
+		this.app.CloseSideBar();
+		this.app.CloseMainPanel();
 		// tell game this battle is over and continue with other battles
 		this.app.game.PresentNextPlayerShipCombat();
 		}

@@ -195,11 +195,15 @@ export default class Galaxy {
 			new Ship( owner.ship_blueprints[3] ),
 			new Ship( owner.ship_blueprints[3] ),
 			new Ship( owner.ship_blueprints[4] ),
-			new Ship( owner.ship_blueprints[5] ),
-			new Ship( owner.ship_blueprints[6] ),
-			new Ship( owner.ship_blueprints[6] ),
-			new Ship( owner.ship_blueprints[6] )
+			new Ship( owner.ship_blueprints[5] )
 			];
+		for ( let i = 0; i < 3; i++ ) { 
+			let ship = owner.ship_blueprints[6].Make();
+			ship.troops.push( 
+				owner.groundunit_blueprints[0].Make()
+				);
+			f.ships.push( ship );
+			}
 		f.ReevaluateStats();	
 		return f;
 		}

@@ -2774,6 +2774,17 @@ DIV.annoyometer .nub {
 	}
 	
 	
+	
+	
+/* GROUND COMBAT PANE */
+#shipcombat_pane.groundcombat {
+	background: url(../img/bg/scene-planet001.jpg) 50% 50% no-repeat;
+	background-size: cover;
+	}
+	
+	
+	
+	
 /* SETUP PANE */
 #setup_pane {
 	padding: 3em;
