@@ -1,5 +1,5 @@
 <template>
-	<div id="shipcombat_pane" class="pane groundcombat" if.bind="combatdata && combat">
+	<div id="combat_pane" class="pane groundcombat" if.bind="combatdata && combat">
 			
 			<div id="center-column">
 				<div class="column-header">
@@ -13,6 +13,13 @@
 						<button click.delegate="ClosePanel()" if.bind="combat.status">Close</button>
 					</p> 
 					<template if.bind="!combat.status" containerless>
+						<p>
+							<input type="range" min="0" max.bind="app.game.myciv.treasury" value.bind="oddscost_slider" id="odds_slider" style="width:100%;" />
+						</p>
+						<p>
+							Odds: +${odds|percent}%, Cost: $${oddscost|round}
+						</p>
+						
 <!--						<p>Targetting Priority:</p>
 						<p class="button_rack">
 							<button click.trigger="ChangeTargetPriority('size_desc')" class="${player_target_priority=='size_desc' ? 'alt' : ''}">Larger Ships</button>
@@ -32,99 +39,68 @@
 					</template>
 				</div>
 				<div class="statsbox">
-					<!-- Duplicating the table to change the order of fleets is silly, but gets job done. -->
-					<table if.bind="combat.log.length && combatdata.attacker.owner.is_player" class="pure-table centered tight borderless">
-						<tr>
-							<td>${combat.stats.ATTACKER.kills}</td>
-							<th>Kills</th>
-							<td>${combat.stats.DEFENDER.kills}</td>
-						</tr>
-						<tr>
-							<td>${combat.stats.ATTACKER.losses}</td>
-							<th>Losses</th>
-							<td>${combat.stats.DEFENDER.losses}</td>
-						</tr>
-					</table>					
-					<table if.bind="combat.log.length && combatdata.defender.owner.is_player" class="pure-table centered tight borderless">
-						<tr>
-							<td>${combat.stats.DEFENDER.kills}</td>
-							<th>Kills</th>
-							<td>${combat.stats.ATTACKER.kills}</td>
-						</tr>
-						<tr>
-							<td>${combat.stats.DEFENDER.losses}</td>
-							<th>Losses</th>
-							<td>${combat.stats.ATTACKER.losses}</td>
-						</tr>
-					</table>					
+					<table if.bind="combat.log.length" class="pure-table centered tight borderless">
+						<p>KILLS:
+							<span if.bind="combatdata.attacker.owner.is_player">${combat.stats.ATTACKER.kills}</span>
+							<span if.bind="!combatdata.attacker.owner.is_player">${combat.stats.DEFENDER.kills}</span>
+						</p>
+						<p>LOSSES:
+							<span if.bind="combatdata.attacker.owner.is_player">${combat.stats.ATTACKER.losses}</span>
+							<span if.bind="!combatdata.attacker.owner.is_player">${combat.stats.DEFENDER.losses}</span>
+						</p>
+					</table>						
 				</div>
 				<div class="log">
 					<p>${combat.teams[0].units.length} vs. ${combat.teams[1].units.length}</p>
-					
-					log goes here
-<!--					<table if.bind="combat.log.length" class="pure-table full tight borderless">
+					<table if.bind="combat.log.length" class="pure-table full tight borderless">
 						<tr>
-							<th>Attacker</th>
-							<th>Defender</th>
-							<th>Weapon</th>
-							<th>Hull Dmg</th>
-							<th>Armor Dmg</th>
-							<th>Shielded</th>
-							<th></th>
+							<th>Attacker Role</th>
+							<th>Defender Role</th>
+							<th>Victory</th>
 						</tr>
 						<tr repeat.for="att of combat.log">
-							<td>${att.ship.bp.name}</td>
-							<td>${att.target.bp.name}</td>
-							<td>${att.weapon.name}</td>
-							<td>${att.hull}</td>
-							<td>${att.armor}</td>
-							<td>${att.shield}</td>
-							<td>
-								${att.missed ? 'miss' : ''}
-								${att.killed ? 'killed' : ''}
-							</td>
+							<td>${att.roll}</td>
+							<td>${att.target_roll}</td>
+							<td>${(att.target_died && att.died) ? '-' : ( att.died ? att.attacker.name : att.defender.name )}</td>
 						</tr>
-					</table>-->
+					</table>
 				</div>
 			</div>
-			
-	
-<!--			<div repeat.for="team of combat.teams" 
+			<div repeat.for="team of combat.teams" 
 				id="${team.role}-column" 
 				class="${team.status=='victory' ? 'winner' : ''} 
 				${team==player_team ? 'is_player' : 'not_player'}
 				">
 				<div class="column-header">
-					<h2 css="color: rgb( ${team.fleet.owner.color_rgb[0]}, ${team.fleet.owner.color_rgb[1]}, ${team.fleet.owner.color_rgb[2]} ); ">
+					<h2 css="color: rgb( ${team.owner.color_rgb[0]}, ${team.owner.color_rgb[1]}, ${team.owner.color_rgb[2]} ); ">
 						<span class="small">${team.role}<span><br/>
-						${team.fleet.owner.name}
+						${team.owner.name}
 					</h2>
-					<p>${team.fleet.ships.length} ships in combat</p>
+					<p repeat.for="m of team.modlist.Query('ground_roll',true)">
+						${m.op} ${m.val|round:1} ${m.label}
+					</p>
 				</div>
+				<!-- tech note: we use shipgrid class even though these are not actually ships -->
 				<div class="fleet-container">
-					<div class="shipgrid">
-						<div id="ship-${ship.id}"
-							class="ship 
-							${ship.selected ? 'selected' : ''} 
-							${ship.retreat ? 'retreat' : ''} 
-							health_${ship.health_class}
-							${ship == last_turnlog.ship || ship == last_turnlog.target ? 'hilite' : ''}
-							"
-							click.delegate="ClickShip(ship,team)" 
-							repeat.for="ship of team.fleet.ships" 
-							>
-							<p class="infobar top"><span>${'🟊'.repeat(ship.xplevel)}</span><span>&nbsp;<span if.bind="ship.bp.shield">${ship.bp.shield}</span></span></p>
-							<img src.one-time="ship.bp.img" />
-							<p class="infobar hp"><span>${ship.hull}</span><span>${ship.armor}</span></p>
-							<progress if.bind="ship.armor" max="100" value="${((ship.armor / ship.bp.armor)*100)|round}" class="${ship.health_class}"></progress>
-							<progress if.bind="!ship.armor" max="100" value="${((ship.hull / ship.bp.hull)*100)|round}" class="${ship.health_class}"></progress>
-							<p class="name">${ship.bp.name} </p>
-							<span repeat.for="w of ship.weapons" style="padding: 2px; background: #555; margin: 3px; display: inline-block; border-radius: 2px;">${w.shotsleft}</span>
-							</p>
-						</div>
-					</div>	
+					<div class="shipgrid trooplist">
+						<!-- ${u == last_turnlog.unit || u == last_turnlog.target ? 'hilite' : ''} -->
+						<div id="groundunit-${u.id}" repeat.for="u of team.units_orig" class="ship" >
+							<img src="img/ground/tank_transp.png" 
+								style="
+									height: 32px; 
+									width: 32px; 
+									display: inline-block; 
+									border: 1px solid white; 
+									border-radius: 0.25em; 
+									overflow: hidden; 
+									padding: 0.25em; 
+									margin: 0 0.5em 0.5em 0;
+									"
+								css="background-color: ${u.hp ? 'none' : '#D11'}; opacity: ${u.hp ? 1.0 : 0.35};"
+							/>
+					</div>
 				</div>
-			</div>-->
+			</div>
 			
 		</div>
 </template>

@@ -1,10 +1,10 @@
+import {Mod,Modlist} from './Mods';
 
 export default class GroundCombat {
 
 	// the attacker is an orbiting fleet with onboard ground units.
 	// The defender is the planet with any ground forces.
 	constructor( fleet, planet ) { 
-		this.queue = [];
 		// battle log.
 		// NOTE: log is in reverse chronological order, because
 		// it works better for UI display and because the log
@@ -20,25 +20,49 @@ export default class GroundCombat {
 				role: 'attacker',
 				fleet: fleet, 
 				planet: null,
-				units: [],
+				units: [], // actual data we work off of
+				units_orig: [], // shadow array for UI display
 				target_priority: 'size_desc', 
 				strategy: 'normal', 
-				status: null
+				status: null,
+				owner: fleet.owner
 				},
 			{ 
 				label: 'DEFENDER', 
 				role: 'defender',
 				fleet: null, 
 				planet: planet,
-				units: [],
+				units: [], // actual data we work off of
+				units_orig: [], // shadow array for UI display
 				target_priority: 'size_desc', 
 				strategy: 'normal', 
-				status: null
+				status: null,
+				owner: planet.owner
 				},
 			];
 		// compile the fighting ground units
 		this.teams[0].units = fleet.ListGroundUnits();
+		this.teams[0].units_orig = this.teams[0].units.slice();
 		this.teams[1].units = planet.troops;
+		this.teams[1].units_orig = this.teams[1].units.slice();
+		// create stat modifiers based on technology and planet conditions
+		this.teams.forEach( team => {
+			team.modlist = new Modlist();
+			let adaptation = this.teams[1].planet.Adaptation( team.owner.race );
+			if ( adaptation ) { 
+				team.modlist.Add( 
+					new Mod( 'ground_roll', '*', 1+(adaptation*0.1), 'Environment' )
+					);
+				}
+			} );
+		// figure out what the cost of improving odds would be
+		this.teams.forEach( team => {
+			let total = 0; // aka firepower
+			for ( let u of team.units ) { 
+				total += ( ( u.bp.maxdmg + u.bp.mindmg ) / 2 ) * u.bp.hp; // hits * avg dmg
+				};
+			team.odds_base_cost = total * 50; // [!]MAGICNUMBER 
+			} );
 		// handy crosslinks
 		this.teams[0].otherteam = this.teams[1];
 		this.teams[1].otherteam = this.teams[0];
@@ -52,27 +76,35 @@ export default class GroundCombat {
 			let a = this.teams[0].units[0];
 			let b = this.teams[1].units[0];
 			// turnlog = { unit:this, target:target, roll: 0, target_roll: 0, dmg_received: 0, target_dmg: 0, died: false, target_died: false }
-			let turnlog = b.Attack( a );
+			let turnlog = a.Attack( b, this.teams[0].modlist, this.teams[1].modlist );
 			if ( !a.hp ) { this.teams[0].units.shift(); }
 			if ( !b.hp ) { this.teams[1].units.shift(); }
 			if ( turnlog ) { 
+				turnlog.attacker = this.teams[0].owner;
+				turnlog.defender = this.teams[1].owner;
 				this.log.unshift( turnlog ); // master log
 				turnlogs.unshift( turnlog ); // function log
 				}
 			if ( only_one_item ) { break; }
 			}
 		// victory/defeat
-		if ( !this.teams[0].units.length ) { 
-			this.status = 'VICTORY: ' + this.teams[0].label;
-			this.winner = this.teams[0].label;
-			this.teams[0].status = 'victory';
+		if ( !this.teams[0].units.length && !this.teams[1].units.length ) { 
+			this.status = 'ANNIHILATION';
+			this.winner = 'neither';
 			this.teams[1].status = 'defeat';
+			this.teams[0].status = 'defeat';
 			}	
-		if ( !this.teams[1].units.length ) { 
+		else if ( !this.teams[0].units.length ) { 
 			this.status = 'VICTORY: ' + this.teams[1].label;
 			this.winner = this.teams[1].label;
 			this.teams[1].status = 'victory';
 			this.teams[0].status = 'defeat';
+			}	
+		else if ( !this.teams[1].units.length ) { 
+			this.status = 'VICTORY: ' + this.teams[0].label;
+			this.winner = this.teams[0].label;
+			this.teams[0].status = 'victory';
+			this.teams[1].status = 'defeat';
 			}	
 		this.CalcStats(turnlogs);
 		// trim our internal log if too big
@@ -109,6 +141,10 @@ export default class GroundCombat {
 				// TODO: land all troops?
 				}
 		
+			// TODO: capture of planet may anihilate the civ
+			
+			// TODO: diplomacy affect
+			
 			}
 			
 		return turnlogs;

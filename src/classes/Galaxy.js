@@ -197,7 +197,7 @@ export default class Galaxy {
 			new Ship( owner.ship_blueprints[4] ),
 			new Ship( owner.ship_blueprints[5] )
 			];
-		for ( let i = 0; i < 3; i++ ) { 
+		for ( let i = 0; i < 16; i++ ) { 
 			let ship = owner.ship_blueprints[6].Make();
 			ship.troops.push( 
 				owner.groundunit_blueprints[0].Make()

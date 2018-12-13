@@ -2699,7 +2699,7 @@ DIV.annoyometer .nub {
 	}*/	
 	
 /* SHIP COMBAT PANE */
-#shipcombat_pane {
+#combat_pane {
 	height:100%;
 	background: url(../img/map/bg/stars.jpg) 50% 50% no-repeat;
 	background-size: cover;
@@ -2708,67 +2708,67 @@ DIV.annoyometer .nub {
 	position:relative; /* needed for absolutely positioned FX */
 	overflow: hidden;
 	}
-#shipcombat_pane > * {
+#combat_pane > * {
 	flex: 2;
 	display:flex;
 	flex-flow: column nowrap;
 	margin: 1em;
 	order: 3;
 	}
-#shipcombat_pane #center-column {
+#combat_pane #center-column {
 	flex: 3;
 	padding: 0 1em;
 	order: 2;
 	}
 /* whichever column is the player goes first */
-#shipcombat_pane #defender-column.is_player,
-#shipcombat_pane #attacker-column.is_player {
+#combat_pane #defender-column.is_player,
+#combat_pane #attacker-column.is_player {
 	order: 1 !important;
 	}
-#shipcombat_pane #defender-column,
-#shipcombat_pane #attacker-column {
+#combat_pane #defender-column,
+#combat_pane #attacker-column {
 	border: 1px solid transparent;
 	}
 	
-#shipcombat_pane .column-header {
+#combat_pane .column-header {
 	flex: 1 1 content;
 	text-align: center;
 	}
-#shipcombat_pane .fleet-container {
+#combat_pane .fleet-container {
 	flex: 30 2;
 	overflow-y: auto;
 	}
-#shipcombat_pane .controlpanel {
+#combat_pane .controlpanel {
 	flex: 1 1 ;
 	text-align:center;
 	}
-#shipcombat_pane .log {
+#combat_pane .log {
 	flex: 10 1 ;
 	overflow-y: auto;
 	text-align:center;
 	}
-#shipcombat_pane .statsbox {
+#combat_pane .statsbox {
 	flex: 2 2;
 	overflow-y: auto;
 	min-height: 12em;
 	text-align:center;
 	}
-#shipcombat_pane .statsbox TD:first-child {
+#combat_pane .statsbox TD:first-child {
 	text-align:right;
 	}
-#shipcombat_pane .statsbox TH {
+#combat_pane .statsbox TH {
 	text-align:center;
 	padding-right: 2em;
 	padding-left: 2em;
 	}
-#shipcombat_pane > .winner {
+#combat_pane > .winner {
 	background-color: rgba( 10, 230, 100, 0.2 );
 /* 	background-image: radial-gradient(circle closest-corner at 50% 50% , transparent 0%, transparent 50%, rgba( 10, 230, 100, 0.25 ) 100%); */
 	border-radius: 1em;
 	border-color: rgba( 10, 255, 180, 0.5 ) !important;
 	transition: border-color 0.75s ease-in, background-color 0.75s ease-in;
 	}
-#shipcombat_pane > .winner H2 {
+#combat_pane > .winner H2 {
 	color: #FFF !important;
 	transition: color 0.75s ease-in;
 	}
@@ -2777,7 +2777,7 @@ DIV.annoyometer .nub {
 	
 	
 /* GROUND COMBAT PANE */
-#shipcombat_pane.groundcombat {
+#combat_pane.groundcombat {
 	background: url(../img/bg/scene-planet001.jpg) 50% 50% no-repeat;
 	background-size: cover;
 	}

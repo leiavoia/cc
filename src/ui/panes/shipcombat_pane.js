@@ -160,7 +160,7 @@ export class ShipCombatPane {
 		el.style.width = log.weapon.fx.w + 'px';
 		if ( 'borderRadius' in log.weapon.fx ) {  el.style.borderRadius = log.weapon.fx.borderRadius; }
 		
-		let pane = document.getElementById('shipcombat_pane');
+		let pane = document.getElementById('combat_pane');
 		pane.appendChild(el); 
 		el.focus();
 		

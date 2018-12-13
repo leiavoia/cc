@@ -59,7 +59,7 @@ export class Modlist {
 			mods = this.parent.Query( ability );
 			}
 		for ( let m of this.mods ) {
-			if ( m.abil == ability ) {
+			if ( !ability || m.abil == ability ) {
 				mods.push(m);
 				}
 			}

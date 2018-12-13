@@ -27,14 +27,18 @@ export class GroundUnit {
 		}
 		
 	// returns combat log
-	Attack( target ) {
+	Attack( target, modlist = null, enemy_modlist = null ) {
 		if ( !target ) { return null; }
 		let log = { unit:this, target:target, roll: 0, target_roll: 0, dmg_received: 0, target_dmg: 0, died: false, target_died: false };
 		// damage rolls
 		let roll1 = Math.ceil( (Math.random() * ( this.bp.maxdmg - this.bp.mindmg )) + this.bp.mindmg );
 		let roll2 = Math.ceil( (Math.random() * ( target.bp.maxdmg - target.bp.mindmg )) + target.bp.mindmg );
-		log.roll = roll1;
-		log.target_roll = roll2;
+		// modifiers
+		if ( modlist ) { roll1 = modlist.Apply( roll1, 'ground_roll', true ); }
+		if ( enemy_modlist ) { roll2 = enemy_modlist.Apply( roll2, 'ground_roll', true ); }
+		// record result
+		log.roll = Math.round(roll1,2);
+		log.target_roll = Math.round(roll2,2);
 		// damage
 		if ( roll1 > roll2 ) { 
 			target.hp--; 

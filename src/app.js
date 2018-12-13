@@ -168,9 +168,9 @@ export class App {
 				this.CloseSideBar();
 				}
 			this.exclusive_ui = !!exclusive;
-			this.main_panel_mode = mode;
 			this.main_panel_obj = obj;
 			this.main_panel_data = data;
+			this.main_panel_mode = mode;
 			}
 		}
 	CloseMainPanel() {
