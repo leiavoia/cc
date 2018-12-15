@@ -1,102 +1,103 @@
 <template>
 	<div id="combat_pane" class="pane groundcombat" if.bind="combatdata && combat">
-			
-			<div id="center-column">
-				<div class="column-header">
-					<h2>Invasion of ${combatdata.planet.name}</h2>
-					<h1 if.bind="combat.status" style="margin: 0.25em 0;">${combat.status}</h1>
-				</div>
-				<div class="controlpanel">
-					<p class="button_rack big">
-						<button click.delegate="PlayCombat()" if.bind="!combat.status" class="${processing?'ghost':''} alt">Begin</button>
-						<button click.delegate="FinishCombat()"if.bind="!combat.status" class="">Auto-Resolve</button>
-						<button click.delegate="ClosePanel()" if.bind="combat.status">Close</button>
-					</p> 
-					<template if.bind="!combat.status" containerless>
-					
-						<!-- purchase better odds slider -->
-						<template containerless if.bind="app.game.myciv.treasury > 0 && !processing">
-							<p class="bold bottomless"> Improve your chance of victory: </p>
-							<p class="marginless">
-								<input type="range" min="0" max.bind="app.game.myciv.treasury" value.bind="oddscost_slider" id="odds_slider" style="width:100%;" />
-							</p>
-							<p class="topless" style="font-weight:bold; color: #AEA; font-size: 125%;"> 
-								<!--Odds: +${(odds?(odds-1):0)|percent}%,--> 
-								Cost: $${oddscost|round} 
-							</p>
-						</template>
-						
-<!--						<p>Targetting Priority:</p>
-						<p class="button_rack">
-							<button click.trigger="ChangeTargetPriority('size_desc')" class="${player_target_priority=='size_desc' ? 'alt' : ''}">Larger Ships</button>
-							<button click.trigger="ChangeTargetPriority('easy_desc')" class="${player_target_priority=='easy_desc' ? 'alt' : ''}">Easy Targets</button>
-							<button click.trigger="ChangeTargetPriority('firepower_desc')" class="${player_target_priority=='firepower_desc' ? 'alt' : ''}">High Firepower</button>
-						</p>-->
-						
-<!--						<p>Combat Speed:</p>
-						<p class="button_rack ">
-							<button click.trigger="combat_speed=2.0" class="${combat_speed==2.0 ? 'alt' : ''}">1/2</button>
-							<button click.trigger="combat_speed=1.0" class="${combat_speed==1.0 ? 'alt' : ''}">1x</button>
-							<button click.trigger="combat_speed=0.5" class="${combat_speed==0.5 ? 'alt' : ''}">2x</button>
-							<button click.trigger="combat_speed=0.2" class="${combat_speed==0.2 ? 'alt' : ''}">5x</button>
-							<button click.trigger="combat_speed=0.1" class="${combat_speed==0.1 ? 'alt' : ''}">10x</button>
-							<button click.trigger="combat_speed=0.05" class="${combat_speed==0.05 ? 'alt' : ''}">20x</button>
-							<button click.trigger="combat_speed=0.0" class="${combat_speed==0.0 ? 'alt' : ''}">Instant</button>
-						</p>-->
+		
+		<div id="center-column" class="ui">
+			<div class="column-header">
+				<h2>Invasion of ${combatdata.planet.name}</h2>
+				<h1 if.bind="combat.status" style="margin: 0.25em 0;">${combat.status}</h1>
+			</div>
+			<div class="controlpanel">
+				<p class="button_rack big">
+					<button click.delegate="PlayCombat()" if.bind="!combat.status" class="${processing?'ghost':''} alt">Begin</button>
+					<button click.delegate="FinishCombat()"if.bind="!combat.status" class="">Auto-Resolve</button>
+					<button click.delegate="ClosePanel()" if.bind="combat.status">Close</button>
+				</p> 
+				<template if.bind="!combat.status" containerless>
+				
+					<!-- purchase better odds slider -->
+					<template containerless if.bind="app.game.myciv.treasury > 0 && !processing">
+						<p class="bold bottomless"> Improve your chance of victory: </p>
+						<p class="marginless">
+							<input type="range" min="0" max.bind="app.game.myciv.treasury" value.bind="oddscost_slider" id="odds_slider" style="width:100%;" />
+						</p>
+						<p class="topless" style="font-weight:bold; color: #AEA; font-size: 125%;"> 
+							<!--Odds: +${(odds?(odds-1):0)|percent}%,--> 
+							Cost: $${oddscost|round} 
+						</p>
 					</template>
-				</div>
-				<div class="log">
-					<table if.bind="combat.log.length" class="pure-table full tight borderless">
-						<tr>
-							<th>Attacker Role</th>
-							<th>Defender Role</th>
-							<th>Victory</th>
-						</tr>
-						<tr repeat.for="att of combat.log">
-							<td>${att.roll}</td>
-							<td>${att.target_roll}</td>
-							<td>${(att.target_died && att.died) ? '-' : ( att.died ? att.attacker.name : att.defender.name )}</td>
-						</tr>
-					</table>
-				</div>
+					
+<!--						<p>Targetting Priority:</p>
+					<p class="button_rack">
+						<button click.trigger="ChangeTargetPriority('size_desc')" class="${player_target_priority=='size_desc' ? 'alt' : ''}">Larger Ships</button>
+						<button click.trigger="ChangeTargetPriority('easy_desc')" class="${player_target_priority=='easy_desc' ? 'alt' : ''}">Easy Targets</button>
+						<button click.trigger="ChangeTargetPriority('firepower_desc')" class="${player_target_priority=='firepower_desc' ? 'alt' : ''}">High Firepower</button>
+					</p>-->
+					
+<!--						<p>Combat Speed:</p>
+					<p class="button_rack ">
+						<button click.trigger="combat_speed=2.0" class="${combat_speed==2.0 ? 'alt' : ''}">1/2</button>
+						<button click.trigger="combat_speed=1.0" class="${combat_speed==1.0 ? 'alt' : ''}">1x</button>
+						<button click.trigger="combat_speed=0.5" class="${combat_speed==0.5 ? 'alt' : ''}">2x</button>
+						<button click.trigger="combat_speed=0.2" class="${combat_speed==0.2 ? 'alt' : ''}">5x</button>
+						<button click.trigger="combat_speed=0.1" class="${combat_speed==0.1 ? 'alt' : ''}">10x</button>
+						<button click.trigger="combat_speed=0.05" class="${combat_speed==0.05 ? 'alt' : ''}">20x</button>
+						<button click.trigger="combat_speed=0.0" class="${combat_speed==0.0 ? 'alt' : ''}">Instant</button>
+					</p>-->
+				</template>
 			</div>
-			<div repeat.for="team of combat.teams" 
-				id="${team.role}-column" 
-				class="${team.status=='victory' ? 'winner' : ''} 
-				${team==player_team ? 'is_player' : 'not_player'}
-				">
-				<div class="column-header">
-					<h2 css="color: rgb( ${team.owner.color_rgb[0]}, ${team.owner.color_rgb[1]}, ${team.owner.color_rgb[2]} ); ">
-						<span class="small">${team.role}<span><br/>
-						${team.owner.name}
-					</h2>
-					<p class="bottomless">Odds of Winning:</p>
-					<p style="font-size: 400%; font-weight:bold; margin: 0;"> ${team.odds|percent}% </p>
-					<p repeat.for="m of team.modlist_labels">
-						${m}
-					</p>
-				</div>
-				<!-- tech note: we use shipgrid class even though these are not actually ships -->
-				<div class="fleet-container">
-					<div class="shipgrid trooplist">
-						<!-- ${u == last_turnlog.unit || u == last_turnlog.target ? 'hilite' : ''} -->
-						<div id="groundunit-${u.id}" repeat.for="u of team.units_orig" class="ship" >
-							<img src="img/ground/tank_transp.png" 
-								style="
-									height: 32px; 
-									width: 32px; 
-									display: inline-block; 
-									border: 1px solid white; 
-									border-radius: 0.25em; 
-									overflow: hidden; 
-									padding: 0.25em; 
-									margin: 0 0.5em 0.5em 0;
-									"
-								css="background-color: ${u.hp ? 'none' : '#D11'}; opacity: ${u.hp ? 1.0 : 0.35};"
-							/>
-					</div>
-				</div>
+			<div class="log">
+				<table if.bind="combat.log.length" class="pure-table full tight borderless">
+					<tr>
+						<th>Attacker Role</th>
+						<th>Defender Role</th>
+						<th>Victory</th>
+					</tr>
+					<tr repeat.for="att of combat.log">
+						<td>${att.roll}</td>
+						<td>${att.target_roll}</td>
+						<td>${(att.target_died && att.died) ? '-' : ( att.died ? att.attacker.name : att.defender.name )}</td>
+					</tr>
+				</table>
 			</div>
-			
 		</div>
+		<div repeat.for="team of combat.teams" 
+			id="${team.role}-column" 
+			class="ui
+			${team.status=='victory' ? 'winner' : ''} 
+			${team==player_team ? 'is_player' : 'not_player'}
+			">
+			<div class="column-header">
+				<h2 css="color: rgb( ${team.owner.color_rgb[0]}, ${team.owner.color_rgb[1]}, ${team.owner.color_rgb[2]} ); ">
+					<span class="small">${team.role}<span><br/>
+					${team.owner.name}
+				</h2>
+				<p class="bottomless">Odds of Winning:</p>
+				<p style="font-size: 400%; font-weight:bold; margin: 0;"> ${team.odds|percent}% </p>
+				<p repeat.for="m of team.modlist_labels">
+					${m}
+				</p>
+			</div>
+			<!-- tech note: we use shipgrid class even though these are not actually ships -->
+			<div class="fleet-container">
+				<div class="shipgrid trooplist">
+					<!-- ${u == last_turnlog.unit || u == last_turnlog.target ? 'hilite' : ''} -->
+					<div id="groundunit-${u.id}" repeat.for="u of team.units_orig" class="ship" >
+						<img src="img/ground/tank_transp.png" 
+							style="
+								height: 32px; 
+								width: 32px; 
+								display: inline-block; 
+								border: 1px solid white; 
+								border-radius: 0.25em; 
+								overflow: hidden; 
+								padding: 0.25em; 
+								margin: 0 0.5em 0.5em 0;
+								"
+							css="background-color: ${u.hp ? 'none' : '#D11'}; opacity: ${u.hp ? 1.0 : 0.35};"
+						/>
+				</div>
+			</div>
+		</div>
+		
+	</div>
 </template>

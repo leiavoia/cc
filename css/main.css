@@ -2708,6 +2708,9 @@ DIV.annoyometer .nub {
 	position:relative; /* needed for absolutely positioned FX */
 	overflow: hidden;
 	}
+#combat_pane .ui {
+	z-index: 10; /* lets us put FX behind the panels */
+	}	
 #combat_pane > * {
 	flex: 2;
 	display:flex;
@@ -2771,6 +2774,20 @@ DIV.annoyometer .nub {
 #combat_pane > .winner H2 {
 	color: #FFF !important;
 	transition: color 0.75s ease-in;
+	}
+/* planet background */
+#combat_pane .planet {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	background-size: 30%;
+	transform: rotate(180deg);
+	z-index: 1;
+	margin: 0;
+	padding: 0;
+	flex:none;
 	}
 	
 	
