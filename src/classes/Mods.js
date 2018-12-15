@@ -26,6 +26,20 @@ export class Modlist {
 	mods = [];
 	parent = null;
 	
+	constructor ( parent = null ) { 
+		if ( parent ) { 
+			if ( parent instanceof Modlist ) { 
+				this.parent = parent;
+				}
+			else if ( 'mods' in parent && parent.mods instanceof Modlist ) { 
+				this.parent = parent.mods;
+				}	
+			else if ( 'modlist' in parent && parent.modlist instanceof Modlist ) { 
+				this.parent = parent.modlist;
+				}
+			}
+		}
+		
 	Add( mod ) {
 		this.mods.push(mod);
 		this.mods.sort( Modlist.SortMods );
@@ -74,7 +88,7 @@ export class Modlist {
 		if ( use_parent instanceof Modlist ) { 
 			value = use_parent.Apply( value, ability );
 			}
-		else if ( use_parent && this.parent ) { 
+		else if ( use_parent && this.parent && this.parent instanceof Modlist ) { 
 			value = this.parent.Apply( value, ability );
 			}
 		for ( let m of this.mods ) {

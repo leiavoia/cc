@@ -8,6 +8,7 @@ import * as utils from '../util/utils';
 import {computedFrom} from 'aurelia-framework';
 import {Ship,ShipBlueprint} from './Ship';
 import {GroundUnit,GroundUnitBlueprint} from './GroundUnit';
+import {Mod,Modlist} from './Mods';
 
 export default class Planet {
 	
@@ -670,6 +671,7 @@ export default class Planet {
 		this.star = star;	
 		this.name = ( name || RandomName() ).uppercaseFirst();
 		this.id = Planet.NextUniqueID();
+		this.mods = new Modlist;
 		}
 	
 	static Random( star ) {
@@ -847,6 +849,7 @@ export default class Planet {
 			}
 		this.owner.RecalcEmpireBox();	
 		this.ui_color = `rgb( ${this.owner.color_rgb[0]}, ${this.owner.color_rgb[1]}, ${this.owner.color_rgb[2]} )` ;
+		this.mods.parent = this.owner.mods;
 		}
 		
 	ListUniqueGroundUnits() { 

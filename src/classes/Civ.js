@@ -9,6 +9,7 @@ import {Ship,ShipBlueprint} from './Ship';
 import {GroundUnit,GroundUnitBlueprint} from './GroundUnit';
 import {WeaponList} from './WeaponList';
 import {ShipComponentList} from './ShipComponentList';
+import {Mod,Modlist} from './Mods';
 
 export default class Civ {
 	
@@ -311,6 +312,7 @@ export default class Civ {
 		this.flag_img = 'img/flags/flag_' + ("000" + Civ.flag_id_roster[this.id]).slice(-3) + '.png';
 		this.diplo_img = 'img/races/alien_' + ("000" + Civ.img_id_roster[this.id]).slice(-3) + '.jpg';
 		this.diplo_img_small = 'img/races/alien_' + ("000" + Civ.img_id_roster[this.id]).slice(-3) + '.jpg';
+		this.mods = new Modlist( this.race );
 		this.InitResearch();
 		
 		// starting ship bits:

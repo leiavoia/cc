@@ -24,10 +24,10 @@ export class GroundCombatPane {
 			v = parseFloat(v);
 			this.oddscost = v;
 			this.odds = 1 + Math.sqrt( v / this.player_team.odds_base_cost );
-			this.player_team.modlist.RemoveMatching( 'ground_roll', null, this );
+			this.player_team.mods.RemoveMatching( 'ground_roll', null, this );
 			if ( this.oddscost ) {  
 				let m = new Mod( 'ground_roll', '*', this.odds, 'Command Override', this );
-				this.player_team.modlist.Add( m );	
+				this.player_team.mods.Add( m );	
 				this.combat.CalcOdds();
 				}
 			
@@ -52,7 +52,7 @@ export class GroundCombatPane {
 			// make labels
 			this.combat.teams.forEach( team => { 
 				team.modlist_labels = [];
-				for ( let m of team.modlist.Query('ground_roll',true) ) { 
+				for ( let m of team.mods.Query('ground_roll',true) ) { 
 					team.modlist_labels.push( m.toDisplay(1) );
 					}
 				} );

@@ -1,4 +1,5 @@
 import * as Signals from '../util/signals';
+import {Mod,Modlist} from './Mods';
 
 export default class Fleet {
 	
@@ -55,6 +56,7 @@ export default class Fleet {
 		this.owner.fleets.push(this);
 		Fleet.all_fleets.push( this );
 		if ( star ) { star.fleets.push(this); }
+		this.mods = new Modlist( this.owner );
 		this.ReevaluateStats();
 		}
 

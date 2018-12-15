@@ -49,10 +49,12 @@ export default class GroundCombat {
 		this.teams[1].units_orig = this.teams[1].units.slice();
 		// create stat modifiers based on technology and planet conditions
 		this.teams.forEach( team => {
-			team.modlist = new Modlist();
+			// modlist parent is the planet for the defender, civ for the attacker
+			let parent = team.planet ? team.planet : team.fleet.owner;
+			team.mods = new Modlist(parent);
 			let adaptation = this.teams[1].planet.Adaptation( team.owner.race );
 			if ( adaptation ) { 
-				team.modlist.Add( 
+				team.mods.Add( 
 					new Mod( 'ground_roll', '*', 1+(adaptation*0.1), 'Environment' )
 					);
 				}
@@ -71,7 +73,7 @@ export default class GroundCombat {
 			let a = this.teams[0].units[0];
 			let b = this.teams[1].units[0];
 			// turnlog = { unit:this, target:target, roll: 0, target_roll: 0, dmg_received: 0, target_dmg: 0, died: false, target_died: false }
-			let turnlog = a.Attack( b, this.teams[0].modlist, this.teams[1].modlist );
+			let turnlog = a.Attack( b, this.teams[0].mods, this.teams[1].mods );
 			if ( !a.hp ) { this.teams[0].units.shift(); }
 			if ( !b.hp ) { this.teams[1].units.shift(); }
 			if ( turnlog ) { 
@@ -178,7 +180,7 @@ export default class GroundCombat {
 			for ( let u of team.units ) { 
 				let avgdmg = ( ( u.bp.maxdmg + u.bp.mindmg ) / 2 );
 				total += 
-					team.modlist.Apply( avgdmg, 'ground_roll', true ) 
+					team.mods.Apply( avgdmg, 'ground_roll', true ) 
 					* u.bp.hp // hits * avg dmg
 					;
 				};
