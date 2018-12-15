@@ -8,7 +8,7 @@ export class GroundCombatPane {
 		this.processing = false;
 		this.turn_delay = 500; // ms
 		this.last_turnlog = { attacker: null, defender:null };
-		this.combat_speed = 1.0; // multiplier
+		this.combat_speed = 0.5; // multiplier
 		this.winner = '';
 		this.player_team = null;
 		this.player_won = false;
@@ -21,8 +21,17 @@ export class GroundCombatPane {
 	get oddscost_slider() { return this.oddscost; }
 	set oddscost_slider( v ) { 
 		if ( this.player_team ) { 
+			v = parseFloat(v);
 			this.oddscost = v;
 			this.odds = 1 + Math.sqrt( v / this.player_team.odds_base_cost );
+			this.player_team.modlist.RemoveMatching( 'ground_roll', null, this );
+			if ( this.oddscost ) {  
+				let m = new Mod( 'ground_roll', '*', this.odds, 'Command Override', this );
+				this.player_team.modlist.Add( m );	
+				this.combat.CalcOdds();
+				}
+			
+			
 			}
 		}
 	activate(data) {
@@ -40,6 +49,13 @@ export class GroundCombatPane {
 			this.combat = new GroundCombat( this.combatdata.attacker, this.combatdata.planet );
 			// which team is the human playing?
 			this.player_team = this.combat.teams[0].fleet.owner.is_player ? this.combat.teams[0] : this.combat.teams[1];
+			// make labels
+			this.combat.teams.forEach( team => { 
+				team.modlist_labels = [];
+				for ( let m of team.modlist.Query('ground_roll',true) ) { 
+					team.modlist_labels.push( m.toDisplay(1) );
+					}
+				} );
 			}
 		}
 		
@@ -49,7 +65,11 @@ export class GroundCombatPane {
 		// finish up the battles
 		this.FinishCombat();
 		// tell game this battle is over and continue with other battles
-		this.app.game.PresentNextPlayerGroundCombat();
+		// NOTE: we actually trigger additional ship combats, which need
+		// to occur first, and the ship combat routines will automatically
+		// start cycling through ground combats if there are no ship
+		// combats left in the queue.
+		this.app.game.PresentNextPlayerShipCombat();
 		}
 
 
@@ -101,9 +121,6 @@ export class GroundCombatPane {
 		// player-purchased odds
 		if ( this.oddscost ) { 
 			this.player_team.owner.treasury -= this.oddscost;
-			this.player_team.modlist.Add( 
-				new Mod( 'ground_roll', '*', this.odds, 'Command Override' )
-				);			
 			}
 		this.processing = true;
 		this.PlayNextAttack();

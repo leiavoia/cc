@@ -25,7 +25,8 @@ export default class GroundCombat {
 				target_priority: 'size_desc', 
 				strategy: 'normal', 
 				status: null,
-				owner: fleet.owner
+				owner: fleet.owner,
+				odds: 0.5
 				},
 			{ 
 				label: 'DEFENDER', 
@@ -37,7 +38,8 @@ export default class GroundCombat {
 				target_priority: 'size_desc', 
 				strategy: 'normal', 
 				status: null,
-				owner: planet.owner
+				owner: planet.owner,
+				odds: 0.5
 				},
 			];
 		// compile the fighting ground units
@@ -55,18 +57,11 @@ export default class GroundCombat {
 					);
 				}
 			} );
-		// figure out what the cost of improving odds would be
-		this.teams.forEach( team => {
-			let total = 0; // aka firepower
-			for ( let u of team.units ) { 
-				total += ( ( u.bp.maxdmg + u.bp.mindmg ) / 2 ) * u.bp.hp; // hits * avg dmg
-				};
-			team.odds_base_cost = total * 50; // [!]MAGICNUMBER 
-			} );
 		// handy crosslinks
 		this.teams[0].otherteam = this.teams[1];
 		this.teams[1].otherteam = this.teams[0];
 		this.winner = null; // will be set to a team.label if victory
+		this.CalcOdds();
 		}
 			
 	Run( only_one_item = false ) {
@@ -176,4 +171,22 @@ export default class GroundCombat {
 			});
 		}
 		
+	CalcOdds() { 
+		// figure out what the cost of improving odds would be
+		for ( let team of this.teams ) { 
+			let total = 0; // aka firepower
+			for ( let u of team.units ) { 
+				let avgdmg = ( ( u.bp.maxdmg + u.bp.mindmg ) / 2 );
+				total += 
+					team.modlist.Apply( avgdmg, 'ground_roll', true ) 
+					* u.bp.hp // hits * avg dmg
+					;
+				};
+			team.firepower = total;
+			team.odds_base_cost = total * 1000; // [!]MAGICNUMBER 
+			};
+		// calculate the odds
+		this.teams[0].odds = this.teams[0].firepower / ( this.teams[0].firepower + this.teams[1].firepower ) ;
+		this.teams[1].odds = this.teams[1].firepower / ( this.teams[0].firepower + this.teams[1].firepower ) ;
+		}
 	};

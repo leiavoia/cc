@@ -20,26 +20,30 @@
 				Anomaly Research: ${(app.game.turn_num*0) + fleet.star.AmountResearched( fleet.owner )} 
 				<progress value.bind="(app.game.turn_num*0) + fleet.star.AmountResearched( fleet.owner ) / fleet.star.size" />
 			</p>
+				
+			<!-- enemy fleet attack option --> 
+			<p class="button_rack button_rack_fill" if.bind="!fleet.owner.is_player && fleet.star && fleet.star.PlayerHasLocalFleet">
+				<button class="alt" click.delegate="AttackTargetWithLocalFleet()">ATTACK</button>
+			</p>
 			
 			<!-- show fleet actions if not on a deep space mission -->
-			<template containerless if.bind="!fleet.mission">
-			
-				<p class="msg" style="font-weight:bold; color: #FAA;" show.bind="can_send==2">Right-click a star to move fleet</p>
+			<template containerless if.bind="!fleet.mission && (fleet.owner.is_player || app.options.see_all)">
+				<p class="msg" style="font-weight:bold; color: #FAA;">
+					<span show.bind="can_send==2">Right-click a star to move fleet</span>&nbsp;
+				</p>
 				
 				<!-- Fleet Actions -->
-				<p class="button_rack button_rack_fill" >
-				</p>
-				<p class="button_rack button_rack_fill" >
-					<button click.delegate="ClickAttack()" class="alt" if.bind="fleet.fp && fleet.star && fleet.star.fleets.length > 1"">ATTACK</button>
+				<p class="button_rack button_rack_fill">
 					<button click.delegate="ClickColonize()" if.bind="can_colonize" class="${can_colonize==2 ? 'alt' : 'ghost'}">COLONIZE</button>
 					<button click.delegate="ClickChooseMission()" if.bind="can_research" class="${can_research==2 ? 'alt' : 'ghost'}">MISSION</button>
-					<button click.delegate="ClickBomb()" if.bind="can_bomb" class="${can_bomb==2 ? 'alt' : 'ghost'}">BOMBARD</button>
-					<button click.delegate="ClickInvade()" if.bind="can_invade" class="${can_invade==2 ? 'alt' : 'ghost'}" >INVADE</button>
 					<button click.delegate="ClickTransferTroops()" if.bind="can_pickup_troops || can_drop_troops" >TROOPS</button>
+					<button click.delegate="ClickAttack()" class="alt" if.bind="app.options.see_all && fleet.fp && fleet.star && fleet.star.fleets.length > 1"">ATTACK</button>
+					<button click.delegate="ClickBomb()" if.bind="can_bomb && app.options.see_all" class="${can_bomb==2 ? 'alt' : 'ghost'}">BOMBARD</button>
+					<button click.delegate="ClickInvade()" if.bind="can_invade && app.options.see_all" class="${can_invade==2 ? 'alt' : 'ghost'}" >INVADE</button>
 				</p>
 				
 				<!-- Ship Selection --> 
-				<p class="button_rack button_rack_fill">
+				<p class="button_rack button_rack_fill" if.bind="fleet.owner.is_player">
 					<button click.delegate="ClickClose()" class="" >CLOSE</button>
 					<button click.delegate="SelectAll()" class="${num_selected==fleet.ships.length ? 'ghost' : ''}">ALL</button>
 					<button click.delegate="SelectNone()" class="${num_selected ? '' : 'ghost'}">NONE</button>
@@ -51,11 +55,6 @@
 			</template>
 			
 		</template>
-			
-		<!-- enemy fleet attack option --> 
-		<p class="button_rack button_rack_fill" if.bind="!fleet.owner.is_player && fleet.star && fleet.star.PlayerHasLocalFleet">
-			<button class="alt" click.delegate="AttackTargetWithLocalFleet()">ATTACK</button>
-		</p>
 		
 		<!-- ship list -->
 		<div class="shipgrid">
@@ -216,7 +215,7 @@
 		
 		<template containerless if.bind="fleet.star">
 			<p>Our Forces:</p>
-			<div class="trooplist">
+			<div repeat.for="[bp,count] of fleet.ListUniqueGroundUnits()" style="display:inline-block;">
 				<img src="img/ground/tank_transp.png" 
 					style="
 						height: 32px; 
@@ -226,10 +225,8 @@
 						border-radius: 0.25em; 
 						overflow: hidden; 
 						padding: 0.25em; 
-						margin: 0 0.5em 0.5em 0;
 						"
-					repeat.for="t of trooplist"
-				/>
+				/>&nbsp;x${count}&nbsp;
 			</div>
 			
 			<h2>Invade Which?</h2>
@@ -243,7 +240,7 @@
 						<span css="color: ${p.ui_color}; font-weight:bold;">${p.name}</span> 
 						Odds: <b>${CalculateChanceOfGroundVictory(p) * 100 | round}%</b>
 					</p>
-					<div class="trooplist">
+					<div repeat.for="[bp,count] of p.ListUniqueGroundUnits()" style="display:inline-block;">
 						<img src="img/ground/tank_transp.png" 
 							style="
 								height: 32px; 
@@ -253,12 +250,9 @@
 								border-radius: 0.25em; 
 								overflow: hidden; 
 								padding: 0.25em; 
-								margin: 0 0.5em 0.5em 0;
 								"
-							repeat.for="t of p.troops"
-						/>
-					</div>
-					
+						/>&nbsp;x${count}&nbsp;
+					</div>		
 				</div>
 			</div>
 		</template>

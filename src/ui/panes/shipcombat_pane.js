@@ -53,8 +53,22 @@ export class ShipCombatPane {
 		this.combat.End(); // cleanup
 		this.app.CloseSideBar();
 		this.app.CloseMainPanel();
+		// switch to ground combat if there was a planet involved and attacker wants it 
+		if ( this.combat.planet 
+			&& this.combatdata.attacker.troops 
+			&& this.combat.winner == 'ATTACKER' 
+			&& ( this.combatdata.attacker.owner.is_player || this.combatdata.attacker.AIWantToInvadePlanet(this.combat.planet) )
+			) {
+			// TODO: if no defending troops, just seize planet outright
+			this.app.game.LaunchPlayerGroundCombat({
+				attacker:this.combatdata.attacker, 
+				planet:this.combat.planet
+				});
+			}
 		// tell game this battle is over and continue with other battles
-		this.app.game.PresentNextPlayerShipCombat();
+		else {
+			this.app.game.PresentNextPlayerShipCombat();
+			}
 		}
 
 	FinishCombat() { 

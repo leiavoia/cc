@@ -5,11 +5,13 @@
 	
 	<div class="planet atm${planet.atm} tmp${planet.temp} grav${planet.grav}" css="min-height:${(planet.size)|idealplanetsize}px; background-size: auto ${(planet.size)|idealplanetsize}px; background-position: 50% -${planet.size/2}px ;"><!-- calc(100% + ${planet.size}px) -->
 		
-		<nav>
-			<!-- add to constellation button when debugging is over: planet.owner.id == theapp.iam -->
-			<a href="#" class="button left" click.delegate="PressStarButton()"> STAR </a><a href="#" class="button center" click.delegate="PressConstelButton()" if.bind="planet.owner"> CONSTL </a><a href="#" class="button right" click.delegate="OpenDetailsPane()"> INFO </a>
-			<a href="#" class="button left" click.delegate="PressPrevPlanetButton()"> PREV </a><a href="#" class="button right" click.delegate="PressNextPlanetButton()"> NEXT </a>
-		</nav>
+		<p class="button_rack button_rack_fill small">
+			<button click.delegate="OpenDetailsPane()">INFO</button>
+			<button click.delegate="PressStarButton()">STAR</button>
+			<button click.delegate="PressPrevPlanetButton()">◀</button>
+<!-- 			<button click.delegate="PressConstelButton()" if.bind="planet.owner"> CONSTL </a> -->
+			<button click.delegate="PressNextPlanetButton()">▶</button>
+		</p>
 		
 		<!-- NOTE: using one-time binding to avoid brief moment when the 
 		object is undefined and browser tries to ask server for 'undefined' -->
@@ -24,6 +26,12 @@
 		">${planet.name}</h2>
 		<h2 if.bind="!planet.owner">${planet.name}</h2>
 		<p class="age" if.bind="planet.age_level">${'🟊'.repeat(planet.age_level)}</p>
+						
+		<!-- enemy fleet attack option --> 
+		<p class="button_rack button_rack_fill" if.bind="planet.settled && !planet.owner.is_player && planet.star.PlayerHasLocalFleet">
+			<button class="alt" click.delegate="AttackTargetWithLocalFleet()">ATTACK</button>
+		</p>
+		
 		<div class="phys">
 	
 			<p class="env_label">${planet.gravDisplayName} ${planet.envDisplayName}
@@ -262,7 +270,7 @@
 			
 			<div class="defenses">
 				<h3>Defenses:</h3>
-				<div class="trooplist">
+				<div repeat.for="[bp,count] of planet.ListUniqueGroundUnits()" style="display:inline-block;">
 					<img src="img/ground/tank_transp.png" 
 						style="
 							height: 32px; 
@@ -272,11 +280,8 @@
 							border-radius: 0.25em; 
 							overflow: hidden; 
 							padding: 0.25em; 
-							margin: 0 0.5em 0.5em 0;
 							"
-						repeat.for="t of planet.troops"
-						click.delegate="t.selected = !t.selected";
-					/>
+					/>&nbsp;x${count}&nbsp;
 				</div>
 			</div>
 		</template>

@@ -862,4 +862,13 @@ export default class Planet {
 		this.owner.RecalcEmpireBox();	
 		this.ui_color = `rgb( ${this.owner.color_rgb[0]}, ${this.owner.color_rgb[1]}, ${this.owner.color_rgb[2]} )` ;
 		}
+		
+	ListUniqueGroundUnits() { 
+		let data = new Map;
+		for ( let t of this.troops ) { 
+			let v = data.get(t.bp) || 0;
+			data.set(t.bp,v+1);
+			}
+		return data;
+		}		
 	}

@@ -114,4 +114,35 @@ export class PlanetDetailPane {
 			}
 		
 		}
+	// for clicking attack planet with a local player fleet
+	AttackTargetWithLocalFleet() { 
+		if ( !this.planet.settled || this.planet.owner.is_player || !this.planet.star.PlayerHasLocalFleet ) { return false; } 
+		// TODO: check if we have treaties, etc. in the future
+		// find my local fleet
+		let myfleet = null;
+		for ( let f of this.planet.star.fleets ) { 
+			if ( f.owner.is_player ) {
+				myfleet = f; 
+				break;
+				}
+			}
+		if ( !myfleet ) { return false; } 
+		// now figure out if we can attack the planet directly 
+		// or if we have to battle a fleet as well
+		let enemy_fleet = null;
+		for ( let f of this.planet.star.fleets ) { 
+			if ( f.owner == this.planet.owner ) {
+				enemy_fleet = f; 
+				break;
+				}
+			}		
+		if ( enemy_fleet ) { 
+			this.app.game.QueueShipCombat( myfleet, enemy_fleet, this.planet );
+			this.app.game.PresentNextPlayerShipCombat();
+			}
+		else {
+			this.app.game.QueueGroundCombat( myfleet, this.planet );
+			this.app.game.PresentNextPlayerGroundCombat();
+			}
+		}		
 	}

@@ -560,13 +560,55 @@ export default class Game {
 			};
 		}
     
+		
+	FindGroundCombats() {
+		// find all AI combats
+		for ( let star of this.galaxy.stars ) {
+			if ( star.fleets.length && star.planets.length ) { 
+				for ( let fleet of star.fleets ) { 
+					if ( !fleet.owner.is_player && fleet.troops ) { 
+						for ( let planet of star.planets ) { 
+							if ( planet.owner != fleet.owner ) { 
+								if ( fleet.AIWantToAttackPlanet(planet) ) { 
+									this.QueueGroundCombat( fleet, planet );
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			
+		// Fight!
+		for ( let c = this.groundcombats.length-1; c >= 0; c-- ) { 
+			let gc = this.groundcombats[c];
+			// fleet may have been destroyed in previous battle.
+			if ( gc.attacker.killme || !gc.attacker.ships.length ) { 
+				this.groundcombats.splice( c, 1 ); // delete
+				continue; 
+				}
+			// if defender is player, save for later
+			if ( gc.planet.owner.is_player ) { 
+				continue; 
+				}
+			// otherwise autoresolve in background
+			console.log('Auto-resolving AI planetary invasion: ' + gc.label);
+			let combat = new GroundCombat( gc.attacker, gc.planet );
+			combat.Run( true ); // true = fight to the death
+			}
+		}
+    
     // this will look through the shipcombats queued for 
     // player-involved combat and present them to the player.
     // The queue drains by having the ship combat screen call
     // this function again on exit. If the queue has no player
     // involved combats, nothing happens.
     PresentNextPlayerShipCombat() { 
- 		if ( !this.shipcombats.length ) { return false; }
+    	// if we're out of ship combats, switch to ground combats
+ 		if ( !this.shipcombats.length ) { 
+ 			this.PresentNextPlayerGroundCombat();
+ 			return false;
+ 			}
 		let sc = this.shipcombats.shift();
 		// fleet may have been destroyed in previous battle.
 		if ( sc.attacker.killme || sc.defender.killme || !sc.attacker.ships.length || !sc.defender.ships.length ) { 
@@ -622,9 +664,6 @@ export default class Game {
     
     // this will look through the groundcombats queued for 
     // player-involved combat and present them to the player.
-    // The queue drains by having the ground combat screen call
-    // this function again on exit. If the queue has no player
-    // involved combats, nothing happens.
     PresentNextPlayerGroundCombat() { 
  		if ( !this.groundcombats.length ) { return false; }
 		let c = this.groundcombats.shift();

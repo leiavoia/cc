@@ -13,6 +13,7 @@ export default class ShipCombat {
 		this.max_log_length = 50;
 		this.stats = null; 
 		this.status = null;
+		this.planet = planet;
 		// set up teams
 		this.teams = [ 
 			{ 
@@ -112,6 +113,7 @@ export default class ShipCombat {
 		this.teams.forEach( team => {
 			if ( team.fleet.ships.length ) { 
 				team.fleet.ReloadAllShipWeapons();
+				team.fleet.ReevaluateStats();
 				// yellow bellied cowards get out of Dodge
 				if ( team.retreating && team.ships_retreated ) {
 					let f = team.fleet;

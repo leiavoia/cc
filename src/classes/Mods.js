@@ -131,5 +131,26 @@ export class Mod {
 			default: { return value; }
 			}
 		}
+	toDisplay( precision = 0 ) { 
+		switch ( this.op ) { 
+			case 'H': { return `Highest of ${this.val.toFixed(precision)}, ${this.label}`; } // highest of
+			case 'L': { return `Lowest of ${this.val.toFixed(precision)}, ${this.label}`; } // lowest of
+			case '^': { return `Power of ${this.val.toFixed(precision)}, ${this.label}`; } // to the power of (i.e. "exponent")
+			case '/': { return `÷ ${this.val.toFixed(precision)}, ${this.label}`; }
+			case '+': { return `÷ ${this.val.toFixed(precision)}, ${this.label}`; }
+			case '-': { return `- ${this.val.toFixed(precision)}, ${this.label}`; }
+			case '=': { return `= ${this.val.toFixed(precision)}, ${this.label}`; } // per se "is" (i.e. "ends with")
+			case 'B': { return `Base value of ${this.val.toFixed(precision)}, ${this.label}`; } // [B]ase value (i.e. "starts with")
+			case '%': { return `${this.val.toFixed(precision)}%, ${this.label}`; }
+			case '*': { 
+				let v = (this.val - 1) * 100;
+				let op = (v >= 0) ? '+' : '';
+				v = v.toFixed(precision).replace(/\.*0+$/,'');
+				let str = `${op}${v}%, ${this.label}`; 
+				return str;
+				}
+			default: { return value; }
+			}
+		}
 	};
 	

@@ -53,7 +53,12 @@ export class FleetDetailPane {
 	fleetChanged( new_fleet, old_fleet ) {
 		if ( new_fleet instanceof Fleet ) { 
 			new_fleet.SetOnUpdate( () => this.UpdateStats() );
-			this.SelectAll(); 
+			if ( new_fleet.owner.is_player ) { 
+				this.SelectAll(); 
+				}
+			else {
+				this.SelectNone(); 
+				}
 			this.UpdateStats();
 			}
 		if ( old_fleet instanceof Fleet ) { 
@@ -93,8 +98,10 @@ export class FleetDetailPane {
 			}
 		}
 	SelectShip(ship) {
-		ship.selected = !ship.selected;
-		this.Recalc();
+		if ( this.fleet.owner.is_player ) { 
+			ship.selected = !ship.selected;
+			this.Recalc();
+			}
 		}
 	GetHealthClass(ship) {
 		let pct = ship.hull / ship.bp.hull;
