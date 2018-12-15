@@ -114,22 +114,27 @@ export default class ShipCombat {
 			if ( team.fleet.ships.length ) { 
 				team.fleet.ReevaluateStats();
 				// yellow bellied cowards get out of Dodge
-				if ( team.retreating && team.ships_retreated ) {
+				if ( team.retreating && team.ships_retreated && team.fleet.owner.planets.length ) {
 					let f = team.fleet;
-					let closest = f.owner.planets.reduce( (closest,planet) => { 
-						if ( !closest || closest == planet.star ) { return planet.star; }
+					// find closest star
+					let closest = null;
+					for ( let planet of f.owner.planets ) { 
+						if ( f.star == planet.star || closest == planet.star ) { continue; }
+						if ( !closest ) { closest = planet.star; continue; }
+						// distance to closest star we've found
 						let dist_a = 
-							Math.pow( Math.abs(f.star.xpos - closest.star.xpos), 2 ) 
-							+ Math.pow( Math.abs(f.star.ypos - closest.star.ypos), 2 ) 
+							Math.pow( Math.abs(f.star.xpos - closest.xpos), 2 ) 
+							+ Math.pow( Math.abs(f.star.ypos - closest.ypos), 2 ) 
 							;
+						// distance to planet to compare to
 						let dist_b = 
 							Math.pow( Math.abs(f.star.xpos - planet.star.xpos), 2 ) 
 							+ Math.pow( Math.abs(f.star.ypos - planet.star.ypos), 2 ) 
 							;
-						return ( dist_a < dist_b ) ? closest : planet;
-						}, null );
+						if ( dist_a > dist_b ) { closest = planet.star; }
+						}
 					// can't retreat to self
-					if ( closest != f.star ) { 
+					if ( closest && closest != f.star ) { 
 						f.SetDest(closest);
 						f.star = null; // prevent circling back
 						}
