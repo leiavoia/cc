@@ -17,12 +17,11 @@
 			<div class="hilite_wrapper" repeat.for="p of star.planets"  click.delegate="app.SwitchSideBar(p)">
 				<div class="planet atm${p.atm} tmp${p.temp} grav${p.grav}" css.one-time="PlanetSizeCSS(p)">
 					<img if.bind="p.owner" class="flag" src.bind="p.owner.flag_img" style="border:1px solid #666;" />
-					<div class="env_box">
-						<div class="target"></div>
-					</div>	
+					<!--<div class="env_box"> <div class="target"></div> </div>-->	
 					<h3 css="color: ${p.ui_color};">${p.name}</h3>
+					<p class="env_label" style="font-size: 80%; text-align:left; float:none; width: 100%">${p.gravDisplayName}  ${p.envDisplayName}</p>
 					<div class="phys">
-						<div class="size">
+						<div class="size" style="margin: 0; padding: 0;">
 							<span class="pop" if.bind="p.owner !== false">${p.total_pop|round}<br/><span class="pop">POP</span></span>
 							<span class="size">${p.size}<br/><span class="size">SIZE</span></span>							
 							<span class="mine">${p.rich}x<br/><span class="mine">MINING</span></span>
@@ -35,7 +34,6 @@
 	<!-- 						<div class="pop" if.bind="p.owner !== false" css="width:${(p.total_pop / p.size) * (p.size / 200) | percent:3}%"></div> -->
 						</div>			
 					</div>
-						<p class="env_label">${p.gravDisplayName}  ${p.envDisplayName}</p>
 						
 	<!--				<div class="spending" if.bind="p.owner">
 						<div class="spending_stackbar">

@@ -1466,6 +1466,11 @@ invisible when unexplored, dim when explored */
 	font-weight: normal;
 	text-shadow: #000 1px 1px 1px;
 	}
+#layout_ui_side .star .planet .phys {
+	padding: 0;
+	margin: 0.5em 0 1.5em 0;
+	text-align:left;
+	}
 #layout_ui_side .star .planet .phys > DIV.size {
 	font-size: 130%;
 	padding-top: 0.35em;
