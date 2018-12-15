@@ -17,7 +17,8 @@ export default class Fleet {
 	in_range = false; // UI hint for visibility - only matters for player perspective
 	ships = [];
 	research = false;
-	fp = 0; // firepower
+	fp = 0; // firepower total
+	fp_remaining = 0; // firepower remaining
 	bulk = 0; // combined "bodyweight" of all ships
 	troopcap = 0; // max capacity
 	troops = 0; // current total
@@ -63,6 +64,7 @@ export default class Fleet {
 		this.research = 0;
 		this.speed = 1000000;
 		this.fp = 0;
+		this.fp_remaining = 0;
 		this.bulk = 0;
 		this.troops = 0;
 		this.troopcap = 0;
@@ -75,6 +77,7 @@ export default class Fleet {
 			if ( ship.bp.speed < this.speed ) { this.speed = ship.bp.speed; }
 			// cumulative firepower and bulk stats
 			this.fp += ship.bp.fp;
+			this.fp_remaining += ship.CalcFirepowerRemaining();
 			this.bulk += ship.bp.hull + ship.bp.armor;
 			// troops and carriers
 			this.troops += ship.troops.length;

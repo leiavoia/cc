@@ -56,6 +56,10 @@ export class GroundCombatPane {
 					team.modlist_labels.push( m.toDisplay(1) );
 					}
 				} );
+			// if the defender has no defenses, end combat now
+			if ( !this.combat.teams[1].planet.troops.length ) { 
+				this.FinishCombat();
+				}
 			}
 		}
 		

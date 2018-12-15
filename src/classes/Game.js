@@ -406,6 +406,14 @@ export default class Game {
 				}
 			console.timeEnd('Planetary Econ');
 			
+			// restock weapons
+			console.time('Fleet Reloading');
+			for ( let f of this.galaxy.fleets ) { 
+				f.ReloadAllShipWeapons();
+				f.ReevaluateStats();
+				}
+			console.timeEnd('Fleet Reloading');
+			
 			// AI!
 			if ( this.app.options.ai ) { 
 				console.time('AI');
@@ -510,12 +518,14 @@ export default class Game {
 		this.galaxy.stars.forEach( star => {
 			if ( star.fleets.length > 1 ) { 
 				for ( let fleet_a=0; fleet_a < star.fleets.length-1; fleet_a++ ) {
-					for ( let fleet_b=1; fleet_b < star.fleets.length; fleet_b++ ) {
-					if ( star.fleets[fleet_a].AIWantToAttackFleet(star.fleets[fleet_b]) ||
-						star.fleets[fleet_b].AIWantToAttackFleet(star.fleets[fleet_a]) 
-						) {
-						// NOTE: fleet may want to attack planet, not just the fleet
-						this.QueueShipCombat( star.fleets[fleet_a], star.fleets[fleet_b], null );
+					if ( star.fleets[fleet_a].fp_remaining ) { 
+						for ( let fleet_b=1; fleet_b < star.fleets.length; fleet_b++ ) {
+						if ( star.fleets[fleet_a].AIWantToAttackFleet(star.fleets[fleet_b]) ||
+							star.fleets[fleet_b].AIWantToAttackFleet(star.fleets[fleet_a]) 
+							) {
+							// NOTE: fleet may want to attack planet, not just the fleet
+							this.QueueShipCombat( star.fleets[fleet_a], star.fleets[fleet_b], null );
+							}
 						}
 					}
 				}

@@ -295,7 +295,17 @@ export class FleetDetailPane {
 	// for clicking attack target from player fleet
 	SelectAttackTarget( target ) {
 		// TODO: check if we have treaties, etc. in the future
-		this.app.game.QueueShipCombat( this.fleet, target, null /* TODO:planet*/ );
+		// Check to see if there is a planet to defend. 
+		// It's stupid for a fleet to offer itself in combat if
+		// it can hide behind a planet that may assist in combat
+		let planet = null;
+		for ( let p of this.fleet.star.planets ) {
+			if ( target.owner == p.owner ) { 
+				planet = p;
+				break;
+				}
+			}
+		this.app.game.QueueShipCombat( this.fleet, target, planet );
 		this.app.game.PresentNextPlayerShipCombat();
 		}
 	ClickCancelChooseAttackTarget() {
@@ -314,7 +324,22 @@ export class FleetDetailPane {
 				}
 			}
 		if ( !myfleet ) { return false; } 
-		this.app.game.QueueShipCombat( myfleet, this.fleet, null /* TODO:planet*/ );
+		// our fleet needs something to fight with
+		if ( !myfleet.fp_remaining ) {
+			this.app.ShowDialog( 'No Firepower Remaining', 'Weapons reload at the start of each turn.' );
+			return false;
+			}
+		// Check to see if there is a planet to defend. 
+		// It's stupid for a fleet to offer itself in combat if
+		// it can hide behind a planet that may assist in combat
+		let planet = null;
+		for ( let p of this.fleet.star.planets ) {
+			if ( this.fleet.owner == p.owner ) { 
+				planet = p;
+				break;
+				}
+			}		
+		this.app.game.QueueShipCombat( myfleet, this.fleet, planet );
 		this.app.game.PresentNextPlayerShipCombat();
 		}
 	ClickCancel() {

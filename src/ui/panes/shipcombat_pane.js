@@ -59,7 +59,6 @@ export class ShipCombatPane {
 			&& this.combat.winner == 'ATTACKER' 
 			&& ( this.combatdata.attacker.owner.is_player || this.combatdata.attacker.AIWantToInvadePlanet(this.combat.planet) )
 			) {
-			// TODO: if no defending troops, just seize planet outright
 			this.app.game.LaunchPlayerGroundCombat({
 				attacker:this.combatdata.attacker, 
 				planet:this.combat.planet

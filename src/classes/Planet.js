@@ -782,20 +782,6 @@ export default class Planet {
 		this.troops.push( this.owner.groundunit_blueprints[0].Make() );
 		this.troops.push( this.owner.groundunit_blueprints[0].Make() );
 		this.troops.push( this.owner.groundunit_blueprints[0].Make() );
-		this.troops.push( this.owner.groundunit_blueprints[0].Make() );
-		this.troops.push( this.owner.groundunit_blueprints[0].Make() );
-		this.troops.push( this.owner.groundunit_blueprints[0].Make() );
-		this.troops.push( this.owner.groundunit_blueprints[0].Make() );
-		this.troops.push( this.owner.groundunit_blueprints[0].Make() );
-		this.troops.push( this.owner.groundunit_blueprints[0].Make() );
-		this.troops.push( this.owner.groundunit_blueprints[0].Make() );
-		this.troops.push( this.owner.groundunit_blueprints[0].Make() );
-		this.troops.push( this.owner.groundunit_blueprints[0].Make() );
-		this.troops.push( this.owner.groundunit_blueprints[0].Make() );
-		this.troops.push( this.owner.groundunit_blueprints[0].Make() );
-		this.troops.push( this.owner.groundunit_blueprints[0].Make() );
-		this.troops.push( this.owner.groundunit_blueprints[0].Make() );
-		this.troops.push( this.owner.groundunit_blueprints[0].Make() );
 		
 		// HACK - TESTING
 		this.prod_q = [

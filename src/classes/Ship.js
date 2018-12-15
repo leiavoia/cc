@@ -83,6 +83,19 @@ export class Ship {
 		return log;
 		}
 		
+	CalcFirepowerRemaining() { 
+		return Math.floor( this.weapons.reduce( ( accum, weapon ) => {
+			// average firepower of weapon
+			let fp = ((weapon.maxdmg - weapon.mindmg)/2) + weapon.mindmg;
+			// with number of shots, assuming it may not live long enough to use them all
+			//fp = Math.pow( fp, 0.65 ); // yes, magic number
+			// times number of weapons equiped on ship
+			fp *= weapon.qty;
+			fp *= weapon.shotsleft;
+			return accum + fp;
+			}, 0 ) );	
+		}
+		
 	// [D]ead, [A]rmor Remaining, [H]igh, [M]edium, [L]ow
 	@computedFrom('hull','bp.hull')
 	get health_class() {
@@ -220,15 +233,7 @@ export class ShipBlueprint {
 		this.colonize = Math.floor( this.mods.Apply( 0, 'colonize', parent ) );
 		this.research = Math.floor( this.mods.Apply( 0, 'research', parent ) ); 
 		this.troopcap = Math.floor( this.mods.Apply( 0, 'troopcap', parent ) ); 
-		this.fp = Math.floor( this.weapons.reduce( ( accum, weapon ) => {
-			// average firepower of weapon
-			let fp = ((weapon.maxdmg - weapon.mindmg)/2) + weapon.mindmg;
-			// with number of shots, assuming it may not live long enough to use them all
-			fp = Math.pow( fp, 0.65 ); // yes, magic number
-			// times number of weapons equiped on ship
-			fp *= weapon.qty;
-			return accum + fp;
-			}, 0 ) );
+		this.fp = this.CalcFirepowerTotal();
 		// class size
 		this.sizeclass ='A';
 		let sizes = ['A','B','C','D','E','F','G','H','I','J','K','L'];
@@ -237,6 +242,19 @@ export class ShipBlueprint {
 			}
 		}
 	
+	CalcFirepowerTotal() { 
+		return Math.floor( this.weapons.reduce( ( accum, weapon ) => {
+			// average firepower of weapon
+			let fp = ((weapon.maxdmg - weapon.mindmg)/2) + weapon.mindmg;
+			// with number of shots, assuming it may not live long enough to use them all
+			//fp = Math.pow( fp, 0.65 ); // yes, magic number
+			// times number of weapons equiped on ship
+			fp *= weapon.qty;
+			fp *= weapon.shots;
+			return accum + fp;
+			}, 0 ) );	
+		}
+		
 	IncNumBuilt() { 
 		this.num_built++;
 		// retract our previous mod

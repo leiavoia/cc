@@ -126,7 +126,7 @@ export class PlanetDetailPane {
 				break;
 				}
 			}
-		if ( !myfleet ) { return false; } 
+		if ( !myfleet ) { return false; } 	
 		// now figure out if we can attack the planet directly 
 		// or if we have to battle a fleet as well
 		let enemy_fleet = null;
@@ -135,10 +135,22 @@ export class PlanetDetailPane {
 				enemy_fleet = f; 
 				break;
 				}
-			}		
-		if ( enemy_fleet ) { 
-			this.app.game.QueueShipCombat( myfleet, enemy_fleet, this.planet );
-			this.app.game.PresentNextPlayerShipCombat();
+			}	
+		// Design note: if we check for enemy fleet remaining firepower,
+		// that would let a ground invasion fleet bypass the defending fleet
+		// by simply occupying them until they run out of guns to shoot with.
+		// This is realistic, but leads to gamey circumvention we dont want.
+		// Defending fleet must be completely annihilated.
+		if ( enemy_fleet /*&& enemy_fleet.fp_remaining*/ ) {
+			// our fleet needs something to fight with
+			if ( !myfleet.fp_remaining ) {
+				this.app.ShowDialog( 'No Firepower Remaining', 'There is a defending fleet and we have nothing to fight them with. Weapons reload at the start of each turn.' );
+				return false;
+				}			
+			else { 
+				this.app.game.QueueShipCombat( myfleet, enemy_fleet, this.planet );
+				this.app.game.PresentNextPlayerShipCombat();
+				}
 			}
 		else {
 			this.app.game.QueueGroundCombat( myfleet, this.planet );

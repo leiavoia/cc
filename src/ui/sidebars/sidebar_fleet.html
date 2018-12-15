@@ -14,6 +14,7 @@
 			
 			<p if.bind="fleet.research">Research Capacity: <b>${fleet.research}</b></p>
 			<p if.bind="fleet.troops">Ground Units: <b>${fleet.troops}</b></p>
+			<p>Firepower: <b>${fleet.fp_remaining} / ${fleet.fp}</b></p>
 			
 			<!-- local anomoly research info -->
 			<p if.bind="fleet.star && !fleet.dest && fleet.star.objtype == 'anom'">
@@ -37,7 +38,7 @@
 					<button click.delegate="ClickColonize()" if.bind="can_colonize" class="${can_colonize==2 ? 'alt' : 'ghost'}">COLONIZE</button>
 					<button click.delegate="ClickChooseMission()" if.bind="can_research" class="${can_research==2 ? 'alt' : 'ghost'}">MISSION</button>
 					<button click.delegate="ClickTransferTroops()" if.bind="can_pickup_troops || can_drop_troops" >TROOPS</button>
-					<button click.delegate="ClickAttack()" class="alt" if.bind="app.options.see_all && fleet.fp && fleet.star && fleet.star.fleets.length > 1"">ATTACK</button>
+					<button click.delegate="ClickAttack()" class="alt" if.bind="app.options.see_all && fleet.fp_remaining && fleet.star && fleet.star.fleets.length > 1"">ATTACK</button>
 					<button click.delegate="ClickBomb()" if.bind="can_bomb && app.options.see_all" class="${can_bomb==2 ? 'alt' : 'ghost'}">BOMBARD</button>
 					<button click.delegate="ClickInvade()" if.bind="can_invade && app.options.see_all" class="${can_invade==2 ? 'alt' : 'ghost'}" >INVADE</button>
 				</p>

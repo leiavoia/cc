@@ -112,7 +112,6 @@ export default class ShipCombat {
 		// clean up dead fleets and reload survivors
 		this.teams.forEach( team => {
 			if ( team.fleet.ships.length ) { 
-				team.fleet.ReloadAllShipWeapons();
 				team.fleet.ReevaluateStats();
 				// yellow bellied cowards get out of Dodge
 				if ( team.retreating && team.ships_retreated ) {
