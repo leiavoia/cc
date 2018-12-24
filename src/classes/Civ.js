@@ -33,7 +33,9 @@ export default class Civ {
 		is_monster: false, // true for space monsters. changes some UI formating.
 		};
 	
-	homeworld = null; // a Planet
+	power_score = 0;
+	
+	homeworld = null; // a Planet // TODO // necessary?
 	victory_ingredients = []; // list of VictoryIngredient objects
 	
 	ship_range = 750; // px
@@ -91,12 +93,12 @@ export default class Civ {
 		return Civ.relation_matrix[key];
 		}
 		
-	InRangeOf( civ ) {
+	InRangeOfCiv( civ ) {
 		let key = Math.min(this.id,civ.id) + '-' + Math.max(this.id,civ.id);
 		return !!Civ.range_matrix[key];
 		}
 	
-	SetInRangeOf( civ, in_range = false ) {
+	SetInRangeOfCiv( civ, in_range = false ) {
 		let key = Math.min(this.id,civ.id) + '-' + Math.max(this.id,civ.id);
 		Civ.range_matrix[key] = in_range;
 		}
@@ -109,6 +111,24 @@ export default class Civ {
 			this.empire_box.x2 = Math.max( this.empire_box.x2, v.star.xpos + this.ship_range );
 			this.empire_box.y2 = Math.max( this.empire_box.y2, v.star.ypos + this.ship_range );
 			});
+		}
+		
+	// returns boolean
+	InRangeOf( x, y ) {
+		// easy box test
+		if ( !utils.BoxPointIntersect( this.empire_box, x, y ) ) { 
+			return false; 
+			}
+		let range = this.ship_range * this.ship_range ; // NOTE: avoid square rooting.
+		for ( let p of this.planets ) { 
+			let dist = 
+				Math.pow( Math.abs(p.star.xpos - x), 2 )
+				+ Math.pow( Math.abs(p.star.ypos - y), 2 );
+			if ( dist <= range ) {
+				return true;
+				}
+			}
+		return false;
 		}
 		
 	// The 'annoyed' meter relates to the player only. 
@@ -419,6 +439,55 @@ export default class Civ {
 		civ.race.env.temp = utils.BiasedRandInt(0, 4, 2, 0.5);
 		civ.race.env.grav = utils.BiasedRandInt(0, 4, 2, 0.5);
 		return civ;
+		}
+		
+	// returns score, but you can also access this.power_score
+	CalcPowerScore() { 
+		this.score = 0;
+		
+		// planets
+		let planet_score = 0;
+		for ( let p of this.planets ) { 
+			planet_score += p.score;
+			planet_score += p.total_pop * 0.1;
+			// local economy
+			for ( let s of Object.keys(p.sect) ) { 
+				planet_score += p.sect[s].output * 0.05;
+				}
+			}
+			
+		// ships
+		let ship_score = 0;
+		for ( let f of this.fleets ) { 
+			if ( !f.killme ) { 
+				ship_score += f.fp;
+				}
+			}
+			
+		// troops
+		let ground_score = 0;
+		for ( let p of this.planets ) { 
+			ground_score += p.troops.length;
+			}
+		for ( let f of this.fleets ) { 
+			ground_score += f.troops;
+			}
+		
+		// tech level
+		let tech_score = 0;
+		for ( let t of this.tech.nodes_compl.values() ) { 
+			tech_score += t.rp;
+			}
+			
+		this.power_score = Math.round( 
+			  ( planet_score * 10.0 )
+			+ ( ship_score * 0.01 )
+			+ ( ground_score * 2.0 )
+			+ ( tech_score * 0.1 )
+			+ ( this.treasury * 0.01 )
+			);
+			
+		return this.power_score;
 		}
 		
 	TurnAI( app ) {

@@ -484,6 +484,22 @@ export default class Game {
 			this.RecalcFleetRanges(); 
 			console.timeEnd('Recalc Fleet Range');
 				
+			// calculate overall civ power scores
+			for ( let civ of this.galaxy.civs ) { 
+				civ.CalcPowerScore();
+				}
+			
+			// [!]DEBUG: score every planet for the player
+			for ( let s of this.galaxy.stars ) { 
+				s.player_score = 0;
+				for ( let p of s.planets ) { 
+					p.player_score = p.ValueTo( this.myciv );
+					if ( !p.owner || p.owner == this.myciv ) { 
+						s.player_score += p.player_score;
+						}
+					}
+				}
+			
 			this.turn_num++;
 			
 			if ( !this.CheckForVictory() ) { 
@@ -855,7 +871,7 @@ export default class Game {
 								;
 								}
 							if ( max_range > dist ) { // avoid sqrt
-								if ( civ1 == this.app.game.myciv && !civ1.InRangeOf( civ2 ) ) { 
+								if ( civ1 == this.app.game.myciv && !civ1.InRangeOfCiv( civ2 ) ) { 
 									let app = this.app;
 									this.app.AddNote(
 										'good',
@@ -864,14 +880,14 @@ export default class Game {
 										function(){app.SwitchMainPanel( 'audience', civ2, {is_greeting:true}, true );}
 										);
 									}
-								civ1.SetInRangeOf( civ2, true );
+								civ1.SetInRangeOfCiv( civ2, true );
 								continue compare_civ2_loop;
 								}
 							}
 						}
 					}
 				// lost contact notice
-				if ( civ1 == this.app.game.myciv && civ1.InRangeOf( civ2 ) ) { 
+				if ( civ1 == this.app.game.myciv && civ1.InRangeOfCiv( civ2 ) ) { 
 					this.app.AddNote(
 						'bad',
 						`Lost Contact`,
@@ -879,7 +895,7 @@ export default class Game {
 						);
 					}
 				// found nothing in range
-				civ1.SetInRangeOf( civ2, false );
+				civ1.SetInRangeOfCiv( civ2, false );
 				}
 			}
 		}

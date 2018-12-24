@@ -100,7 +100,7 @@ export class Modlist {
 		}
 		
 	static SortMods( a, b ) {
-		let op_order = ['B','^','*','/','+','-','L','H','=']; // first .. last
+		let op_order = ['B','^','*','%','/','+','-','L','H','=']; // first .. last
 		let a_op = op_order.indexOf( a.op );
 		let b_op = op_order.indexOf( b.op );
 		// ability 
@@ -151,7 +151,7 @@ export class Mod {
 			case 'L': { return `Lowest of ${this.val.toFixed(precision)}, ${this.label}`; } // lowest of
 			case '^': { return `Power of ${this.val.toFixed(precision)}, ${this.label}`; } // to the power of (i.e. "exponent")
 			case '/': { return `÷ ${this.val.toFixed(precision)}, ${this.label}`; }
-			case '+': { return `÷ ${this.val.toFixed(precision)}, ${this.label}`; }
+			case '+': { return `+ ${this.val.toFixed(precision)}, ${this.label}`; }
 			case '-': { return `- ${this.val.toFixed(precision)}, ${this.label}`; }
 			case '=': { return `= ${this.val.toFixed(precision)}, ${this.label}`; } // per se "is" (i.e. "ends with")
 			case 'B': { return `Base value of ${this.val.toFixed(precision)}, ${this.label}`; } // [B]ase value (i.e. "starts with")

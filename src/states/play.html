@@ -8,53 +8,8 @@
 		
 	<div id="layout_mapwrap" css="width: ${app.game.galaxy.width}px; height: ${app.game.galaxy.height}px;">
 		<div id="layout_map" class="${app.options.show_sectors ? 'sectors' : ''}" css="width: ${app.game.galaxy.width}px; height: ${app.game.galaxy.height}px">
-			
-<!--			<div style="
-				position:absolute; 
-				margin-left: 400px; 
-				margin-top: 400px; 
-				background-color: none;
-				background-repeat: no-repeat;
-				background-image: url(../x/img/workshop/map/nebula20.png); 
-				background-size: 100% 100%;
-				width: 2800px;
-				height: 2000px;
-				">
-			</div>
-			<div style="
-				position:absolute; 
-				margin-left:2400px; 
-				margin-top: 1200px; 
-				background-color: none;
-				background-repeat: no-repeat;
-				background-image: url(../x/img/workshop/map/objects/crack2.png); 
-				background-size: 100% 100%;
-				width: 2800px;
-				height: 800px;
-				">
-			</div>
-			<div style="
-				position:absolute; 
-				margin-left: 1800px; 
-				margin-top: 1800px; 
-				background-color: none;
-				background-repeat: no-repeat;
-				background-image: url(../x/img/workshop/map/nebula13.png); 
-				background-size: 100% 100%;
-				width: 1200px;
-				height: 1200px;
-				">
-			</div>-->
 			<!-- RANGE LAYER HEADSUP -->
 			<div id="range_layer" if.bind="app.options.show_range">
-				<!--<div style="color: #FFF; font-size: 10em; font-weight:bold; text-align: center; padding-top: 350px; box-sizing: border-box; background:#2A2; width: 800px; height: 800px; left: 0px; top: 0px; border-radius: 0;">4%</div>
-				<div style="color: #FFF; font-size: 10em; font-weight:bold; text-align: center; padding-top: 350px; box-sizing: border-box; background:#2A2; width: 800px; height: 800px; left: 1600px; top: 800px; border-radius: 0; ">82%</div>
-				<div style="color: #FFF; font-size: 10em; font-weight:bold; text-align: center; padding-top: 350px; box-sizing: border-box; background:#2A2; width: 800px; height: 800px; left: 0px; top: 800px;  border-radius: 0;">100%</div>
-				<div style="color: #FFF; font-size: 10em; font-weight:bold; text-align: center; padding-top: 350px; box-sizing: border-box; background:#2A2; width: 800px; height: 800px; left: 1600px; top: 2400px;  border-radius: 0;"></div>
-				<div style="color: #FFF; font-size: 10em; font-weight:bold; text-align: center; padding-top: 350px; box-sizing: border-box; background:#2A2; width: 800px; height: 800px; left: 2400px; top: 800px;  border-radius: 0;">15%</div>
-				<div style="color: #FFF; font-size: 10em; font-weight:bold; text-align: center; padding-top: 350px; box-sizing: border-box; background:#2A2; width: 800px; height: 800px; left: 2400px; top: 2400px;  border-radius: 0;">90%</div>
-				<div style="color: #FFF; font-size: 10em; font-weight:bold; text-align: center; padding-top: 350px; box-sizing: border-box; background:#2A2; width: 800px; height: 800px; left: 0px; top: 2400px;  border-radius: 0;">45%</div>
-				-->
 				<template repeat.for="star of app.game.galaxy.stars" containerless>
 					<div if.bind="star.settled_by[app.game.myciv.id]" 
 						css="
@@ -65,6 +20,17 @@
 							">		
 					</div>
 				</template>
+				<!-- DEBUG / AI system value -->
+<!--				<template repeat.for="star of app.game.galaxy.stars" containerless>
+					<div 
+						css="
+							width: ${star.player_score*10}px; 
+							height: ${star.player_score*10}px; 
+							left:${star.xpos - (star.player_score*5)}px; 
+							top:${star.ypos - (star.player_score*5)}px;
+							">		
+					</div>
+				</template>-->
 			</div>   
 			
 			<div id="the_caret" class="caret ${caret.class}" if.bind="caret.obj && caret.x && caret.y" css="left:${caret.x}px; top:${caret.y}px;"></div>

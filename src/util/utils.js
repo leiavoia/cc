@@ -86,6 +86,13 @@ export function BoxPointIntersect( b, px, py ) {
 	return px >= b.x1 && px <= b.x2 && py >= b.y1 && py <= b.y2;
 	}
 
+export function DistanceBetween( x1, y1, x2, y2, fastcalc = false ) {
+	let dist = 
+		( (x2 - x1) * (x2 - x1) ) +
+		( (y2 - y1) * (y2 - y1) ) ;
+	return fastcalc ? dist : Math.sqrt(dist); 
+	}
+	
 // maps a number from one range to a number from a different range
 export function MapToRange( n, min1, max1, min2, max2 ) { 
   return ( (n - min1) * ( (max2 - min2) / (max1 - min1) ) ) + min2;

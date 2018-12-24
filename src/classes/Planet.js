@@ -39,7 +39,9 @@ export default class Planet {
 	temp = 0;
 	grav = 0;
 	physattr = [];
-	
+	score = 0; // AI score of natural attributes
+	slots = [];
+	maxslots = 0;
 	
 	// ECONOMY -------------------------------------------
 	tax_rate = 0.2;
@@ -163,14 +165,14 @@ export default class Planet {
 	AgePlanet() { 
 		this.age_level = Math.min( Math.floor( ++this.age / 40 ), 5 );
 		}
-  // returns an integer value which may be negative
+  	// returns an integer value which may be negative
 	Adaptation( race ) { 
 		return -( 
 			(Math.abs( this.atm - race.env.atm ) + Math.abs( this.temp - race.env.temp ) + Math.abs( this.grav - race.env.grav )  )
 	 		- race.env.adaptation 
 	 		) ;
 		}
-  // returns true if the planet can be settled by the race
+  	// returns true if the planet can be settled by the race
 	Habitable( race ) { 
 		return ( (Math.abs( this.atm - race.env.atm ) + Math.abs( this.temp - race.env.temp )  + Math.abs( this.grav - race.env.grav ) )
 	 		- race.env.adaptation 
@@ -702,7 +704,7 @@ export default class Planet {
 		let rarity = Math.abs( planet.atm - planet.temp ); // high number = more off the main line of probability.
 		
 		// galaxy age influences the richness of the planet.
-		// younger galaxies have less resoures.
+		// younger galaxies have less resources.
 		let rich_salt = 0.8 + (star_age - 0.5);
 		if ( star.color == 'purple' ) { rich_salt += 0.6; }
 		if ( star.color == 'black' ) { rich_salt += 0.8; }
@@ -743,9 +745,8 @@ export default class Planet {
 		if ( Math.random() < 0.5 ) { planet.sect.sci.pow = parseFloat( (1.5 - utils.BiasedRand(0.0, 1.0, 0.75, 0.5)).toFixed(1) ); }
 		if ( Math.random() < 0.5 ) { planet.sect.def.pow = parseFloat( (1.5 - utils.BiasedRand(0.0, 1.0, 0.75, 0.5)).toFixed(1) ); }
 		if ( Math.random() < 0.5 ) { planet.sect.esp.pow = parseFloat( (1.5 - utils.BiasedRand(0.0, 1.0, 0.75, 0.5)).toFixed(1) ); }
-// 		if ( Math.random() < 0.5 ) { planet.sect.gov.pow = parseFloat( (1.5 - utils.BiasedRand(0.0, 1.0, 0.75, 0.5)).toFixed(1) ); }
 		
-		// special attributes
+		// special attributes (AKA "goodies")
 		let selector = Planet.AttributeSelector();
 		let attr_randnum = Math.random();
 		// special and rare stars get more goodies
@@ -763,7 +764,46 @@ export default class Planet {
 			}
 		planet.physattr;// = planet.physattr.unique();		
 		
+		// feature slots
+		planet.maxslots = utils.BiasedRandInt(0, 5, 1, 0.5);
+		
+		// calculate natural score
+		for ( let k of Object.keys(planet.sect) ) { 
+			planet.score += planet.sect[k].pow;
+			}
+		planet.score += planet.size *0.1;
+		planet.score += planet.maxslots *0.25;
+		// TODO calculate goodies
+		
 		return planet;
+		}
+		
+	// gives a value score from the perspective of the civ.
+	// useful for AI functions in determining where to 
+	// colonize or capture
+	ValueTo( civ ) {
+		// even habitable?
+		if ( !this.Adaptation( civ.race ) ) { 
+			return 0;
+			}
+		// not in range? not worth anything 
+		if ( !civ.InRangeOf(this.star.xpos, this.star.ypos) ) { 
+			return 0;
+			}
+		// natural environmental score
+		let score = this.score;
+		// distance from emperical center
+		let bx = civ.empire_box.x1 + ( ( civ.empire_box.x2 - civ.empire_box.x1 ) * 0.5 );
+		let by = civ.empire_box.y1 + ( ( civ.empire_box.y2 - civ.empire_box.y1 ) * 0.5 );
+		let dist = utils.DistanceBetween( this.star.xpos, this.star.ypos, bx, by );
+		score += ( 1 / dist ) * 3500;
+		// population	
+		score += this.total_pop * 0.1;
+		// local economy
+		for ( let s of Object.keys(this.sect) ) { 
+			score += this.sect[s].output * 0.05;
+			}
+		return score;
 		}
 		
 	// owner must be a civ object, not an index ID
