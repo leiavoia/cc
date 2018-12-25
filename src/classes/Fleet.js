@@ -8,7 +8,6 @@ export default class Fleet {
 	id = 0;
 	star = null;
 	dest = null;
-	lane = null;
 	xpos = 0;
 	ypos = 0;
 	speed = 50.0;

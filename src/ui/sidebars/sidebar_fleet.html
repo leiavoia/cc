@@ -7,9 +7,14 @@
 		<template containerless if.bind="app.options.see_all || fleet.owner.is_player">
 			
 			<p style="font-size: 150%;" class="big" if.bind="fleet.mission">On Mission. Back in [${fleet.mission.time}] turns.</p>
-			<p style="font-size: 150%;" class="big" if.bind="!fleet.mission">Location: 
-				<span if.bind="fleet.star">${fleet.star.name}</span>
-				<span if.bind="fleet.dest"><span>➠</span> ${fleet.dest.name}</span>
+			<p style="" class="big topless" if.bind="!fleet.mission">
+				<span if.bind="fleet.star">@${fleet.star.name}</span>
+				<span if.bind="fleet.dest">
+					<span>➠</span> ${fleet.dest.name}
+					<span class="bold" style="color: #FF9F00;">
+						${fleet.dest_line_length / fleet.speed | ceil} turn${(fleet.dest_line_length / fleet.speed <= 1) ? '' : 's' }
+					</span>
+				</span>
 			</p>
 			
 			<p if.bind="fleet.research">Research Capacity: <b>${fleet.research}</b></p>

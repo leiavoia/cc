@@ -268,7 +268,7 @@
 				
 			</div>
 			
-			<div class="defenses">
+			<div class="defenses" if.bind="planet.owner">
 				<h3>Defenses:</h3>
 				<div repeat.for="[bp,count] of planet.ListUniqueGroundUnits()" style="display:inline-block;">
 					<img src="img/ground/tank_transp.png" 

@@ -7,6 +7,8 @@ export function configure(config) {
   	'./value-converters/MinMaxConverter',
   	'./value-converters/percent',
   	'./value-converters/round',
+  	'./value-converters/ceil',
+  	'./value-converters/floor',
   	'./value-converters/sqrt',
   	'./value-converters/objprops',
   	'./value-converters/uppercase',
