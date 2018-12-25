@@ -36,7 +36,14 @@
 			<div id="the_caret" class="caret ${caret.class}" if.bind="caret.obj && caret.x && caret.y" css="left:${caret.x}px; top:${caret.y}px;"></div>
 			
 			<!-- STARS -->
-			<div click.delegate="app.ClickStar(star,$event)" repeat.for="star of app.game.galaxy.stars" class="mapobj_container star_${star.color & oneTime} ${star.settled ? 'settled' : ''} ${star.in_range ? 'in_range' : 'out_range'} ${star.explored || app.options.see_all ? 'explored' : 'unexplored'}" css="left:${star.xpos & oneTime}px; top:${star.ypos & oneTime}px;">
+			<div click.delegate="app.ClickStar(star,$event)" 
+				contextmenu.delegate="app.ClickStar(star,$event)" 
+				repeat.for="star of app.game.galaxy.stars" 
+				class="mapobj_container star_${star.color & oneTime} 
+				${star.settled ? 'settled' : ''} 
+				${star.in_range ? 'in_range' : 'out_range'} 
+				${star.explored || app.options.see_all ? 'explored' : 'unexplored'}" 
+				css="left:${star.xpos & oneTime}px; top:${star.ypos & oneTime}px;">
 				<h2 css="${star.ownership_title_css}" >${star.name}</h2>
 				<div if.bind="star.planets.length" class="planet_list"><!--  && (star.explored || app.options.see_all) -->
 					<a href="#" click.trigger="app.SwitchSideBar(p,$event)" repeat.for="p of star.planets" class="${p.settled ? 'settled' : ''}" css="color: ${p.ui_color};"><svg class="icon icon-nature"><use xlink:href="#icon-nature"></use></svg></a>
@@ -56,7 +63,8 @@
 			<!-- ANOMALIES -->
 			<template containerless repeat.for="anom of app.game.galaxy.anoms">
 				<div if.bind="(anom.onmap && anom.vis_level <= app.game.myciv.vis_level) || app.options.see_all"
-					click.delegate="app.ClickStar(anom,$event)" 
+					click.delegate="app.ClickStar(anom,$event)"  
+					contextmenu.delegate="app.ClickStar(anom,$event)" 
 					class="mapobj_container anom anom_${anom.type & oneTime} ${anom.settled ? 'settled' : ''} ${anom.in_range ? 'in_range' : 'out_range'} ${anom.explored || app.options.see_all ? 'explored' : 'unexplored'}" 
 					css="left:${anom.xpos & oneTime}px; top:${anom.ypos & oneTime}px;"
 					>
