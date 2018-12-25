@@ -9,8 +9,12 @@
 			<button click.delegate="OpenDetailsPane()">INFO</button>
 			<button click.delegate="PressStarButton()">STAR</button>
 			<button click.delegate="PressPrevPlanetButton()">◀</button>
-<!-- 			<button click.delegate="PressConstelButton()" if.bind="planet.owner"> CONSTL </a> -->
 			<button click.delegate="PressNextPlanetButton()">▶</button>
+		</p>
+						
+		<!-- enemy fleet attack option --> 
+		<p class="button_rack button_rack_fill" if.bind="planet.settled && !planet.owner.is_player && playerHasLocalFleet">
+			<button class="alt" click.delegate="AttackTargetWithLocalFleet()">ATTACK</button>
 		</p>
 		
 		<!-- NOTE: using one-time binding to avoid brief moment when the 
@@ -26,11 +30,6 @@
 		">${planet.name}</h2>
 		<h2 if.bind="!planet.owner">${planet.name}</h2>
 		<p class="age" if.bind="planet.age_level">${'🟊'.repeat(planet.age_level)}</p>
-						
-		<!-- enemy fleet attack option --> 
-		<p class="button_rack button_rack_fill" if.bind="planet.settled && !planet.owner.is_player && planet.star.PlayerHasLocalFleet">
-			<button class="alt" click.delegate="AttackTargetWithLocalFleet()">ATTACK</button>
-		</p>
 		
 		<div class="phys">
 	

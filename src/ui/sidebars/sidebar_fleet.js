@@ -13,6 +13,8 @@ export class FleetDetailPane {
 	mission_turns = 10;
 	selected_planet = null; // used for UI interaction
 	starclick_subsc = null;
+	turn_subscription = null;
+	playerHasLocalFleet = false;
 	@bindable fleet = null;
 	app = null;
 
@@ -30,11 +32,13 @@ export class FleetDetailPane {
 		this.starclick_subsc = Signals.Listen('starclick', 
 			data => { if ( data.event.which > 1 ) { this.StarClickCallback(data.star) } }
 			);
+		this.turn_subscription = Signals.Listen( 'turn', data => this.UpdateStats() );
 		}
 		
 	unbind() { 	
 		// stop listening for starclicks
 		this.starclick_subsc.dispose();
+		this.turn_subscription.dispose();
 		// stop listening for hotkeys
 		window.removeEventListener('keypress', this.keypressCallback);
 		}
@@ -94,7 +98,6 @@ export class FleetDetailPane {
 			}
 		else {
 			this.Recalc();
-			// TODO: speed, strength, etc
 			}
 		}
 	SelectShip(ship) {
@@ -169,6 +172,8 @@ export class FleetDetailPane {
 		//
 		}
 	Recalc() { 
+		this.playerHasLocalFleet = this.fleet.star && this.fleet.star.PlayerHasLocalFleet;
+		
 		// for each stat, distinguish between ability of the
 		// fleet as a whole (1) or the specific selection (2)
 		// or no ability at all (0)

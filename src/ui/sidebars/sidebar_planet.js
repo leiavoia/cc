@@ -1,13 +1,23 @@
 import {Ship,ShipBlueprint} from '../../classes/Ship';
 import {GroundUnit,GroundUnitBlueprint} from '../../classes/GroundUnit';
+import * as Signals from '../../util/signals';
 
 export class PlanetDetailPane {
-	
+
+	constructor() { 
+		this.playerHasLocalFleet = false;
+		}
+		
 	activate(data) {
 		this.app = data.app;
 		this.planet = data.obj;
 		this.planetChanged( this.planet );
 		this.sel_build_item = null;
+		this.turn_subscription = Signals.Listen('turn', data => this.planetChanged() );
+		}
+		
+	unbind() { 	
+		this.turn_subscription.dispose();
 		}
 
 	prod_q_repeat_vals = [
@@ -21,14 +31,9 @@ export class PlanetDetailPane {
 		
 	// update some calculated values whenever planet changes
 	planetChanged( planet ) { 
-		//
-		// WARNING: This stuff needs to be updated if our tech 
-		// would change the numbers while the panel is in focus.
-		//
-		// NOTE: Numbers displayed are from the point of view of the
+		if ( !planet ) { planet = this.planet; }			
+		// NOTE 1: Numbers displayed are from the point of view of the
 		// race of the player, NOT the owner of the planet
-		//
-		
 		// NOTE 2: Aurelia has race conditions with switching dynamic 
 		// elements (the sidebar) and binding its data. 
 		// Sniff the "planet" to make sure it really is such.
@@ -36,6 +41,7 @@ export class PlanetDetailPane {
 			this.habitat = planet.Adaptation( this.app.game.myciv.race );
 			this.habitable = planet.Habitable( this.app.game.myciv.race );
 			this.habitat_bonus = planet.HabitationBonus( this.app.game.myciv.race );
+			this.playerHasLocalFleet = planet.star.PlayerHasLocalFleet;
 			}
 		}
 		

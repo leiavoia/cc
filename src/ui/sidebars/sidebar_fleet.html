@@ -16,19 +16,21 @@
 					</span>
 				</span>
 			</p>
-			
-			<p if.bind="fleet.research">Research Capacity: <b>${fleet.research}</b></p>
-			<p if.bind="fleet.troops">Ground Units: <b>${fleet.troops}</b></p>
-			<p>Firepower: <b>${fleet.fp_remaining} / ${fleet.fp}</b></p>
+			<p>
+				<b style="color: #F33;" show.bind="fleet.fp">⚔${fleet.fp_remaining} / ${fleet.fp}&nbsp;</b>
+				<b style="color: #AEA;" show.bind="fleet.research">⚛${fleet.research}&nbsp;</b>
+				<b style="color: #FF9F00;" show.bind="fleet.troops">☠${fleet.troops}&nbsp;</b>
+				<b style="color: #FF0;" show.bind="can_colonize">⚑&nbsp;</b>
+			</p>
 			
 			<!-- local anomoly research info -->
 			<p if.bind="fleet.star && !fleet.dest && fleet.star.objtype == 'anom'">
-				Anomaly Research: ${(app.game.turn_num*0) + fleet.star.AmountResearched( fleet.owner )} 
+				Anomaly Research: ${(app.game.turn_num*0) + fleet.star.AmountResearched( fleet.owner ) / fleet.star.size | percent}% 
 				<progress value.bind="(app.game.turn_num*0) + fleet.star.AmountResearched( fleet.owner ) / fleet.star.size" />
 			</p>
 				
 			<!-- enemy fleet attack option --> 
-			<p class="button_rack button_rack_fill" if.bind="!fleet.owner.is_player && fleet.star && fleet.star.PlayerHasLocalFleet">
+			<p class="button_rack button_rack_fill" if.bind="!fleet.owner.is_player && fleet.star && playerHasLocalFleet">
 				<button class="alt" click.delegate="AttackTargetWithLocalFleet()">ATTACK</button>
 			</p>
 			

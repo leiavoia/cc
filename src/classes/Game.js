@@ -502,6 +502,15 @@ export default class Game {
 			
 			this.turn_num++;
 			
+			//
+			// At this point the turn is considered "processed",
+			// however the player may still need to complete
+			// some interactivities like combat resolution, 
+			// subscreens, events, etc.
+			//
+			
+			Signals.Send('turn', this.turn_num );
+			
 			if ( !this.CheckForVictory() ) { 
 				
 				// event queue needs the new turn number
@@ -509,7 +518,7 @@ export default class Game {
 				
 				this.PresentNextPlayerShipCombat();
 				
-				this.PresentNextPlayerGroundCombat()
+				this.PresentNextPlayerGroundCombat();
 				}
 				
 			} // foreach turn (in case of multiple).

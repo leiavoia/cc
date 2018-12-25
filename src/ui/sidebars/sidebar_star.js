@@ -1,14 +1,40 @@
 // import Planet from './classes/Planet';
 // import {bindable} from 'aurelia-framework';
+import * as Signals from '../../util/signals';
 
 export class StarDetailPane {
 	star = null;
 	app = null;
 	editing_name = false;
+	// used for stuff that needs to be computed when UI changes.
+	// changes in player's technology can affect the results, so
+	// we use signals from the turn processor to update this
+	// after each turn completed.
+	calc_vals = {}; 
+	playerHasLocalFleet = false;
 	
 	activate(data) {
 		this.app = data.app;
 		this.star = data.obj;
+		this.turn_subscription = Signals.Listen('turn', data => this.Update(data) );
+		this.Update();
+		}
+		
+	unbind() { 	
+		this.turn_subscription.dispose();
+		}
+		
+	Update( turn_num ) { 
+		this.calc_vals = {};
+		if ( this.star ) { 
+			for ( let p of this.star.planets ) { 
+				this.calc_vals[p.id] = {
+					adapt: p.Adaptation( this.app.game.myciv.race ),
+					hab: p.Habitable( this.app.game.myciv.race )
+					};
+				}
+			this.playerHasLocalFleet = this.star.PlayerHasLocalFleet;
+			}
 		}
 		
 	PlanetSizeCSS( planet ) {
@@ -20,16 +46,6 @@ export class StarDetailPane {
 		else {
 			let pos = 0; //75 - size;
 			return `background-size: ${size}px; background-position: ${pos}px 0%`;
-			}
-		}
-		
-// 	bind () { 
-// 		this.acct = this.star.Acct( this.app.game.iam );
-// 		}
-	ClickConstelLink() { 
-		let acct = this.star.Acct(this.app.game.iam);
-		if ( acct ) { 
-			this.app.SwitchSideBar( acct.constel );
 			}
 		}
 		
