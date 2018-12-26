@@ -115,53 +115,94 @@ export default class Planet {
 			if ( !myfleet ) { 
 				myfleet = new Fleet( this.owner, this.star );
 				}
-			myfleet.AddShip( item.obj.bp.Make() );
+			myfleet.AddShip( item.obj.Make() );
 			}
 		// ground units
 		else if ( item.type == 'groundunit' ) { 
-			this.troops.push( item.obj.bp.Make() );
+			this.troops.push( item.obj.Make() );
 			}
 		// NOTE: custom functions will not serialize to a save format.
 		// clean this up later.
-		else if ( item.obj.hasOwnProperty('ProduceMe') ) { 
-			item.obj.ProduceMe( this );
+		else if ( item.hasOwnProperty('ProduceMe') ) { 
+			item.ProduceMe( this );
 			}
 		}
 		
 	AddBuildQueueShipBlueprint( bp ) { 
 		let item = {
 			type: 'ship',
-			obj: {
-				name: bp.name,
-				bp: bp
-				},
+			obj: bp,
+			name: bp.name,
 			labor: bp.labor, // "cost" in hammers
 			mp: bp.mass, // material points
 			spent: 0,
-			quantity: 1,
+			qty: 1,
 			turns_left: 0,
 			pct: 0
 			};
 		this.prod_q.push(item);
+		this.BuildQueueShuffleDownInfiniteProjects();
 		}
 		
 	AddBuildQueueGroundUnitBlueprint( bp ) { 
 		let item = {
 			type: 'groundunit',
-			obj: {
-				name: bp.name,
-				bp: bp
-				},
+			obj: bp,
+			name: bp.name,
 			labor: bp.labor, // "cost" in hammers
 			mp: bp.mass, // material points
 			spent: 0,
-			quantity: 1,
+			qty: 1,
 			turns_left: 0,
 			pct: 0
 			};
 		this.prod_q.push(item);
+		this.BuildQueueShuffleDownInfiniteProjects();
+		}
+		
+	AddBuildQueueMakeworkProject( type = 'tradegoods' ) { 
+		// TODO differentiate makework types. only tradegoods for now
+		let item = null;
+		switch ( type ) { 
+			case 'tradegoods' : 
+			default : { 
+				item = {
+					type: 'makework',
+					name: 'Trade Goods',
+					obj: 'tradegoods',
+					labor: 3, // "cost" in hammers
+					mp: 1, // material points
+					spent: 0,
+					qty: -1, // default infinity
+					turns_left: 0,
+					pct: 0,
+					ProduceMe: function ( planet ) {
+						// TODO: add to accounting records
+						planet.owner.treasury += 10;	
+						planet.econ.tradegoods += 10;
+						}
+					};
+				break;
+				}
+			}
+		this.prod_q.push(item);
+		this.BuildQueueShuffleDownInfiniteProjects();
 		}
 
+	BuildQueueShuffleDownInfiniteProjects() { 
+		this.prod_q.sort( (a,b) => { 
+			if ( a.qty == -1 && b.qty != -1 ) { return 1; }
+			else if ( b.qty == -1 && a.qty != -1 ) { return -1; }
+			return 0;
+			});
+		}
+		
+	ListMakeworkProjects() { 
+		return [
+			{type: 'tradegoods', name: 'Trade Goods'},
+			];
+		}
+		
 	AgePlanet() { 
 		this.age_level = Math.min( Math.floor( ++this.age / 40 ), 5 );
 		}
@@ -330,8 +371,8 @@ export default class Planet {
 			outerloop:
 			for ( let item of this.prod_q ) {
 				// each queue item also has a quantity
-				let quantity = (item.quantity > 0) ? item.quantity : 100000; // account for infinite quantity "-1"
-				for ( let n = 0; n < quantity; n++ ) { 
+				let qty = (item.qty > 0) ? item.qty : 100000; // account for infinite qty "-1"
+				for ( let n = 0; n < qty; n++ ) { 
 					// how much can i build next turn?
 					let labor_per_mp = item.labor / item.mp;
 					let mp_remaining = item.mp - ( n==0 ? item.spent : 0 );
@@ -340,10 +381,6 @@ export default class Planet {
 					if ( labor_needed < labor_available ) { 
 						labor_available -= labor_needed;
 						this.mp_need += mp_remaining;
-						// [!]TRADEGOODS
-						if ( item.type == 'makework' && item.obj.name == 'Trade Goods' ) { 
-							this.econ.tradegoods += 10; 
-							}
 						}
 					// can only build a portion.
 					// how many MP can i buy with this many hammers?
@@ -388,7 +425,7 @@ export default class Planet {
 				let item = this.prod_q[0];
 // 				console.log(item);
 				// each queue item also has a quantity
-				if ( item.quantity ) { 
+				if ( item.qty ) { 
 					// how much can i build next turn?
 					let labor_per_mp = item.labor / item.mp;
 					let mp_remaining = item.mp - item.spent;
@@ -413,11 +450,11 @@ export default class Planet {
 						item.pct = 0;
 						item.turns_left = 0; // Math.ceil( item.cost / this.sect.prod.output ) ;
 						// decrement if they wanted more than one
-						if ( item.quantity > 0 ) {
-							item.quantity -= 1;
+						if ( item.qty > 0 ) {
+							item.qty -= 1;
 							}
 						// pop from list if we reached zero
-						if ( item.quantity == 0 ) {
+						if ( item.qty == 0 ) {
 // 							console.log(`popped from list`);
 							this.prod_q.shift()
 // 							this.buildings.push( this.prod_q.shift() );
@@ -440,55 +477,21 @@ export default class Planet {
 			}	
 		}
 		
-// 	GrowEconomy() { 
-// 		// morale and taxes affect the growth rate
-// 		let min_PCI = 1.0 + this.bonus_PCI;
-// 		let tax_baserate = 1.05;
-// 		let tax_mod = tax_baserate - (this.tax_rate * this.tax_rate);
-// 		let morale_baserate = 1.00;
-// 		let morale_effect = 0.12;
-// 		let morale_mod = morale_baserate + ((this.morale - 1.0) * morale_effect);
-// 		// commerce improves growth factor a lot
-// 		let com_effect = 0.05;
-// 		let com_mod = 1.0 + ( com_effect * this.sect.com.output );
-// 		// if commerce feeds into growth factor, it leads to semi-permanent gains !?
-// 		
-// 		// technology
-// 		
-// 		// galactic economy
-// 		
-// 		
-// 		// local resources
-// 		let local_rsc = (this.rich + this.energy) / 2; // this hovers around 1.0 naturally
-// 		let local_rsc_effect = 5; // increasing this waters down the effect, unlike the others
-// 		let local_rsc_mod = ( local_rsc + local_rsc_effect) / local_rsc_effect;
-// 		
-// 		// environment
-// 		let env = this.HabitationBonus( this.owner.race );
-// 		let env_effect = 0.5;
-// 		let env_mod = 1.0 + ( env_effect * env );
-// 		
-// 		this.econ.GF = Math.pow( com_mod * env_mod * local_rsc_mod * tax_mod * morale_mod, (1.0 / this.econ.PCI) );
-// 		this.econ.PCI *= this.econ.GF;
-// 		if ( this.econ.PCI < min_PCI ) { this.econ.PCI = min_PCI; }
-// 		this.econ.GDP = this.total_pop * this.econ.PCI;
-// 		}
+  	UpdateMorale() {
+		// each element outputs a number between 0..2
+		// and are then scaled against each other to
+		// vary the weighting of different factors.
+		// We then take the average of them.
 
-  UpdateMorale() {
-    // each element outputs a number between 0..2
-    // and are then scaled against each other to
-    // vary the weighting of different factors.
-    // We then take the average of them.
-    
-    // TODO:
-    // gov type
-    // local culture
-    // at war
-    // recently conquered
-    // recently attacked
-    // enemy ships present
-    // defensive fleet present?
-    // spending? (employment)
+		// TODO:
+		// gov type
+		// local culture
+		// at war
+		// recently conquered
+		// recently attacked
+		// enemy ships present
+		// defensive fleet present?
+		// spending? (employment)
     
 		let factors = {};
 		// economy (PCI)
@@ -508,17 +511,17 @@ export default class Planet {
 			fx: ( 1.5 / ( 1 + Math.pow( Math.E, (-6 + (9*( this.total_pop/this.maxpop )) ) ) ) ) + 0.5,
 			weight: 4.0
 			};
-    // age level - TODO: might change this to just 'age' for more granularity
+    	// age level - TODO: might change this to just 'age' for more granularity
 		factors.age = { 
 			fx: ( 1 + ( this.age_level / 5 ) ),
 			weight: 5.0
 			};
-    // military defense - makes people feel safe
+    	// military defense - makes people feel safe
 		factors.age = { 
 			fx: ( 1 + ( utils.Clamp(this.sect.def.output,0,100) / 100 ) ),
 			weight: 5.0
 			};
-    let total_weight = 0;
+    	let total_weight = 0;
 		let total_value = 0;
 		for ( let f in factors ) { 
 		  total_weight += factors[f].weight; 
@@ -530,31 +533,31 @@ export default class Planet {
 		let growth = diff ? (0.4 * Math.pow( Math.abs(diff), 0.75 ) ) : 0;
 		this.morale += ( diff > 0 ) ? growth : -growth ;	
 		this.morale = utils.Clamp( this.morale, 0, 2 );
-    }
+    	}
 
     
 	GrowEconomy() { 
-    // TODO:
-    // local culture
-		// technology
-		// galactic economy
-		// recent events
-		// connectivity / hyperlanes
-		
-    // we want PCI=10 for new vanilla colonies
-    let resource_mod = 20; 
-    // establish a base economic rate based on planet resources
-    let target_PCI = ((this.rich + this.energy) / 2) * resource_mod;
-    // adjust by the planet's age (doubles after 100 turns)
-    target_PCI *= 1 + (this.age/50);
-    // taxes modify the base rate
-    target_PCI *= Math.pow( utils.MapToRange( this.tax_rate, 0, 0.5, 2.0, 0.2 ), 1.5 );
+		// TODO:
+		// local culture
+			// technology
+			// galactic economy
+			// recent events
+			// connectivity / hyperlanes
+			
+		// we want PCI=10 for new vanilla colonies
+		let resource_mod = 20; 
+		// establish a base economic rate based on planet resources
+		let target_PCI = ((this.rich + this.energy) / 2) * resource_mod;
+		// adjust by the planet's age (doubles after 100 turns)
+		target_PCI *= 1 + (this.age/50);
+		// taxes modify the base rate
+		target_PCI *= Math.pow( utils.MapToRange( this.tax_rate, 0, 0.5, 2.0, 0.2 ), 1.5 );
     
 // 		let ecoscale = 1.0; // for balancing
 // 		let base = total * ecoscale;
 // 		if ( base < 1 ) { base = 1; }
 		let min_PCI = 0.1; 
-    this.econ.target_PCI = Math.pow( target_PCI, 0.65 ); // diminishing returns
+		this.econ.target_PCI = Math.pow( target_PCI, 0.65 ); // diminishing returns
 		if ( this.econ.target_PCI < min_PCI ) { this.econ.target_PCI = min_PCI; }
 		
 		// grow economy in stages, like sector infrastructure, but faster
@@ -769,9 +772,9 @@ export default class Planet {
 		
 		// calculate natural score
 		for ( let k of Object.keys(planet.sect) ) { 
-			planet.score += planet.sect[k].pow;
+			planet.score += planet.sect[k].pow * 2;
 			}
-		planet.score += planet.size *0.1;
+		planet.score += planet.size * 0.1;
 		planet.score += planet.maxslots *0.25;
 		// TODO calculate goodies
 		
@@ -783,7 +786,7 @@ export default class Planet {
 	// colonize or capture
 	ValueTo( civ ) {
 		// even habitable?
-		if ( !this.Adaptation( civ.race ) ) { 
+		if ( !this.Habitable( civ.race ) ) { 
 			return 0;
 			}
 		// not in range? not worth anything 
@@ -792,11 +795,13 @@ export default class Planet {
 			}
 		// natural environmental score
 		let score = this.score;
+		// adaptation
+		score += this.Adaptation( civ.race ) * 3; 
 		// distance from emperical center
 		let bx = civ.empire_box.x1 + ( ( civ.empire_box.x2 - civ.empire_box.x1 ) * 0.5 );
 		let by = civ.empire_box.y1 + ( ( civ.empire_box.y2 - civ.empire_box.y1 ) * 0.5 );
 		let dist = utils.DistanceBetween( this.star.xpos, this.star.ypos, bx, by );
-		score += ( 1 / dist ) * 3500;
+		score += ( 1 / dist ) * 7000; // not actually that important
 		// population	
 		score += this.total_pop * 0.1;
 		// local economy
@@ -820,44 +825,7 @@ export default class Planet {
 		this.econ.PCI = this.base_PCI + this.bonus_PCI;
 		this.econ.GF = 1.0;
 		
-		// HACK - TESTING
-		this.troops.push( this.owner.groundunit_blueprints[0].Make() );
-		this.troops.push( this.owner.groundunit_blueprints[0].Make() );
-		this.troops.push( this.owner.groundunit_blueprints[0].Make() );
-		
-		// HACK - TESTING
-		this.prod_q = [
-			{
-				type: 'ship',
-				obj: {
-					name: this.owner.ship_blueprints[0].name,
-					bp: this.owner.ship_blueprints[0],
-					},
-				labor: 10, // "cost" in hammers
-				mp: 5, // material points
-				spent: 0,
-				quantity: -1,
-				turns_left: 0,
-				pct: 0
-				},
-			{
-				type: 'makework',
-				obj: {
-					name: 'Trade Goods',
-					ProduceMe: function ( planet ) {
-						// TODO: add to accounting records
-						planet.owner.treasury += 10;	
-						planet.econ.tradegoods += 10;
-						}
-					},
-				labor: 3, // "cost" in hammers
-				mp: 1, // material points
-				spent: 0,
-				quantity: -1,
-				turns_left: 0,
-				pct: 0
-				}
-			];
+		this.AddBuildQueueMakeworkProject('tradegoods');
 			
 		this.RecalcSectors();	
 		this.UpdateOwnership();

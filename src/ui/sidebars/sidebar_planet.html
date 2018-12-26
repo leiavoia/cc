@@ -75,6 +75,11 @@
 					${planet.sect.def.pow|round:1}x
 				</span>
 			</p>	
+			
+			<p style="font-size: 1.5rem" >
+				${'▢'.repeat(planet.maxslots)}
+			</p>
+			
 		</div> 
 		
 <!--		<p>
@@ -246,11 +251,11 @@
 				<table class="prod_queue">
 					<tr repeat.for="item of planet.prod_q">
 						<td>${item.turns_left}</td>
-						<td><progress max="100" value="${item.pct|round}"></progress><p>${item.obj.name}</p></td>
+						<td><progress max="100" value="${item.pct|round}"></progress><p>${item.name}</p></td>
 						<td><a href="#" click.delegate="BuildQueueMoveItemUp($index)" if.bind="$index > 0">▲</a></td>
 						<td><a href="#" click.delegate="BuildQueueMoveItemDown($index)" if.bind="$index != (planet.prod_q.length-1)">▼</a></td>
 						<td>
-							<select value.bind="item.quantity">
+							<select value.bind="item.qty">
 								<option repeat.for="option of prod_q_repeat_vals" model.bind="option.value">${option.name}</option>
 							</select>			
 						</td>
@@ -261,6 +266,7 @@
 					<select value.bind="sel_build_item">
 						<option repeat.for="bp of planet.owner.ship_blueprints" model.bind="bp">${bp.name}</option>
 						<option repeat.for="bp of planet.owner.groundunit_blueprints" model.bind="bp">${bp.name}</option>
+						<option repeat.for="bp of planet.ListMakeworkProjects()" model.bind="bp">${bp.name}</option>
 					</select>
 					<button click.delegate="AddSelectedItemToBuildQueue()">Add</button>
 				</p>

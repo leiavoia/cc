@@ -36,7 +36,17 @@ export default class Civ {
 	// AI stuff
 	ai = { 
 		objectives: [],
-		priorities: [] // TODO
+		priorities: [], // TODO
+		needs: { 
+			colony_ships: 0,
+			combat_ships: 0,
+			troop_ships: 0,
+			research_ships: 0,
+			scout_ships: 0,
+			troops: 0,
+			cash: 1,
+			tech: 1
+			}
 		};
 		
 	power_score = 0;
@@ -252,7 +262,6 @@ export default class Civ {
 	ships = [];
 	ship_designs;
 	
-	spy = []; // how to structure???
 	econ = {
 		income: 0,
 		warehouse : 0,
@@ -262,7 +271,6 @@ export default class Civ {
 	policies = []; // how to structure???
 	
 	planets = [];
-	constels = []; // list of connected constellations
 	fleets = [];
 	
 	// well-chosen colors for other races:
@@ -496,27 +504,109 @@ export default class Civ {
 		return this.power_score;
 		}
 		
-	AI_EvaluateObjectives() { 
+	// find a particular objective
+	AI_QueryObjectives( type, obj ) {
+		for ( let o of this.ai.objectives ) { 
+			if ( o.type == type && obj == o.obj ) { 
+				return o;
+				}
+			}
+		return null;
+		}
+		
+	AI_EvaluateObjectives(app) { 
+		this.AI_Colonize(app);
+		this.AI_Defend(app);
+		this.AI_Attack(app);
+		this.AI_Intercept(app);
+		}
+	
+	AI_Defend(app) {
 	
 		}
 		
-	TurnAI( app ) {
+	AI_Attack(app) {
+	
+		}
+		
+	AI_Intercept(app) {
+	
+		}
+		
+	AI_Planets(app) {
+		for ( let p of this.planets ) { 
+			// colony ships
+			if ( this.ai.needs.colony_ships > 0 ) { 
+				for ( let bp of this.ship_blueprints ) { 
+					if ( bp.colonize ) { 
+						// note: by adding just one, it will
+						// encourage other planets to build some too
+						p.AddBuildQueueShipBlueprint( bp );
+						--this.ai.needs.colony_ships;
+						break;
+						}
+					}
+				}
+			else if ( this.ai.needs.colony_ships < 0 && p.prod_q.length > 1 ) { 
+				// we need to get rid of some unbuilt colony ships
+				for ( let i=1; i < p.prod_q.length; i++ ) { // start on the first one
+					if ( p.prod_q[i].type == 'ship' && p.prod_q[i].obj.colonize ) {
+						this.ai.needs.colony_ships += ( p.prod_q[i].qty == -1 ) ? 1 : p.prod_q[i].qty;
+						}
+					}
+				}
+			// combat ships
+			if ( this.ai.needs.combat_ships > 0 ) { 
+				
+				}
+			// troop ships
+			if ( this.ai.needs.troop_ships > 0 ) { 
+				
+				}
+			// research ships
+			if ( this.ai.needs.research_ships > 0 ) { 
+				
+				}
+			// research ships
+			if ( this.ai.needs.scout_ships > 0 ) { 
+				
+				}
+			// troops / ground units
+			if ( this.ai.needs.troops > 0 ) { 
+				
+				}
+			// tech research
+			if ( this.ai.needs.tech > 0 ) { 
+				
+				}
+			// cash
+			if ( this.ai.needs.cash > 0 ) { 
+				// already in queue?
+				let inq = false;
+				for ( let i of p.prod_q ) { 
+					if ( i.obj == 'tradegoods' ) {
+						inq = true; break;
+						}
+					}
+				if ( !inq ) { 
+					p.AddBuildQueueMakeworkProject( 'tradegoods' );
+					}
+				}
+			}
+		}
+		
+	AI_Colonize(app) {
 		// build a list of targets, sorted by distance
 		let targets = [];
 		for ( let s of app.game.galaxy.stars ) { 
 			for ( let p of s.planets ) {
-				if ( !p.owner && p.Habitable( this.race ) ) { 
-					// TODO: respect ship range.
-					// In order to calculate range, we have to check
-					// every colony we have against every unclaimed
-					// star system. Each civ has to keep track of their
-					// own ship range and that's a lot of track-keeping.
+				if ( !p.owner && p.Habitable( this.race ) && this.InRangeOf(p.star.xpos, p.star.ypos) ) { 
 					targets.push(p);
 					}
 				}
 			}
 		// have colony ships?
-		if ( targets )  {
+		if ( targets.length )  {
 			for ( let f of this.fleets ) {
 				// parked and not on mission
 				if ( f.colonize && f.star && !f.dest && f.star.objtype == 'star' && !f.mission ) { 
@@ -534,27 +624,27 @@ export default class Civ {
 									if ( this == app.game.myciv && app.options.notify.settle ) { 
 										app.AddNote( 'good',`${p.name} Settled`,'',function(){app.FocusMap(p);});	
 										}
+									// remove from target list
+									targets.splice( targets.indexOf(p), 1 );
 									break next_ship;
 									}
 								}
-							if ( targets.length) { 
+							if ( targets.length ) { 
 								// resort the list and send to the first target
 								targets.sort( (a,b) => {
-									if ( a.star == b.star ) { return 0; }
-									let dist_a = 
-										Math.pow( Math.abs(f.star.xpos - a.star.xpos), 2 ) 
-										+ Math.pow( Math.abs(f.star.ypos - a.star.ypos), 2 ) 
-										;
-									let dist_b = 
-										Math.pow( Math.abs(f.star.xpos - b.star.xpos), 2 ) 
-										+ Math.pow( Math.abs(f.star.ypos - b.star.ypos), 2 ) 
-										;
-									if ( dist_a > dist_b ) { return -1; }
+									let score_a = a.ValueTo(this);
+									let score_b = b.ValueTo(this);
+									if ( score_a > score_b ) { return -1; }
 									else { return 1; }
 									} );
-								let t = targets.pop();
+								let t = targets.shift();
+// 								console.log(`Best planet was ${t.name} @ ${t.ValueTo(this)}`);
+// 								for ( let x of targets ) { 
+// 									console.log(`Runnerup: ${x.name} @ ${x.ValueTo(this)} :: size ${x.size}, SLOT: ${x.maxslots}, HAB ${x.Adaptation(this.race)} MINE ${x.sect.mine.pow}, PROD ${x.sect.prod.pow}, SCI ${x.sect.sci.pow}, DEF ${x.sect.def.pow}, ESP ${x.sect.esp.pow}, `);
+// 									}
 								let myfleet = null;
 								// split fleet if more than 1 ship in fleet
+								// TODO: escorts would be nice
 								if ( f.ships.length > 1 ) { 
 									f.RemoveShip(s); // old fleet
 									myfleet = new Fleet( f.owner, f.star );
@@ -571,6 +661,22 @@ export default class Civ {
 					}
 				}
 			}
+		// if i still have leftover targets, i dont have enough colony ships.
+		this.ai.needs.colony_ships = targets.length;
+		// see how many colony ships we already have in production. this may
+		// indicate we need to build more or possibly cull some already queued.
+		for ( let p of this.planets ) { 
+			for ( let i of p.prod_q ) { 
+				if ( i.type == 'ship' && i.obj.colonize ) {
+					this.ai.needs.colony_ships -= ( i.qty == -1 ) ? 1 : i.qty;
+					}
+				}
+			}
+		}
+		
+	TurnAI( app ) {
+		this.AI_EvaluateObjectives(app);
+		this.AI_Planets(app);
 		}
 		
 	}

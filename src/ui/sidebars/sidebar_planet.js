@@ -118,7 +118,9 @@ export class PlanetDetailPane {
 		else if ( this.sel_build_item instanceof GroundUnitBlueprint ) {
 			this.planet.AddBuildQueueGroundUnitBlueprint( this.sel_build_item );
 			}
-		
+		else if ( typeof(this.sel_build_item) == 'object' && 'type' in this.sel_build_item ) { 
+			this.planet.AddBuildQueueMakeworkProject( this.sel_build_item.type );
+			}
 		}
 	// for clicking attack planet with a local player fleet
 	AttackTargetWithLocalFleet() { 
