@@ -164,13 +164,14 @@
 				<p>${team.fleet.ships.length} ships in combat</p>
 			</div>
 			<div class="fleet-container">
-				<div class="shipgrid">
+				<div class="shipgrid ${app.options.ship_scaling ? 'dynasize' : ''}">
 					<div id="ship-${ship.id}"
 						class="ship 
 						${ship.selected ? 'selected' : ''} 
 						${ship.retreat ? 'retreat' : ''} 
 						health_${ship.health_class}
 						${ship == last_turnlog.ship || ship == last_turnlog.target ? 'hilite' : ''}
+						size_${ship.bp.sizeclass}
 						"
 						click.delegate="ClickShip(ship,team)" 
 						repeat.for="ship of team.fleet.ships" 

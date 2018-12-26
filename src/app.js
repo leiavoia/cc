@@ -33,6 +33,7 @@ export class App {
 		show_range: false,
 		show_xtreme_anoms: true,
 		show_xtreme_fleets: true,
+		ship_scaling: true,
 		debug: false,
 		ai: true,
 		bg_bright: 1.0,

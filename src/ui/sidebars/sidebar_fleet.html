@@ -4,69 +4,69 @@
 	<!-- FLEET DISPLAY MODE -->
 	<div class="fleet" if.bind="mode == 'fleet' || mode == 'awaiting_star_click'">
 		<h2 css="color: ${fleet.ui_color};">${fleet.owner.name} Fleet #${fleet.id}</h2>
-		<template containerless if.bind="app.options.see_all || fleet.owner.is_player">
-			
-			<p style="font-size: 150%;" class="big" if.bind="fleet.mission">On Mission. Back in [${fleet.mission.time}] turns.</p>
-			<p style="" class="big topless" if.bind="!fleet.mission">
-				<span if.bind="fleet.star">@${fleet.star.name}</span>
-				<span if.bind="fleet.dest">
-					<span>➠</span> ${fleet.dest.name}
-					<span class="bold" style="color: #FF9F00;">
-						${fleet.dest_line_length / fleet.speed | ceil} turn${(fleet.dest_line_length / fleet.speed <= 1) ? '' : 's' }
-					</span>
+		
+		<p style="font-size: 150%;" class="big" if.bind="fleet.mission">On Mission. Back in [${fleet.mission.time}] turns.</p>
+		
+		<p style="" class="big topless" if.bind="!fleet.mission">
+			<span if.bind="fleet.star">@${fleet.star.name}</span>
+			<span if.bind="fleet.dest && (app.options.see_all || fleet.owner.is_player)">
+				<span>➠</span> ${fleet.dest.name}
+				<span class="bold" style="color: #FF9F00;">
+					${fleet.dest_line_length / fleet.speed | ceil} turn${(fleet.dest_line_length / fleet.speed <= 1) ? '' : 's' }
 				</span>
-			</p>
-			<p>
-				<b style="color: #F33;" show.bind="fleet.fp">⚔${fleet.fp_remaining} / ${fleet.fp}&nbsp;</b>
-				<b style="color: #AEA;" show.bind="fleet.research">⚛${fleet.research}&nbsp;</b>
-				<b style="color: #FF9F00;" show.bind="fleet.troops">☠${fleet.troops}&nbsp;</b>
-				<b style="color: #FF0;" show.bind="can_colonize">⚑&nbsp;</b>
+			</span>
+		</p>
+		
+		<p>
+			<b style="color: #F33;" show.bind="fleet.fp">⚔${fleet.fp_remaining} / ${fleet.fp}&nbsp;</b>
+			<b style="color: #AEA;" show.bind="fleet.research">⚛${fleet.research}&nbsp;</b>
+			<b style="color: #FF9F00;" show.bind="fleet.troops">☠${fleet.troops}&nbsp;</b>
+			<b style="color: #FF0;" show.bind="can_colonize">⚑&nbsp;</b>
+		</p>
+		
+		<!-- local anomoly research info -->
+		<p if.bind="fleet.star && !fleet.dest && fleet.star.objtype == 'anom' && (app.options.see_all || fleet.owner.is_player)">
+			Anomaly Research: ${(app.game.turn_num*0) + fleet.star.AmountResearched( fleet.owner ) / fleet.star.size | percent}% 
+			<progress value.bind="(app.game.turn_num*0) + fleet.star.AmountResearched( fleet.owner ) / fleet.star.size" />
+		</p>
+			
+		<!-- enemy fleet attack option --> 
+		<p class="button_rack button_rack_fill" if.bind="!fleet.owner.is_player && fleet.star && playerHasLocalFleet">
+			<button class="alt" click.delegate="AttackTargetWithLocalFleet()">ATTACK</button>
+		</p>
+		
+		<!-- show fleet actions if not on a deep space mission -->
+		<template containerless if.bind="!fleet.mission && (fleet.owner.is_player || app.options.see_all)">
+			<p class="msg" style="font-weight:bold; color: #FAA;">
+				<span show.bind="can_send==2">Right-click a star to move fleet</span>&nbsp;
 			</p>
 			
-			<!-- local anomoly research info -->
-			<p if.bind="fleet.star && !fleet.dest && fleet.star.objtype == 'anom'">
-				Anomaly Research: ${(app.game.turn_num*0) + fleet.star.AmountResearched( fleet.owner ) / fleet.star.size | percent}% 
-				<progress value.bind="(app.game.turn_num*0) + fleet.star.AmountResearched( fleet.owner ) / fleet.star.size" />
-			</p>
-				
-			<!-- enemy fleet attack option --> 
-			<p class="button_rack button_rack_fill" if.bind="!fleet.owner.is_player && fleet.star && playerHasLocalFleet">
-				<button class="alt" click.delegate="AttackTargetWithLocalFleet()">ATTACK</button>
+			<!-- Fleet Actions -->
+			<p class="button_rack button_rack_fill">
+				<button click.delegate="ClickColonize()" if.bind="can_colonize" class="${can_colonize==2 ? 'alt' : 'ghost'}">COLONIZE</button>
+				<button click.delegate="ClickChooseMission()" if.bind="can_research" class="${can_research==2 ? 'alt' : 'ghost'}">MISSION</button>
+				<button click.delegate="ClickTransferTroops()" if.bind="can_pickup_troops || can_drop_troops" >TROOPS</button>
+				<button click.delegate="ClickAttack()" class="alt" if.bind="app.options.see_all && fleet.fp_remaining && fleet.star && fleet.star.fleets.length > 1"">ATTACK</button>
+				<button click.delegate="ClickBomb()" if.bind="can_bomb && app.options.see_all" class="${can_bomb==2 ? 'alt' : 'ghost'}">BOMBARD</button>
+				<button click.delegate="ClickInvade()" if.bind="can_invade && app.options.see_all" class="${can_invade==2 ? 'alt' : 'ghost'}" >INVADE</button>
 			</p>
 			
-			<!-- show fleet actions if not on a deep space mission -->
-			<template containerless if.bind="!fleet.mission && (fleet.owner.is_player || app.options.see_all)">
-				<p class="msg" style="font-weight:bold; color: #FAA;">
-					<span show.bind="can_send==2">Right-click a star to move fleet</span>&nbsp;
-				</p>
-				
-				<!-- Fleet Actions -->
-				<p class="button_rack button_rack_fill">
-					<button click.delegate="ClickColonize()" if.bind="can_colonize" class="${can_colonize==2 ? 'alt' : 'ghost'}">COLONIZE</button>
-					<button click.delegate="ClickChooseMission()" if.bind="can_research" class="${can_research==2 ? 'alt' : 'ghost'}">MISSION</button>
-					<button click.delegate="ClickTransferTroops()" if.bind="can_pickup_troops || can_drop_troops" >TROOPS</button>
-					<button click.delegate="ClickAttack()" class="alt" if.bind="app.options.see_all && fleet.fp_remaining && fleet.star && fleet.star.fleets.length > 1"">ATTACK</button>
-					<button click.delegate="ClickBomb()" if.bind="can_bomb && app.options.see_all" class="${can_bomb==2 ? 'alt' : 'ghost'}">BOMBARD</button>
-					<button click.delegate="ClickInvade()" if.bind="can_invade && app.options.see_all" class="${can_invade==2 ? 'alt' : 'ghost'}" >INVADE</button>
-				</p>
-				
-				<!-- Ship Selection --> 
-				<p class="button_rack button_rack_fill" if.bind="fleet.owner.is_player">
-					<button click.delegate="ClickClose()" class="" >CLOSE</button>
-					<button click.delegate="SelectAll()" class="${num_selected==fleet.ships.length ? 'ghost' : ''}">ALL</button>
-					<button click.delegate="SelectNone()" class="${num_selected ? '' : 'ghost'}">NONE</button>
-					<button click.delegate="SelectInvert()" class="${num_selected ? '' : 'ghost'}">INVERT</button>
-					<button click.delegate="ClickScrap()" class="${num_selected ? '' : 'ghost'}" >SCRAP</button>
+			<!-- Ship Selection --> 
+			<p class="button_rack button_rack_fill" if.bind="fleet.owner.is_player">
+				<button click.delegate="ClickClose()" class="" >CLOSE</button>
+				<button click.delegate="SelectAll()" class="${num_selected==fleet.ships.length ? 'ghost' : ''}">ALL</button>
+				<button click.delegate="SelectNone()" class="${num_selected ? '' : 'ghost'}">NONE</button>
+				<button click.delegate="SelectInvert()" class="${num_selected ? '' : 'ghost'}">INVERT</button>
+				<button click.delegate="ClickScrap()" class="${num_selected ? '' : 'ghost'}" >SCRAP</button>
 <!-- 					<span>${num_selected}/${fleet.ships.length}</span> -->
-				</p>
-			
-			</template>
-			
+			</p>
 		</template>
 		
+		
+		
 		<!-- ship list -->
-		<div class="shipgrid">
-			<div class="ship ${ship.selected ? 'selected' : ''} health_${ship.health_class}" click.delegate="SelectShip(ship)" repeat.for="ship of fleet.ships" >
+		<div class="shipgrid ${app.options.ship_scaling ? 'dynasize' : ''}">
+			<div class="ship ${ship.selected ? 'selected' : ''} health_${ship.health_class} size_${ship.bp.sizeclass}" click.delegate="SelectShip(ship)" repeat.for="ship of fleet.ships" >
 				<p class=" top">
 					<span>${ship.bp.colonize ? '🅲' : ''} ${ship.bp.research ? '🆁' : ''}</span>
 					<span>${'🟊'.repeat(ship.xplevel)}</span>
@@ -74,9 +74,7 @@
 				</p>
 				<img src.one-time="ship.bp.img" />
 				<p class="center">
-					<span>${ship.bp.hull}</span> / 
-					<span>${ship.bp.armor}</span> /
-					<span>${ship.bp.shield}</span>
+					<span>${ship.bp.hull}</span>&nbsp;/&nbsp;<span>${ship.bp.armor}</span>&nbsp;/&nbsp;<span>${ship.bp.shield}</span>
 				</p>
 				<progress if.bind="ship.armor" max="100" value="${((ship.armor / ship.bp.armor)*100)|round}" class="${ship.health_class}"></progress>
 				<progress if.bind="!ship.armor" max="100" value="${((ship.hull / ship.bp.hull)*100)|round}" class="${ship.health_class}"></progress>

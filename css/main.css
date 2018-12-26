@@ -2222,22 +2222,16 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 .shipgrid {
 	display: flex;
 	flex-flow: row wrap;
-/* 	justify-content: space-between; */
-/* 	align-items: stretch; */
 	clear:right;
 	}
 	
 .shipgrid .ship {
-/* 	background-color: #000; */
-/* 	border: #444 solid 1px; */
 	border: 1px solid transparent;
 	border-radius: 0.5em;
 	padding: 0.25em;
 	box-sizing: border-box;
 	margin: 0.25em;
 	flex: 1;
-/* 	height: 100px; */
-	width: 30%;
 	text-align:center;
 	/* the data inside each box is also controlled by flexbox */
 /*	display: flex;
@@ -2309,11 +2303,39 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	}	
 .shipgrid .ship IMG {
 	height: 70px;
-	max-height: 70px;
-/* 	max-width: 100%; */
+	width: 60px;
+	object-fit: contain;
 	margin: 0 auto;
-/* 	width: 100%; */
-/* 	transform: rotate(-90deg); */
+	}
+	
+/* dynamic image sizing based on ship size class */
+.shipgrid.dynasize .ship IMG {
+	height: 300px;
+	width: 300px;
+	}
+.shipgrid.dynasize .ship.size_A IMG {
+	height: 70px;
+	width: 35px;
+	}
+.shipgrid.dynasize .ship.size_B IMG {
+	height: 70px;
+	width: 55px;
+	}
+.shipgrid.dynasize .ship.size_C IMG {
+	height: 100px;
+	width: 85px;
+	}
+.shipgrid.dynasize .ship.size_D IMG {
+	height: 125px;
+	width: 105px;
+	}
+.shipgrid.dynasize .ship.size_E IMG {
+	height: 175px;
+	width: 150px;
+	}
+.shipgrid.dynasize .ship.size_F IMG {
+	height: 225px;
+	width: 200px;
 	}
 	
 .shipgrid .ship progress[value] {

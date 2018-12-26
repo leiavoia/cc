@@ -881,11 +881,8 @@ export default class Planet {
 		let had_prev_acct = this.star.Acct(this.owner);
 		this.owner.planets.push( this );
 		this.star.UpdateOwnershipTitleColorCSS();
-		// when a planet is settled, we have to refactor constellations, if any.
-		// start by finding all connected systems to this one.
 		if ( !had_prev_acct ) { 
-			this.star.AddAccount( this.owner );
-			// Constellation.Refactor( this.owner ); 
+			this.star.AddAccount( this.owner ); 
 			}
 		this.owner.RecalcEmpireBox();	
 		this.ui_color = `rgb( ${this.owner.color_rgb[0]}, ${this.owner.color_rgb[1]}, ${this.owner.color_rgb[2]} )` ;
