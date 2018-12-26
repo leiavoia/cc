@@ -126,7 +126,7 @@ export default class Game {
 		}
 		
 	AnomCompleted( data ) { // data contains at `anom`
-		if ( data.fleet.owner == this.myciv ) { 
+		if ( data.fleet.owner == this.myciv && app.options.notify.anom ) { 
 			this.app.AddNote(
 				'neutral',
 				data.anom.name,
@@ -436,7 +436,7 @@ export default class Game {
 					// if the fleet arrived, mark the star as explored to help the UI
 					if ( f.owner == this.myciv && f.star && !f.dest && !f.star.explored ) { 
 						f.star.explored = true;
-						if ( this.app.options.announce_scouted_stars && f.star.objtype == 'star' ) { 
+						if ( this.app.options.notify.explore && f.star.objtype == 'star' ) { 
 							// count habitable systems
 							let goods = 0;
 							f.star.planets.forEach( (p) => {if (!p.owner && p.Habitable(f.owner.race)) { goods++; }} )
@@ -880,14 +880,16 @@ export default class Game {
 								;
 								}
 							if ( max_range > dist ) { // avoid sqrt
-								if ( civ1 == this.app.game.myciv && !civ1.InRangeOfCiv( civ2 ) ) { 
-									let app = this.app;
-									this.app.AddNote(
-										'good',
-										`Contact!`,
-										`We have received communication signals from an alien civilization called the <b>"${civ2.name}"</b>`,
-										function(){app.SwitchMainPanel( 'audience', civ2, {is_greeting:true}, true );}
-										);
+								if ( this.app.options.notify.contact ) { 
+									if ( civ1 == this.app.game.myciv && !civ1.InRangeOfCiv( civ2 ) ) { 
+										let app = this.app;
+										this.app.AddNote(
+											'good',
+											`Contact!`,
+											`We have received communication signals from an alien civilization called the <b>"${civ2.name}"</b>`,
+											function(){app.SwitchMainPanel( 'audience', civ2, {is_greeting:true}, true );}
+											);
+										}
 									}
 								civ1.SetInRangeOfCiv( civ2, true );
 								continue compare_civ2_loop;
@@ -896,12 +898,14 @@ export default class Game {
 						}
 					}
 				// lost contact notice
-				if ( civ1 == this.app.game.myciv && civ1.InRangeOfCiv( civ2 ) ) { 
-					this.app.AddNote(
-						'bad',
-						`Lost Contact`,
-						`We have lost contact with the ${civ2.name}`
-						);
+				if ( this.app.options.notify.contact_lost ) { 
+					if ( civ1 == this.app.game.myciv && civ1.InRangeOfCiv( civ2 ) ) { 
+						this.app.AddNote(
+							'bad',
+							`Lost Contact`,
+							`We have lost contact with the ${civ2.name}`
+							);
+						}
 					}
 				// found nothing in range
 				civ1.SetInRangeOfCiv( civ2, false );

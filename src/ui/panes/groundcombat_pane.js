@@ -88,7 +88,7 @@ export class GroundCombatPane {
 			this.last_turnlog = null; // ends hiliting
 			this.FormatResolutionLabel();
 			// note successfull invasions
-			if ( this.combat.winner == 'ATTACKER' ) { 
+			if ( this.combat.winner == 'ATTACKER' && this.app.options.notify.combat ) { 
 				if ( this.combatdata.attacker.owner.is_player ) { 
 					this.app.AddNote(
 						'good',

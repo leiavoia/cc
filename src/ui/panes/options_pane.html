@@ -1,42 +1,50 @@
 <template>
-<!--	<require from="./converters/percent"></require>
-	<require from="./converters/round"></require>-->
-
 	<div id="options_pane" class="pane">
-		<p style="float:right;"><a href="#"  click.delegate="ClosePanel()" class="button big">CLOSE</a></p>
-		<h2>Options</h2>
+		<p style="float:right;"><button click.delegate="ClosePanel()" class="big">CLOSE</button></p>
+		<h1>Options</h1>
 		
-		<h3>Dim Unexplored Stars</h3>
-		<p class="button_rack">
-			<a href="#" click.delegate="app.ToggleOption('dim_unexplored')" class="button ${app.options.dim_unexplored ? 'alt' : 'cool'}">ON</a>
-			<a href="#" click.delegate="app.ToggleOption('dim_unexplored')" class="button ${app.options.dim_unexplored ? 'cool' : 'alt'}">OFF</a>
-		</p>
+		<h2>UI</h2>
 		
-		<h3>Show Sector Lines</h3>
+		<p><button click.delegate="app.ToggleOption('dim_unexplored')" class="${app.options.dim_unexplored ? 'alt' : 'cool'}">
+			Dim Unexplored Stars
+		</button></p>
+		<p><button click.delegate="app.ToggleOption('show_sectors')" class="${app.options.show_sectors ? 'alt' : 'cool'}">
+			Show Sector Lines
+		</button></p>
+		<p><button click.delegate="app.ToggleOption('see_all')" class="${app.options.see_all ? 'alt' : 'cool'}">
+			See Everything (Debug)
+		</button></p>
+		<p><button click.delegate="app.ToggleOption('show_range')" class="${app.options.show_range ? 'alt' : 'cool'}">
+			Show Ship Range Circles
+		</button></p>
+
 		<p class="button_rack">
-			<a href="#" click.delegate="app.ToggleOption('show_sectors')" class="button ${app.options.show_sectors ? 'alt' : 'cool'}">ON</a>
-			<a href="#" click.delegate="app.ToggleOption('show_sectors')" class="button ${app.options.show_sectors ? 'cool' : 'alt'}">OFF</a>
-		</p>
-		
-		<h3>See Everything (Debug)</h3>
-		<p class="button_rack">
-			<a href="#" click.delegate="app.ToggleOption('see_all')" class="button ${app.options.see_all ? 'alt' : 'cool'}">ON</a>
-			<a href="#" click.delegate="app.ToggleOption('see_all')" class="button ${app.options.see_all ? 'cool' : 'alt'}">OFF</a>
-		</p>
-		
-		<h3>Show Ship Range Circles</h3>
-		<p class="button_rack">
-			<a href="#" click.delegate="app.ToggleOption('show_range')" class="button ${app.options.show_range ? 'alt' : 'cool'}">ON</a>
-			<a href="#" click.delegate="app.ToggleOption('show_range')" class="button ${app.options.show_range ? 'cool' : 'alt'}">OFF</a>
-		</p>
-		
-		<h3>Background Brightness</h3>
-		<p class="button_rack">
+			<b>Background Brightness</b><br/>
 			<input id="bg_bright" type="range" min="0.0" max="1.0" step="0.01" value.bind="app.options.bg_bright" /> 
 		</p>
 		
+		
+		<h2>Notifications</h2>
+		<p><button click.delegate="app.ToggleNotification('explore')" class="${app.options.notify.explore ? 'alt' : 'cool'}">
+			New star system explored
+		</button></p>
+		<p><button click.delegate="app.ToggleNotification('settle')" class="${app.options.notify.settle ? 'alt' : 'cool'}">
+			Planet settled
+		</button></p>
+		<p><button click.delegate="app.ToggleNotification('contact')" class="${app.options.notify.contact ? 'alt' : 'cool'}">
+			Civilization contacted
+		</button></p>
+		<p><button click.delegate="app.ToggleNotification('lost_contact')" class="${app.options.notify.lost_contact ? 'alt' : 'cool'}">
+			Civilization contact lost
+		</button></p>
+		<p><button click.delegate="app.ToggleNotification('research')" class="${app.options.notify.research ? 'alt' : 'cool'}">
+			Technology researched
+		</button></p>
+		<p><button click.delegate="app.ToggleNotification('anom')" class="${app.options.notify.anom ? 'alt' : 'cool'}">
+			Anomaly researched
+		</button></p>
+		<p><button click.delegate="app.ToggleNotification('combat')" class="${app.options.notify.combat ? 'alt' : 'cool'}">
+			Ground combat resolution
+		</button></p>
 	</div>
-
-
-
 </template>

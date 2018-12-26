@@ -5,6 +5,7 @@ export class OptionsPane {
 		}
 
 	 ClosePanel() {
+		this.app.SaveOptions();
 		this.app.CloseSideBar();
 		this.app.CloseMainPanel();
 		}

@@ -34,9 +34,19 @@ export class App {
 		show_xtreme_anoms: true,
 		show_xtreme_fleets: true,
 		debug: false,
-		announce_scouted_stars: false,
 		ai: true,
-		bg_bright: 1.0
+		bg_bright: 1.0,
+		// notifications to bug player with.
+		// you can also just set notify to boolean to en/disable all
+		notify: { 
+			explore: false,
+			settle: false,
+			contact: true,
+			lost_contact: true,
+			research: false,
+			combat: true,
+			anom: true
+			}
 		};
 	
 	ResetEverything() { 
@@ -62,6 +72,7 @@ export class App {
 		
 	constructor() {
 		window.document.title = `Constellation Control v.${this.version}`;
+		this.LoadOptions();
 // 		this.state = 'title';
 // 		return;
 		// --------\/-- [!]DEBUG SHORTCUT --\/---------------------
@@ -101,10 +112,36 @@ export class App {
 		
 		}
 		
+	ToggleNotification( o ) { 
+		this.options.notify[o] = this.options.notify[o] ? false : true;
+		this.SaveOptions();
+		}
+		
 	ToggleOption( o ) { 
 		this.options[o] = this.options[o] ? false : true;
+		this.SaveOptions();
 		}
 
+	SaveOptions() { 
+		window.localStorage.setItem( 
+			'options',
+			JSON.stringify(this.options)
+			);
+		}
+		
+	LoadOptions() { 
+		try { 
+			let json = window.localStorage.getItem( 'options' );
+			if ( json ) { 
+				json = JSON.parse( json );
+				if ( json ) { this.options = json; }
+				}
+			}
+		catch ( ex ) {
+			console.log('could not load options');	
+			}
+		}
+		
 	// can be a Star, Planet, Fleet, or an x/y pair: {x:100,y:100}
 	FocusMap( obj, snap = false ) { 
 		if ( this.state == 'play' ) { 
@@ -207,6 +244,8 @@ export class App {
 	// content: optional, HTML allowed
 	// onclick: callback function. optional.
 	AddNote( type, title = null, content = null , onclick = null ) {
+		// notes can be totally disabled
+		if ( this.options.notify === false ) { return; }
 		this.notes.push({ type:type, title:title, content:content, onclick:onclick });
 		}
 	// removes the note by default. executes onclick callback if set.

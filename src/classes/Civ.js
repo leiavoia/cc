@@ -33,6 +33,12 @@ export default class Civ {
 		is_monster: false, // true for space monsters. changes some UI formating.
 		};
 	
+	// AI stuff
+	ai = { 
+		objectives: [],
+		priorities: [] // TODO
+		};
+		
 	power_score = 0;
 	
 	homeworld = null; // a Planet // TODO // necessary?
@@ -217,7 +223,7 @@ export default class Civ {
 						}
 					}
 				// note to player
-				if ( app.game.myciv == this ) { 
+				if ( app.game.myciv == this && app.options.notify.research ) { 
 					app.AddNote(
 						'good',
 						`${this.tech.current_project.node.name} completed.`,
@@ -490,6 +496,10 @@ export default class Civ {
 		return this.power_score;
 		}
 		
+	AI_EvaluateObjectives() { 
+	
+		}
+		
 	TurnAI( app ) {
 		// build a list of targets, sorted by distance
 		let targets = [];
@@ -521,8 +531,8 @@ export default class Civ {
 									if ( !f.ships.length ) { f.Kill(); }
 									else { f.FireOnUpdate(); }
 									// i'm me?
-									if ( this == app.game.myciv ) { 
-// 										app.AddNote( 'good',`${p.name} Settled`,'',function(){app.FocusMap(p);});	
+									if ( this == app.game.myciv && app.options.notify.settle ) { 
+										app.AddNote( 'good',`${p.name} Settled`,'',function(){app.FocusMap(p);});	
 										}
 									break next_ship;
 									}
