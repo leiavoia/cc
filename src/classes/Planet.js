@@ -796,11 +796,11 @@ export default class Planet {
 		let score = this.score;
 		// adaptation
 		score += this.Adaptation( civ.race ) * 3; 
-		// distance from emperical center
+		// distance from emperical center (not actually that important)
 		let bx = civ.empire_box.x1 + ( ( civ.empire_box.x2 - civ.empire_box.x1 ) * 0.5 );
 		let by = civ.empire_box.y1 + ( ( civ.empire_box.y2 - civ.empire_box.y1 ) * 0.5 );
 		let dist = utils.DistanceBetween( this.star.xpos, this.star.ypos, bx, by );
-		score += ( 1 / dist ) * 7000; // not actually that important
+		if ( dist ) { score += ( 1 / dist ) * 7000; }
 		// population	
 		score += this.total_pop * 0.1;
 		// local economy

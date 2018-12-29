@@ -36,6 +36,7 @@ export default class Civ {
 	ai = { 
 		objectives: [],
 		priorities: [], // TODO
+		threats: [], // fleets
 		needs: { 
 			colony_ships: 0,
 			combat_ships: 0,
@@ -673,7 +674,84 @@ export default class Civ {
 			}
 		}
 		
-	TurnAI( app ) {
+	AI_EvaluateValuesAndThreats( app ) { 
+		// reset some stats
+		this.ai.threats = [];
+		for ( let p of this.planets ) { 
+			let acct = p.star.accts.get(this);
+			acct.ai.value = 0;
+			acct.ai.defense = 0;
+			acct.ai.threat = 0;
+			}
+		// reevaluate values and threats
+		for ( let p of this.planets ) { 
+			let star_already_evaluated = p.star.accts.get(this).ai.value != 0;
+			// value
+			p.ai_value = p.ValueTo(this);
+			p.star.accts.get(this).ai.value += p.ai_value;
+			// defense
+			let f = p.OwnerFleet();
+			if ( f ) { p.star.accts.get(this).ai.defense = f.fp; } // firepower!
+			// threats, if not already evaluated
+			if ( !star_already_evaluated ) { 
+				for ( let c of app.game.galaxy.civs ) { 
+					if ( c == this ) { continue; } 
+					// tech note: monsters show up in the civ list, 
+					// but have no planets to calculate range.
+					if ( !c.InRangeOfCiv( this ) && c.planets.length ) { continue; }
+					// TODO: factor in diplomatic situation
+					for ( let f of c.fleets ) { 
+						if ( f.killme ) { continue; }
+						if ( !f.fp ) { continue; }
+						let is_a_threat = false;
+						let fastrange = 1; // use later
+						// fleets en route - use their destination
+						if ( f.dest ) { 
+							// WARNING: we are assuming no subspace communications can reoute fleets in transit
+							fastrange = utils.DistanceBetween( f.dest.xpos, f.dest.ypos, p.star.xpos, p.star.ypos, true );
+							if ( fastrange < this.ship_range * this.ship_range ) {
+								is_a_threat = true;
+								}
+							}
+						// parked fleets nearby
+						else if ( f.star ) { 
+							fastrange = utils.DistanceBetween( f.star.xpos, f.star.ypos, p.star.xpos, p.star.ypos, true );
+							if ( fastrange < this.ship_range * this.ship_range ) {
+								is_a_threat = true;
+								}
+							}
+						// fleet is considered a threat - determine how much
+						if ( is_a_threat ) { 
+							let threat = f.fp;
+							// fleets parked on me
+							if ( f.star == p ) { threat = f.fp; }
+							// fleets en route to me
+							else if ( f.dest == p ) { threat = f.fp; }
+							// fleets in the neighborhood
+							else {
+								let range_mod = 1 - ( fastrange / (this.ship_range * this.ship_range));
+								// monsters are always a threat
+								if ( f.owner.race.is_monster ) { 
+									threat = f.fp * range_mod;
+									}
+								else { 
+									threat = f.fp * range_mod * 0.25;
+									}
+								}
+							p.star.accts.get(this).ai.threat += threat;
+							this.ai.threats.push(f);
+// 							if ( p.owner == app.game.myciv ) { 
+// 								console.log(`${f.owner.name} fleet #${f.id} is a threat to ${p.star.name} [${threat}]`);
+// 								}
+							}
+						}
+					}
+				}
+			}	
+		}
+		
+	TurnAI( app ) { 
+		this.AI_EvaluateValuesAndThreats(app);
 		this.AI_EvaluateObjectives(app);
 		this.AI_Planets(app);
 		}

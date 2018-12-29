@@ -55,9 +55,13 @@
 							<use xlink:href="#icon-transport"></use>
 						</svg>
 						<span class="icon icon-transport" if.bind="f.owner.race.is_monster">✾</span>
-					
 					</a>
 				</div>
+				<p if.bind="app.options.debug && star.settled_by[app.game.myciv.id]">
+					VAL: ${star.accts.get(app.game.myciv).ai.value | round:1},
+					THR: ${star.accts.get(app.game.myciv).ai.threat | round}, 
+					DEF: ${star.accts.get(app.game.myciv).ai.defense | round}
+				</p>
 			</div>
 			
 			<!-- ANOMALIES -->
