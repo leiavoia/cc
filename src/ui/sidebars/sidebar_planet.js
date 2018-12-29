@@ -84,11 +84,6 @@ export class PlanetDetailPane {
 		this.app.CloseMainPanel();
 		}
 		
-	PressConstelButton() { 
-		this.app.SwitchSideBar( this.planet.star.Acct(this.planet.owner.id).constel );
-		this.app.CloseMainPanel();
-		}
-		
 	OpenDetailsPane() { 
 		this.app.SwitchMainPanel( 'planetinfo', this.planet );
 		}

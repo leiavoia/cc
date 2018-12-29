@@ -3,7 +3,6 @@
 import RandomName from '../util/RandomName';
 import * as utils from '../util/utils';
 import * as Tech from './Tech';
-import Constellation from './Constellation';
 import Planet from './Planet';
 import {Ship,ShipBlueprint} from './Ship';
 import {GroundUnit,GroundUnitBlueprint} from './GroundUnit';

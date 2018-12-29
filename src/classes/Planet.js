@@ -1,7 +1,6 @@
 import Star from './Star';
 import Hyperlane from './Hyperlane';
 import Fleet from './Fleet';
-import Constellation from './Constellation';
 import RandomPicker from '../util/RandomPicker';
 import RandomName from '../util/RandomName';
 import * as utils from '../util/utils';
@@ -17,11 +16,6 @@ export default class Planet {
 	star = null;
 	explored = false;
 	owner = false; // false indicates unowned. zero can be an index
-	// constellations are groups of connected stars of the same civ. 
-	// it's easier to put a link to the constellation on the indv colonies
-	// than to link it to the star, because contellations of different
-	// civs in the same star systems may overlap
-// 	constel = null;
 	name = 'UNKNOWN';
 	total_pop = 0;
 	pop = [];
@@ -39,9 +33,14 @@ export default class Planet {
 	temp = 0;
 	grav = 0;
 	physattr = [];
-	score = 0; // AI score of natural attributes
 	slots = [];
 	maxslots = 0;
+	
+	// AI ------------------------------------------------
+	score = 0; // AI score of natural attributes
+	ai_value = 0;
+	ai_threat = 0;
+	ai_defense = 0;
 	
 	// ECONOMY -------------------------------------------
 	tax_rate = 0.2;
@@ -814,8 +813,6 @@ export default class Planet {
 	// owner must be a civ object, not an index ID
 	Settle( owner ) {
 		
-		let had_prev_acct = this.star.Acct(owner);
-		
 		this.owner = owner;
 		this.total_pop = 0.5;
 		this.settled = true;
@@ -836,6 +833,7 @@ export default class Planet {
 		}
 		
 	BeConqueredBy( invader ) {
+		this.star.accts.get(this.owner).planets--;
 		let i = this.owner.planets.indexOf( this );
 		if ( i > -1 ) { this.owner.planets.splice( i, 1 ); } 
 		this.owner = invader;
@@ -846,10 +844,12 @@ export default class Planet {
 	// in case of a change in ownership, call this function to run 
 	// necessary housekeeping stuff
 	UpdateOwnership() { 
-		let had_prev_acct = this.star.Acct(this.owner);
 		this.owner.planets.push( this );
 		this.star.UpdateOwnershipTitleColorCSS();
-		if ( !had_prev_acct ) { 
+		if ( this.star.accts.has(this.owner) ) {
+			this.star.accts.get(this.owner).planets++;
+			}
+		else {
 			this.star.AddAccount( this.owner ); 
 			}
 		this.owner.RecalcEmpireBox();	
@@ -864,5 +864,18 @@ export default class Planet {
 			data.set(t.bp,v+1);
 			}
 		return data;
-		}		
+		}
+		
+	// owning civ's parked fleet
+	OwnerFleet() { 
+		if ( this.owner ) { 
+			for ( let f of this.star.fleets ) { 
+				if ( f.owner == this.owner && !f.dest ) { 
+					return f;
+					}
+				}
+			}
+		return null;
+		}
+		
 	}

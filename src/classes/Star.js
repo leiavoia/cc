@@ -1,6 +1,5 @@
 import Planet from './Planet';
 import Civ from './Civ';
-import Constellation from './Constellation';
 import Hyperlane from './Hyperlane';
 import RandomPicker from '../util/RandomPicker';
 import RandomName from '../util/RandomName';
@@ -17,7 +16,6 @@ export default class Star {
 	xpos = 0;
 	ypos = 0;
 	planets = [];
-	lanes = [];
 	fleets = [];
 	ownership_title_css = null;
 	settled = false; // set to true to tell the UI to do special stuff
@@ -58,64 +56,39 @@ export default class Star {
 		return false;
 		}
 		
-	ConnectLane( to, owner ) { 
-		let l = new Hyperlane( this, to, owner );
-		this.lanes.push(l);
-		to.lanes.push(l);
-		Constellation.Refactor( owner ); 	
-		return l;
+	// helper function returns the account of the civ.
+	// NOTE deprecated since we switched from civ_id to civ.
+	// prefer to just use `accts.get(civ)` because aurelia
+	// knows how to dynamically bind to that.
+	Acct( civ ) {
+		return this.accts.get(civ);
 		}
-// 	Disconnect( star ) { 
-// 		this.lanes.indexOf( star
-// 		}
-		
-	// helper function returns the account of the civ
-	Acct( civ_id ) {
-		civ_id = this.AccountConvertToCivID( civ_id );
-		return this.accts.get(civ_id);
-		}
-	AddAccount( civ_id ) {
-		civ_id = this.AccountConvertToCivID( civ_id );
-		if ( !this.accts.has( civ_id ) ) { 
-			let constel = new Constellation( this.name );
-			constel.AddStar(this);
-			this.accts.set( civ_id, {
-				constel: constel, // default. will get refactored by the planet.Settle()
-				time: Date.now(), // unix timestamp. used for naming constellations later on
-				econ: { 
-					need: 0,
-					have: 0,
-					export: 0,
-					reset: function () { 
-						this.need = 0;
-						this.have = 0;
-						this.export = 0;				
-						this.imported = 0;				
-						}
+	AddAccount( civ ) {
+		if ( !this.accts.has( civ ) ) { 
+			this.accts.set( civ, {
+				planets: 1,
+				ai: { 
+					threat: 0,
+					value: 0,
+					defense: 0,
 					}
 				});
 			}
 		}
 	// deletes if no more colonies in this system
-	DeleteAccount( civ_id ) { 
-		civ_id = this.AccountConvertToCivID( civ_id );
-		if ( this.accts.has( civ_id )  ) { 
+	DeleteAccount( civ ) { 
+		if ( this.accts.has( civ )  ) { 
 			let p = 0;
 			// how many planets do they have left? 
 			for ( let i =0; i < this.planets.length; i++ ) {
-				if ( this.planets[i].owner !== false && this.planets[i].owner.id == civ_id ) {
+				if ( this.planets[i].owner !== false && this.planets[i].owner == civ ) {
 					p++;
 					}
 				}
 			if ( p == 0 ) { 
-				this.accts.delete(civ_id);
+				this.accts.delete(civ);
 				}
 			}
-		}
-	AccountConvertToCivID( civ ) { 
-		if ( civ instanceof Civ ) { return civ.id; }
-		else if ( Number.isInteger(civ) ) { return civ; }
-		else { return parseInt(civ); }
 		}
 		
 	UpdateOwnershipTitleColorCSS() {
