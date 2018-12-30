@@ -10,7 +10,6 @@ import {Ship,ShipBlueprint} from './Ship';
 export default class Galaxy {
 	fleets = []; // maps to Fleet.all_fleets
 	stars = [];
-	lanes = [];
 	civs = [];
 	anoms = [];
 	width = 2000;
@@ -80,67 +79,44 @@ export default class Galaxy {
 				}
 			}
 		}
-	
-	MakeDemo() {
-
-		// reset data
-		this.stars = [];
-		this.lanes = [];
-	
-		this.width = 1600;
-		this.height = 900;
-		this.age = 0.5;
-		
-		// git us some stars and planets
-		this.stars.push( Star.Random( 400, 150,  this.age ) );	
-		this.stars.push( Star.Random( 300, 450,  this.age ) );	
-		this.stars.push( Star.Random( 750, 415,  this.age ) );	
-		this.stars.push( Star.Random( 700, 175,  this.age ) );	
-		this.stars.push( Star.Random( 540, 600,  this.age ) );	
 			
-		this.MakeCivs(3);
-		this.AssignHomeWorlds();
-		
-		}
-		
-	MakeExploreDemo() {
+	ThreatDemo( num_civs=2 ) {
 
-		// reset data
-		this.stars = [];
-		this.lanes = [];
-	
-		this.width = 1500;
-		this.height = 1500;
-		this.age = 0.5;
+		this.MakeCivs( num_civs );
 		
-		// git us some stars and planets
-		this.stars.push( Star.Random( 400, 150,  this.age ) );	
-		this.stars.push( Star.Random( 300, 450,  this.age ) );	
-		this.stars.push( Star.Random( 750, 415,  this.age ) );	
-		this.stars.push( Star.Random( 700, 175,  this.age ) );	
-		this.stars.push( Star.Random( 540, 600,  this.age ) );	
-		
-		this.MakeCivs(1);
-		
-		// settle one planet
-		outer:
+		// find stars with planets
+		let stars = [];
 		for ( let s of this.stars ) { 
 			if ( s.planets.length ) { 
-				for ( let p of s.planets ) { 
-					p.Settle( this.civs[0] );
-					s.explored = true;
-					break;
-					}
-				break;
+				stars.push(s);
 				}
 			}
-		}	
+		// settle some planets
+		stars.shuffle();
+		for ( let c of this.civs ) { 
+			// homeworld
+			let s = stars.pop();
+			let p = s.planets[0];
+			p.Settle( c );
+			if ( c.id == 0 ) { s.explored = true; }
+			this.AssignStartingFleet( c, s );
+			c.homeworld = p;
+			// colonies
+			for ( let i=0; stars.length && i < 2; i++ ) { 
+				let next = stars.pop();
+				let p = next.planets[0];
+				p.Settle( c );
+				if ( c.id == 0 ) { next.explored = true; }
+				// defending fleet
+				this.CreateRandomFleet( c, next );
+				}
+			}
 		
+		return this.civs[0].homeworld.star;
+		}	
+			
 	AddExploreDemo( num_civs=1 ) {
 
-		// reset data
-		this.lanes = [];
-	
 		this.MakeCivs( num_civs );
 		
 		// settle some planets
@@ -197,14 +173,33 @@ export default class Galaxy {
 			new Ship( owner.ship_blueprints[4] ),
 			new Ship( owner.ship_blueprints[5] )
 			];
-		for ( let i = 0; i < 16; i++ ) { 
+		for ( let i = 0; i < 2; i++ ) { 
 			let ship = owner.ship_blueprints[6].Make();
 			ship.troops.push( 
 				owner.groundunit_blueprints[0].Make()
 				);
 			f.ships.push( ship );
 			}
+		f.ReevaluateStats();
+		f.SortShips();
+		return f;
+		}
+		
+	CreateRandomFleet( owner, star ) { 
+		let f = new Fleet( owner, star );
+		for ( let i = 0, max = utils.RandomInt(2,12); i < max; i++ ) { 
+			let which = utils.RandomInt(0,6);
+			let ship = owner.ship_blueprints[which].Make();
+			// add ground units
+			if ( which == 6 ) { 
+				ship.troops.push( 
+					owner.groundunit_blueprints[0].Make()
+					);
+				}
+			f.ships.push( ship );
+			}
 		f.ReevaluateStats();	
+		f.SortShips();
 		return f;
 		}
 	}

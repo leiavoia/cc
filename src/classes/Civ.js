@@ -504,6 +504,17 @@ export default class Civ {
 		return this.power_score;
 		}
 		
+	// reutrns list of star systems we have a colony in
+	MyStars() {
+		let systems = [];
+		for ( let p of this.planets ) { 
+			if ( systems.indexOf(p.star) == -1 ) {
+				systems.push(p.star);
+				}
+			}
+		return systems;
+		}
+		
 	// find a particular objective
 	AI_QueryObjectives( type, obj ) {
 		for ( let o of this.ai.objectives ) { 
@@ -522,7 +533,100 @@ export default class Civ {
 		}
 	
 	AI_Defend(app) {
-	
+		console.log(`DEFENSE AI ROUTINE ------{${this.name}}------`);
+		// find all threatened systems above some threshold
+		let systems = this.MyStars().filter( 
+			s => s.accts.get(this).ai.threat_norm > 0.1 
+			);
+		systems.sort( (a,b) => {
+			let threat_a = a.accts.get(this).ai.threat_norm;
+			let threat_b = b.accts.get(this).ai.threat_norm;
+			if ( threat_a > threat_b ) { return -1; }
+			if ( threat_a < threat_b ) { return 1; }
+			return 0;
+			});
+		for ( let s of systems ) { 
+			console.log( `:: ${s.name} @${s.accts.get(this).ai.threat_norm}` );
+			};
+		// find all fleets that can help defend
+		let helpers = [];
+		for ( let f of this.fleets ) { 
+			if ( !f.dest && f.fp && f.star && !f.killme && !f.mission ) { 
+				let acct = f.star.accts.get(this);
+				// don't peel off ships from high-value systems
+				// or systems already under significant threat
+				if ( acct.ai.threat * 0.5 > acct.ai.defense ) { continue; } 
+				helpers.push(f);
+				}
+			}
+		// sort fleets based on system threat level first
+		helpers.sort( (a,b) => {
+			// fleets on away missions need to come home
+			if ( a.star.owner != this ) { return -1; }
+			let threat_a = a.star.accts.get(this).ai.threat_norm;
+			let threat_b = b.star.accts.get(this).ai.threat_norm;
+			if ( threat_a > threat_b ) { return -1; }
+			if ( threat_a < threat_b ) { return 1; }
+			return 0;
+			});
+		// TRIAGE STRATEGY: peel ships off the least-threatened systems
+		// and send them to the most threatened systems.
+		if ( 1 ) { // TODO variable strategies
+			while ( systems.length && helpers.length ) { 
+				let star = systems.shift(); // most threatened
+				// as part of our defense rating, we need to factor in ships en route to battle.
+				// otherwise algorithm will just keep stripping more ships off other systems.
+				let fp = 0;
+				for ( let f of this.fleets ) { 
+					if ( ( f.dest == star || f.star == star ) && f.fp ) { 
+						fp += f.fp;
+						}
+					}
+				let fp_needed = star.accts.get(this).ai.threat - fp;
+				if ( fp_needed > 0 ) { 
+					console.log(`defense needed at ${star.name} (${star.accts.get(this).ai.threat_norm}). Short by ${fp_needed} FP. ${helpers.length} fleets can help.`);
+					while ( helpers.length && fp_needed ) { 
+						let helper = helpers.pop();
+						// already there?
+						if ( helper.star == star || helper.dest == star ) { continue; }
+						//
+						// TODO: don't turn back designated attack fleets unless
+						// things are going REALLY bad.
+						//
+						// if they need everything we've got, just reroute the entire fleet.
+						if ( fp_needed >= helper.fp ) {
+							console.log(`sending entire fleet #${helper.id}`);
+							helper.SetDest( star );
+							}
+						// otherwise, get some random ships
+						else {
+							console.log(`sending portion of fleet #${helper.id}`);
+							let ships_to_send = [];
+							for ( let i=helper.ships.length-1; i >= 0 && fp_needed > 0; i-- ) { 
+								let ship = helper.ships[i];
+								if ( ship.bp.fp ) { 
+									fp_needed -= ship.bp.fp;
+									ships_to_send.push(ship); // add 
+									helper.ships.splice( i, 1 ); // remove
+									}
+								}
+							if ( ships_to_send.length ) { 
+								let newfleet = new Fleet( helper.owner, helper.star );
+								newfleet.ships = ships_to_send;
+								newfleet.ReevaluateStats();
+								newfleet.SetDest( star );
+								}
+							if ( !helper.ships.length ) {
+								helper.Kill();
+								}
+							else {
+								helper.ReevaluateStats();
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 		
 	AI_Attack(app) {
@@ -682,18 +786,27 @@ export default class Civ {
 			acct.ai.value = 0;
 			acct.ai.defense = 0;
 			acct.ai.threat = 0;
+			acct.ai.threat_norm = 0;
 			}
+		// make a list of star systems while we're doing this
+		let starsystems = [];
+		let total_threat = 0;
+		let total_defense = 0;
 		// reevaluate values and threats
 		for ( let p of this.planets ) { 
-			let star_already_evaluated = p.star.accts.get(this).ai.value != 0;
+			let acct = p.star.accts.get(this);
+			let star_already_evaluated = acct.ai.value != 0;
 			// value
 			p.ai_value = p.ValueTo(this);
-			p.star.accts.get(this).ai.value += p.ai_value;
-			// defense
-			let f = p.OwnerFleet();
-			if ( f ) { p.star.accts.get(this).ai.defense = f.fp; } // firepower!
-			// threats, if not already evaluated
+			acct.ai.value += p.ai_value;
 			if ( !star_already_evaluated ) { 
+				// defense
+				let f = p.OwnerFleet();
+				if ( f ) { // firepower!
+					acct.ai.defense = f.fp; 
+					total_defense += f.fp;
+					}
+				// threats
 				for ( let c of app.game.galaxy.civs ) { 
 					if ( c == this ) { continue; } 
 					// tech note: monsters show up in the civ list, 
@@ -701,22 +814,22 @@ export default class Civ {
 					if ( !c.InRangeOfCiv( this ) && c.planets.length ) { continue; }
 					// TODO: factor in diplomatic situation
 					for ( let f of c.fleets ) { 
-						if ( f.killme ) { continue; }
-						if ( !f.fp ) { continue; }
+						if ( f.killme || f.mission || !f.fp ) { continue; }
 						let is_a_threat = false;
 						let fastrange = 1; // use later
+						let scanrange = 800*800; // don't care about targets outside 800px radius
 						// fleets en route - use their destination
 						if ( f.dest ) { 
 							// WARNING: we are assuming no subspace communications can reoute fleets in transit
 							fastrange = utils.DistanceBetween( f.dest.xpos, f.dest.ypos, p.star.xpos, p.star.ypos, true );
-							if ( fastrange < this.ship_range * this.ship_range ) {
+							if ( fastrange < this.ship_range * this.ship_range && fastrange < (scanrange) ) {
 								is_a_threat = true;
 								}
 							}
 						// parked fleets nearby
 						else if ( f.star ) { 
 							fastrange = utils.DistanceBetween( f.star.xpos, f.star.ypos, p.star.xpos, p.star.ypos, true );
-							if ( fastrange < this.ship_range * this.ship_range ) {
+							if ( fastrange < this.ship_range * this.ship_range && fastrange < (scanrange) ) {
 								is_a_threat = true;
 								}
 							}
@@ -729,16 +842,18 @@ export default class Civ {
 							else if ( f.dest == p ) { threat = f.fp; }
 							// fleets in the neighborhood
 							else {
-								let range_mod = 1 - ( fastrange / (this.ship_range * this.ship_range));
+								// graduate threat over 7 turn ETA
+								let range_mod = 1 + (7 - Math.min( 7, Math.ceil( fastrange / (f.speed * f.speed) ) ) ) / 7;
 								// monsters are always a threat
 								if ( f.owner.race.is_monster ) { 
-									threat = f.fp * range_mod;
+									threat = f.fp * range_mod * 0.2;
 									}
 								else { 
-									threat = f.fp * range_mod * 0.25;
+									threat = f.fp * range_mod * 0.1;
 									}
 								}
-							p.star.accts.get(this).ai.threat += threat;
+							acct.ai.threat += threat;
+							total_threat += threat;
 							this.ai.threats.push(f);
 // 							if ( p.owner == app.game.myciv ) { 
 // 								console.log(`${f.owner.name} fleet #${f.id} is a threat to ${p.star.name} [${threat}]`);
@@ -746,8 +861,17 @@ export default class Civ {
 							}
 						}
 					}
+				starsystems.push(p.star);
 				}
-			}	
+			}
+		// normalize threat level
+		if ( total_threat ) { 
+			for ( let s of starsystems ) {
+				let acct = s.accts.get(this);
+				acct.ai.threat_norm = acct.ai.threat / total_threat;
+				acct.ai.defense_norm = acct.ai.defense / total_defense;
+				}
+			}
 		}
 		
 	TurnAI( app ) { 

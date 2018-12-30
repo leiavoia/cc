@@ -69,6 +69,7 @@ export default class Star {
 				planets: 1,
 				ai: { 
 					threat: 0,
+					threat_norm: 0, // percentage of total threat
 					value: 0,
 					defense: 0,
 					}

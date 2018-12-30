@@ -57,10 +57,15 @@
 						<span class="icon icon-transport" if.bind="f.owner.race.is_monster">✾</span>
 					</a>
 				</div>
-				<p if.bind="app.options.debug && star.settled_by[app.game.myciv.id]">
-					VAL: ${star.accts.get(app.game.myciv).ai.value | round:1},
-					THR: ${star.accts.get(app.game.myciv).ai.threat | round}, 
-					DEF: ${star.accts.get(app.game.myciv).ai.defense | round}
+				<p if.bind="app.options.debug && star.settled_by[app.game.myciv.id]"
+					style="box-style: border-box; margin-left: -100%; margin-top: -92px; width: 300%; text-align:center;" 
+					>
+					<span style="color: #AFA;">VAL: ${star.accts.get(app.game.myciv).ai.value | round:1}</span>,&nbsp; 
+					<span style="color: #F66;">
+						THR: ${star.accts.get(app.game.myciv).ai.threat | round}
+						<b>(${star.accts.get(app.game.myciv).ai.threat_norm | round:2})</b>
+					</span>,&nbsp;
+					<span style="color: #3CF;">DEF: ${star.accts.get(app.game.myciv).ai.defense | round}</span>
 				</p>
 			</div>
 			
@@ -89,9 +94,6 @@
 				</div>
 			</template>
 			
-			<div repeat.for="lane of app.game.galaxy.lanes" class="hyperlane" css="left:${lane.x1}px; top:${lane.y1}px; width: ${lane.length}px; transform:  rotate(${lane.angle}deg) translateY(-5px); background-color: rgb( ${lane.color[0]}, ${lane.color[1]}, ${lane.color[2]}); ">
-			</div>
-		
 			<!-- FLEETS EN ROUTE -->
 			<template containerless repeat.for="f of app.game.galaxy.fleets" >
 				<!-- only display fleets en route -->

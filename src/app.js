@@ -81,12 +81,12 @@ export class App {
 		// create initial state
 		this.game.InitGalaxy();
 // 		this.ChangeState('title');
-		this.game.galaxy.Make( 6,6,20,0.5 );
+		this.game.galaxy.Make( 5,4,16,0.5 );
 		this.game.DeployVictoryIngredients();
-		let mystar = this.game.galaxy.AddExploreDemo( 8 );
+		let mystar = this.game.galaxy.ThreatDemo( 2 );
 		CrazyBox.AddGiantSpaceAmoeba(this);
 		CrazyBox.AddRedSpaceAmoeba(this);
-		CrazyBox.AddBlueSpaceAmoeba(this);
+		// CrazyBox.AddBlueSpaceAmoeba(this);
 		this.game.SetMyCiv( 0 ); // could switch using debug stuff
 		this.ChangeState('play');
 		this.hilite_star = mystar; // hint for playstate startup

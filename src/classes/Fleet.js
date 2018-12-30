@@ -314,9 +314,8 @@ export default class Fleet {
 	
 	AIWantToAttackFleet( fleet ) {
 		return false;
-		// TODO / AI HACK
-		// AI always fights, human player gets option
-		return !this.owner.is_player && this.fp && this.ships.length; // need guns to attack 
+// 		return this.fp_remaining > fleet.fp_remaining;
+// 		return !this.owner.is_player && this.fp && this.ships.length; // need guns to attack 
     	}
 	    
 	// any juicy planets?
@@ -410,6 +409,18 @@ export default class Fleet {
 				}
 			}
 		return report;
+		}
+		
+	SortShips() { 
+		this.ships.sort( (a,b) => {
+			if ( a.bp.fp > b.bp.fp ) { return -1; }
+			else if ( a.bp.fp < b.bp.fp ) { return 1; }
+			else if ( a.colonize && !b.colonize ) { return -1; }
+			else if ( !a.colonize && b.colonize ) { return 1; }
+			else if ( a.troops.length && !b.troops.length ) { return -1; }
+			else if ( !a.troops.length && b.troops.length ) { return 1; }
+			return 0;
+			});
 		}
 	}
 	
