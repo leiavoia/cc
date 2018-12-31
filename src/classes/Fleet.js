@@ -313,8 +313,8 @@ export default class Fleet {
 		}
 	
 	AIWantToAttackFleet( fleet ) {
-		return false;
-// 		return this.fp_remaining > fleet.fp_remaining;
+// 		return false;
+		return this.fp_remaining > fleet.fp_remaining;
 // 		return !this.owner.is_player && this.fp && this.ships.length; // need guns to attack 
     	}
 	    

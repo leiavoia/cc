@@ -35,7 +35,8 @@ export class App {
 		show_xtreme_fleets: true,
 		ship_scaling: true,
 		debug: false,
-		ai: true,
+		ai: true, // process the AI each turn
+		soak: true, // run the game without player involvement
 		bg_bright: 1.0,
 		// notifications to bug player with.
 		// you can also just set notify to boolean to en/disable all

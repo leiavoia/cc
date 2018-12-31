@@ -186,9 +186,6 @@ export default class Game {
 					}
 				}
 			
-			
-			
-			
 			// Planetary Economics
 			console.time('Planetary Econ');
 			for ( let s of this.galaxy.stars ) { 
@@ -246,8 +243,6 @@ export default class Game {
 							if ( s.inf < 1.0 ) { s.inf = 1.0 } 
 							}
 		
-		
-		
 						// grow/shrink economy
 						p.GrowEconomy();
             
@@ -258,9 +253,7 @@ export default class Game {
 						if ( p.GrowPop() ) { 
 // 							this.ShowDialog( 'Maximum Polulation Reached', p.name );
 							}
-							
-						// migration
-						
+													
 						// age the planet
 						p.AgePlanet();
 						
@@ -377,14 +370,13 @@ export default class Game {
 			
 			Signals.Send('turn', this.turn_num );
 			
-			if ( !this.CheckForVictory() ) { 
-				
-				// event queue needs the new turn number
-				this.ProcessEventCardQueue();
-				
-				this.PresentNextPlayerShipCombat();
-				
-				this.PresentNextPlayerGroundCombat();
+			if ( !this.CheckForVictory() ) { 				
+				if ( !this.app.options.soak ) { 
+					// event queue needs the new turn number
+					this.ProcessEventCardQueue();
+					this.PresentNextPlayerShipCombat();
+					this.PresentNextPlayerGroundCombat();
+					}
 				}
 				
 			} // foreach turn (in case of multiple).
@@ -422,17 +414,7 @@ export default class Game {
 				}
 			}
 		});
-// 		// sort all player-involved combats to the back
-// 		this.shipcombats.sort( (a,b) => {
-// 			if ( a.owner == this.myciv || b.owner == this.myciv ) { return 1; }
-// 			return 0;
-// 		});
-
-		// TODO sort out duplicates - lower CIV ID goes first (a-b, b-a)
-
-		// TODO: we need to make a separate list of "proposed" combats 
-		// for the player to accept or decline
-
+		
 		// Fight!
 		for ( let c = this.shipcombats.length-1; c >= 0; c-- ) { 
 			let sc = this.shipcombats[c];
@@ -442,7 +424,7 @@ export default class Game {
 				continue; 
 				}
 			// if fleet involves player, save for later
-			if ( sc.attacker.owner.is_player || sc.defender.owner.is_player ) { 
+			if ( (sc.attacker.owner.is_player || sc.defender.owner.is_player) && !this.app.options.soak ) { 
 				continue; 
 				}
 			// otherwise autoresolve in background
@@ -489,7 +471,7 @@ export default class Game {
 				continue; 
 				}
 			// if defender is player, save for later
-			if ( gc.planet.owner.is_player ) { 
+			if ( gc.planet.owner.is_player && !this.app.options.soak ) { 
 				continue; 
 				}
 			// otherwise autoresolve in background
@@ -520,6 +502,13 @@ export default class Game {
 		else if ( !sc.attacker.fp && !sc.defender.fp ) { 
 			this.PresentNextPlayerShipCombat();
 			return;
+			}
+		// if we are soaking, automate it
+		else if ( this.app.options.soak ) { 
+			let combat = new ShipCombat( sc.attacker, sc.defender, sc.planet );
+			combat.ProcessQueue( 100000, false ); // 1000 = fight to the death if possible
+			combat.End();
+			this.PresentNextPlayerShipCombat();		
 			}
 		// if player is the defender, present mandatory battle
 		else if ( sc.defender.owner.is_player ) { 
@@ -573,6 +562,12 @@ export default class Game {
 			this.PresentNextPlayerGroundCombat();
 			return;
 			}
+		// if we are soaking, automate it
+		else if ( this.app.options.soak ) { 
+			let combat = new GroundCombat( c.attacker, c.planet );
+			combat.Run( true ); // true = fight to the death
+			this.PresentNextPlayerGroundCombat();
+			}			
 		// if player is the defender, present mandatory battle
 		else if ( c.planet.owner.is_player ) { 
 			this.app.ShowDialog(
@@ -783,7 +778,6 @@ export default class Game {
 		this.app.sidebar_obj = null;
 		this.app.sidebar_mode = false;
 		// let there be light
-// 		this.galaxy = new Galaxy();
 		this.galaxy.Make( 20, 10, 65, Math.random() );
 		this.RefactorPlanetList();
 		this.DeployVictoryIngredients();
