@@ -355,6 +355,7 @@ body,html {
 	pointer-events: auto; /* capture click events */
 	}
 #layout_ui_center {
+	position:relative;
 	flex: 85;
 	overflow: hidden;
 	display:flex;
@@ -373,6 +374,17 @@ body,html {
 	/* allows click-though to map space when child elements are hidden */
 	pointer-events: none;
 	}
+#layout_ai_headsup { 
+	display: block; 
+	text-align: right; 
+	position: absolute; 
+	bottom: 1em; 
+	right: 1em; 
+	color: #3F3; 
+	font-size: 8pt; 
+	font-family: monospace;
+	}
+ 
 #layout_ui_content {
 	flex: 70;
 	overflow: auto;

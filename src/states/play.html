@@ -122,6 +122,7 @@
 
 	<div id="layout_ui_main">
 	
+		<!-- TOP VISOR -->
 		<div id="layout_ui_visor" class="fadeIn" if.bind="!app.main_panel_mode">
 			<span class="turn">TURN: ${app.game.turn_num}</span>
 			<span class="planets">PLANETS: ${app.game.myciv.planets.length}</span>
@@ -137,6 +138,19 @@
 		
 		<div id="layout_ui_center">
 		
+			<!-- AI DEBUG -->
+			<div id="layout_ai_headsup" if.bind="app.options.debug && !app.main_panel_mode">
+				needs.colony_ships: ${app.game.myciv.ai.needs.colony_ships|round}<br/>
+				needs.combat_ships: ${app.game.myciv.ai.needs.combat_ships|round}<br/>
+				needs.troop_ships: ${app.game.myciv.ai.needs.troop_ships|round}<br/>
+				needs.research_ships: ${app.game.myciv.ai.needs.research_ships|round}<br/>
+				needs.scout_ships: ${app.game.myciv.ai.needs.scout_ships|round}<br/>
+				needs.troops: ${app.game.myciv.ai.needs.troops|round}<br/>
+				needs.cash: ${app.game.myciv.ai.needs.cash|round}<br/>
+				needs.tech: ${app.game.myciv.ai.needs.tech|round}<br/>
+			</div>
+	
+			<!-- NEWS --> 
 			<div id="layout_ui_news" class="fadeIn" if.bind="!app.main_panel_mode">
 				<p><a href="#" class="button micro cool" click.delegate="app.ClearNotes()" if.bind="app.notes.length > 1">Clear Messages</a></p>
 				<div repeat.for="note of app.notes" class="${note.type} trekIn" click.trigger="app.ClickNote(note)">
@@ -146,6 +160,7 @@
 				</div>
 			</div>
 			
+			<!-- MAIN SUB-PANEL CONTENT -->
 			<div id="layout_ui_content" class="${app.main_panel_mode ? 'active trekIn' : 'trekOut'}">
 				<compose if.bind="app.main_panel_mode" 
 					model.bind="{app: app, obj: app.main_panel_obj, data: app.main_panel_data}"  
@@ -155,6 +170,7 @@
 
 		</div>
 
+		<!-- FOOTER -->
 		<div id="layout_ui_footer" class="fadeIn" if.bind="!app.main_panel_mode">
 			<a href="#" click.delegate="app.MapZoomIn()" class="button cool bold">+</a>
 			<a href="#" click.delegate="app.MapZoomOut()" class="button cool bold">-</a>
@@ -173,30 +189,31 @@
 			<a href="#" click.delegate="app.ToggleOption('ship_scaling')" class="button ${app.options.ship_scaling ? 'alt' : 'cool'}">DS</a>
 			<a href="#" click.delegate="app.state_obj.DramaticIntro()" class="button">✈</a>
 			<a href="#" click.delegate="app.game.DoEvent()" class="button">EVENT</a>
-<!-- 			<span if.bind="app.game.myciv.econ.mp_need_met < 1.0" class="bad">Not Enough Resources!</span> -->
 		</div>
 		
 	</div>
 
+	<!-- CONTENT SIDEBAR -->
 	<div id="layout_ui_side" class="trekIn" if.bind="app.sidebar_mode && app.sidebar_obj">		
 		<compose if.bind="app.sidebar_mode && app.sidebar_obj" model.bind="{app: app, obj: app.sidebar_obj}"  view-model="../ui/sidebars/sidebar_${app.sidebar_mode}" containerless></compose>
 	</div>
 	
+	<!-- RIGHT-SIDE BUTTON MENU BAR -->
 	<div id="layout_ui_nav" class="slideInRight">
 		<a href="#" id="nav_button_map" click.delegate="app.ReturnToMap()"><svg class="icon icon-night"><use xlink:href="#icon-night"></use></svg></a>
 		<a href="#" id="nav_button_galaxy" click.delegate="app.ChangeState('setup_new')" ><svg class="icon icon-black-1"><use xlink:href="#icon-black-1"></use></svg></a>
 		<a href="#" id="nav_button_planets" click.delegate="app.SwitchMainPanel('planets')"><svg class="icon icon-nature-1"><use xlink:href="#icon-nature-1"></use></svg></a>
-		<a href="#" id="nav_button_econ" click.delegate="app.SwitchMainPanel('econ')"><svg class="icon icon-coins-2"><use xlink:href="#icon-coins-2"></use></svg></a>
-		<a href="#" id="nav_button_gov" click.delegate="app.SwitchMainPanel('gov')"><svg class="icon icon-building"><use xlink:href="#icon-building"></use></svg></a>
-		<a href="#" id="nav_button_spy" click.delegate="app.SwitchMainPanel('spy')"><svg class="icon icon-medical"><use xlink:href="#icon-medical"></use></svg></a>
+		<a href="#" id="nav_button_econ" click.delegate="app.SwitchMainPanel('econ')"><svg class="icon icon-technology"><use xlink:href="#icon-technology"></use></svg></a>
+<!-- 		<a href="#" id="nav_button_gov" click.delegate="app.SwitchMainPanel('gov')"><svg class="icon icon-building"><use xlink:href="#icon-building"></use></svg></a> -->
+<!-- 		<a href="#" id="nav_button_spy" click.delegate="app.SwitchMainPanel('spy')"><svg class="icon icon-medical"><use xlink:href="#icon-medical"></use></svg></a> -->
 		<a href="#" id="nav_button_tech" click.delegate="app.SwitchMainPanel('tech')"><svg class="icon icon-tool"><use xlink:href="#icon-tool"></use></svg></a>
 		<a href="#" id="nav_button_diplo" click.delegate="app.SwitchMainPanel('diplo')"><svg class="icon icon-shapes-2"><use xlink:href="#icon-shapes-2"></use></svg></a>
 		<a href="#" id="nav_button_ship_des" click.delegate="app.SwitchMainPanel('shipdes')"><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
-		<a href="#" id="nav_button_fleets" click.delegate="app.SwitchMainPanel('fleets')"><svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg></a>
+		<a href="#" id="nav_button_fleets" click.delegate="app.SwitchMainPanel('fleets')"><svg class="icon icon-weather"><use xlink:href="#icon-weather"></use></svg></a>
 		<a href="#" id="nav_button_victory" click.delegate="app.ToggleOption('dim_unexplored')" ><svg class="icon icon-black"><use xlink:href="#icon-black"></use></svg></a>
 		<a href="#" id="nav_button_opt" click.delegate="app.SwitchMainPanel('options')" ><svg class="icon icon-gear"><use xlink:href="#icon-gear"></use></svg></a>
 		<a href="#" id="nav_button_help" click.delegate="app.FocusMap(app.game.galaxy.civs[0].planets[0])" ><svg class="icon icon-signs"><use xlink:href="#icon-signs"></use></svg></a>
-		<a href="#" id="nav_button_turn" click.delegate="app.game.ToggleAutoPlay()" css="color: ${app.game.autoplay ? '#AFA' : '#FFF' }"><svg class="icon icon-arrows"><use xlink:href="#icon-arrows"></use></svg></a>
+		<a href="#" id="nav_button_turn" click.delegate="app.game.ToggleAutoPlay()" css="color: ${app.game.autoplay ? '#AFA' : '#FFF' }"><svg class="icon icon-arrows-1"><use xlink:href="#icon-arrows-1"></use></svg></a>
 		<a href="#" id="nav_button_turn" click.delegate="app.game.ProcessTurn()"css="color: ${app.game.processing_turn ? '#AFA' : '#FFF' }" ><svg class="icon icon-arrows"><use xlink:href="#icon-arrows"></use></svg></a>
 	</div>
 
@@ -231,6 +248,5 @@
 	</div>
 	
 </div>
-
 
 </template>

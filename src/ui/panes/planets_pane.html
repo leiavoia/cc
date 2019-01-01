@@ -1,12 +1,10 @@
 <template>
 	<div id="planets_pane" class="pane">
 	
+		<p style="float:right; margin: 0;"><button click.delegate="ClosePanel()" class="big">CLOSE</button></p>
+		
 		<h1>Planets</h1>
 		
-<!--		<p>AVG RICH: ${app.avg_rich|round:3}x</p>
-		<p>AVG RARITY: ${app.avg_rarity|round:3}</p>
-		<p>RARITY COUNT: ${app.rare_count[0]} | ${app.rare_count[1]} | ${app.rare_count[2]} | ${rapp.are_count[3]} |  ${app.rare_count[4]}</p>-->
-
 		<p>
 			<a href="#" class="button ${show_mine?'':'cool'}" click.delegate="show_mine=!show_mine">My Planets</a>
 			<a href="#" class="button ${show_foreign?'':'cool'}" click.delegate="show_foreign=!show_foreign">Foreign Planets</a>
@@ -33,9 +31,11 @@
 				<th repeat.for="k of planets[0].sect|props">${k|uppercaseFirst}</th>
 			</tr>
 			<template repeat.for="p of planets" containerless>
-				<tr if.bind="(show_mine && p.owner == myciv) || (show_unclaimed && !p.owner) || (show_foreign && p.owner != myciv && p.owner)">
+				<tr if.bind="(show_mine && p.owner == myciv) || (show_unclaimed && !p.owner) || (show_foreign && p.owner != myciv && p.owner)"
+					click.delegate="ClickPlanet(p)" 
+					>
 					<td><img if.bind="p.owner" class="flag" src.bind="p.owner.flag_img" style="max-height: 16px;" /></td>
-					<td><a href="#"  click.delegate="ClickPlanet(p)">${p.name}</a></td>
+					<td><b style="color: ${p.owner ? p.owner.color : 'inherit'};">${p.name}</b></td>
 					<td class="i">${p.size}</td>
 					<td>${p.envDisplayName}</td>
 					<td>${p.atm}</td>
@@ -53,6 +53,5 @@
 			</template>
 		</table>
 		
-		<p><a href="#"  click.delegate="ClosePanel()" class="button big">CLOSE</a></p>
 	</div>
 </template>

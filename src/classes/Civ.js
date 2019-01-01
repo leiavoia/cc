@@ -477,7 +477,7 @@ export default class Civ {
 		let ship_score = 0;
 		for ( let f of this.fleets ) { 
 			if ( !f.killme ) { 
-				ship_score += f.fp;
+				ship_score += f.threat;
 				}
 			}
 			
@@ -498,7 +498,7 @@ export default class Civ {
 			
 		this.power_score = Math.round( 
 			  ( planet_score * 10.0 )
-			+ ( ship_score * 0.01 )
+			+ ( ship_score * 0.03 )
 			+ ( ground_score * 2.0 )
 			+ ( tech_score * 0.1 )
 			+ ( this.treasury * 0.01 )
@@ -509,11 +509,11 @@ export default class Civ {
 		
 	ArchiveStats() { 
 		let ships = 0;
+		let fp = 0;
 		this.fleets.forEach( f => {
 			ships += f.ships.length;
-			fp += f.fp;
+			fp += f.threat;
 			});
-		let fp = 0;
 		this.stat_history.push({
 			research: Math.round(this.research),
 			research_income: Math.round(this.research_income),
@@ -648,6 +648,11 @@ export default class Civ {
 						}
 					}
 				}
+			}
+		// if there is leftover undefended threat, add that to our AI needs
+		while ( systems.length > 0 ) { 
+			let star = systems.pop();
+			this.ai.needs.combat_ships += star.accts.get(this).ai.threat;
 			}
 		}
 		

@@ -20,7 +20,7 @@ export class PlanetsPane {
 		}
 		
 	ClosePanel() {
-		this.app.CloseSideBar();
+		// this.app.CloseSideBar(); // keep this open
 		this.app.CloseMainPanel();
 		}
 	ClickPlanet(p) { 

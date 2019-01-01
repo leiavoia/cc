@@ -5,8 +5,8 @@ export class FleetsPane {
 		}
 		
 	 ClosePanel() {
-		this.app.CloseSideBar();
-		this.app.CloseMainPanel();
+		// this.app.CloseSideBar(); // keep this open
+		this.app.CloseMainPanel(); 
 		}
 		
 	ClickObject(o) { 

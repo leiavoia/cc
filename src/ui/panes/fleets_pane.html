@@ -1,26 +1,35 @@
 <template>
-<!--	<require from="./converters/percent"></require>
-	<require from="./converters/round"></require>-->
-
 	<div id="fleets_pane" class="pane">
 	
+		<p style="float:right; margin: 0;"><button click.delegate="ClosePanel()" class="big">CLOSE</button></p>
+		
 		<h1>Fleets</h1>
 		
 		<table>
-			<tr repeat.for="f of app.game.galaxy.fleets" ><!--app.game.myciv.fleets-->
-				<td><a href="#" click.delegate="ClickObject(f)">FLEET #${f.id}</a></td>
+			<!--app.game.myciv.fleets-->
+			<tr repeat.for="f of app.game.galaxy.fleets" 
+				style="${f.killme?'line-through':'none'};"
+				click.delegate="ClickObject(f)"
+				>
+				<td>#${f.id}</td>
+				<td style="color: ${f.owner.color};"><b>${f.owner.name}</b></td>
+				<td>
+					<b style="color: #000; text-shadow: 1px 1px 0 #FFF; background-color: #F33;" if.bind="f.fp">⚔</b>
+					<b style="color: #000; text-shadow: 1px 1px 0 #FFF; background-color: #4C4;" if.bind="f.research">⚛</b>
+					<b style="color: #000; text-shadow: 1px 1px 0 #FFF; background-color: #FF9F00;" if.bind="f.troops">☠</b>
+					<b style="color: #000; text-shadow: 1px 1px 0 #FFF; background-color: #FF0;" if.bind="f.colonize">⚑</b>
+				</td>
 				<td>SHIPS: ${f.ships.length}</td>
+				<td>Threat: ${f.threat}</td>
 				<td>STAR: ${f.star ? f.star.name : '-'}</td>
 				<td>DEST: ${f.mission ? 'On Mission' : (f.dest ? f.dest.name : '-')}</td>
 				<td>X: ${f.xpos|round}</td>
 				<td>Y: ${f.ypos|round}</td>
-				<td>killme: ${f.killme?'1':''}</td>
+				<td>FP: ${f.fp} (${f.fp_remaining / f.fp | percent}%)</td>
+				<td>HP: ${f.health / f.healthmax | percent}%</td>
 			</tr>
 		</table>
 			
-		<p><a href="#"  click.delegate="ClosePanel()" style="font-size: 200%; color: #000; background-color: #FFF; padding: 0.25em;">CLOSE</a></p>
 	</div>
-
-
 
 </template>
