@@ -18,10 +18,16 @@
 		</p>
 		
 		<p>
-			<b style="color: #F33;" show.bind="fleet.fp">⚔${fleet.fp_remaining} / ${fleet.fp}&nbsp;</b>
+			<b style="color: #F33;">⚡${fleet.threat|round}&nbsp;</b>
 			<b style="color: #AEA;" show.bind="fleet.research">⚛${fleet.research}&nbsp;</b>
 			<b style="color: #FF9F00;" show.bind="fleet.troops">☠${fleet.troops}&nbsp;</b>
 			<b style="color: #FF0;" show.bind="can_colonize">⚑&nbsp;</b>
+			<b style="color: #F33;" if.bind="fleet.fp" >
+				⚔<progress max="1.0" value.bind="fleet.fp_remaining / fleet.fp" style="width: 4em; height: 0.7em; color: #F33;"></progress>&nbsp;
+			</b>
+			<b style="color: #8B8;" if.bind="fleet.healthmax">
+				✚<progress max="1.0" value.bind="fleet.health / fleet.healthmax" style="width: 4em; height: 0.7em; color: #8B8;"></progress>&nbsp;
+			</b>
 		</p>
 		
 		<!-- local anomoly research info -->

@@ -577,7 +577,7 @@ export default class Civ {
 				let acct = f.star.accts.get(this);
 				// don't peel off ships from high-value systems
 				// or systems already under significant threat
-				if ( acct.ai.threat * 0.5 > acct.ai.defense ) { continue; } 
+				if ( acct && acct.ai.threat * 0.5 > acct.ai.defense ) { continue; } 
 				helpers.push(f);
 				}
 			}
@@ -600,8 +600,8 @@ export default class Civ {
 				// otherwise algorithm will just keep stripping more ships off other systems.
 				let fp = 0;
 				for ( let f of this.fleets ) { 
-					if ( ( f.dest == star || f.star == star ) && f.fp ) { 
-						fp += f.fp;
+					if ( ( f.dest == star || f.star == star ) && f.threat ) { 
+						fp += f.threat;
 						}
 					}
 				let fp_needed = star.accts.get(this).ai.threat - fp;
@@ -616,7 +616,7 @@ export default class Civ {
 						// things are going REALLY bad.
 						//
 						// if they need everything we've got, just reroute the entire fleet.
-						if ( fp_needed >= helper.fp ) {
+						if ( fp_needed >= helper.threat ) {
 							console.log(`sending entire fleet #${helper.id}`);
 							helper.SetDest( star );
 							}
@@ -626,8 +626,8 @@ export default class Civ {
 							let ships_to_send = [];
 							for ( let i=helper.ships.length-1; i >= 0 && fp_needed > 0; i-- ) { 
 								let ship = helper.ships[i];
-								if ( ship.bp.fp ) { 
-									fp_needed -= ship.bp.fp;
+								if ( ship.bp.threat ) { 
+									fp_needed -= ship.bp.threat;
 									ships_to_send.push(ship); // add 
 									helper.ships.splice( i, 1 ); // remove
 									}
@@ -825,8 +825,8 @@ export default class Civ {
 				// defense
 				let f = p.OwnerFleet();
 				if ( f ) { // firepower!
-					acct.ai.defense = f.fp; 
-					total_defense += f.fp;
+					acct.ai.defense = f.threat; 
+					total_defense += f.threat;
 					}
 				// threats
 				for ( let c of app.game.galaxy.civs ) { 
@@ -857,21 +857,21 @@ export default class Civ {
 							}
 						// fleet is considered a threat - determine how much
 						if ( is_a_threat ) { 
-							let threat = f.fp;
+							let threat = f.threat;
 							// fleets parked on me
-							if ( f.star == p ) { threat = f.fp; }
+							if ( f.star == p ) { threat = f.threat; }
 							// fleets en route to me
-							else if ( f.dest == p ) { threat = f.fp; }
+							else if ( f.dest == p ) { threat = f.threat; }
 							// fleets in the neighborhood
 							else {
 								// graduate threat over 7 turn ETA
 								let range_mod = 1 + (7 - Math.min( 7, Math.ceil( fastrange / (f.speed * f.speed) ) ) ) / 7;
 								// monsters are always a threat
 								if ( f.owner.race.is_monster ) { 
-									threat = f.fp * range_mod * 0.2;
+									threat = f.threat * range_mod * 0.2;
 									}
 								else { 
-									threat = f.fp * range_mod * 0.1;
+									threat = f.threat * range_mod * 0.1;
 									}
 								}
 							acct.ai.threat += threat;

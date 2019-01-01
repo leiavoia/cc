@@ -19,9 +19,12 @@ export default class Fleet {
 	research = false;
 	fp = 0; // firepower total
 	fp_remaining = 0; // firepower remaining
+	threat = 0; // AI threat value
 	bulk = 0; // combined "bodyweight" of all ships
 	troopcap = 0; // max capacity
 	troops = 0; // current total
+	health = 0; // current hit points
+	healthmax = 0; // max hit points
 	
 	onUpdate = null; // callback
 	SetOnUpdate( callback ) { 
@@ -69,6 +72,7 @@ export default class Fleet {
 		this.bulk = 0;
 		this.troops = 0;
 		this.troopcap = 0;
+		this.threat = 0;
 		for ( let ship of this.ships ) { 
 			// check if there are colony ships
 			if ( ship.bp.colonize ) { this.colonize = true; }
@@ -83,6 +87,12 @@ export default class Fleet {
 			// troops and carriers
 			this.troops += ship.troops.length;
 			this.troopcap += ship.bp.troopcap;
+			// AI threat level
+			this.threat += ship.bp.threat;
+			this.threat += ship.troops.length * 100;
+			// fleet health
+			this.health += ship.hull + ship.armor;
+			this.healthmax += ship.bp.hull + ship.bp.armor;
 			}
 		this.FireOnUpdate();
 		}

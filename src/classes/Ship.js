@@ -129,6 +129,7 @@ export class ShipBlueprint {
 		this.research = 0;    
 		this.troopcap = 0; // number of ground units we can carry    
 		this.fp = 0; // calculated firepower
+		this.threat = 0; // calculated offensive threat for AI
 		// Calculated size class makes it easier to relate to humans.
 		// Uses letters 'A','B','C' ...
 		this.sizeclass = 'A'; 
@@ -234,12 +235,36 @@ export class ShipBlueprint {
 		this.research = Math.floor( this.mods.Apply( 0, 'research', parent ) ); 
 		this.troopcap = Math.floor( this.mods.Apply( 0, 'troopcap', parent ) ); 
 		this.fp = this.CalcFirepowerTotal();
+		this.threat = this.CalcThreat();
 		// class size
 		this.sizeclass ='A';
 		let sizes = ['A','B','C','D','E','F','G','H','I','J','K','L'];
 		for ( let max=50, i=1; this.hull > max; max*=2, i++ ) {
 			this.sizeclass = sizes[i];
 			}
+		}
+	
+	CalcThreat() { 
+		// raw firepower
+		let fp = Math.floor( this.weapons.reduce( ( accum, weapon ) => {
+			// average firepower of weapon
+			let x = ((weapon.maxdmg - weapon.mindmg)/2) + weapon.mindmg;
+			// times number of shots, assuming it may not live long enough to use them all
+			x *= Math.pow( weapon.shots, 0.45 );
+			// times number of weapons equiped on ship
+			x *= weapon.qty;
+			// times shots that will likely land a hit (0..1)
+			x *= weapon.accu;
+			// quick draws have a huge advantage in combat
+			// if this is too severe, also try ( 4 / weapon.reload )
+			x *= 16 / (weapon.reload * weapon.reload);
+			return accum + x;
+			}, 0 ) );	
+		// how long this thing can stick around in combat.
+		// lets use 100 as a baseline for a "normal ship"
+		let body = ( this.hull + this.armor ) / 100; // [!]MAGICNUMBER
+		body = Math.pow( body, 1+(this.shield/50) );
+		return Math.round( ( fp * body ) / 10 );
 		}
 	
 	CalcFirepowerTotal() { 
