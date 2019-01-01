@@ -97,3 +97,13 @@ export function DistanceBetween( x1, y1, x2, y2, fastcalc = false ) {
 export function MapToRange( n, min1, max1, min2, max2 ) { 
   return ( (n - min1) * ( (max2 - min2) / (max1 - min1) ) ) + min2;
   }
+
+export function DecToHex( n ) { 
+	n = n.toString(16);
+	if ( n.length % 2 ) { n = '0' + n; }
+	return n;
+	}
+	
+export function HexToDec( n ) { 
+	return parseInt(n, 16);
+	}

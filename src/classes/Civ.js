@@ -71,6 +71,8 @@ export default class Civ {
 	color = '#FFFFFF';
 	color_rgb = [255,255,255];
 	
+	stat_history = [];
+	
 	// diplomatic communication with other races is measured
 	// by comparing their overlapping line segments composed 
 	// of diplo_style +/- diplo_skill
@@ -444,6 +446,7 @@ export default class Civ {
 	static Random( difficulty = 0.5 ) {
 		let civ = new Civ;
 		civ.color_rgb = Civ.PickNextStandardColor();
+		civ.color = '#' + utils.DecToHex(civ.color_rgb[0]) + utils.DecToHex(civ.color_rgb[1]) + utils.DecToHex(civ.color_rgb[2]);
 		civ.lovenub = Math.random();
 		civ.annoyed = Math.random();
 		civ.diplo_dispo = Math.random();
@@ -504,7 +507,26 @@ export default class Civ {
 		return this.power_score;
 		}
 		
-	// reutrns list of star systems we have a colony in
+	ArchiveStats() { 
+		let ships = 0;
+		this.fleets.forEach( f => {
+			ships += f.ships.length;
+			fp += f.fp;
+			});
+		let fp = 0;
+		this.stat_history.push({
+			research: Math.round(this.research),
+			research_income: Math.round(this.research_income),
+			techs: this.tech.nodes_compl.size, 
+			power: this.power_score,
+			ships,
+			fp, 
+			planets: this.planets.length,
+			cash: this.treasury
+			});
+		}
+		
+	// returns list of star systems we have a colony in
 	MyStars() {
 		let systems = [];
 		for ( let p of this.planets ) { 

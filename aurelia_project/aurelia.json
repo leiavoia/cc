@@ -115,6 +115,11 @@
           "aurelia-templating-binding",
           "text",
           "fastpriorityqueue",
+			{
+				"name": "chart.js",
+				"path": "../node_modules/chart.js/dist",
+				"main": "Chart.min.js"
+			},          
           {
             "name": "aurelia-templating-resources",
             "path": "../node_modules/aurelia-templating-resources/dist/amd",

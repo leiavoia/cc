@@ -8,9 +8,10 @@
   },
   "license": "MIT",
   "dependencies": {
-    "aurelia-bootstrapper": "^2.1.1",
     "aurelia-animator-css": "^1.0.2",
+    "aurelia-bootstrapper": "^2.1.1",
     "bluebird": "^3.4.1",
+    "chart.js": "^2.7.3",
     "requirejs": "^2.3.2",
     "text": "github:requirejs/text#latest"
   },

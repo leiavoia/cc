@@ -38,6 +38,7 @@ export class App {
 		ai: true, // process the AI each turn
 		soak: true, // run the game without player involvement
 		bg_bright: 1.0,
+		history_mode: 'power',
 		// notifications to bug player with.
 		// you can also just set notify to boolean to en/disable all
 		notify: { 
@@ -136,7 +137,10 @@ export class App {
 			let json = window.localStorage.getItem( 'options' );
 			if ( json ) { 
 				json = JSON.parse( json );
-				if ( json ) { this.options = json; }
+				if ( json ) { 
+					// using object.assign lets us slip in new settings over time
+					this.options = Object.assign(this.options,json);
+					}
 				}
 			}
 		catch ( ex ) {

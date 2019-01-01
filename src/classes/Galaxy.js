@@ -102,7 +102,7 @@ export default class Galaxy {
 			this.AssignStartingFleet( c, s );
 			c.homeworld = p;
 			// colonies
-			for ( let i=0; stars.length && i < 2; i++ ) { 
+			for ( let i=0, max = utils.RandomInt(0,2); stars.length && i < max; i++ ) { 
 				let next = stars.pop();
 				let p = next.planets[0];
 				p.Settle( c );

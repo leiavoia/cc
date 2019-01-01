@@ -359,6 +359,11 @@ export default class Game {
 					}
 				}
 			
+			// compile stats
+			for ( let civ of this.galaxy.civs ) { 
+				civ.ArchiveStats();
+				}
+			
 			this.turn_num++;
 			
 			//
