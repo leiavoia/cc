@@ -2235,6 +2235,52 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	display: flex;
 	flex-flow: row wrap;
 	clear:right;
+	padding-bottom: 2em;
+	margin-bottom: -10000px; /* prevents extra bottom spacing when scaling with dynamic packing */
+	}
+
+.shipgrid.pack_2x {
+	transform: scale(0.66666666);
+	transform-origin: 0 0 ;
+	width: 150%;
+	}
+.shipgrid.pack_4x {
+	transform: scale(0.5);
+	transform-origin: 0 0 ;
+	width: 200%;
+	}
+.shipgrid.pack_9x {
+	transform: scale(0.3333333);
+	transform-origin: 0 0 ;
+	width: 300%;
+	}
+.shipgrid.pack_16x {
+	transform: scale(0.25);
+	transform-origin: 0 0 ;
+	width: 400%;
+	}
+.shipgrid.pack_25x {
+	transform: scale(0.2);
+	transform-origin: 0 0 ;
+	width: 500%;
+	}
+.shipgrid.pack_36x {
+	transform: scale(0.1666666666);
+	transform-origin: 0 0 ;
+	width: 600%;
+	}
+/*.shipgrid.pack_2x .ship > P,*/
+.shipgrid.pack_4x .ship > SPAN,
+.shipgrid.pack_9x .ship > SPAN,
+.shipgrid.pack_16x .ship > SPAN,
+.shipgrid.pack_25x .ship > SPAN,
+.shipgrid.pack_36x .ship > SPAN,
+.shipgrid.pack_4x .ship > P,
+.shipgrid.pack_9x .ship > P,
+.shipgrid.pack_16x .ship > P,
+.shipgrid.pack_25x .ship > P,
+.shipgrid.pack_36x .ship > P {
+	display: none;
 	}
 	
 .shipgrid .ship {

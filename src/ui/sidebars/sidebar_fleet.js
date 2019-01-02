@@ -15,6 +15,7 @@ export class FleetDetailPane {
 	starclick_subsc = null;
 	turn_subscription = null;
 	playerHasLocalFleet = false;
+	ship_grid_packing = 1; // controls density of ships on UI. [1,2,4,9,16,25,36]
 	@bindable fleet = null;
 	app = null;
 
@@ -173,7 +174,15 @@ export class FleetDetailPane {
 		}
 	Recalc() { 
 		this.playerHasLocalFleet = this.fleet.star && this.fleet.star.PlayerHasLocalFleet;
-		
+
+		// calculate ideal ship packing for UI
+		let num_ships = this.fleet.ships.length;
+		this.ship_grid_packing = 1;
+		while ( num_ships / 20 > this.ship_grid_packing ) { 
+			this.ship_grid_packing *= this.ship_grid_packing==1 ? 2 : this.ship_grid_packing;
+			}
+		if ( this.ship_grid_packing > 36 ) { this.ship_grid_packing = 36; } // lets be sane	
+
 		// for each stat, distinguish between ability of the
 		// fleet as a whole (1) or the specific selection (2)
 		// or no ability at all (0)

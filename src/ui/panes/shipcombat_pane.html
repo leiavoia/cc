@@ -164,7 +164,7 @@
 				<p>${team.fleet.ships.length} ships in combat</p>
 			</div>
 			<div class="fleet-container">
-				<div class="shipgrid ${app.options.ship_scaling ? 'dynasize' : ''}">
+				<div class="shipgrid ${app.options.ship_scaling ? 'dynasize' : ''} pack_${ship_grid_packing}x">
 					<div id="ship-${ship.id}"
 						class="ship 
 						${ship.selected ? 'selected' : ''} 

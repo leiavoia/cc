@@ -13,6 +13,7 @@ export class ShipCombatPane {
 		this.winner = '';
 		this.player_target_priority = 'size_desc';
 		this.player_team = null;
+		this.ship_grid_packing = 1; // controls density of ships on UI. [1,2,4,9,16,25,36]
 	    }
 	   
 	activate(data) {
@@ -36,6 +37,12 @@ export class ShipCombatPane {
 			this.player_team = this.combat.teams[0].fleet.owner.is_player ? this.combat.teams[0] : this.combat.teams[1];
 			this.player_target_priority = this.player_team.target_priority;
 			this.combat.SortTargets(this.player_team);
+			// calculate ideal ship packing
+			let num_ships = Math.max( this.combatdata.attacker.ships.length, this.combatdata.defender.ships.length );
+			while ( num_ships / 20 > this.ship_grid_packing ) { 
+				this.ship_grid_packing *= this.ship_grid_packing==1 ? 2 : this.ship_grid_packing;
+				}
+			if ( this.ship_grid_packing > 36 ) { this.ship_grid_packing = 36; } // lets be sane
 			}
 		}
 		
