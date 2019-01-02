@@ -39,6 +39,7 @@ export class App {
 		soak: true, // run the game without player involvement
 		bg_bright: 1.0,
 		history_mode: 'power',
+		autoload_troops: true,
 		// notifications to bug player with.
 		// you can also just set notify to boolean to en/disable all
 		notify: { 

@@ -88,6 +88,10 @@ export class PlanetDetailPane {
 		this.app.SwitchMainPanel( 'planetinfo', this.planet );
 		}
 		
+	ToggleStagingPoint() { 
+		this.planet.owner.AI_ToggleStagingPoint( this.planet.star );
+		}
+		
 	BuildQueueMoveItemUp( index ) {
 		// tech note: aurelia doesn't recognize that anything changed if you 
 		// use the old fashioned "swap from temp" technique

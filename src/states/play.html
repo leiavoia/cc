@@ -140,6 +140,7 @@
 		
 			<!-- AI DEBUG -->
 			<div id="layout_ai_headsup" if.bind="app.options.debug && !app.main_panel_mode">
+				staging: <span repeat.for="pt of app.game.myciv.ai.staging_pts">${pt.name} </span><br/>
 				needs.colony_ships: ${app.game.myciv.ai.needs.colony_ships|round}<br/>
 				needs.combat_ships: ${app.game.myciv.ai.needs.combat_ships|round}<br/>
 				needs.troop_ships: ${app.game.myciv.ai.needs.troop_ships|round}<br/>

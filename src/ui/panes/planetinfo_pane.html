@@ -37,6 +37,7 @@
 					</tr>
 				</table>		
 			</div>
+			
 			<div class="content data">
 				<h2>Summary</h2>
 				<span>POP: ${planet.total_pop|round:1}</span>
@@ -44,6 +45,7 @@
 				<span>UNEMP: ${planet.unempl|percent}%</span>
 				<span>WRHS: ${planet.warehouse|round:2}</span>
 			</div>
+			
 			<div class="content resources">
 				<h2>Resources</h2>
 				<span>Keep in Stock:</span>
@@ -59,6 +61,7 @@
 				<span>Civ Need Met: ${planet.owner.econ.mp_need_met|percent:2}</span>
 				<span>Civ Warehouse: ${planet.owner.econ.warehouse|round:2}</span>
 			</div>
+			
 			<div class="content financial">
 				<h2>Financial</h2>
 				<span>Tax Rate: ${(planet.tax_rate)|percent}%</span>
@@ -69,14 +72,17 @@
 				<span>GDP: ${planet.econ.GDP|round:1}</span>
 				<span>PCI: ${planet.econ.PCI|round:1} ➞ ${planet.econ.target_PCI|round:1} </span>
 			</div>
-<!--			<div class="content economy">
-				<h2>Economy</h2>
-			</div>-->
+						
 			<div class="content production">
 				<h2>Production</h2>
-				<span>Currently Building: TODO</span>
-				<span>Complete In: [TODO] turns</span>
+				<span>Currently Building: ${planet.prod_q[0].name}</span>
+				<span>Complete In: ${planet.prod_q[0].turns_left} turns</span>
+				<p><b>When ships are completed, send them to:</b></p>
+				<select value.bind="planet.ship_dest">
+					<option repeat.for="option of ship_dest_opts" model.bind="option.value">${option.name}</option>
+				</select>
 			</div>
+			
 			<div class="content policies">
 				<h2>Policies</h2>
 				<span><input type="checkbox" /> Foreign Policy</span>

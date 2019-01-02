@@ -37,6 +37,7 @@ export default class Civ {
 		objectives: [],
 		priorities: [], // TODO
 		threats: [], // fleets
+		staging_pts: [], // stars to send newly built ships, AKA "accumulators"
 		needs: { 
 			colony_ships: 0,
 			combat_ships: 0,
@@ -650,6 +651,7 @@ export default class Civ {
 				}
 			}
 		// if there is leftover undefended threat, add that to our AI needs
+		this.ai.needs.combat_ships = 0;
 		while ( systems.length > 0 ) { 
 			let star = systems.pop();
 			this.ai.needs.combat_ships += star.accts.get(this).ai.threat;
@@ -776,6 +778,7 @@ export default class Civ {
 								let myfleet = null;
 								// split fleet if more than 1 ship in fleet
 								// TODO: escorts would be nice
+								// TODO: check for any hostile fleets to prevent suicide
 								if ( f.ships.length > 1 ) { 
 									f.RemoveShip(s); // old fleet
 									myfleet = new Fleet( f.owner, f.star );
@@ -905,6 +908,49 @@ export default class Civ {
 		this.AI_EvaluateValuesAndThreats(app);
 		this.AI_EvaluateObjectives(app);
 		this.AI_Planets(app);
+		}
+		
+	AI_ToggleStagingPoint( star ) { 
+		let acct = star.accts.get(this);
+		if ( acct ) { 
+			if ( !acct.ai.staging_pt ) { 
+				acct.ai.staging_pt = true;
+				this.ai.staging_pts.push(star);
+				}
+			else {
+				acct.ai.staging_pt = false;
+				let i = this.ai.staging_pts.indexOf(star);
+				if ( i > -1 ) { 
+					this.ai.staging_pts.splice(i,1); 
+					}			
+				}
+			return true;
+			}
+		return false;
+		}
+		
+	AI_AddStagingPoint( star ) { 
+		let acct = star.accts.get(this);
+		if ( acct ) { 
+			acct.ai.staging_pt = true;
+			this.ai.staging_pts.push(star);
+			return true;
+			}
+		return false;
+		}
+		
+	AI_RemoveStagingPoint( star ) { 
+		let acct = star.accts.get(this);
+		if ( acct ) { 
+			acct.ai.staging_pt = false;
+			let i = this.ai.staging_pts.indexOf(star);
+			if ( i > -1 ) { 
+				this.ai.staging_pts.splice(i,1); 
+				}
+			return true;
+			}
+		return false;
+		
 		}
 		
 	}

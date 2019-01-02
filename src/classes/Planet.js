@@ -69,8 +69,7 @@ export default class Planet {
 		mine_export: 0, // can be pos or neg, depending on if planet has a need or excess
 		mine_import: 0, // the actual amount being imported, if needed. number may differ from need above
 		};
-	
-		
+			
 	// ACTIVITY SECTORS ----------------------------------
 	// 	vars:
 	//		pct: the percentage of the planetary spending allocated to this sector
@@ -100,21 +99,47 @@ export default class Planet {
 // 		civ:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 		};
 
+	// POLICIES -------------------------------------------
+	// Ship Destination: Where to send ships when they are built.
+	// Valid options: NULL (here), '@' (nearest rondezvous point), Star (object)
+	ship_dest = null; 
+	
 	ProduceBuildQueueItem( item ) {
 		// ships
 		if ( item.type == 'ship' ) { 
-			// find my fleet
-			let myfleet = null;
-			for ( let f of this.star.fleets ) { 
-				if ( f.owner == this.owner ) { 
-					myfleet = f;
-					break;
+			let ship = item.obj.Make();
+			// if this is a troop carrier, autoload troops if any available
+			if ( ship.troopcap ) { // TODO: Make optional, but no access to app.options here???
+				while ( this.troops.length ) { 
+					ship.troops.push( this.troops.pop() );
 					}
 				}
-			if ( !myfleet ) { 
+			// find my local fleet
+			let myfleet = this.OwnerFleet();
+			if ( !myfleet || this.ship_dest ) { 
 				myfleet = new Fleet( this.owner, this.star );
 				}
-			myfleet.AddShip( item.obj.Make() );
+			myfleet.AddShip( ship );
+			if ( this.ship_dest ) { 
+				if ( typeof(this.ship_dest)==='object' ) { 
+					myfleet.SetDest(this.ship_dest);
+					}
+				else if ( this.ship_dest == '@' ) { 
+					let closest = null;
+					let best_length = 100000000;
+					for ( let star of this.owner.ai.staging_pts ) { 
+						let dist = utils.DistanceBetween( star.xpos, star.ypos, this.star.xpos, this.star.ypos, true );
+						if ( dist < best_length ) { 
+							best_length = dist;
+							closest = star;
+							}
+						}
+					if ( closest ) { 
+						myfleet.SetDest(closest);
+						console.log('set course for ' + closest.name);
+						}
+					}
+				}
 			}
 		// ground units
 		else if ( item.type == 'groundunit' ) { 

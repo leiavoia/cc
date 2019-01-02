@@ -1,8 +1,5 @@
 <template>
-<!--	<require from="./converters/percent"></require>
-	<require from="./converters/round"></require>
-	<require from="./converters/idealplanetsize"></require>-->
-	
+
 	<div class="planet atm${planet.atm} tmp${planet.temp} grav${planet.grav}" css="min-height:${(planet.size)|idealplanetsize}px; background-size: auto ${(planet.size)|idealplanetsize}px; background-position: 50% -${planet.size/2}px ;"><!-- calc(100% + ${planet.size}px) -->
 		
 		<p class="button_rack button_rack_fill small">
@@ -10,6 +7,9 @@
 			<button click.delegate="PressStarButton()">STAR</button>
 			<button click.delegate="PressPrevPlanetButton()">◀</button>
 			<button click.delegate="PressNextPlanetButton()">▶</button>
+			<button if.bind="planet.owner == app.game.myciv"
+				click.delegate="ToggleStagingPoint()" 
+					class="${planet.star.accts.get(planet.owner).ai.staging_pt ? 'alt' : ''}">✜STAGING</button>
 		</p>
 						
 		<!-- enemy fleet attack option --> 
@@ -270,7 +270,17 @@
 					</select>
 					<button click.delegate="AddSelectedItemToBuildQueue()">Add</button>
 				</p>
-				
+				<p class="clickable" click.delegate="OpenDetailsPane()">Send newly built ships to: 
+					<b>${
+						planet.ship_dest == '@' 
+						? 'Nearest Staging Point'
+						: (
+							!planet.ship_dest 
+							? 'Here'
+							: planet.ship_dest.name
+							) 
+					}</b>
+				</p>
 			</div>
 			
 			<div class="defenses" if.bind="planet.owner">
