@@ -149,7 +149,7 @@ export class FleetDetailPane {
 	ChoosePlanetToColonize( p ) { 
 		let ship = this.GetFirstColonyShip();
 		if ( ship ) { 
-			p.Settle( this.app.game.MyCiv() );
+			p.Settle( this.app.game.myciv );
 			// [!]OPTIMIZE: we only need to do this:
 			// - if we dont already have a planet in this system
 			// - only for our own civ, not all of them

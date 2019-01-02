@@ -140,6 +140,7 @@
 		
 			<!-- AI DEBUG -->
 			<div id="layout_ai_headsup" if.bind="app.options.debug && !app.main_panel_mode">
+				<span style="padding: 0.1em 1em; color:#FFF;text-shadow:1px 1px 0 #000; background-color: ${app.game.myciv.color}">${app.game.myciv.name}</span><br/>
 				staging: <span repeat.for="pt of app.game.myciv.ai.staging_pts">${pt.name} </span><br/>
 				needs.colony_ships: ${app.game.myciv.ai.needs.colony_ships|round}<br/>
 				needs.combat_ships: ${app.game.myciv.ai.needs.combat_ships|round}<br/>
@@ -187,6 +188,7 @@
 			<a href="#" click.delegate="app.ToggleOption('show_xtreme_anoms')" class="button ${app.options.show_xtreme_anoms ? 'alt' : 'cool'}">▰</a>
 			<a href="#" click.delegate="app.ToggleOption('ai')" class="button ${app.options.ai ? 'alt' : 'cool'}">AI</a>
 			<a href="#" click.delegate="app.ToggleOption('soak')" class="button ${app.options.soak ? 'alt' : 'cool'}">Soak</a>
+			<a href="#" click.delegate="app.game.RotateMyCiv()" class="button cool">SwCiv</a>
 			<a href="#" click.delegate="app.ToggleOption('ship_scaling')" class="button ${app.options.ship_scaling ? 'alt' : 'cool'}">DS</a>
 			<a href="#" click.delegate="app.state_obj.DramaticIntro()" class="button">✈</a>
 			<a href="#" click.delegate="app.game.DoEvent()" class="button">EVENT</a>

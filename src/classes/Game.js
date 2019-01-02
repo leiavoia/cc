@@ -18,8 +18,7 @@ export default class Game {
 	galaxy = null;
 	planets = [];
 	turn_num = 0;
-	iam = 0;
-	myciv = null;
+	myciv = null; // object of player civ
 	processing_turn = false;
 	autoplay = false;
 	eventcard = null; // the event card we are currently displaying to the player
@@ -796,16 +795,26 @@ export default class Game {
 		}
 	
 	// utility function
-	MyCiv() { 
-		return this.galaxy.civs[ this.iam ];
+	SetMyCiv( c ) { // id or Civ object
+		if ( Number.isInteger(c) ) { 
+			c = this.galaxy.civs.find( civ => civ.id == c );
+			}
+		if ( c ) { 
+			// unset old one
+			if ( this.myciv ) { this.myciv.is_player = false; }
+			// set new one
+			this.myciv = c;
+			this.myciv.is_player = true;
+			}
 		}
-	SetMyCiv( id ) { 
+	RotateMyCiv() { 
+		let oldIndex = this.galaxy.civs.indexOf(this.myciv);
+		let newIndex = oldIndex == this.galaxy.civs.length-1 ? 0 : oldIndex+1;
 		// unset old one
-		this.galaxy.civs[ this.iam ].is_player = false;
+		if ( this.myciv ) { this.myciv.is_player = false; }
 		// set new one
-		this.iam = id;
-		this.myciv = this.galaxy.civs[ this.iam ];
-		this.galaxy.civs[ this.iam ].is_player = true;
+		this.myciv = this.galaxy.civs[ newIndex ];
+		this.myciv.is_player = true;
 		}
 	}
 
