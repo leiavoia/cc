@@ -289,9 +289,11 @@ export default class Game {
 			console.timeEnd('Fleet Research');
 			
 			console.time('Ship Movement');
-			// ship movement
-			for ( let f of this.galaxy.fleets ) { 
-				if ( f.MoveFleet() ) { 
+			// ship movement. TECHNICAL: loop backwards because moving can 
+			// remove fleets from the list when they land at destinations.
+			for ( let i = this.galaxy.fleets.length-1; i >= 0; i-- ) { 
+				let f = this.galaxy.fleets[i];
+				if ( f.MoveFleet() ) {
 					// if the fleet arrived, mark the star as explored to help the UI
 					if ( f.owner == this.myciv && f.star && !f.dest && !f.star.explored ) { 
 						f.star.explored = true;
@@ -310,8 +312,11 @@ export default class Game {
 								);						
 							}
 						}
-				
 					}
+				};
+			// update caret (check for dead fleets removed from ship movement ) 
+			if ( this.app.state_obj.caret.obj instanceof Fleet && this.app.state_obj.caret.obj.killme ) { 
+				this.app.state_obj.caret.obj = null;
 				}
 			this.app.state_obj.SetCaret( this.app.state_obj.caret.obj );
 			console.timeEnd('Ship Movement');
