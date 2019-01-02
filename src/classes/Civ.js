@@ -556,7 +556,6 @@ export default class Civ {
 		}
 	
 	AI_Defend(app) {
-		console.log(`DEFENSE AI ROUTINE ------{${this.name}}------`);
 		// find all threatened systems above some threshold
 		let systems = this.MyStars().filter( 
 			s => s.accts.get(this).ai.threat_norm > 0.1 
@@ -569,7 +568,6 @@ export default class Civ {
 			return 0;
 			});
 		for ( let s of systems ) { 
-			console.log( `:: ${s.name} @${s.accts.get(this).ai.threat_norm}` );
 			};
 		// find all fleets that can help defend
 		let helpers = [];
@@ -607,7 +605,6 @@ export default class Civ {
 					}
 				let fp_needed = star.accts.get(this).ai.threat - fp;
 				if ( fp_needed > 0 ) { 
-					console.log(`defense needed at ${star.name} (${star.accts.get(this).ai.threat_norm}). Short by ${fp_needed} FP. ${helpers.length} fleets can help.`);
 					while ( helpers.length && fp_needed ) { 
 						let helper = helpers.pop();
 						// already there?
@@ -618,12 +615,10 @@ export default class Civ {
 						//
 						// if they need everything we've got, just reroute the entire fleet.
 						if ( fp_needed >= helper.threat ) {
-							console.log(`sending entire fleet #${helper.id}`);
 							helper.SetDest( star );
 							}
 						// otherwise, get some random ships
 						else {
-							console.log(`sending portion of fleet #${helper.id}`);
 							let ships_to_send = [];
 							for ( let i=helper.ships.length-1; i >= 0 && fp_needed > 0; i-- ) { 
 								let ship = helper.ships[i];
@@ -655,6 +650,15 @@ export default class Civ {
 		while ( systems.length > 0 ) { 
 			let star = systems.pop();
 			this.ai.needs.combat_ships += star.accts.get(this).ai.threat;
+			}
+		// see how many combat ships we already have in production. this may
+		// indicate we need to build more or possibly cull some already queued.
+		for ( let p of this.planets ) { 
+			for ( let i of p.prod_q ) { 
+				if ( i.type == 'ship' && i.obj.threat ) {
+					this.ai.needs.combat_ships -= i.obj.threat * ( i.qty == -1 ? 1 : i.qty );
+					}
+				}
 			}
 		}
 		
@@ -689,8 +693,18 @@ export default class Civ {
 					}
 				}
 			// combat ships
-			if ( this.ai.needs.combat_ships > 0 ) { 
-				
+			if ( this.ai.needs.combat_ships > 0 ) {
+				// find the best combat blueprint appropriate for this planet. 
+				// TODO: AI build preferance algorithm goes here ;-)
+				let bps = this.ship_blueprints.filter( bp => bp.threat > 0 && !bp.colonize && !bp.troopcap );
+				// pick one at random
+				if ( bps.length ) { 
+					let bp = bps[ utils.RandomInt(0, bps.length-1) ];
+					// note: by adding just one, it will
+					// encourage other planets to build some too
+					p.AddBuildQueueShipBlueprint( bp );
+					this.ai.needs.combat_ships -= bp.threat;
+					}				
 				}
 			// troop ships
 			if ( this.ai.needs.troop_ships > 0 ) { 

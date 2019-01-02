@@ -122,16 +122,24 @@ export default class Planet {
 			myfleet.AddShip( ship );
 			if ( this.ship_dest ) { 
 				if ( typeof(this.ship_dest)==='object' ) { 
-					myfleet.SetDest(this.ship_dest);
+					if ( this.ship_dest.accts.has(this.owner) ) { 
+						myfleet.SetDest(this.ship_dest);
+						}
 					}
 				else if ( this.ship_dest == '@' ) { 
 					let closest = null;
 					let best_length = 100000000;
 					for ( let star of this.owner.ai.staging_pts ) { 
-						let dist = utils.DistanceBetween( star.xpos, star.ypos, this.star.xpos, this.star.ypos, true );
-						if ( dist < best_length ) { 
-							best_length = dist;
-							closest = star;
+						if ( star.accts.has(this.owner) ) { 
+							let dist = utils.DistanceBetween( star.xpos, star.ypos, this.star.xpos, this.star.ypos, true );
+							if ( dist < best_length ) { 
+								best_length = dist;
+								closest = star;
+								}
+							}
+						// remove from staging point list while we're here
+						else {
+							this.owner.AI_RemoveStagingPoint(star);
 							}
 						}
 					if ( closest ) { 
@@ -880,6 +888,11 @@ export default class Planet {
 		this.owner.RecalcEmpireBox();	
 		this.ui_color = `rgb( ${this.owner.color_rgb[0]}, ${this.owner.color_rgb[1]}, ${this.owner.color_rgb[2]} )` ;
 		this.mods.parent = this.owner.mods;
+		this.ship_dest = this.owner.is_player ? null : '@';
+		// homeworlds are AI staging points by default
+		if ( !this.owner.is_player && this.owner.planets.length==1 ) { 
+			this.owner.AI_AddStagingPoint( this.star );
+			}
 		}
 		
 	ListUniqueGroundUnits() { 
