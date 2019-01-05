@@ -157,14 +157,14 @@ export class GroundCombatPane {
 		let log = Object.assign( {}, this.last_turnlog ); // can't rely on this with setTimeouts
 		
 		// origin and target points on screen
-		let attacker_el = document.getElementById( 'groundunit-' + log.unit.id.toString() );
-		let defender_el = document.getElementById( 'groundunit-' + log.target.id.toString() );
+		let attacker_el = document.querySelector( '#groundunit-' + log.unit.id.toString() + ' IMG');
+		let defender_el = document.querySelector( '#groundunit-' + log.target.id.toString() + ' IMG' );
 		let rect = attacker_el.getBoundingClientRect();
-		let x1 = rect.left + ( attacker_el.offsetWidth / 2 );
-		let y1 = rect.top + ( attacker_el.offsetHeight / 2 ) - 25;
+		let x1 = rect.left + ( (rect.right - rect.left) / 2 );
+		let y1 = rect.top + ( (rect.bottom - rect.top) / 2 );
 		rect = defender_el.getBoundingClientRect();
-		let x2 = rect.left + ( defender_el.offsetWidth / 2 ) - 25;
-		let y2 = rect.top + ( defender_el.offsetHeight / 2 ) - 25;
+		let x2 = rect.left + ( (rect.right - rect.left) / 2 );
+		let y2 = rect.top + ( (rect.bottom - rect.top) / 2 );
 		// let length = Math.sqrt( Math.pow( Math.abs( x1 - x2 ), 2 ) + Math.pow( Math.abs( y1 - y2 ), 2 ) );
 		// let angle = Math.atan2( (y2-y1),(x2-x1)) * (180/Math.PI);		
 
@@ -197,8 +197,8 @@ export class GroundCombatPane {
 			let x = document.createElement("div"); 
 			x.className = 'explosion';
 			x.style.position = 'absolute';
-			x.style.top = (y1-64) + 'px';
-			x.style.left = (x1-64) + 'px';
+			x.style.top = y1 + 'px';
+			x.style.left = x1 + 'px';
 			x.style.zIndex = '1000';
 			pane.appendChild(x);
 			setTimeout( () => { x.remove();}, 500 ); // 500 is hard set by explosion class
@@ -207,8 +207,8 @@ export class GroundCombatPane {
 			let x = document.createElement("div"); 
 			x.className = 'explosion';
 			x.style.position = 'absolute';
-			x.style.top = (y2-64) + 'px';
-			x.style.left = (x2-64) + 'px';
+			x.style.top = y2 + 'px';
+			x.style.left = x2 + 'px';
 			x.style.zIndex = '1000';
 			pane.appendChild(x);
 			setTimeout( () => { x.remove();}, 500 ); // 500 is hard set by explosion class

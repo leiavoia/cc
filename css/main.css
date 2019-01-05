@@ -2270,16 +2270,16 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	width: 600%;
 	}
 /*.shipgrid.pack_2x .ship > P,*/
-.shipgrid.pack_4x .ship > SPAN,
-.shipgrid.pack_9x .ship > SPAN,
-.shipgrid.pack_16x .ship > SPAN,
-.shipgrid.pack_25x .ship > SPAN,
-.shipgrid.pack_36x .ship > SPAN,
-.shipgrid.pack_4x .ship > P,
-.shipgrid.pack_9x .ship > P,
-.shipgrid.pack_16x .ship > P,
-.shipgrid.pack_25x .ship > P,
-.shipgrid.pack_36x .ship > P {
+.shipgrid.pack_4x .ship SPAN,
+.shipgrid.pack_9x .ship SPAN,
+.shipgrid.pack_16x .ship SPAN,
+.shipgrid.pack_25x .ship SPAN,
+.shipgrid.pack_36x .ship SPAN,
+.shipgrid.pack_4x .ship P,
+.shipgrid.pack_9x .ship P,
+.shipgrid.pack_16x .ship P,
+.shipgrid.pack_25x .ship P,
+.shipgrid.pack_36x .ship P {
 	display: none;
 	}
 	
@@ -3020,23 +3020,31 @@ DIV.annoyometer .nub {
 	mix-blend-mode: screen;
 	height: 128px;
 	width: 128px;
+	margin: 0 !important;
+	padding: 0 !important;
 	animation: explosion 0.5s steps(16);	
 	transform-origin: 50% 50% 0; 
+	transform: translateX(-64px) translateY(-64px);
 	}
 @keyframes explosion {
-   from { background-position:    0px; transform: rotate(0deg);}
-     to { background-position: -2048px; transform: rotate(60deg);}
+   from { background-position:    0px; transform: translateX(-64px) translateY(-64px) rotate(0deg);}
+     to { background-position: -2048px; transform: translateX(-64px) translateY(-64px) rotate(60deg);}
 	}
 
 .shipcombat_hit_stat {
 	height: 30px;
 	width: 150px;
 	color: #FFA;
+	box-sizing: border-box; 
+	margin: 0 !important;
+	padding: 0 !important;
 	font-weight:bold;
 	text-align:center;
 	font-size: 150%;
 	text-shadow: 1px 1px 0px #000;
 	animation: shipcombat_hit_stat 1s ease-out;	
+	transform: translateX(-75px);
+	transform-origin: 50% 50% 0; 
 	}
 .shipcombat_hit_stat.hull { color: #FFA; } 
 .shipcombat_hit_stat.armor { color: #3BF; } 

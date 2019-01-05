@@ -178,11 +178,12 @@ export class FleetDetailPane {
 		// calculate ideal ship packing for UI
 		let num_ships = this.fleet.ships.length;
 		this.ship_grid_packing = 1;
-		while ( num_ships / 20 > this.ship_grid_packing ) { 
-			this.ship_grid_packing *= this.ship_grid_packing==1 ? 2 : this.ship_grid_packing;
+		while ( num_ships/15 > this.ship_grid_packing * this.ship_grid_packing ) { 
+			this.ship_grid_packing++;
 			}
-		if ( this.ship_grid_packing > 36 ) { this.ship_grid_packing = 36; } // lets be sane	
-
+		if ( this.ship_grid_packing > 36 ) { this.ship_grid_packing = 6; } // lets be sane	
+		this.ship_grid_packing *= this.ship_grid_packing;
+		
 		// for each stat, distinguish between ability of the
 		// fleet as a whole (1) or the specific selection (2)
 		// or no ability at all (0)
