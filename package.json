@@ -12,6 +12,7 @@
     "aurelia-bootstrapper": "^2.1.1",
     "bluebird": "^3.4.1",
     "chart.js": "^2.7.3",
+    "fastpriorityqueue": "^0.6.1",
     "requirejs": "^2.3.2",
     "text": "github:requirejs/text#latest"
   },
