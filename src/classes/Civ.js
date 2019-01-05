@@ -663,7 +663,8 @@ export default class Civ {
 		}
 		
 	AI_Attack(app) {
-	
+		// baseline military
+		this.ai.needs.combat_ships += 2000;
 		}
 		
 	AI_Intercept(app) {
@@ -811,6 +812,9 @@ export default class Civ {
 			}
 		// if i still have leftover targets, i dont have enough colony ships.
 		this.ai.needs.colony_ships = targets.length;
+		if ( this.ai.needs.colony_ships > 5 ) { 
+			this.ai.needs.colony_ships = 5;
+			}
 		// see how many colony ships we already have in production. this may
 		// indicate we need to build more or possibly cull some already queued.
 		for ( let p of this.planets ) { 

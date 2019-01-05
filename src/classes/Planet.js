@@ -88,11 +88,11 @@ export default class Planet {
 	//		growth = 0.2 * ( work - inf ) ^ 0.75
 	//		inf += growth
 	sect = {
-		mine:{ pct: 0.20, relpct: 0.20, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
+		mine:{ pct: 0.30, relpct: 0.30, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 		prod:{ pct: 0.35, relpct: 0.35, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 		sci:	{ pct: 0.35, relpct: 0.35, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
-		def:	{ pct: 0.10, relpct: 0.10, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
-		esp:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
+// 		def:	{ pct: 0.00, relpct: 0.00, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
+// 		esp:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 // 		gov:	{ pct: 0.15, relpct: 0.15, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
 // 		com:	{ pct: 0.00, relpct: 0.00, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 0 },
 // 		sup:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
@@ -144,7 +144,6 @@ export default class Planet {
 						}
 					if ( closest ) { 
 						myfleet.SetDest(closest);
-						console.log('set course for ' + closest.name);
 						}
 					}
 				}
@@ -548,11 +547,11 @@ export default class Planet {
 			fx: ( 1 + ( this.age_level / 5 ) ),
 			weight: 5.0
 			};
-    	// military defense - makes people feel safe
-		factors.age = { 
-			fx: ( 1 + ( utils.Clamp(this.sect.def.output,0,100) / 100 ) ),
-			weight: 5.0
-			};
+//     	// military defense - makes people feel safe
+// 		factors.age = { 
+// 			fx: ( 1 + ( utils.Clamp(this.sect.def.output,0,100) / 100 ) ),
+// 			weight: 5.0
+// 			};
     	let total_weight = 0;
 		let total_value = 0;
 		for ( let f in factors ) { 
@@ -778,8 +777,8 @@ export default class Planet {
 			
 		// for reasons beyond science, other market sectors have random powers
 		if ( Math.random() < 0.5 ) { planet.sect.sci.pow = parseFloat( (1.5 - utils.BiasedRand(0.0, 1.0, 0.75, 0.5)).toFixed(1) ); }
-		if ( Math.random() < 0.5 ) { planet.sect.def.pow = parseFloat( (1.5 - utils.BiasedRand(0.0, 1.0, 0.75, 0.5)).toFixed(1) ); }
-		if ( Math.random() < 0.5 ) { planet.sect.esp.pow = parseFloat( (1.5 - utils.BiasedRand(0.0, 1.0, 0.75, 0.5)).toFixed(1) ); }
+// 		if ( Math.random() < 0.5 ) { planet.sect.def.pow = parseFloat( (1.5 - utils.BiasedRand(0.0, 1.0, 0.75, 0.5)).toFixed(1) ); }
+// 		if ( Math.random() < 0.5 ) { planet.sect.esp.pow = parseFloat( (1.5 - utils.BiasedRand(0.0, 1.0, 0.75, 0.5)).toFixed(1) ); }
 		
 		// special attributes (AKA "goodies")
 		let selector = Planet.AttributeSelector();

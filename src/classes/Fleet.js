@@ -132,7 +132,6 @@ export default class Fleet {
 		if ( this.star ) { 
 			let pos = this.star.fleets.indexOf(this);
 			if ( pos !== -1 ) { 
-// 				console.log(`unhooking F${this.id} from ${this.star.name} in pos ${pos}`);
 				this.star.fleets.splice( pos, 1 );
 				}
 			}
@@ -238,7 +237,6 @@ export default class Fleet {
 // 			this.xpos = ((1.0-ratio)*this.xpos) + (ratio*this.dest.xpos);
 // 			this.ypos = ((1.0-ratio)*this.ypos) + (ratio*this.dest.ypos);	
 			this.UpdateDestLine();
-// 			console.log(`F${this.id}: I'm going to ${dest.name}! (departing from ${this.star?this.star.name:'--'})`);
 			}
 		this.FireOnUpdate();
 		}
@@ -308,7 +306,6 @@ export default class Fleet {
 				}
 			// sort targets by their prescribed order
 			targets.sort( (a,b) => { return (a.order < b.order) ? -1 : ((a.order > b.order) ? 1 : 0 ); } );
-			console.log(targets);
 			// create the mission. ("status": 0 = in progress / no report, -1 = failed, +1 = success )
 			let time = Math.max( duration, 3 );
 			this.mission = { 
