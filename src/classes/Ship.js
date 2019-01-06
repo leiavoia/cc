@@ -129,7 +129,7 @@ export class ShipBlueprint {
 		this.research = 0;    
 		this.troopcap = 0; // number of ground units we can carry    
 		this.fp = 0; // calculated firepower
-		this.threat = 0; // calculated offensive threat for AI
+		this.milval = 0; // calculated military value for AI
 		// Calculated size class makes it easier to relate to humans.
 		// Uses letters 'A','B','C' ...
 		this.sizeclass = 'A'; 
@@ -235,7 +235,7 @@ export class ShipBlueprint {
 		this.research = Math.floor( this.mods.Apply( 0, 'research', parent ) ); 
 		this.troopcap = Math.floor( this.mods.Apply( 0, 'troopcap', parent ) ); 
 		this.fp = this.CalcFirepowerTotal();
-		this.threat = this.CalcThreat();
+		this.milval = this.CalcMilitaryValue();
 		// class size
 		this.sizeclass ='A';
 		let sizes = ['A','B','C','D','E','F','G','H','I','J','K','L'];
@@ -244,7 +244,7 @@ export class ShipBlueprint {
 			}
 		}
 	
-	CalcThreat() { 
+	CalcMilitaryValue() { 
 		// raw firepower
 		let fp = Math.floor( this.weapons.reduce( ( accum, weapon ) => {
 			// average firepower of weapon

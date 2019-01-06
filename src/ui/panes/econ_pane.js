@@ -9,7 +9,7 @@ export class EconPane {
 			{key: 'research_income', label: 'Research Per Turn'},
 			{key: 'techs', label: 'Techs Researched'},
 			{key: 'ships', label: 'Ships'},
-			{key: 'fp', label: 'Firepower'},
+			{key: 'milval', label: 'Military'},
 			{key: 'cash', label: 'Treasury'},
 			{key: 'planets', label: 'Planets'}
 			];

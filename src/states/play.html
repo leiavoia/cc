@@ -57,15 +57,23 @@
 						<span class="icon icon-transport" if.bind="f.owner.race.is_monster">✾</span>
 					</a>
 				</div>
+				<!-- AI DEBUG -->
 				<p if.bind="app.options.debug && star.settled_by[app.game.myciv.id]"
 					style="box-style: border-box; margin-left: -100%; margin-top: -92px; width: 300%; text-align:center;" 
 					>
-					<span style="color: #AFA;">VAL: ${star.accts.get(app.game.myciv).ai.value | round:1}</span>,&nbsp; 
+					<span style="color: #AFA;">
+						VAL: ${star.accts.get(app.game.myciv).ai.value | round:1}
+						<b>(${star.accts.get(app.game.myciv).ai.value_norm | round:2})</b>
+					</span>,&nbsp; 
 					<span style="color: #F66;">
 						THR: ${star.accts.get(app.game.myciv).ai.threat | round}
 						<b>(${star.accts.get(app.game.myciv).ai.threat_norm | round:2})</b>
 					</span>,&nbsp;
-					<span style="color: #3CF;">DEF: ${star.accts.get(app.game.myciv).ai.defense | round}</span>
+					<span style="color: #3CF;">
+						DEF: ${star.accts.get(app.game.myciv).ai.defense | round}
+						<b>(${star.accts.get(app.game.myciv).ai.defense_norm | round:2})</b>
+						<b if.bind="star.accts.get(app.game.myciv).ai.defense > star.accts.get(app.game.myciv).ai.threat">✔</b>
+					</span>
 				</p>
 			</div>
 			
@@ -141,7 +149,9 @@
 			<!-- AI DEBUG -->
 			<div id="layout_ai_headsup" if.bind="app.options.debug && !app.main_panel_mode">
 				<span style="padding: 0.1em 1em; color:#FFF;text-shadow:1px 1px 0 #000; background-color: ${app.game.myciv.color}">${app.game.myciv.name}</span><br/>
+				<br/>
 				staging: <span repeat.for="pt of app.game.myciv.ai.staging_pts">${pt.name} </span><br/>
+				<br/>
 				needs.colony_ships: ${app.game.myciv.ai.needs.colony_ships|round}<br/>
 				needs.combat_ships: ${app.game.myciv.ai.needs.combat_ships|round}<br/>
 				needs.troop_ships: ${app.game.myciv.ai.needs.troop_ships|round}<br/>
@@ -150,6 +160,18 @@
 				needs.troops: ${app.game.myciv.ai.needs.troops|round}<br/>
 				needs.cash: ${app.game.myciv.ai.needs.cash|round}<br/>
 				needs.tech: ${app.game.myciv.ai.needs.tech|round}<br/>
+				<br/>
+				total_milval: ${app.game.myciv.ai.total_milval|round}<br/>
+				avail_milval: ${app.game.myciv.ai.avail_milval|round}<br/>
+				total_threat: ${app.game.myciv.ai.total_threat|round}<br/>
+				total_starvalue: ${app.game.myciv.ai.total_starvalue|round}<br/>
+				<br/>
+				strat.def: ${app.game.myciv.ai.strat.def}<br/>
+				strat.offense_ratio: ${app.game.myciv.ai.strat.offense_ratio|round:2}<br/>
+				strat.def_planetvalue_weight: ${app.game.myciv.ai.strat.def_planetvalue_weight|round:2}<br/>
+				strat.def_threat_weight: ${app.game.myciv.ai.strat.def_threat_weight|round:2}<br/>
+				strat.risk: ${app.game.myciv.ai.strat.risk|round:2}<br/>
+				strat.posture: ${app.game.myciv.ai.strat.posture|round:2}<br/>
 			</div>
 	
 			<!-- NEWS --> 

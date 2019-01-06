@@ -19,13 +19,18 @@ export default class Fleet {
 	research = false;
 	fp = 0; // firepower total
 	fp_remaining = 0; // firepower remaining
-	threat = 0; // AI threat value
+	milval = 0; // AI military value
 	bulk = 0; // combined "bodyweight" of all ships
 	troopcap = 0; // max capacity
 	troops = 0; // current total
 	health = 0; // current hit points
 	healthmax = 0; // max hit points
-	
+	ai = {
+		desig: null, // fleet designation, e.g. 'attack', 'guard', etc.
+		objective: null, // link to civ's AI mission objective
+		reserved_milval: 0 // designated fleets may need to keep a minimum composition
+		};
+		
 	onUpdate = null; // callback
 	SetOnUpdate( callback ) { 
 		if ( callback instanceof Function ) { 
@@ -72,7 +77,7 @@ export default class Fleet {
 		this.bulk = 0;
 		this.troops = 0;
 		this.troopcap = 0;
-		this.threat = 0;
+		this.milval = 0;
 		for ( let ship of this.ships ) { 
 			// check if there are colony ships
 			if ( ship.bp.colonize ) { this.colonize = true; }
@@ -87,9 +92,9 @@ export default class Fleet {
 			// troops and carriers
 			this.troops += ship.troops.length;
 			this.troopcap += ship.bp.troopcap;
-			// AI threat level
-			this.threat += ship.bp.threat;
-			this.threat += ship.troops.length * 100;
+			// AI milval level
+			this.milval += ship.bp.milval;
+			this.milval += ship.troops.length * 100;
 			// fleet health
 			this.health += ship.hull + ship.armor;
 			this.healthmax += ship.bp.hull + ship.bp.armor;
