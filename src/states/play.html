@@ -59,20 +59,24 @@
 				</div>
 				<!-- AI DEBUG -->
 				<p if.bind="app.options.debug && star.settled_by[app.game.myciv.id]"
-					style="box-style: border-box; margin-left: -100%; margin-top: -92px; width: 300%; text-align:center;" 
+					style="box-style: border-box; margin-left: -200%; margin-top: -92px; width: 500%; text-align:center;" 
 					>
 					<span style="color: #AFA;">
-						VAL: ${star.accts.get(app.game.myciv).ai.value | round:1}
+						VAL: ${star.accts.get(app.game.myciv).ai.value | round}
 						<b>(${star.accts.get(app.game.myciv).ai.value_norm | round:2})</b>
-					</span>,&nbsp; 
+					</span>&nbsp; 
 					<span style="color: #F66;">
 						THR: ${star.accts.get(app.game.myciv).ai.threat | round}
 						<b>(${star.accts.get(app.game.myciv).ai.threat_norm | round:2})</b>
-					</span>,&nbsp;
+					</span>&nbsp;
 					<span style="color: #3CF;">
 						DEF: ${star.accts.get(app.game.myciv).ai.defense | round}
 						<b>(${star.accts.get(app.game.myciv).ai.defense_norm | round:2})</b>
 						<b if.bind="star.accts.get(app.game.myciv).ai.defense > star.accts.get(app.game.myciv).ai.threat">✔</b>
+					</span>&nbsp;
+					<span style="color: #8EF;">	
+						DefBal ${star.accts.get(app.game.myciv).ai.def_priority * app.game.myciv.ai.total_milval | round}
+						<b>(${star.accts.get(app.game.myciv).ai.def_priority | round:2})</b>
 					</span>
 				</p>
 			</div>
