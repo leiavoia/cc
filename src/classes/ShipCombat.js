@@ -273,7 +273,9 @@ export default class ShipCombat {
 				})
 			});	
 		// fast forward to first shot
-		this.time = this.queue[0].p;
+		if ( this.queue.length ) { 
+			this.time = this.queue[0].p;
+			}
 		}
 		
 	RetreatTeam( team ) { 

@@ -25,12 +25,9 @@ export default class Fleet {
 	troops = 0; // current total
 	health = 0; // current hit points
 	healthmax = 0; // max hit points
-	ai = {
-		desig: null, // fleet designation, e.g. 'attack', 'guard', etc.
-		objective: null, // link to civ's AI mission objective
-		reserved_milval: 0 // designated fleets may need to keep a minimum composition
-		};
-		
+	ai = null; // ai objective
+	get reserved_milval() { return ( this.ai && 'milval' in this.ai ) ? this.ai.milval : 0; }	
+	
 	onUpdate = null; // callback
 	SetOnUpdate( callback ) { 
 		if ( callback instanceof Function ) { 
@@ -144,6 +141,7 @@ export default class Fleet {
 		this.dest = null;
 		this.xpos = -1000;
 		this.ypos = -1000;
+		this.ai = null;
 		// signal to other processes to ignore/cleanup 
 		// if they still have references to this fleet
 		this.killme = true; 
@@ -203,6 +201,10 @@ export default class Fleet {
 				f.ReevaluateStats();
 				this.ships = [];
 				this.merged_with = f; // hint for UI
+				// AI objectives: if either fleet has AI objective, dont lose it.
+				// TODO not sure how to handle both fleets having different objectives.
+				f.ai = f.ai || this.ai;
+				if ( f.ai ) { f.ai.fleet = f; }
 				this.Kill();
 				break;
 				}
@@ -330,26 +332,40 @@ export default class Fleet {
 // 		return !this.owner.is_player && this.fp && this.ships.length; // need guns to attack 
     	}
 	    
-	// any juicy planets?
-	AIWantsToInvade( planet ) {
-		if ( !this.troops ) { return false; } 
-		let best_planet = null;
-		let high_score = -1;
-		for ( let p of this.star.planets ) { 
-			if ( this.troops >= p.troops.length ) { 
-				let score = this.troops - p.troops.length;
-				if ( score > high_score ) { 
-					best_planet = p;
-					high_score = score;
-					}
-				}
-			}
-		return best_planet; 
-    	}
+// 	// any juicy planets?
+// 	AIWantsToInvade() {
+// 		if ( !this.troops ) { return false; } 
+// 		let best_planet = null;
+// 		let high_score = -1;
+// 		for ( let p of this.star.planets ) { 
+// 			// if we're on a mission, always pick that planet
+// 			if ( this.ai.mission && this.ai.mission.target == p )  {
+// 				best_planet = p;
+// 				break;
+// 				}
+// 			// otherwise rank planets
+// 			if ( this.owner && this.owner != p.owner && this.troops >= p.troops.length ) { 
+// 				//TODO: score should be planet score
+// 				// or use the planet target of the fleet's AI mission
+// 				let score = this.troops - p.troops.length;
+// 				if ( score > high_score ) { 
+// 					best_planet = p;
+// 					high_score = score;
+// 					}
+// 				}
+// 			}
+// 		return best_planet; 
+//     	}
     	
 	// invade a specific planet?
 	AIWantToInvadePlanet( planet ) {
-		return this.troops && this.troops >= planet.troops.length; 
+		return this.ai 
+			&& this.ai.target == planet
+			&& planet.owner 
+			&& this.owner != planet.owner 
+			&& this.troops 
+			&& this.troops >= planet.troops.length
+			; 
     	}
 	    
 	// returns a mission report for any completed deepspace missions
@@ -421,6 +437,37 @@ export default class Fleet {
 				}
 			}
 		return report;
+		}
+		
+	// dumps all troops from a planet into the fleet
+	TransferTroopsFromPlanet( planet, max ) {
+		let moved = 0;
+		while ( planet.troops.length && this.troopcap > this.troops && moved <= max ) { 
+			let t = planet.troops[0];
+			// find a ship that can hold this unit
+			for ( let s of this.ships ) { // [!]OPTIMIZE this could be optimized
+				if ( s.bp.troopcap > s.troops.length ) { 
+					s.troops.push( t );
+					planet.troops.shift(); // remove from planet
+					moved++;
+					}
+				}
+			}
+		this.ReevaluateStats();
+		}
+		
+	// dumps all troops from a fleet onto a planet
+	TransferTroopsToPlanet( planet ) {
+		for ( let s of this.ships ) {
+			if ( s.troops.length ) { 
+				while ( s.troops.length ) { 
+					planet.troops.push(
+						s.troops.pop()
+						);
+					}
+				}
+			}
+		this.ReevaluateStats();
 		}
 		
 	SortShips() { 

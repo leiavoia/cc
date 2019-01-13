@@ -6,6 +6,7 @@ export function configure(config) {
   	'./value-converters/idealplanetsize',
   	'./value-converters/MinMaxConverter',
   	'./value-converters/percent',
+  	'./value-converters/abs',
   	'./value-converters/round',
   	'./value-converters/ceil',
   	'./value-converters/floor',

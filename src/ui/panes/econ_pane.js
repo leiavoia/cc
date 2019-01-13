@@ -11,7 +11,8 @@ export class EconPane {
 			{key: 'ships', label: 'Ships'},
 			{key: 'milval', label: 'Military'},
 			{key: 'cash', label: 'Treasury'},
-			{key: 'planets', label: 'Planets'}
+			{key: 'planets', label: 'Planets'},
+			{key: 'min_assault', label: 'Min Assault'}
 			];
 		this.mode = 'power';
 		this.chart = null;

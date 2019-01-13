@@ -49,13 +49,13 @@
 					<a href="#" click.trigger="app.SwitchSideBar(p,$event)" repeat.for="p of star.planets" class="${p.settled ? 'settled' : ''}" css="color: ${p.ui_color};"><svg class="icon icon-nature"><use xlink:href="#icon-nature"></use></svg></a>
 				</div>
 				<div if.bind="star.fleets.length" class="fleet_list">
-					<a href="#" click.trigger="app.SwitchSideBar(f,$event)" repeat.for="f of star.fleets" css="color: ${f.ui_color};">
-<!-- 					<svg class="icon icon-transport"><use xlink:href="#icon-transport"></use></svg><span if.bind="app.options.debug">F${f.colonize?'c':''}${f.id}</span> -->
+					<span class="clickable" repeat.for="f of star.fleets" click.trigger="app.SwitchSideBar(f,$event)" css="left:${f.xpos}px; top:${f.ypos}px; color: ${f.owner.color}; border-color: ${f.owner.color};">
 						<svg class="icon icon-transport" if.bind="!f.owner.race.is_monster">
 							<use xlink:href="#icon-transport"></use>
 						</svg>
 						<span class="icon icon-transport" if.bind="f.owner.race.is_monster">✾</span>
-					</a>
+						<span if.bind="app.options.debug">${f.id}</span>
+					</span>	
 				</div>
 				<!-- AI DEBUG -->
 				<p if.bind="app.options.debug && star.settled_by[app.game.myciv.id]"
@@ -95,13 +95,13 @@
 						${anom.size} / v${anom.vis_level} / o${anom.order} / r${app.game.turn_num*0 + anom.AmountResearched(app.game.myciv)} / ${ anom.collected===null ? '-' : ( anom.collected ? '☒' : '☐' ) }
 					</p>
 					<div if.bind="anom.fleets.length" class="fleet_list">
-						<a href="#" click.trigger="app.SwitchSideBar(f,$event)" repeat.for="f of anom.fleets" css="color: ${f.ui_color};">
+						<span class="clickable" repeat.for="f of anom.fleets" click.trigger="app.SwitchSideBar(f,$event)" css="left:${f.xpos}px; top:${f.ypos}px; color: ${f.owner.color}; border-color: ${f.owner.color};">
 							<svg class="icon icon-transport" if.bind="!f.owner.race.is_monster">
 								<use xlink:href="#icon-transport"></use>
 							</svg>
 							<span class="icon icon-transport" if.bind="f.owner.race.is_monster">✾</span>
-							<span if.bind="app.options.debug">F${f.colonize?'c':''}${f.id}</span>
-						</a>
+							<span if.bind="app.options.debug">${f.id}</span>
+						</span>	
 					</div>
 				</div>
 			</template>
@@ -111,17 +111,15 @@
 				<!-- only display fleets en route -->
 				<template containerless if.bind="f.dest && (app.options.show_xtreme_fleets || !app.state_obj.xtreme_zoom) && (app.options.see_all || f.in_range || f.owner == app.game.myciv)">
 					<!-- show destination indicator line -->
-					<div if.bind="!app.state_obj.xtreme_zoom && app.options.see_all || f.owner == app.game.myciv" class="dest_line" css="left:${f.xpos}px; top:${f.ypos}px; width: ${f.dest_line_length}px; transform:  rotate(${f.dest_line_angle}deg) translateY(-5px); "></div>
+					<div if.bind="!app.state_obj.xtreme_zoom && app.options.see_all || f.owner == app.game.myciv" class="dest_line" css="background-color: ${f.owner.color}; left:${f.xpos}px; top:${f.ypos}px; width: ${f.dest_line_length}px; transform:  rotate(${f.dest_line_angle}deg) translateY(-5px); "></div>
 					<!-- show fleet icon -->
-					<div class="fleet_en_route" css="left:${f.xpos}px; top:${f.ypos}px; border-color: ${f.ui_color};">
-						<a href="#" click.delegate="app.SwitchSideBar(f,$event)" css="color: ${f.ui_color};">
-							<svg class="icon icon-transport" if.bind="!f.owner.race.is_monster">
-								<use xlink:href="#icon-transport"></use>
-							</svg>
-							<span class="icon icon-transport" if.bind="f.owner.race.is_monster">✾</span>
-							<span if.bind="app.options.debug">F${f.colonize?'c':''}${f.id}</span>
-						</a>
-					</div>
+					<span class="fleet_en_route clickable" click.delegate="app.SwitchSideBar(f,$event)" css="left:${f.xpos}px; top:${f.ypos}px; color: ${f.owner.color}; border-color: ${f.owner.color};">
+						<svg class="icon icon-transport" if.bind="!f.owner.race.is_monster">
+							<use xlink:href="#icon-transport"></use>
+						</svg>
+						<span class="icon icon-transport" if.bind="f.owner.race.is_monster">✾</span>
+						<span if.bind="app.options.debug">${f.id}</span>
+					</span>
 				</template>
 			</template>
 		</div>		
@@ -176,6 +174,13 @@
 				strat.def_threat_weight: ${app.game.myciv.ai.strat.def_threat_weight|round:2}<br/>
 				strat.risk: ${app.game.myciv.ai.strat.risk|round:2}<br/>
 				strat.posture: ${app.game.myciv.ai.strat.posture|round:2}<br/>
+				strat.min_assault_score: ${app.game.myciv.ai.strat.min_assault_score|round:2}<br/>
+				<br/>
+				objectives: <br/>
+				<span repeat.for="o of app.game.myciv.ai.objectives">
+					[${o.type}] =&gt; ${o.target.name} w/ <span click.delegate="app.SwitchSideBar(o.fleet)" class="clickable">f.${o.fleet.id} ${o.fleet.killme ? '*killed' : ''} s${o.fleet.ships.length}</span>
+					<br/>
+				</span>
 			</div>
 	
 			<!-- NEWS --> 
@@ -210,7 +215,7 @@
 			<a href="#" click.delegate="app.ToggleOption('show_sectors')" class="button ${app.options.show_sectors ? 'alt' : 'cool'}">⛶</a>
 			<a href="#" click.delegate="app.ToggleOption('see_all')" class="button ${app.options.see_all ? 'alt' : 'cool'}">★</a>
 			<a href="#" click.delegate="app.ToggleOption('show_xtreme_fleets')" class="button ${app.options.show_xtreme_fleets ? 'alt' : 'cool'}">▪</a>
-			<a href="#" click.delegate="app.ToggleOption('debug')" class="button ${app.options.debug ? 'alt' : 'cool'}">❇</a>
+			<a href="#" click.delegate="app.ToggleOption('debug')" class="button ${app.options.debug ? 'alt' : 'cool'}">🐞</a>
 			<a href="#" click.delegate="app.ToggleOption('show_xtreme_anoms')" class="button ${app.options.show_xtreme_anoms ? 'alt' : 'cool'}">▰</a>
 			<a href="#" click.delegate="app.ToggleOption('ai')" class="button ${app.options.ai ? 'alt' : 'cool'}">AI</a>
 			<a href="#" click.delegate="app.ToggleOption('soak')" class="button ${app.options.soak ? 'alt' : 'cool'}">Soak</a>
@@ -243,7 +248,8 @@
 		<a href="#" id="nav_button_opt" click.delegate="app.SwitchMainPanel('options')" ><svg class="icon icon-gear"><use xlink:href="#icon-gear"></use></svg></a>
 		<a href="#" id="nav_button_help" click.delegate="app.FocusMap(app.game.galaxy.civs[0].planets[0])" ><svg class="icon icon-signs"><use xlink:href="#icon-signs"></use></svg></a>
 		<a href="#" id="nav_button_turn" click.delegate="app.game.ToggleAutoPlay()" css="color: ${app.game.autoplay ? '#AFA' : '#FFF' }"><svg class="icon icon-arrows-1"><use xlink:href="#icon-arrows-1"></use></svg></a>
-		<a href="#" id="nav_button_turn" click.delegate="app.game.ProcessTurn()"css="color: ${app.game.processing_turn ? '#AFA' : '#FFF' }" ><svg class="icon icon-arrows"><use xlink:href="#icon-arrows"></use></svg></a>
+		<a href="#" id="nav_button_turn" click.delegate="app.game.ProcessTurn(10)" css="color: ${app.game.processing_turn ? '#AFA' : '#FFF' }"><svg class="icon icon-star"><use xlink:href="#icon-star"></use></svg></a>
+		<a href="#" id="nav_button_turn" click.delegate="app.game.ProcessTurn()" css="color: ${app.game.processing_turn ? '#AFA' : '#FFF' }" ><svg class="icon icon-arrows"><use xlink:href="#icon-arrows"></use></svg></a>
 	</div>
 
 </div>

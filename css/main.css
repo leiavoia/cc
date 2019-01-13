@@ -774,7 +774,7 @@ TABLE.env TD.ideal {
 .bottomless {margin-bottom: 0 !important;}
 .marginless {margin: 0 !important;}
 .unpadded {padding: 0 !important;}
-.clickable { cursor: pointer; }
+.clickable { cursor: pointer; pointer-events: auto; }
 
 .bold { font-weight:bold; }
 

@@ -2,7 +2,6 @@ import Anom from './Anom';
 import Star from './Star';
 import Planet from './Planet';
 import Civ from './Civ';
-import Hyperlane from './Hyperlane';
 import Fleet from './Fleet';
 import * as utils from '../util/utils';
 import {Ship,ShipBlueprint} from './Ship';
@@ -28,7 +27,6 @@ export default class Galaxy {
 		
 		// reset data
 		this.stars = [];
-		this.lanes = [];
 		this.anoms = [];
 	
 		// for aesthetics and UI reasons, 

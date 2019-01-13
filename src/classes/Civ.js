@@ -49,6 +49,7 @@ export default class Civ {
 			def_threat_weight: 0.5, // 0..1 amount to consider external threats when defending
 			risk: 0.5, // 0..1 amount of risk AI is willing to take
 			posture: 0.5, // 0..1 balance between turtling (0) and mindless offense (1).
+			min_assault_score: 10000
 			},
 		needs: { 
 			colony_ships: 0,
@@ -469,7 +470,7 @@ export default class Civ {
 		civ.race.env.temp = utils.BiasedRandInt(0, 4, 2, 0.5);
 		civ.race.env.grav = utils.BiasedRandInt(0, 4, 2, 0.5);
 		// AI / personality
-		civ.ai.strat.def = ['balanced', 'triage', 'equal', null][ utils.RandomInt(0,3) ];
+		civ.ai.strat.def = ['balanced', 'triage'/*, 'equal', null*/][ utils.RandomInt(0,1) ];
 		civ.ai.strat.def_threat_weight = Math.random();
 		civ.ai.strat.def_planetvalue_weight = 1 - civ.ai.strat.def_threat_weight;
 		civ.ai.strat.offense_ratio = Math.random();
@@ -542,7 +543,8 @@ export default class Civ {
 			ships,
 			milval, 
 			planets: this.planets.length,
-			cash: this.treasury
+			cash: this.treasury,
+			min_assault: ( this.ai.strat.min_assault_score > 500 ? 500 : this.ai.strat.min_assault_score )
 			});
 		}
 		
@@ -558,16 +560,44 @@ export default class Civ {
 		}
 		
 	// find a particular objective
-	AI_QueryObjectives( type, obj ) {
-		for ( let o of this.ai.objectives ) { 
-			if ( o.type == type && obj == o.obj ) { 
-				return o;
+	AI_QueryObjectives( type, target=null ) {
+		return this.ai.objectives.filter( o => 
+			o.type == type && ( target == o.target || !target )
+			);
+		}
+	
+	AI_RemoveObsoleteObjectives(app) {
+		for ( let i = this.ai.objectives.length-1; i >=0; i-- ) { 
+			let m = this.ai.objectives[i];
+			let killme = false;
+			if ( m.type == 'invade' ) { 
+				// planet acquired
+				if ( m.target.owner == this ) { 
+					killme = true; 
+					console.log(`!!!!!!!!!! ${this.name}: Mission Complete: [${m.type}] ${m.target.name}. ` + (m.target.owner == this ? 'Planet acquired!' : ''));
+					}
+				// assigned fleet destroyed
+				else if ( m.fleet.killme ) { 
+					killme = true; 
+					console.log(`:-( ${this.name}: Mission Failed, Fleet Destroyed: [${m.type}] ${m.target.name}. ` + (m.target.owner == this ? 'Planet acquired!' : ''));
+					}
+				// mission complete
+				if ( killme ) { 
+					// fleet AI disengage
+					m.fleet.ai = null;	
+					this.ai.objectives.splice(i,1);
+					}
+				// TODO: we don't know how to wait for reinforcements,
+				// so if we don't secure the area in one shot, we are not going to.
 				}
-			}
-		return null;
+			else {
+			
+				}
+			}	
 		}
 		
 	AI_EvaluateObjectives(app) { 
+		this.AI_RemoveObsoleteObjectives(app);
 		this.AI_Colonize(app);
 		this.AI_Defend(app);
 		this.AI_Attack(app);
@@ -580,14 +610,14 @@ export default class Civ {
 		// already there?
 		if ( fleet.star == star || fleet.dest == star ) { return; }
 		// if they need everything we've got, just reroute the entire fleet.
-		if ( milval_needed >= fleet.milval && !fleet.ai.reserved_milval ) {
+		if ( milval_needed >= fleet.milval && !fleet.reserved_milval ) {
 			fleet.SetDest( star );
 			return fleet.milval;
 			}
 		// otherwise, get some random ships
 		else {
 			let ships_to_send = [];
-			let max_milval_to_strip = fleet.milval - fleet.ai.reserved_milval;
+			let max_milval_to_strip = fleet.milval - fleet.reserved_milval;
 			let milval_stripped = 0;
 			for ( let i=fleet.ships.length-1; i >= 0 && milval_needed > 0 && milval_stripped < max_milval_to_strip; i-- ) { 
 				let ship = fleet.ships[i];
@@ -768,6 +798,109 @@ export default class Civ {
 		}
 		
 	AI_Attack(app) {
+		this.ai.needs.troop_ships = 2;
+		this.ai.needs.troops = 2;
+		
+		let att_missions = this.ai.objectives.filter( o => o.type=='invade' );
+			
+		// start building troops
+		this.ai.needs.troop_ships += att_missions.length * 3; // TODO
+		this.ai.needs.troops += att_missions.length * 3; // TODO
+		
+		// if i have enough objectives already, do not accept more.
+		if ( att_missions.length > 1 /*Math.ceil( this.planets.length / 3 )*/ ) {
+// 			console.log('too many missions. ignoring attack routine');
+			return;
+			}
+			
+		// what's the best planet i have? 
+		let my_best_planet = this.planets.reduce( (v,p) => Math.max(p.ValueTo(this),v), 0 );
+		// how many planets are available for me to colonize still?
+		// TODO may want to factor this out as a general AI signal
+		let uncolonized = 0;
+		let best_uncolonized = 0;
+		for ( let s of app.game.galaxy.stars ) { 
+			for ( let p of s.planets ) { 
+				if ( !p.owner && this.InRangeOf(p.star.xpos,p.star.ypos) ) { 
+					let v = p.ValueTo(this);
+					if ( v ) { 
+						uncolonized++;
+						if ( v > best_uncolonized ) { best_uncolonized = v; }
+						}
+					}
+				}
+			}
+			
+		// find the minimum score we would be willing to accept
+		this.ai.strat.min_assault_score = 
+			my_best_planet 
+			* ( (1 + uncolonized) * 0.5  )
+			* ( (0.5 - this.ai.strat.posture) * 0.5 + 1 ) // more posture means more offensive tendency
+			/ ((app.game.turn_num+1) / 50) // war more likely after turn 50
+			;
+			
+		// find a list of planets we might like to have
+		let planets = []; // { planet, score }
+		for ( let civ of app.game.galaxy.civs ) { 
+			if ( civ == this || civ.race.is_monster ) { continue; }
+			// diplo status is important, but we wont write off something 
+			// really juicy just because we're "friends"
+			for ( let p of civ.planets ) { 
+				let score = p.ValueTo(this);
+				if ( score ) { // must be at habitable at least
+					// TODO: at war? basically free for the taking!
+					// if ( 1 /* at war */ ) { score *= 2; }
+					// else if ( 0 /* at peace */ ) { score *= 0.5; }
+					// defended?
+					let defender = p.OwnerFleet();
+					if ( defender && defender.milval ) { 
+						// hard to gauge "how defended this is" because it depends
+						// on our own fleet strength available
+						let difficulty = defender.milval / this.ai.total_milval;
+						score -= 30 * difficulty * (1-this.ai.strat.risk);
+						}
+					// ground forces to overcome?
+					if ( p.troops.length ) { score -= p.troops.length * 2 * (1-this.ai.strat.risk); }
+					// we already have a foothold there?
+					if ( p.star.accts.has(this) ) { score *= 1.5; }
+					// likelyhood of getting our butts kicked
+					score *= ( this.ai.total_milval / p.owner.ai.total_milval ) * (1+this.ai.strat.risk)
+					// meets minimum score? 
+					if ( score > this.ai.strat.min_assault_score ) { 
+						planets.push({ planet: p, score, raw: p.ValueTo(this) }); 
+						}
+					}
+				}
+			}
+		if ( planets.length ) { 
+			planets.sort( (a,b) => a.score > b.score ? -1 : 1 );
+			for ( let p of planets ) { 
+				p = p.planet;
+				// no duplicate missions
+				let dups = this.AI_QueryObjectives( 'invade', p );
+				if ( dups.length ) { continue; }
+				// find a fleet that can handle this mission
+				// check our staging points
+				let fleet = null;
+				for ( let s of this.ai.staging_pts ) { 
+					let f = s.fleets.filter( f => f.owner == this && !f.dest && !f.killme && f.troops  ).pop();
+					if ( f && ( !fleet || fleet.milval < f.milval ) ) { fleet = f; }
+					}
+				if ( fleet ) { 
+					let m = { type: 'invade', target: p, fleet: fleet };
+					this.ai.objectives.push(m);
+					fleet.ai = m;
+					// pick up troops
+					fleet.star.planets.forEach( p => { 
+						if ( p.owner == this ) { 
+							fleet.TransferTroopsFromPlanet( p );
+							}
+						});
+					fleet.SetDest(p.star);
+					console.log(`${this.name}: Adding invasion mission: ${p.name}, fleet ${fleet.id}`);
+					}
+				}
+			}
 		// baseline military
 		this.ai.needs.combat_ships += 2000;
 		}
@@ -799,7 +932,7 @@ export default class Civ {
 					}
 				}
 			// combat ships
-			if ( this.ai.needs.combat_ships > 0 ) {
+			if ( this.ai.needs.combat_ships > 0 && p.prod_q.length <= 5 ) {
 				// find the best combat blueprint appropriate for this planet. 
 				// TODO: AI build preferance algorithm goes here ;-)
 				let bps = this.ship_blueprints.filter( bp => bp.milval > 0 && !bp.colonize && !bp.troopcap );
@@ -813,20 +946,36 @@ export default class Civ {
 					}				
 				}
 			// troop ships
-			if ( this.ai.needs.troop_ships > 0 ) { 
-				
+			if ( this.ai.needs.troop_ships > 0 && p.prod_q.length <= 5  ) { 
+				// find the best combat blueprint for troopships
+				let bps = this.ship_blueprints.filter( bp => bp.troopcap > 0 );
+				// pick one at random
+				if ( bps.length ) { 
+					let bp = bps[ utils.RandomInt(0, bps.length-1) ];
+					// note: by adding just one, it will
+					// encourage other planets to build some too
+					p.AddBuildQueueShipBlueprint( bp );
+					this.ai.needs.troop_ships--;
+					}				
 				}
 			// research ships
 			if ( this.ai.needs.research_ships > 0 ) { 
 				
 				}
-			// research ships
+			// scout ships
 			if ( this.ai.needs.scout_ships > 0 ) { 
 				
 				}
 			// troops / ground units
-			if ( this.ai.needs.troops > 0 ) { 
-				
+			if ( this.ai.needs.troops > 0 && p.prod_q.length <= 7   ) { 
+				// find the best troop blueprint
+				if ( this.groundunit_blueprints.length ) { 
+					let bp = this.groundunit_blueprints[this.groundunit_blueprints.length-1];
+					// note: by adding just one, it will
+					// encourage other planets to build some too
+					p.AddBuildQueueGroundUnitBlueprint( bp );
+					this.ai.needs.troops--;
+					}			
 				}
 			// tech research
 			if ( this.ai.needs.tech > 0 ) { 
@@ -961,10 +1110,10 @@ export default class Civ {
 			if ( !star_already_evaluated ) { 
 				// defense
 				let f = p.OwnerFleet();
-				if ( f ) { // firepower!
+				if ( f ) {
 					acct.ai.defense = f.milval; // TODO: factor in fleets on missions?
 					this.ai.total_milval += f.milval;
-					this.ai.avail_milval += (f.milval - f.ai.reserved_milval);
+					this.ai.avail_milval += (f.milval - f.reserved_milval);
 					}
 				// threats
 				for ( let c of app.game.galaxy.civs ) { 
@@ -973,6 +1122,9 @@ export default class Civ {
 					// but have no planets to calculate range.
 					if ( !c.InRangeOfCiv( this ) && c.planets.length ) { continue; }
 					// TODO: factor in diplomatic situation
+					// TODO: if star is theoretically reachable by ANY
+					// unfriendly fleet, that should be a mild concern regardless
+					// of presence of any actual fleets right now.
 					for ( let f of c.fleets ) { 
 						if ( f.killme || f.mission || !f.fp ) { continue; }
 						let is_a_threat = false;

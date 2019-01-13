@@ -10,6 +10,7 @@ import * as Signals from '../util/signals';
 import FastPriorityQueue from 'fastpriorityqueue';
 import EventLibrary from './EventLibrary';
 import ShipCombat from './ShipCombat';
+import GroundCombat from './GroundCombat';
 import {VictoryRecipes,VictoryIngredients} from './VictoryRecipes';
 
 
@@ -157,7 +158,8 @@ export default class Game {
 		// TODO: lock the UI
 		
 		for ( let t=0; t < num_turns; t++ ) { 
-
+// 			console.time('Turn Processor');
+			
 			// calculate how many material points (mining) we can afford 
 			// to distribute to those planets in need.
 			for ( let civ of this.galaxy.civs ) { 
@@ -186,7 +188,7 @@ export default class Game {
 				}
 			
 			// Planetary Economics
-			console.time('Planetary Econ');
+// 			console.time('Planetary Econ');
 			for ( let s of this.galaxy.stars ) { 
 				for ( let p of s.planets ) {
 					if ( p.settled ) {  
@@ -262,32 +264,32 @@ export default class Game {
 						}
 					}
 				}
-			console.timeEnd('Planetary Econ');
+// 			console.timeEnd('Planetary Econ');
 			
 			// restock weapons
-			console.time('Fleet Reloading');
+// 			console.time('Fleet Reloading');
 			for ( let f of this.galaxy.fleets ) { 
 				f.ReloadAllShipWeapons();
 				f.ReevaluateStats();
 				}
-			console.timeEnd('Fleet Reloading');
+// 			console.timeEnd('Fleet Reloading');
 			
 			// AI!
 			if ( this.app.options.ai ) { 
-				console.time('AI');
+// 				console.time('AI');
 				for ( let civ of this.galaxy.civs ) { 
 					civ.TurnAI( this.app );
 					}
-				console.timeEnd('AI');
+// 				console.timeEnd('AI');
 				}
 				
 			// important to do ship research BEFORE moving ships,
 			// otherwise they get to do both in one turn. Not allowed.
-			console.time('Fleet Research');
+// 			console.time('Fleet Research');
 			this.DoFleetResearch();
-			console.timeEnd('Fleet Research');
+// 			console.timeEnd('Fleet Research');
 			
-			console.time('Ship Movement');
+// 			console.time('Ship Movement');
 			// ship movement. TECHNICAL: loop backwards because moving can 
 			// remove fleets from the list when they land at destinations.
 			for ( let i = this.galaxy.fleets.length-1; i >= 0; i-- ) { 
@@ -318,34 +320,35 @@ export default class Game {
 				this.app.state_obj.caret.obj = null;
 				}
 			this.app.state_obj.SetCaret( this.app.state_obj.caret.obj );
-			console.timeEnd('Ship Movement');
+// 			console.timeEnd('Ship Movement');
 			
 			// RESEARCH
-			console.time('Research');
+// 			console.time('Research');
 			for ( let civ of this.galaxy.civs ) { 
 				civ.DoResearch( this.app );
 				}	
-			console.timeEnd('Research');
+// 			console.timeEnd('Research');
 			
-			// find potential ship combats
-			console.time('Finding ship combats');
+			// find potential combats
+// 			console.time('Finding combats');
 			this.FindShipCombats();
-			console.timeEnd('Finding ship combats');
+			this.FindGroundCombats();
+// 			console.timeEnd('Finding combats');
 			
 			// [!]OPTIMIZE we can optimize this out of the loop if 
 			// we limit it to events that change planets or ship ranges
-			console.time('Recalc Civ Contact');
+// 			console.time('Recalc Civ Contact');
 			this.RecalcCivContactRange();
-			console.timeEnd('Recalc Civ Contact');
+// 			console.timeEnd('Recalc Civ Contact');
 			
-			console.time('Recalc Star Range');
+// 			console.time('Recalc Star Range');
 			this.RecalcStarRanges();
-			console.timeEnd('Recalc Star Range');
+// 			console.timeEnd('Recalc Star Range');
 				
 			// fleets move, so we need to do this on each turn
-			console.time('Recalc Fleet Range');
+// 			console.time('Recalc Fleet Range');
 			this.RecalcFleetRanges(); 
-			console.timeEnd('Recalc Fleet Range');
+// 			console.timeEnd('Recalc Fleet Range');
 				
 			// calculate overall civ power scores
 			for ( let civ of this.galaxy.civs ) { 
@@ -370,6 +373,7 @@ export default class Game {
 			
 			this.turn_num++;
 			
+// 			console.timeEnd('Turn Processor');
 			//
 			// At this point the turn is considered "processed",
 			// however the player may still need to complete
@@ -406,8 +410,8 @@ export default class Game {
 		}
 		
 	FindShipCombats() {
-		// find all combats
-		this.galaxy.stars.forEach( star => {
+		// find all combats (stars and anomalies)
+		this.galaxy.stars.concat( this.galaxy.anoms ).forEach( star => {
 			if ( star.fleets.length > 1 ) { 
 				for ( let fleet_a=0; fleet_a < star.fleets.length-1; fleet_a++ ) {
 					if ( star.fleets[fleet_a].fp_remaining ) { 
@@ -437,18 +441,11 @@ export default class Game {
 				continue; 
 				}
 			// otherwise autoresolve in background
-			console.log('Auto-resolving AI combat: ' + sc.label);
 			let combat = new ShipCombat( sc.attacker, sc.defender, sc.planet );
 			combat.ProcessQueue( 1000 ); // 1000 = fight to the death if possible
 			combat.End();
-			// if the attacker was successfull and has troops onboard, offer option to invade
-			if ( combat.teams[0].status == 'victory' && combat.teams[0].fleet.troops ) { 
-				// choose a juicy target
-				let planet = combat.teams[0].fleet.AIWantsToInvade();
-				if ( planet ) { 
-					this.QueueGroundCombat( combat.teams[0].fleet, planet );
-					}
-				}
+			console.log('Resolved ship combat: ' + sc.label + ', WINNER: ' + combat.winner);
+			this.shipcombats.splice( c, 1 ); // delete
 			};
 		}
     
@@ -458,10 +455,11 @@ export default class Game {
 		for ( let star of this.galaxy.stars ) {
 			if ( star.fleets.length && star.planets.length ) { 
 				for ( let fleet of star.fleets ) { 
-					if ( !fleet.owner.is_player && fleet.troops ) { 
+					if ( (this.app.options.soak || !fleet.owner.is_player) && fleet.troops && !fleet.mission && !fleet.killme ) { 
 						for ( let planet of star.planets ) { 
 							if ( planet.owner != fleet.owner ) { 
-								if ( fleet.AIWantToAttackPlanet(planet) ) { 
+								if ( fleet.AIWantToInvadePlanet(planet) && !planet.OwnerFleet() ) {
+									console.log(`GC: ${fleet.owner.name} wants to invade ${planet.name}`);
 									this.QueueGroundCombat( fleet, planet );
 									}
 								}
@@ -484,9 +482,10 @@ export default class Game {
 				continue; 
 				}
 			// otherwise autoresolve in background
-			console.log('Auto-resolving AI planetary invasion: ' + gc.label);
 			let combat = new GroundCombat( gc.attacker, gc.planet );
 			combat.Run( true ); // true = fight to the death
+			console.log(`INVASION :: ${gc.attacker.owner.name} invading ${gc.planet.name}, winner: ${gc.winner}`);
+			this.groundcombats.splice( c, 1 ); // delete
 			}
 		}
     
