@@ -868,6 +868,8 @@ export default class Planet {
 		this.star.accts.get(this.owner).planets--;
 		let i = this.owner.planets.indexOf( this );
 		if ( i > -1 ) { this.owner.planets.splice( i, 1 ); } 
+		this.prod_q.splice(0,this.prod_q.length);
+		this.AddBuildQueueMakeworkProject('tradegoods'); 
 		this.owner = invader;
 		this.UpdateOwnership();
 		// TODO: morale penalty?

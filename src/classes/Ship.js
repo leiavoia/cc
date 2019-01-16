@@ -115,6 +115,7 @@ export class ShipBlueprint {
 	constructor() {
 		this.id = ++ShipBlueprint.next_id;
 		this.name = 'Ship Name';
+		this.role = 'scout'; // helps AI. ['scout','combat','colonizer','carrier','research']
 		this.weapons = [];
 		this.mass = 0;
 		this.hull = 1;
@@ -144,7 +145,7 @@ export class ShipBlueprint {
 		this.IncNumBuilt();
 		return s;
 		};
-	
+		
 	// returns true on success, false on failure
 	AddWeapon( tag, qty = 1 ) {
 		// check for existing weapons, just add qty
@@ -242,6 +243,12 @@ export class ShipBlueprint {
 		for ( let max=50, i=1; this.hull > max; max*=2, i++ ) {
 			this.sizeclass = sizes[i];
 			}
+		// primary role
+		if ( this.colonize ) { this.role = 'colonizer'; }
+		else if ( this.research ) { this.role = 'research'; }
+		else if ( this.troopcap ) { this.role = 'carrier'; }
+		else if ( this.fp ) { this.role = 'combat'; }
+		else { this.role = 'scout'; }
 		}
 	
 	CalcMilitaryValue() { 

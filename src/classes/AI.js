@@ -43,6 +43,8 @@ export class CivAI extends AI {
 	total_threat = 0;
 	total_starvalue = 0;
 	num_uncolonized = 0;
+	total_troops = 0;
+	total_troopships = 0;
 	strat = { 
 		def: 'balanced', // star system defense strategy [balanced, triage, equal, none, null]
 		offense_ratio: 0.5, // 0..1. guides fleet composition and mission assignment
@@ -448,34 +450,46 @@ export class AIOffenseObjective extends AIObjective {
 	type = 'offense';
 	priority = 20;
 	EvaluateFunc( app, civ ) { 
+		this.note = '';
 		
 		let max_missions = 1;
-		let att_missions = civ.ai.objectives.filter( o => o.type=='invade' ).length;
+		let att_missions = civ.ai.objectives.filter( o => o.type=='invade' );
 		
-		// count how many troops we have in production
-		civ.ai.needs.troop_ships = civ.ai.total_troopships;
-		civ.ai.needs.troops = civ.ai.total_troops;
+		// how much ground power do i need to meet all objectives?
+		civ.ai.needs.troops = att_missions.reduce( (total,m) => {
+			return total + ( ( m.target && m.target.owner != civ ) ? m.target.troops.length : 0 );
+			}, 0 );
+		// this should tell me how many troop ships i need, plus a little extra
+		civ.ai.needs.troop_ships = civ.ai.needs.troops;
+		// also factor in how much security i need to protect all of my planets
+		civ.ai.needs.troops += civ.planets.length * 3; // TODO scale with time. TODO: AI personality
+		// balance this with what is in production
 		for ( let p of civ.planets ) {
 			for ( let i of p.prod_q ) {
 				if ( i.type == 'groundunit' ) {
 					civ.ai.needs.troops--;
 					}
-				else if ( i.type == 'ship' && i.obj.troopcap ) {
+				else if ( i.type == 'ship' && i.obj.role=='carrier' ) {
 					civ.ai.needs.troop_ships--;
 					}
 				}
 			}
-		
-		if ( att_missions ) { 
-			this.note = `${att_missions} missions`;
+		// ... and what we have on hand
+		for ( let f of civ.fleets ) {
+			if ( f.killme || f.mission ) { continue; } 
+			civ.ai.needs.troop_ships - f.troopcap;
+			civ.ai.needs.troops - f.troops;
 			}
 		
-		// if i have enough objectives already, do not accept more.
-		if ( att_missions >= max_missions ) {
-			this.note += ' /!\\';
-			return true;
+		if ( att_missions.length ) { 
+			this.note = `${att_missions.length} missions`;
+			// if i have enough objectives already, do not accept more.
+			if ( att_missions.length >= max_missions ) {
+				this.note = this.note + ' /!\\';
+				return true;
+				}
 			}
-			
+		
 		// what's the best planet i have? 
 		let my_best_planet = civ.planets.reduce( (v,p) => Math.max(p.ValueTo(civ),v), 0 );
 		// how many planets are available for me to colonize still?
@@ -546,10 +560,7 @@ export class AIOffenseObjective extends AIObjective {
 				civ.ai.objectives.push(m);
 				m.Evaluate(app,civ); // this activates it
 				console.log(`${civ.name}: Adding invasion mission: ${p.name}`);
-				att_missions++;
-				if ( att_missions >= max_missions ) { 
-					break;
-					}
+				if ( ++att_missions.length >= max_missions ) { break; }
 				}
 			}
 		// baseline military
@@ -653,92 +664,145 @@ export class AIColonizeObjective extends AIObjective {
 export class AIPlanetsObjective extends AIObjective { 	
 	type = 'planets';
 	priority = 50;
-	EvaluateFunc( app, civ ) { 
+	EvaluateFunc( app, civ ) {
+				
+		// what is our average combat ship milval?
+		let combat_bps = civ.ship_blueprints.filter( bp => bp.role == 'combat' );
+		let avg_milval = combat_bps.reduce( (total,bp) => total+bp.milval, 0 ) / combat_bps.length;
+			
 		for ( let p of civ.planets ) { 
-			// colony ships
-			if ( civ.ai.needs.colony_ships > 0 ) { 
-				for ( let bp of civ.ship_blueprints ) { 
-					if ( bp.colonize ) { 
-						// note: by adding just one, it will
-						// encourage other planets to build some too
-						p.AddBuildQueueShipBlueprint( bp );
-						--civ.ai.needs.colony_ships;
-						break;
-						}
-					}
-				}
-			else if ( civ.ai.needs.colony_ships < 0 && p.prod_q.length > 1 ) { 
-				// we need to get rid of some unbuilt colony ships
-				for ( let i=1; i < p.prod_q.length; i++ ) { // start on the first one
-					if ( p.prod_q[i].type == 'ship' && p.prod_q[i].obj.colonize ) {
+			// Purge unneeded queue items
+			if ( p.prod_q.length > 1 ) { 
+				// skip the one in the first slot because it may be half-built already
+				for ( let i=p.prod_q.length-1; i > 0; i-- ) { 
+					if ( p.prod_q[i].type != 'ship' ) { continue; }
+					// colony ships
+					if ( civ.ai.needs.colony_ships < 0 && p.prod_q[i].obj.role=='colonizer' ) {
 						civ.ai.needs.colony_ships += ( p.prod_q[i].qty == -1 ) ? 1 : p.prod_q[i].qty;
+						p.prod_q.splice(i,1);
+						}
+					// research ships
+					else if ( civ.ai.needs.research_ships < 0 && p.prod_q[i].obj.role=='research' ) {
+						civ.ai.needs.research_ships += ( p.prod_q[i].qty == -1 ) ? 1 : p.prod_q[i].qty;
+						p.prod_q.splice(i,1);
+						}
+					// troop ships
+					else if ( civ.ai.needs.troop_ships < 0 && p.prod_q[i].obj.role=='carrier' ) {
+						civ.ai.needs.troop_ships += ( p.prod_q[i].qty == -1 ) ? 1 : p.prod_q[i].qty;
+						p.prod_q.splice(i,1);
+						}
+					// combat ships (check queue length because combat needs tend to vascillate wildly each turn)
+					else if ( p.prod_q.length > 5 && civ.ai.needs.combat_ships < 0 && p.prod_q[i].obj.role=='combat' ) {
+						civ.ai.needs.combat_ships += ( p.prod_q[i].qty == -1 ) ? 1 : p.prod_q[i].qty;
+						p.prod_q.splice(i,1);
+						}
+					// scout ships
+					else if ( civ.ai.needs.scout_ships < 0 && p.prod_q[i].obj.role=='scout' ) {
+						civ.ai.needs.scout_ships += ( p.prod_q[i].qty == -1 ) ? 1 : p.prod_q[i].qty;
+						p.prod_q.splice(i,1);
 						}
 					}
 				}
-			// combat ships
-			if ( civ.ai.needs.combat_ships > 0 && p.prod_q.length <= 5 ) {
-				// find the best combat blueprint appropriate for civ planet. 
-				// TODO: AI build preferance algorithm goes here ;-)
-				let bps = civ.ship_blueprints.filter( bp => bp.milval > 0 && !bp.colonize && !bp.troopcap );
-				// pick one at random
-				if ( bps.length ) { 
-					let bp = bps[ utils.RandomInt(0, bps.length-1) ];
-					// note: by adding just one, it will
-					// encourage other planets to build some too
-					p.AddBuildQueueShipBlueprint( bp );
-					civ.ai.needs.combat_ships -= bp.milval;
-					}				
-				}
-			// troop ships
-			if ( civ.ai.needs.troop_ships > 0 && p.prod_q.length <= 5  ) { 
-				// find the best combat blueprint for troopships
-				let bps = civ.ship_blueprints.filter( bp => bp.troopcap > 0 );
-				// pick one at random
-				if ( bps.length ) { 
-					let bp = bps[ utils.RandomInt(0, bps.length-1) ];
-					// note: by adding just one, it will
-					// encourage other planets to build some too
-					p.AddBuildQueueShipBlueprint( bp );
-					civ.ai.needs.troop_ships--;
-					}				
-				}
-			// research ships
-			if ( civ.ai.needs.research_ships > 0 ) { 
+
+			// in order to decide what to build here,
+			// we create a custom weighting function based 
+			// on current supply and demand and then pick something
+			// to build, if anything at all.
+			let RollForBuildItem = () => { 
+				let weights = [
+					{ need: 'colony_ships', score: 1.0 * civ.ai.needs.colony_ships },
+					{ need: 'combat_ships', score: civ.ai.needs.combat_ships / avg_milval },
+					{ need: 'troop_ships', score: 1.0 * civ.ai.needs.troop_ships },
+					{ need: 'research_ships', score: 1.0 * civ.ai.needs.research_ships },
+					{ need: 'scout_ships', score: 1.0 * civ.ai.needs.scout_ships },
+					{ need: 'troops', score: 1.0 * civ.ai.needs.troops },
+// 					{ need: 'tech', score: 1.0 * civ.ai.needs.tech },
+// 					{ need: 'cash', score: 1.0 * civ.ai.needs.cash },
+					]
+					.filter( i => i.score > 0 );
+				weights.sort( (a,b) => a-b );
+				let thing = weights.pop();
+				return thing ? thing.need : null;
+				};
 				
-				}
-			// scout ships
-			if ( civ.ai.needs.scout_ships > 0 ) { 
-				
-				}
-			// troops / ground units
-			if ( civ.ai.needs.troops > 0 && p.prod_q.length <= 7   ) { 
-				// find the best troop blueprint
-				if ( civ.groundunit_blueprints.length ) { 
-					let bp = civ.groundunit_blueprints[civ.groundunit_blueprints.length-1];
-					// note: by adding just one, it will
-					// encourage other planets to build some too
-					p.AddBuildQueueGroundUnitBlueprint( bp );
-					civ.ai.needs.troops--;
-					}			
-				}
-			// tech research
-			if ( civ.ai.needs.tech > 0 ) { 
-				
-				}
-			// cash
-			if ( civ.ai.needs.cash > 0 ) { 
-				// already in queue?
-				let inq = false;
-				for ( let i of p.prod_q ) { 
-					if ( i.obj == 'tradegoods' ) {
-						inq = true; break;
+			if ( p.prod_q.length < 7 ) { // dont overload the queue
+				let thing_to_build = RollForBuildItem();
+				if ( thing_to_build ) { 
+					switch ( thing_to_build ) {
+						case 'colony_ships' : { 
+							for ( let bp of civ.ship_blueprints ) { 
+								if ( bp.colonize ) { 
+									p.AddBuildQueueShipBlueprint( bp );
+									civ.ai.needs.colony_ships--;
+									break;
+									}
+								}
+							break;
+							}
+						case 'combat_ships' : { 
+							// find the best combat blueprint appropriate for civ planet. 
+							// TODO: AI build preferance algorithm goes here ;-)
+							if ( combat_bps.length ) { 
+								let bp = combat_bps[ utils.RandomInt(0, combat_bps.length-1) ];
+								p.AddBuildQueueShipBlueprint( bp );
+								civ.ai.needs.combat_ships -= bp.milval;
+								}					
+							break;
+							}
+						case 'troop_ships' : { 
+							// find the best combat blueprint for troopships
+							let bps = civ.ship_blueprints.filter( bp => bp.role=='carrier' );
+							if ( bps.length ) { 
+								let bp = bps[ utils.RandomInt(0, bps.length-1) ];
+								p.AddBuildQueueShipBlueprint( bp );
+								civ.ai.needs.troop_ships--;
+								}					
+							break;
+							}
+						case 'troops' : { 
+							// find the best troop blueprint
+							if ( civ.groundunit_blueprints.length ) { 
+								let bp = civ.groundunit_blueprints[civ.groundunit_blueprints.length-1];
+								p.AddBuildQueueGroundUnitBlueprint( bp );
+								civ.ai.needs.troops--;
+								}						
+							break;
+							}
+						case 'research_ships' : { 
+							let bps = civ.ship_blueprints.filter( bp => bp.role=='research' );
+							if ( bps.length ) { 
+								let bp = bps[ utils.RandomInt(0, bps.length-1) ];
+								p.AddBuildQueueShipBlueprint( bp );
+								civ.ai.needs.research_ships--;
+								}					
+							break;
+							}
+						case 'scout_ships' : { 
+							let bps = civ.ship_blueprints.filter( bp => bp.role=='scout' );
+							if ( bps.length ) { 
+								let bp = bps[ utils.RandomInt(0, bps.length-1) ];
+								p.AddBuildQueueShipBlueprint( bp );
+								civ.ai.needs.scout_ships--;
+								}					
+							break;
+							}
 						}
 					}
-				if ( !inq ) { 
-					p.AddBuildQueueMakeworkProject( 'tradegoods' );
+				}
+				
+			// always put tradegoods at the end of the queue
+			let tradegoods_in_queue = false;
+			for ( let i of p.prod_q ) { 
+				if ( i.obj == 'tradegoods' ) {
+					tradegoods_in_queue = true; 
+					break;
 					}
+				}
+			if ( !tradegoods_in_queue ) { 
+				p.AddBuildQueueMakeworkProject( 'tradegoods' );
 				}
 			}	
+			
 		return true;
 		}			
 	}
@@ -796,10 +860,9 @@ export class AIInvadeObjective extends AIObjective {
 			let defender = this.target.OwnerFleet();
 			let milval_needed = defender ? defender.milval : 0;
 			milval_needed *= 2 * (1-civ.ai.strat.risk);
-			// find a new fleet from a staging point
-			for ( let pt of civ.ai.staging_pts ) { 
-				let f = pt.FleetFor(civ);
-				if ( f && !f.killme && !f.mission && !f.dest && f.MilvalAvailable() > milval_needed ) {
+			// find the best whole fleet that can do the job
+			for ( let f of civ.fleets ) { 
+				if ( f.star && !f.killme && !f.mission && !f.dest && !f.ai && f.troopcap && f.MilvalAvailable() > milval_needed ) {
 					if ( !this.fleet ) { this.fleet = f; }
 					else if ( this.fleet && this.fleet.MilvalAvailable() < f.MilvalAvailable() ) { 
 						this.fleet = f;
@@ -840,7 +903,7 @@ export class AIInvadeObjective extends AIObjective {
 		else if ( this.target.star == this.fleet.star && this.target.OwnerFleet() ) { 
 			//
 			// TODO: do i need to check for firepower?
-			// should i assum that because i cannot attack, i am underpowered?
+			// should i assume that because i cannot attack, i am underpowered?
 			// see: Fleet.AIWantsToAttackFleet()
 			//
 			// if we are cowardly, run away!
