@@ -56,6 +56,17 @@ export default class Star {
 		return false;
 		}
 		
+	
+	FleetFor( civ ) { 
+		for ( let f of this.fleets ) { 
+			if ( f.owner == civ ) { 
+				if ( !f.killme && !f.mission && !f.merged_with ) { return f; }
+				else { return null; }
+				}
+			}
+		return null;
+		}
+		
 	// helper function returns the account of the civ.
 	// NOTE deprecated since we switched from civ_id to civ.
 	// prefer to just use `accts.get(civ)` because aurelia

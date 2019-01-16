@@ -378,11 +378,12 @@ body,html {
 	display: block; 
 	text-align: right; 
 	position: absolute; 
-	bottom: 1em; 
+	top: 1em; 
 	right: 1em; 
 	color: #3F3; 
 	font-size: 8pt; 
 	font-family: monospace;
+	opacity: 0.5;
 	}
  
 #layout_ui_content {
@@ -777,7 +778,7 @@ TABLE.env TD.ideal {
 .clickable { cursor: pointer; pointer-events: auto; }
 
 .bold { font-weight:bold; }
-
+.strike, .strikeout { text-decoration: line-through; }
 .small { font-size: 80%; }
 .big { font-size: 120%; }
 

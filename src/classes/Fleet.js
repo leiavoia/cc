@@ -27,6 +27,7 @@ export default class Fleet {
 	healthmax = 0; // max hit points
 	ai = null; // ai objective
 	get reserved_milval() { return ( this.ai && 'milval' in this.ai ) ? this.ai.milval : 0; }	
+	MilvalAvailable() { return ( this.ai && 'milval' in this.ai ) ? ( this.milval - this.ai.milval ).clamp(0,null) : this.milval; }	
 	
 	onUpdate = null; // callback
 	SetOnUpdate( callback ) { 
@@ -327,8 +328,8 @@ export default class Fleet {
 		}
 	
 	AIWantToAttackFleet( fleet ) {
-// 		return false;
 		return this.fp_remaining > fleet.fp_remaining;
+		// TODO - take into account risk tolerance, diplo, AI objectives etc
 // 		return !this.owner.is_player && this.fp && this.ships.length; // need guns to attack 
     	}
 	    

@@ -167,6 +167,9 @@
 				avail_milval: ${app.game.myciv.ai.avail_milval|round}<br/>
 				total_threat: ${app.game.myciv.ai.total_threat|round}<br/>
 				total_starvalue: ${app.game.myciv.ai.total_starvalue|round}<br/>
+				num_uncolonized: ${app.game.myciv.ai.num_uncolonized|round}<br/>
+				total_troops: ${app.game.myciv.ai.total_troops|round}<br/>
+				total_troopships: ${app.game.myciv.ai.total_troopships|round}<br/>
 				<br/>
 				strat.def: ${app.game.myciv.ai.strat.def}<br/>
 				strat.offense_ratio: ${app.game.myciv.ai.strat.offense_ratio|round:2}<br/>
@@ -178,7 +181,18 @@
 				<br/>
 				objectives: <br/>
 				<span repeat.for="o of app.game.myciv.ai.objectives">
-					[${o.type}] =&gt; ${o.target.name} w/ <span click.delegate="app.SwitchSideBar(o.fleet)" class="clickable">f.${o.fleet.id} ${o.fleet.killme ? '*killed' : ''} s${o.fleet.ships.length}</span>
+					[${o.type}]
+					=&gt;  
+					<span if.bind="o.target" click.delegate="app.SwitchSideBar(o.target)" class="clickable">${o.target.name}</span>
+					<span if.bind="o.fleet" click.delegate="app.SwitchSideBar(o.fleet)" class="clickable ${o.fleet.killme ? 'strike' : ''}">F.${o.fleet.id}</span>
+					<span if.bind="o.ttl > -1">TTL.${o.ttl}</span>
+					<span if.bind="o.delay">DL.${o.delay}</span>
+					<i>${o.note}</i>
+					<br/>
+				</span>
+				<br/>completed: <br/>
+				<span repeat.for="o of app.game.myciv.ai.completed">
+					${o.toString()}
 					<br/>
 				</span>
 			</div>
