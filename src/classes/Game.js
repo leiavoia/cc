@@ -483,8 +483,8 @@ export default class Game {
 				}
 			// otherwise autoresolve in background
 			let combat = new GroundCombat( gc.attacker, gc.planet );
-			combat.Run( true ); // true = fight to the death
-			console.log(`INVASION :: ${gc.attacker.owner.name} invading ${gc.planet.name}, winner: ${gc.winner}`);
+			combat.Run(); // fight to the death
+			console.log(`INVASION :: ${gc.attacker.owner.name} invading ${gc.planet.name}, winner: ${combat.winner}`);
 			this.groundcombats.splice( c, 1 ); // delete
 			}
 		}
@@ -573,7 +573,8 @@ export default class Game {
 		// if we are soaking, automate it
 		else if ( this.app.options.soak ) { 
 			let combat = new GroundCombat( c.attacker, c.planet );
-			combat.Run( true ); // true = fight to the death
+			combat.Run(); // fight to the death
+			console.log(`INVASION :: ${c.attacker.owner.name} invading ${c.planet.name}, winner: ${combat.winner}`);
 			this.PresentNextPlayerGroundCombat();
 			}			
 		// if player is the defender, present mandatory battle
@@ -593,7 +594,7 @@ export default class Game {
 						class: "alt",
 						cb: btn => { 
 							let combat = new GroundCombat( c.attacker, c.planet );
-							combat.Run( true ); // true = fight to the death
+							combat.Run(); // fight to the death
 							this.PresentNextPlayerGroundCombat();
 							}
 						}

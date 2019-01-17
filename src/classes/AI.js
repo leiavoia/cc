@@ -186,7 +186,7 @@ export class AIAnalyzeObjective extends AIObjective {
 			}
 		// make a list of star systems while we're doing civ
 		let starsystems = [];
-		// reevaluate values and threats
+		// evaluate values and threats
 		for ( let p of civ.planets ) { 
 			let acct = p.star.accts.get(civ);
 			let star_already_evaluated = acct.ai.value != 0;
@@ -455,16 +455,22 @@ export class AIOffenseObjective extends AIObjective {
 		let max_missions = 1;
 		let att_missions = civ.ai.objectives.filter( o => o.type=='invade' );
 		
+		// we need to maintain at least a minimal force to keep at the ready
+		civ.ai.needs.troops = civ.ai.total_troops < 5 ? (5 - civ.ai.total_troops) : 0;
+		civ.ai.needs.troop_ships = civ.ai.total_troopships < 5 ? (5 - civ.ai.total_troopships) : 0;
 		// how much ground power do i need to meet all objectives?
-		civ.ai.needs.troops = att_missions.reduce( (total,m) => {
+		civ.ai.needs.troops += att_missions.reduce( (total,m) => {
 			return total + ( ( m.target && m.target.owner != civ ) ? m.target.troops.length : 0 );
 			}, 0 );
 		// this should tell me how many troop ships i need, plus a little extra
 		civ.ai.needs.troop_ships = civ.ai.needs.troops;
 		// also factor in how much security i need to protect all of my planets
 		civ.ai.needs.troops += civ.planets.length * 3; // TODO scale with time. TODO: AI personality
-		// balance this with what is in production
+		// balance this with what is on planets
 		for ( let p of civ.planets ) {
+			// stationed on planet
+			civ.ai.needs.troops -= p.troops.length;
+			// being built
 			for ( let i of p.prod_q ) {
 				if ( i.type == 'groundunit' ) {
 					civ.ai.needs.troops--;
@@ -474,12 +480,15 @@ export class AIOffenseObjective extends AIObjective {
 					}
 				}
 			}
-		// ... and what we have on hand
+		// ... and what we have in the air
 		for ( let f of civ.fleets ) {
 			if ( f.killme || f.mission ) { continue; } 
 			civ.ai.needs.troop_ships - f.troopcap;
 			civ.ai.needs.troops - f.troops;
 			}
+		// and a little extra motivation for the planetary build queue
+		civ.ai.needs.troop_ships += 0.5;
+		civ.ai.needs.troops += 0.5;
 		
 		if ( att_missions.length ) { 
 			this.note = `${att_missions.length} missions`;
@@ -643,7 +652,7 @@ export class AIColonizeObjective extends AIObjective {
 			}
 		// if i still have leftover targets, i dont have enough colony ships.
 		civ.ai.needs.colony_ships = targets.length;
-		if ( civ.ai.needs.colony_ships > 5 ) { 
+		if ( civ.ai.needs.colony_ships > 5 ) { // don't go crazy 
 			civ.ai.needs.colony_ships = 5;
 			}
 		// see how many colony ships we already have in production. civ may
@@ -862,7 +871,7 @@ export class AIInvadeObjective extends AIObjective {
 			milval_needed *= 2 * (1-civ.ai.strat.risk);
 			// find the best whole fleet that can do the job
 			for ( let f of civ.fleets ) { 
-				if ( f.star && !f.killme && !f.mission && !f.dest && !f.ai && f.troopcap && f.MilvalAvailable() > milval_needed ) {
+				if ( f.star && !f.killme && !f.mission && !f.ai && f.troopcap && f.MilvalAvailable() > milval_needed ) {
 					if ( !this.fleet ) { this.fleet = f; }
 					else if ( this.fleet && this.fleet.MilvalAvailable() < f.MilvalAvailable() ) { 
 						this.fleet = f;
@@ -884,7 +893,13 @@ export class AIInvadeObjective extends AIObjective {
 				this.note = 'assigned fleet';
 				}
 			else {
-				this.note = 'no fleet available. doing nothing';
+				// TODO create a new fleet from bits and pieces around
+				this.note = 'no fleet available; calling all carriers';
+				if ( civ.ai.staging_pts.length ) { 
+					civ.AI_AvailableFleets( this.target, this.ttl )
+					.filter( f => f.troops && !f.ai )
+					.forEach( f => { f.SplitBy( ship => ship.troops.length, civ.ai.staging_pts[0] ) });
+					}
 				}
 			return true;
 			}
@@ -900,69 +915,76 @@ export class AIInvadeObjective extends AIObjective {
 			return true;
 			}
 		// on location but unable to overcome defenses
-		else if ( this.target.star == this.fleet.star && this.target.OwnerFleet() ) { 
-			//
-			// TODO: do i need to check for firepower?
-			// should i assume that because i cannot attack, i am underpowered?
-			// see: Fleet.AIWantsToAttackFleet()
-			//
-			// if we are cowardly, run away!
-			if ( civ.ai.strat.posture < 0.34 || ( civ.ai.strat.posture < 0.67 && Math.random() > 0.5 ) ) {
-				this.note = "underpowered; running away";
-				let dest = civ.ai.staging_pts.length ? civ.ai.staging_pts[0] : null;
-				if ( dest ) { this.fleet.SetDest(dest); }
-				return false;
+		else if ( this.target.star == this.fleet.star ) { 
+			// TECHNICAL: this is run before ship movement and combat, 
+			// so fleet may be parked here right now.
+			// TECHNICAL: fleet battles can be multi-turn affairs, 
+			// so check to see if we still have what it takes to get the job done
+			this.note = 'obtaining air superiority';
+			let defender = this.target.OwnerFleet();
+			if ( defender && defender.milval > this.fleet.milval ) { 
+				// if we are cowardly, run away!
+				if ( civ.ai.strat.posture < 0.34 || ( civ.ai.strat.posture < 0.67 && Math.random() > 0.5 ) ) {
+					this.note = "underpowered; running away";
+					let dest = civ.ai.staging_pts.length ? civ.ai.staging_pts[0] : null;
+					if ( dest ) { this.fleet.SetDest(dest); }
+					return false;
+					}
+				// call for backup
+				else {
+					this.note = 'waiting for backup';
+					// make a list of nearest systems and peel off reinforcements.
+					// we need reinforcements *fast*
+					let fleets = civ.AI_AvailableFleets( this.target, this.ttl )
+						.filter( f => f.fp && f.MilvalAvailable() );
+					if ( fleets.length ) { 
+						// time is of the essence
+						fleets.sort( (a,b) => { 
+							let a_turns = utils.DistanceBetween( 
+								( a.star ? a.star.xpos : a.xpos ), 
+								( b.star ? b.star.xpos : b.xpos ), 
+								this.target.xpos, 
+								this.target.ypos 
+								) / Math.ceil(a.speed);
+							let b_turns = utils.DistanceBetween( 
+								( a.star ? a.star.xpos : a.xpos ), 
+								( b.star ? b.star.xpos : b.xpos ), 
+								this.target.xpos, 
+								this.target.ypos 
+								) / Math.ceil(a.speed);
+							return a_turns < b_turns ? -1 : 1;
+							});
+						let defender_milval = this.target.OwnerFleet().milval;
+						let milval_needed = defender_milval - this.fleet.milval;
+						milval_needed *= 2 * (1-civ.ai.strat.risk);
+						for ( let f of fleets ) { 
+							milval_needed -= civ.AI_PeelShipsForDefense( this.target.star, f, milval_needed );
+							if ( milval_needed <= 0 ) { break; }
+							}
+						if ( milval_needed > 0 ) {
+							this.note = 'calling meager reinforcements';
+							}
+						}
+					else {
+						this.note = 'no help; looks grim';
+						}
+					}
 				}
-			// call for backup
-			else {
-				this.note = 'waiting for backup';
-				// make a list of nearest systems and peel off reinforcements.
-				// we need reinforcements *fast*
-				let fleets = civ.fleets.filter( f => { 
-					// already here
-					if ( f.star && f.star == this.target ) { return false; }
-					// not available
-					if ( f.killme || f.mission ) { return false; }
-					// busy
-					if ( f.dest && f.dest != this.target ) { return false; }
-					// no firepower
-					if ( !f.fp || !f.MilvalAvailable() ) { return false; }
-					// can't get here fast enough ( 6 turns )
-					if ( utils.DistanceBetween( f.star.xpos, f.star.ypos, this.target.xpos, this.target.ypos ) > f.speed * 6 ) { return false; }
-					return true;
+			// do we have enough troops to feel confident about winning? 
+			if ( !this.fleet.troops || this.fleet.troops < this.target.troops.length ) { 
+				let gothelp = false;
+				civ.AI_AvailableFleets( this.target, this.ttl )
+				.filter( f => f.troops && !f.ai )
+				.forEach( f => {
+					gothelp = gothelp || !!f.SplitBy( ship => ship.troops.length, this.target.star )
 					});
-				if ( fleets.length ) { 
-					// time is of the essence
-					fleets.sort( (a,b) => { 
-						let a_turns = utils.DistanceBetween( 
-							( a.star ? a.star.xpos : a.xpos ), 
-							( b.star ? b.star.xpos : b.xpos ), 
-							this.target.xpos, 
-							this.target.ypos 
-							) / Math.ceil(a.speed);
-						let b_turns = utils.DistanceBetween( 
-							( a.star ? a.star.xpos : a.xpos ), 
-							( b.star ? b.star.xpos : b.xpos ), 
-							this.target.xpos, 
-							this.target.ypos 
-							) / Math.ceil(a.speed);
-						return a_turns < b_turns ? -1 : 1;
-						});
-					let defender_milval = this.target.OwnerFleet().milval;
-					let milval_needed = defender_milval - this.fleet.milval;
-					milval_needed *= 2 * (1-civ.ai.strat.risk);
-					for ( let f of fleets ) { 
-						milval_needed -= civ.AI_PeelShipsForDefense( this.target.star, f, milval_needed );
-						if ( milval_needed <= 0 ) { break; }
-						}
-					if ( milval_needed > 0 ) {
-						this.note = 'calling meager reinforcements';
-						}
+				if ( gothelp ) { 
+					this.note = 'troops exhausted; mission failed';
+					return false;
 					}
 				else {
-					this.note = 'no help; looks grim';
+					this.note = 'called for more troops';
 					}
-				return true;
 				}
 			}
 		return true; // hang tight. maybe something good will happen

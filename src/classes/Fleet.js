@@ -111,6 +111,39 @@ export default class Fleet {
 		this.ReevaluateStats();
 		}
 		
+	// Creates a new fleet from the array of `ships`.
+	// The `ships` array are ships currently in this fleet.
+	// `dest` is the star you want to send them to.
+	// RETURNS: new fleet.
+	Split( ships, dest ) { 
+		if ( !ships.length || !this.ships.length ) { return null; }
+		if ( this.killme || this.mission || (this.dest && !this.star) ) { return null; }
+		if ( ships.length == this.ships.length ) { 
+			if ( dest ) { this.SetDest(dest); }
+			return this;
+			}
+		let f = new Fleet( this.owner, this.star );
+		for ( let s of ships ) { 
+			let i = this.ships.indexOf(s);
+			if ( i >= 0 ) { 
+				f.ships.push(s);
+				this.ships.splice(i,1);
+				}
+			}
+		this.ReevaluateStats();
+		f.ReevaluateStats();
+		if ( dest ) { f.SetDest(dest); }
+		return f;
+		}
+		
+	// Creates a new fleet from a filter callback function.
+	// `dest` is the star you want to send them to.
+	// RETURNS: new fleet.
+	SplitBy( cb, dest ) { 
+		let ships = this.ships.filter(cb);
+		return this.Split(ships,dest);
+		}
+		
 	ReloadAllShipWeapons() { 
 		this.ships.forEach( s => {
 			s.weapons.forEach( w => w.shotsleft = w.shots );
@@ -333,31 +366,6 @@ export default class Fleet {
 // 		return !this.owner.is_player && this.fp && this.ships.length; // need guns to attack 
     	}
 	    
-// 	// any juicy planets?
-// 	AIWantsToInvade() {
-// 		if ( !this.troops ) { return false; } 
-// 		let best_planet = null;
-// 		let high_score = -1;
-// 		for ( let p of this.star.planets ) { 
-// 			// if we're on a mission, always pick that planet
-// 			if ( this.ai.mission && this.ai.mission.target == p )  {
-// 				best_planet = p;
-// 				break;
-// 				}
-// 			// otherwise rank planets
-// 			if ( this.owner && this.owner != p.owner && this.troops >= p.troops.length ) { 
-// 				//TODO: score should be planet score
-// 				// or use the planet target of the fleet's AI mission
-// 				let score = this.troops - p.troops.length;
-// 				if ( score > high_score ) { 
-// 					best_planet = p;
-// 					high_score = score;
-// 					}
-// 				}
-// 			}
-// 		return best_planet; 
-//     	}
-    	
 	// invade a specific planet?
 	AIWantToInvadePlanet( planet ) {
 		return this.ai 

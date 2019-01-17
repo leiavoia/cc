@@ -318,7 +318,7 @@ export default class Civ {
 
 	constructor( name ) { 
 		this.name = ( name || RandomName() ).uppercaseFirst();
-		this.name_plural = name + 's';
+		this.name_plural = this.name + 's';
 		Civ.IncTotalNumCivs();
 		this.id = Civ.total_civs;
 		if ( !Civ.relation_matrix ) { Civ.relation_matrix = []; }
@@ -618,6 +618,24 @@ export default class Civ {
 			}
 		return false;
 		
+		}
+		
+	AI_AvailableFleets( dest = null, within_turns = 10 ) { 
+		return this.fleets.filter( f => { 
+			// already here
+			if ( f.star && f.star == dest ) { return false; }
+			// not available
+			if ( f.killme || f.mission ) { return false; }
+			// in flight
+			if ( f.dest && !f.star ) { return false; }
+			// can't get here fast enough
+			if ( f.star && dest && within_turns > 0 ) { 
+				if ( utils.DistanceBetween( f.star.xpos, f.star.ypos, dest.xpos, dest.ypos ) > f.speed * within_turns ) { 
+					return false; 
+					}
+				}
+			return true;
+			} );
 		}
 		
 	}
