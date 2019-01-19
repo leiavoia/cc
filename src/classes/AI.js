@@ -124,13 +124,18 @@ export class AIObjective {
 	onSuccess = null; // optional callback
 	onFail = null; // optional callback
 	
-	constructor( target = null, fleet = null, ttl = -1, delay = 0 ) {
+	constructor( target = null, fleet = null, ttl = -1, delay = 0, priority = 100 ) {
 		this.target = target;
 		this.fleet = fleet;
 		this.ttl = ttl;
 		this.delay = delay;
+		this.priority = priority;
 		if ( this.fleet ) { 
 			this.fleet.ai = this;
+			}
+		// minimum one turn
+		if ( this.ttl == 0 ) { 
+			this.ttl = 1;
 			}
 		if ( delay ) { 
 			this.note = 'waiting';
@@ -505,7 +510,7 @@ export class AIOffenseObjective extends AIObjective {
 	EvaluateFunc( app, civ ) { 
 		this.note = '';
 		
-		let max_missions = 1;
+		let max_missions = Math.ceil( civ.planets.length * civ.ai.strat.risk * 0.2 );
 		let att_missions = civ.ai.objectives.filter( o => o.type=='invade' );
 		
 		// we need to maintain at least a minimal force to keep at the ready
@@ -543,13 +548,12 @@ export class AIOffenseObjective extends AIObjective {
 		civ.ai.needs.troop_ships += 0.5;
 		civ.ai.needs.troops += 0.5;
 		
-		if ( att_missions.length ) { 
-			this.note = `${att_missions.length} missions`;
-			// if i have enough objectives already, do not accept more.
-			if ( att_missions.length >= max_missions ) {
-				this.note = this.note + ' /!\\';
-				return;
-				}
+		this.note = `${att_missions.length}/${max_missions} missions`;
+		
+		// if i have enough objectives already, do not accept more.
+		if ( att_missions.length >= max_missions ) {
+			this.note = this.note + ' /!\\';
+			return;
 			}
 		
 		// what's the best planet i have? 
@@ -618,12 +622,13 @@ export class AIOffenseObjective extends AIObjective {
 				// no duplicate missions
 				let dups = civ.ai.QueryObjectives( 'invade', p );
 				if ( dups.length ) { continue; }
-				let m = new AIInvadeObjective( p, null, 14, 0 );
+				const ttl = utils.Clamp( Math.ceil( (civ.empire_box.x2 - civ.empire_box.x1 ) / civ.ship_speed )+2, 6, 25 );
+				const m = new AIInvadeObjective( p, null, ttl, 0 );
 				// chain into Guard mission if planet acquired
 				m.onSuccess = () => {
 					if ( !m.FleetDestroyed() ) {
 						civ.ai.objectives.push( 
-							new AIGuardObjective( p.star, m.fleet, Math.ceil( 12 * (1-civ.ai.risk) ) ) 
+							new AIGuardObjective( p.star, m.fleet, Math.ceil( 12 * (1-civ.ai.strat.risk) ), 0, 90 ) 
 							);
 						// TODO possibly call for reinforcements if fleet got hammered
 						}	
