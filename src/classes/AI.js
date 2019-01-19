@@ -1,3 +1,40 @@
+// = HOW THE AI WORKS: =
+// Fundamentally, the AI system is just a list of objectives
+// that the AI will try to meet each turn. The system here
+// is broken down into two basic classes: AI and AIObjective.
+// 
+// == CivAI ==
+
+// CivAI has a list of objectives but also internally keeps
+// track of some high level statistics which it can use to make
+// decisions. This AI is specifically tailored to sandbox Civs.
+// You could use the generic AI class to create an AI for any
+// other sort of scenario.
+// 
+// == AIObjective ==
+
+// Objectives are extremely simple data structures with potentially 
+// very complex behaviors. They have a single EvaluateFunc() which
+// does all of the logic. The CivAI class will process all objectives
+// in order of priority. On evaluation, Objectives that return 
+// FALSE are pruned from the list. 
+// 
+// Objectives can have a delay and a TTL (time to live) to make sure
+// short term objectives do not run away.
+// 
+// Because each AI entity works from one master list of objectives
+// objectives can spawn sub objectives which are simply added to the 
+// list. Objectives do not directly manage these sub objectives, 
+// but you could easily program them to do so.
+// 
+// You can add a callback for when objectives complete or expire with
+// `onComplete`, `onSuccess`, and `onFail`.
+//
+// Objectives can be chained together by using `onComplete` which is
+// a callback function that can do literally whatever you want,
+// including deploy another Objective.
+
+
 import * as utils from '../util/utils';
 import Fleet from './Fleet';
 
@@ -13,17 +50,19 @@ export class AI {
 		this.objectives.sort( (a,b) => a.priority <= b.priority ? -1 : 1 );
 		// TECHNICAL: Aurelia can't handle array self-reassignment, so 
 		// we need to loop through and manually splice out completed objectives.
-// 		this.objectives = this.objectives.filter( o => o.Evaluate(app,this.civ) );
 		for ( let i = this.objectives.length-1; i >= 0; i-- ) { 
 			let result = this.objectives[i].Evaluate(app,this.civ);		
-			if ( !result ) { 
+			if ( result === true || result === false ) { 
 				let o = this.objectives[i];
-				console.log('AI: ' + this.civ.name + ' ' + o.toString() );
+				// removal 
 				this.objectives.splice(i,1); 
 				this.completed.unshift(o);
 				if ( this.completed.length > 12 ) {
 					this.completed.pop();
 					}
+				// notes
+				o.note += ' ' + ( result ? '⬤' : '⭕' );
+				console.log('AI: ' + this.civ.name + ' ' + o.toString() );
 				}
 			}
 		}
@@ -82,6 +121,8 @@ export class AIObjective {
 	note = ''; // for debugging and the curious
 	priority = 100; // for future development
 	onComplete = null; // optional callback
+	onSuccess = null; // optional callback
+	onFail = null; // optional callback
 	
 	constructor( target = null, fleet = null, ttl = -1, delay = 0 ) {
 		this.target = target;
@@ -98,34 +139,44 @@ export class AIObjective {
 		
 	// Does internal stuff to try to meet the objective.
 	// Returns: 
+	// 	NULL or UNDEFINED if objective is ongoing.
 	// 	FALSE if objective failed or expired and needs to be removed.
-	// 	TRUE if objective is ongoing.
+	// 	TRUE if objective succeeded
 	Evaluate( app, civ ) { 
 		// delay
 		if ( this.delay > 0 ) { 
 			this.delay--;
 			this.note = 'waiting';
-			return true; // do nothing
+			return; // do nothing
 			}
 		// ttl
-		let killme = false;
+		let result = null;
 		if ( this.ttl > 0 ) { this.ttl--; }
 		if ( this.ttl == 0 ) { 
 			this.note = this.note + ' -expired';
-			killme = true; 
+			result = false; 
 			}
 		// actual objective evaluation
-		else { killme = !this.EvaluateFunc(app,civ); }
+		else { result = this.EvaluateFunc(app,civ); }
 		// cleanup
-		if ( killme && this.fleet ) { this.fleet.ai = null; }
-		return !killme;	
+		if ( this.fleet && ( result === true || result === false ) ) { 
+			this.fleet.ai = null; 
+			}
+		// post completion callbacks
+		if ( typeof this.onComplete == 'function' && ( result === true || result === false ) ) { this.onComplete(); } 
+		if ( result === true && typeof this.onSuccess == 'function' ) { this.onSuccess(); } 
+		if ( result === false && typeof this.onFail == 'function' ) { this.onFail(); } 			
+		return result;	
 		}
 		
 	// This is the guts of the objective evaluation.
 	// Inherit and overwrite this for subclass behaviors.
 	// The default behavior is to do absolutely nothing.
 	EvaluateFunc( app, civ ) { 
-		return true;
+		// Return: 
+		// 	NULL or UNDEFINED if objective is ongoing.
+		// 	FALSE if objective failed
+		// 	TRUE if objective succeeded
 		}
 		
 	toString() { 
@@ -157,7 +208,6 @@ export class AIMainObjective extends AIObjective {
 			civ.ai.objectives.push( new AIPlanetsObjective() );
 			this.bootstrapped = true;
 			}
-		return true;
 		}			
 	}
 
@@ -196,7 +246,12 @@ export class AIAnalyzeObjective extends AIObjective {
 			p.ai_value = p.ValueTo(civ);
 			acct.ai.value += p.ai_value;
 			civ.ai.total_starvalue += p.ai_value;
-			if ( !star_already_evaluated ) { 
+			if ( !star_already_evaluated ) {
+				// defense
+				let f = p.OwnerFleet();
+				if ( f ) {
+					acct.ai.defense = f.milval; // TODO: factor in fleets on missions?
+					}			
 				// threats
 				for ( let c of app.game.galaxy.civs ) { 
 					if ( c == civ ) { continue; } 
@@ -281,7 +336,6 @@ export class AIAnalyzeObjective extends AIObjective {
 				}
 			}	
 		this.note = 'PowerScore ' + civ.power_score;
-		return true;
 		}			
 	}
 
@@ -289,7 +343,7 @@ export class AIAnalyzeObjective extends AIObjective {
 // DEFENSE
 export class AIDefenseObjective extends AIObjective { 	
 	type = 'defense';
-	priority = 10;
+	priority = 20;
 	EvaluateFunc( app, civ ) {
 		// BALANCED STRATEGY: calculate the ideal amount of ships for
 		// each system based on system value and current threat level. 
@@ -440,7 +494,6 @@ export class AIDefenseObjective extends AIObjective {
 					}
 				}
 			}	
-		return true;
 		}			
 	}
 
@@ -448,7 +501,7 @@ export class AIDefenseObjective extends AIObjective {
 // OFFENSE
 export class AIOffenseObjective extends AIObjective { 	
 	type = 'offense';
-	priority = 20;
+	priority = 10;
 	EvaluateFunc( app, civ ) { 
 		this.note = '';
 		
@@ -495,7 +548,7 @@ export class AIOffenseObjective extends AIObjective {
 			// if i have enough objectives already, do not accept more.
 			if ( att_missions.length >= max_missions ) {
 				this.note = this.note + ' /!\\';
-				return true;
+				return;
 				}
 			}
 		
@@ -565,7 +618,16 @@ export class AIOffenseObjective extends AIObjective {
 				// no duplicate missions
 				let dups = civ.ai.QueryObjectives( 'invade', p );
 				if ( dups.length ) { continue; }
-				let m = new AIInvadeObjective( p, null, 11, 0 );
+				let m = new AIInvadeObjective( p, null, 14, 0 );
+				// chain into Guard mission if planet acquired
+				m.onSuccess = () => {
+					if ( !m.FleetDestroyed() ) {
+						civ.ai.objectives.push( 
+							new AIGuardObjective( p.star, m.fleet, Math.ceil( 12 * (1-civ.ai.risk) ) ) 
+							);
+						// TODO possibly call for reinforcements if fleet got hammered
+						}	
+					};
 				civ.ai.objectives.push(m);
 				m.Evaluate(app,civ); // this activates it
 				console.log(`${civ.name}: Adding invasion mission: ${p.name}`);
@@ -574,7 +636,6 @@ export class AIOffenseObjective extends AIObjective {
 			}
 		// baseline military
 		civ.ai.needs.combat_ships += 2000;	
-		return true;
 		}			
 	}
 
@@ -664,7 +725,6 @@ export class AIColonizeObjective extends AIObjective {
 					}
 				}
 			}	
-		return true;
 		}			
 	}
 
@@ -812,13 +872,12 @@ export class AIPlanetsObjective extends AIObjective {
 				}
 			}	
 			
-		return true;
 		}			
 	}
 
 
 // GUARD - Fleet will navigate to target star and sit there until TTL expires.
-export class AIObjectiveGuard extends AIObjective { 	
+export class AIGuardObjective extends AIObjective { 	
 	type = 'guard';
 	EvaluateFunc( app, civ ) { 
 		// still have a fleet?
@@ -829,22 +888,22 @@ export class AIObjectiveGuard extends AIObjective {
 		// en route?
 		if ( this.fleet.dest && !this.fleet.star ) { 
 			this.note = 'en route';
-			return true; 
+			return; 
 			} 
 		// on science mission? (why? *shrug*)
 		if ( this.fleet.mission ) { 
 			this.note = 'busy sciencing';
-			return true; 
+			return; 
 			}
 		// not where we need to be?
 		if ( this.target != this.fleet.star ) {
 			this.note = 'redirected';
 			this.fleet.SetDest(this.target);
-			return true;
+			return;
 			}
-		// doing nothing is what we are supposed to do
+		// doing nothing is what we are supposed to do.
+		// note: we never actually return specific "success" (return true)
 		this.note = 'guarding';
-		return true;
 		}			
 	}
 
@@ -856,8 +915,7 @@ export class AIInvadeObjective extends AIObjective {
 		// planet acquired
 		if ( this.target.owner == civ ) { 
 			this.note = '!!! Invasion success !!!';
-			if ( this.onSuccess ) { this.onSuccess(); }
-			return false;
+			return true;
 			}
 		// assigned fleet destroyed
 		if ( this.FleetDestroyed() ) { 
@@ -901,18 +959,18 @@ export class AIInvadeObjective extends AIObjective {
 					.forEach( f => { f.SplitBy( ship => ship.troops.length, civ.ai.staging_pts[0] ) });
 					}
 				}
-			return true;
+			return;
 			}
 		// en route?
 		if ( this.fleet.dest && !this.fleet.star ) { 
 			this.note = 'en route';
-			return true; 
+			return; 
 			} 
 		// not where we need to be?
 		else if ( this.target.star != this.fleet.star ) {
 			this.note = 'redirected';
 			this.fleet.SetDest(this.target.star);
-			return true;
+			return;
 			}
 		// on location but unable to overcome defenses
 		else if ( this.target.star == this.fleet.star ) { 
@@ -979,7 +1037,7 @@ export class AIInvadeObjective extends AIObjective {
 					gothelp = gothelp || !!f.SplitBy( ship => ship.troops.length, this.target.star )
 					});
 				if ( gothelp ) { 
-					this.note = 'troops exhausted; mission failed';
+					this.note = 'troops exhausted; quit';
 					return false;
 					}
 				else {
@@ -987,6 +1045,5 @@ export class AIInvadeObjective extends AIObjective {
 					}
 				}
 			}
-		return true; // hang tight. maybe something good will happen
 		}			
 	}
