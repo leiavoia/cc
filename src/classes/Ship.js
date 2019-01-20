@@ -84,6 +84,7 @@ export class Ship {
 		}
 		
 	CalcFirepowerRemaining() { 
+		if ( !this.weapons.length ) { return 0; }
 		return Math.floor( this.weapons.reduce( ( accum, weapon ) => {
 			// average firepower of weapon
 			let fp = ((weapon.maxdmg - weapon.mindmg)/2) + weapon.mindmg;

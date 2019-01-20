@@ -56,9 +56,11 @@ export class AI {
 				let o = this.objectives[i];
 				// removal 
 				this.objectives.splice(i,1); 
-				this.completed.unshift(o);
-				if ( this.completed.length > 12 ) {
-					this.completed.pop();
+				if ( app.options.debug ) { 
+					this.completed.unshift(o);
+					if ( this.completed.length > 12 ) {
+						this.completed.pop();
+						}
 					}
 				// notes
 				o.note += ' ' + ( result ? '⬤' : '⭕' );
@@ -514,16 +516,22 @@ export class AIOffenseObjective extends AIObjective {
 		let att_missions = civ.ai.objectives.filter( o => o.type=='invade' );
 		
 		// we need to maintain at least a minimal force to keep at the ready
-		civ.ai.needs.troops = civ.ai.total_troops < 5 ? (5 - civ.ai.total_troops) : 0;
-		civ.ai.needs.troop_ships = civ.ai.total_troopships < 5 ? (5 - civ.ai.total_troopships) : 0;
-		// how much ground power do i need to meet all objectives?
+		const min_troops = ( 1 - civ.ai.strat.posture ) * 10 + 2;
+		civ.ai.needs.troops = civ.ai.total_troops < min_troops ? (min_troops - civ.ai.total_troops) : 0;
+		civ.ai.needs.troop_ships = civ.ai.total_troopships < min_troops ? (min_troops - civ.ai.total_troopships) : 0;
+		// how much ground power do i need to meet all current objectives?
 		civ.ai.needs.troops += att_missions.reduce( (total,m) => {
 			return total + ( ( m.target && m.target.owner != civ ) ? m.target.troops.length : 0 );
 			}, 0 );
-		// this should tell me how many troop ships i need, plus a little extra
+		// this should tell me how many troop ships i need
 		civ.ai.needs.troop_ships = civ.ai.needs.troops;
 		// also factor in how much security i need to protect all of my planets
-		civ.ai.needs.troops += civ.planets.length * 3; // TODO scale with time. TODO: AI personality
+		civ.ai.needs.troops += // TODO: this is sloppy
+			Math.ceil( 15
+				* civ.planets.length 
+				* civ.ai.strat.posture 
+				* utils.Clamp( app.game.turn_num / 150, 0, 2.0 ) 
+			); 
 		// balance this with what is on planets
 		for ( let p of civ.planets ) {
 			// stationed on planet
@@ -544,9 +552,9 @@ export class AIOffenseObjective extends AIObjective {
 			civ.ai.needs.troop_ships - f.troopcap;
 			civ.ai.needs.troops - f.troops;
 			}
-		// and a little extra motivation for the planetary build queue
-		civ.ai.needs.troop_ships += 0.5;
-		civ.ai.needs.troops += 0.5;
+		// strongly reduce need for carriers in first 10 turns
+		civ.ai.needs.troop_ships = Math.ceil( civ.ai.needs.troop_ships * utils.Clamp( app.game.turn_num / 10, 0, 1 ) );
+		civ.ai.needs.troops = Math.ceil( civ.ai.needs.troops * utils.Clamp( app.game.turn_num / 10, 0, 1 ) );
 		
 		this.note = `${att_missions.length}/${max_missions} missions`;
 		
@@ -559,7 +567,6 @@ export class AIOffenseObjective extends AIObjective {
 		// what's the best planet i have? 
 		let my_best_planet = civ.planets.reduce( (v,p) => Math.max(p.ValueTo(civ),v), 0 );
 		// how many planets are available for me to colonize still?
-		// TODO may want to factor civ out as a general AI signal
 		civ.ai.num_uncolonized = 0;
 		let best_uncolonized = 0;
 		for ( let s of app.game.galaxy.stars ) { 
@@ -596,7 +603,7 @@ export class AIOffenseObjective extends AIObjective {
 					// else if ( 0 /* at peace */ ) { score *= 0.5; }
 					// defended?
 					let defender = p.OwnerFleet();
-					if ( defender && defender.milval ) { 
+					if ( defender && defender.fp && defender.milval ) { 
 						// hard to gauge "how defended this is" because it depends
 						// on our own fleet strength available
 						let difficulty = defender.milval / civ.ai.total_milval;
@@ -635,12 +642,11 @@ export class AIOffenseObjective extends AIObjective {
 					};
 				civ.ai.objectives.push(m);
 				m.Evaluate(app,civ); // this activates it
-				console.log(`${civ.name}: Adding invasion mission: ${p.name}`);
 				if ( ++att_missions.length >= max_missions ) { break; }
 				}
 			}
 		// baseline military
-		civ.ai.needs.combat_ships += 2000;	
+		civ.ai.needs.combat_ships += 2000 * (1.5-civ.ai.strat.posture);	
 		}			
 	}
 
@@ -985,7 +991,7 @@ export class AIInvadeObjective extends AIObjective {
 			// so check to see if we still have what it takes to get the job done
 			this.note = 'obtaining air superiority';
 			let defender = this.target.OwnerFleet();
-			if ( defender && defender.milval > this.fleet.milval ) { 
+			if ( defender && defender.milval > this.fleet.milval /* * (1.5-civ.ai.strat.risk)*/ ) { 
 				// if we are cowardly, run away!
 				if ( civ.ai.strat.posture < 0.34 || ( civ.ai.strat.posture < 0.67 && Math.random() > 0.5 ) ) {
 					this.note = "underpowered; running away";

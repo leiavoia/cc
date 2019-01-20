@@ -1204,7 +1204,7 @@ settled
 	}
 .mapobj_container.in_range H2 {
 	animation: fadeIn 0.7s linear;
-	color: rgba(255,255,255,0.18); 
+	color: rgba(255,255,255,0.18);   
 	}	
 
 /* .mapobj_container.explored H3, */
@@ -1345,7 +1345,7 @@ invisible when unexplored, dim when explored */
 	background: none;
 	border-radius: 0;
 	}
-.xtreme_zoom .fleet_en_route A:after {
+.xtreme_zoom .fleet_en_route:after {
 	content:'◼';
 	font-size:40px;
 	text-decoration:none;

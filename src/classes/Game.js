@@ -158,7 +158,7 @@ export default class Game {
 		// TODO: lock the UI
 		
 		for ( let t=0; t < num_turns; t++ ) { 
-// 			console.time('Turn Processor');
+			console.time('Turn Processor');
 			
 			// calculate how many material points (mining) we can afford 
 			// to distribute to those planets in need.
@@ -373,7 +373,7 @@ export default class Game {
 			
 			this.turn_num++;
 			
-// 			console.timeEnd('Turn Processor');
+			console.timeEnd('Turn Processor');
 			//
 			// At this point the turn is considered "processed",
 			// however the player may still need to complete
@@ -414,14 +414,12 @@ export default class Game {
 		this.galaxy.stars.concat( this.galaxy.anoms ).forEach( star => {
 			if ( star.fleets.length > 1 ) { 
 				for ( let fleet_a=0; fleet_a < star.fleets.length-1; fleet_a++ ) {
-					if ( star.fleets[fleet_a].fp_remaining ) { 
-						for ( let fleet_b=1; fleet_b < star.fleets.length; fleet_b++ ) {
-						if ( star.fleets[fleet_a].AIWantToAttackFleet(star.fleets[fleet_b]) ||
-							star.fleets[fleet_b].AIWantToAttackFleet(star.fleets[fleet_a]) 
-							) {
-							// NOTE: fleet may want to attack planet, not just the fleet
-							this.QueueShipCombat( star.fleets[fleet_a], star.fleets[fleet_b], null );
-							}
+					for ( let fleet_b=1; fleet_b < star.fleets.length; fleet_b++ ) {
+					if ( star.fleets[fleet_a].AIWantToAttackFleet(star.fleets[fleet_b]) ||
+						star.fleets[fleet_b].AIWantToAttackFleet(star.fleets[fleet_a]) 
+						) {
+						// NOTE: fleet may want to attack planet, not just the fleet
+						this.QueueShipCombat( star.fleets[fleet_a], star.fleets[fleet_b], null );
 						}
 					}
 				}
