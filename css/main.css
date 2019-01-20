@@ -1180,6 +1180,33 @@ DIV.hyperlane {
 	display:block !important;
 	}	
 	
+.ai_caret {	
+	width: 300px;
+	height: 300px;
+	position:absolute;
+	margin-left:-150px;
+	margin-top:-150px;
+	top: 0;
+	left: 0;
+	border: 10px solid #FFF;
+	border-radius: 100%;
+	z-index:-5;
+	opacity: 0.3;
+	padding: 0;
+	box-sizing: border-box;
+	}
+.ai_caret.small {	
+	width: 150px;
+	height: 150px;
+	position:absolute;
+	margin-left:-75px;
+	margin-top:-75px;
+	}
+.ai_caret.good {	border-color: #3F3; }
+.ai_caret.bad {	border-color: #D11; }
+.ai_caret.neutral {	border-color: #39F; }
+.ai_caret.shared {	border-style: dashed; }
+	
 /* 
 Exploration and range status determine which parts are displayed 
 hidden: star is completely invisible on the map

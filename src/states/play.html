@@ -20,18 +20,20 @@
 							">		
 					</div>
 				</template>
-				<!-- DEBUG / AI system value -->
-<!--				<template repeat.for="star of app.game.galaxy.stars" containerless>
-					<div 
-						css="
-							width: ${star.player_score*10}px; 
-							height: ${star.player_score*10}px; 
-							left:${star.xpos - (star.player_score*5)}px; 
-							top:${star.ypos - (star.player_score*5)}px;
-							">		
-					</div>
-				</template>-->
 			</div>   
+			
+			<!-- DEBUG / AI system value -->
+			<template repeat.for="o of app.game.myciv.ai.objectives" containerless>
+				<template containerless if.bind="o.type == 'guard'">
+					<div class="ai_caret neutral" css=" left:${o.target.xpos}px; top:${o.target.ypos}px; "></div>
+					<div if.bind="o.fleet && !o.fleet.killme && !o.fleet.star" class="ai_caret neutral small shared" css="left:${o.fleet.xpos}px; top:${o.fleet.ypos}px; "></div>
+				</template>
+				<template containerless if.bind="o.type == 'invade'">
+					<div class="ai_caret bad" css=" left:${o.target.star.xpos}px; top:${o.target.star.ypos}px; "></div>
+					<div if.bind="o.fleet && !o.fleet.killme && o.fleet.star" class="ai_caret good shared" css="left:${o.fleet.star.xpos}px; top:${o.fleet.star.ypos}px; "></div>
+					<div if.bind="o.fleet && !o.fleet.killme && !o.fleet.star" class="ai_caret good small" css="left:${o.fleet.xpos}px; top:${o.fleet.ypos}px; "></div>
+				</template>
+			</template>
 			
 			<div id="the_caret" class="caret ${caret.class}" if.bind="caret.obj && caret.x && caret.y" css="left:${caret.x}px; top:${caret.y}px;"></div>
 			
