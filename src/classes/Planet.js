@@ -865,7 +865,9 @@ export default class Planet {
 		}
 		
 	BeConqueredBy( invader ) {
-		this.star.accts.get(this.owner).planets--;
+		if ( --this.star.accts.get(this.owner).planets == 0 ) { 
+			this.owner.AI_RemoveStagingPoint(this.star);
+			}
 		let i = this.owner.planets.indexOf( this );
 		if ( i > -1 ) { this.owner.planets.splice( i, 1 ); } 
 		this.prod_q.splice(0,this.prod_q.length);

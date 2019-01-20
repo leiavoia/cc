@@ -209,6 +209,7 @@ export class AIMainObjective extends AIObjective {
 	EvaluateFunc( app, civ ) { 
 		if ( !this.bootstrapped ) { 
 			civ.ai.objectives.push( new AIAnalyzeObjective() );
+			civ.ai.objectives.push( new AIMaintainStagingPtsObjective() );
 			civ.ai.objectives.push( new AIDefenseObjective() );
 			civ.ai.objectives.push( new AIOffenseObjective() );
 			civ.ai.objectives.push( new AIColonizeObjective() );
@@ -347,6 +348,77 @@ export class AIAnalyzeObjective extends AIObjective {
 	}
 
 
+// STAGING POINTS - Makes sure we have reasonable number of staging points
+export class AIMaintainStagingPtsObjective extends AIObjective { 	
+	type = 'staging';
+	priority = 5;
+	EvaluateFunc( app, civ ) { 
+		const area_per_point = 3 * 2 * 400 * 400;
+		const turn_radius = 3;
+		const stars = civ.MyStars();
+		const pt_range = ( civ.ship_speed * turn_radius ) * ( civ.ship_speed * turn_radius ); // note: presquared for speed
+		// note: empire box factors in ship_range, so we need to subtract this area 
+		const empire_w = ( civ.empire_box.x2 - civ.empire_box.x1 ) - ( civ.ship_range * 2 );
+		const empire_h = ( civ.empire_box.y2 - civ.empire_box.y1 ) - ( civ.ship_range * 2 );
+		const empire_area = (empire_w * empire_h) + 1; // the 1 just keeps it from freaking out
+		if ( !civ.ai.staging_pts.length ) { 
+			if ( civ.planets.length == 1 ) { 
+				civ.AI_AddStagingPoint( civ.planets[0].star );
+				}
+			else {
+				// find center of empire box
+				const x = civ.empire_box.x1 + ( civ.empire_box.x2 - civ.empire_box.x1 ) * 0.5;
+				const y = civ.empire_box.y1 + ( civ.empire_box.y2 - civ.empire_box.y1 ) * 0.5;
+				// find closest star to the center
+				let star = null;
+				let dist = 10000000;
+				for ( let s of stars ) { 
+					const d = utils.DistanceBetween(x,y,s.xpos,s.ypos,true);
+					if ( d < dist ) { 
+						star = s;
+						dist = d;
+						}
+					}
+				if ( star ) { civ.AI_AddStagingPoint( star ); }
+				}
+			}
+		else {
+			const points_needed = Math.ceil( empire_area / area_per_point );
+			if ( civ.ai.staging_pts.length < points_needed ) { 
+				// find all stars not covered by a point
+				const uncovered = stars.filter( s => {
+					for ( let pt of civ.ai.staging_pts ) { 
+						if ( utils.DistanceBetween(pt.xpos,pt.ypos,s.xpos,s.ypos,true) <= pt_range ) { return false; }
+						}
+					return true;
+					});
+				if ( uncovered.length ) { 
+					// find a circle that covers the most points
+					let star = null;
+					let best = 0;
+					for ( let c of uncovered ) { 
+						let score = 0;
+						for ( let s of uncovered ) { 
+							const d = utils.DistanceBetween(c.xpos,c.ypos,s.xpos,s.ypos,true);
+							if ( d <= pt_range ) { score++; }
+							}
+						if ( score > best ) { 
+							star = c;
+							best = score;
+							}
+						}				
+					// you win!
+					if ( star ) { 
+						civ.AI_AddStagingPoint( star );
+						}
+					}
+				}
+			}
+		this.note = `Area: ${empire_area}/${area_per_point}, ${civ.ai.staging_pts.length} pts`;
+		}
+	}
+
+	
 // DEFENSE
 export class AIDefenseObjective extends AIObjective { 	
 	type = 'defense';

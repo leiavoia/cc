@@ -1180,9 +1180,6 @@ DIV.hyperlane {
 	display:block !important;
 	}	
 	
-	
-	
-	
 /* 
 Exploration and range status determine which parts are displayed 
 hidden: star is completely invisible on the map
@@ -1272,6 +1269,23 @@ invisible when unexplored, dim when explored */
 	text-shadow:none;
 	}	
 	
+.mapobj_container .staging_pt { 
+	position:absolute;
+	display:block !important;
+	width: 500% !important;
+	height: 400px !important;
+	margin-left: -200% !important;
+	margin-top: -125px !important;
+	font-size: 400px !important; 
+	text-align:center !important; 
+	vertical-align:middle !important;
+	line-height: 400px !important; 
+	opacity: 0.15;
+	z-index: -5;	
+	}	
+.xtreme_zoom .mapobj_container .staging_pt { 
+	opacity: 0.3;
+	}
 	
 
 	
