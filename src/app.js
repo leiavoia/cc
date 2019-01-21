@@ -33,7 +33,10 @@ export class App {
 		show_range: false,
 		show_xtreme_anoms: true,
 		show_xtreme_fleets: true,
-		show_staging_pts: false,
+		show_staging_pts: true,
+		show_objectives: true, // debug only
+		show_empire_box: true, // debug only
+		show_threats: true, // debug only
 		ship_scaling: true,
 		debug: false,
 		ai: true, // process the AI each turn

@@ -22,16 +22,45 @@
 				</template>
 			</div>   
 			
-			<!-- DEBUG / AI system value -->
-			<template repeat.for="o of app.game.myciv.ai.objectives" containerless>
-				<template containerless if.bind="o.type == 'guard'">
-					<div class="ai_caret neutral" css=" left:${o.target.xpos}px; top:${o.target.ypos}px; "></div>
-					<div if.bind="o.fleet && !o.fleet.killme && !o.fleet.star" class="ai_caret neutral small shared" css="left:${o.fleet.xpos}px; top:${o.fleet.ypos}px; "></div>
+			<!-- STAGING POINT MAP INDICATOR -->
+			<template if.bind="app.options.show_staging_pts">
+				<div class="ai_caret staging_pt" repeat.for="star of app.game.myciv.ai.staging_pts" css="left:${star.xpos}px; top:${star.ypos}px;" ></div>
+			</template>
+			
+			<!-- DEBUG / AI SYMBOLS OVERLAY -->
+			<template if.bind="app.options.debug">
+				<!-- objectives -->
+				<template containerless if.bind="app.options.show_objectives">
+					<template repeat.for="o of app.game.myciv.ai.objectives" containerless>
+						<template containerless if.bind="o.type == 'guard'">
+							<div class="ai_caret neutral" css=" left:${o.target.xpos}px; top:${o.target.ypos}px; "></div>
+							<div if.bind="o.fleet && !o.fleet.killme && !o.fleet.star" class="ai_caret neutral small shared" css="left:${o.fleet.xpos}px; top:${o.fleet.ypos}px; "></div>
+						</template>
+						<template containerless if.bind="o.type == 'invade'">
+							<div class="ai_caret bad" css=" left:${o.target.star.xpos}px; top:${o.target.star.ypos}px; "></div>
+							<div if.bind="o.fleet && !o.fleet.killme && o.fleet.star" class="ai_caret bad shared" css="left:${o.fleet.star.xpos}px; top:${o.fleet.star.ypos}px; "></div>
+							<div if.bind="o.fleet && !o.fleet.killme && !o.fleet.star" class="ai_caret bad small" css="left:${o.fleet.xpos}px; top:${o.fleet.ypos}px; "></div>
+						</template>
+					</template>
 				</template>
-				<template containerless if.bind="o.type == 'invade'">
-					<div class="ai_caret bad" css=" left:${o.target.star.xpos}px; top:${o.target.star.ypos}px; "></div>
-					<div if.bind="o.fleet && !o.fleet.killme && o.fleet.star" class="ai_caret good shared" css="left:${o.fleet.star.xpos}px; top:${o.fleet.star.ypos}px; "></div>
-					<div if.bind="o.fleet && !o.fleet.killme && !o.fleet.star" class="ai_caret good small" css="left:${o.fleet.xpos}px; top:${o.fleet.ypos}px; "></div>
+				<!-- threats -->
+				<template containerless if.bind="app.options.show_threats && app.game.myciv.ai.threats.size">
+					<template containerless repeat.for="[f,v] of app.game.myciv.ai.threats">
+						<div if.bind="!f.killme && f.star" class="ai_caret threat system" css="left:${f.star.xpos}px; top:${f.star.ypos}px; width:${v*5|sqrt}px; height:${v*5|sqrt}px; "></div>
+						<div if.bind="!f.killme && !f.star" class="ai_caret threat" css="left:${f.xpos}px; top:${f.ypos}px; width:${v*5|sqrt}px; height:${v*5|sqrt}px;"></div>
+					</template>
+				</template>
+				<!-- empire fast-check range bounding boxes -->
+				<template containerless if.bind="app.options.show_empire_box">
+					<template containerless repeat.for="civ of app.game.galaxy.civs">
+						<div if.bind="civ.planets.length" class="empire_box" css="
+							left:${civ.empire_box.x1}px; 
+							top:${civ.empire_box.y1}px;
+							width: ${civ.empire_box.x2 - civ.empire_box.x1}px;
+							height: ${civ.empire_box.y2 - civ.empire_box.y1}px;
+							border-color:${civ.color};
+							"></div>
+					</template>
 				</template>
 			</template>
 			
@@ -46,8 +75,6 @@
 				${star.in_range ? 'in_range' : 'out_range'} 
 				${star.explored || app.options.see_all ? 'explored' : 'unexplored'}" 
 				css="left:${star.xpos & oneTime}px; top:${star.ypos & oneTime}px;">
-				<p if.bind="(app.options.debug || app.options.show_staging_pts ) && star.settled_by[app.game.myciv.id] && star.accts.get(app.game.myciv).ai.staging_pt" 
-				class="staging_pt">✜</p>
 				<h2 css="${star.ownership_title_css}" >${star.name}</h2>
 				<div if.bind="star.planets.length" class="planet_list"><!--  && (star.explored || app.options.see_all) -->
 					<a href="#" click.trigger="app.SwitchSideBar(p,$event)" repeat.for="p of star.planets" class="${p.settled ? 'settled' : ''}" css="color: ${p.ui_color};"><svg class="icon icon-nature"><use xlink:href="#icon-nature"></use></svg></a>
@@ -148,6 +175,8 @@
 			</span>
 			<span>HAB: ${app.game.myciv.race.env.habitation}</span>
 			<span>ADAPT: ${app.game.myciv.race.env.adaptation}</span>
+			<span>SPD: ${app.game.myciv.ship_speed}</span>
+			<span>RANGE: ${app.game.myciv.ship_range}</span>
 		</div>
 		
 		<div id="layout_ui_center">
@@ -170,6 +199,7 @@
 				total_milval: ${app.game.myciv.ai.total_milval|round}<br/>
 				avail_milval: ${app.game.myciv.ai.avail_milval|round}<br/>
 				total_threat: ${app.game.myciv.ai.total_threat|round}<br/>
+				actual_threat: ${app.game.myciv.ai.actual_threat|round}<br/>
 				total_starvalue: ${app.game.myciv.ai.total_starvalue|round}<br/>
 				num_uncolonized: ${app.game.myciv.ai.num_uncolonized|round}<br/>
 				total_troops: ${app.game.myciv.ai.total_troops|round}<br/>
@@ -231,16 +261,22 @@
 			<a href="#" click.delegate="app.MapScroll(400,0)" class="button cool">▶</a>
 			<a href="#" click.delegate="app.ToggleOption('show_range')" class="button ${app.options.show_range ? 'alt' : 'cool'}">◯</a>
 			<a href="#" click.delegate="app.ToggleOption('show_sectors')" class="button ${app.options.show_sectors ? 'alt' : 'cool'}">⛶</a>
+			<a href="#" click.delegate="app.ToggleOption('show_staging_pts')" class="button ${app.options.show_staging_pts ? 'alt' : 'cool'}">✜</a>
 			<a href="#" click.delegate="app.ToggleOption('see_all')" class="button ${app.options.see_all ? 'alt' : 'cool'}">★</a>
 			<a href="#" click.delegate="app.ToggleOption('show_xtreme_fleets')" class="button ${app.options.show_xtreme_fleets ? 'alt' : 'cool'}">▪</a>
-			<a href="#" click.delegate="app.ToggleOption('debug')" class="button ${app.options.debug ? 'alt' : 'cool'}">🐞</a>
 			<a href="#" click.delegate="app.ToggleOption('show_xtreme_anoms')" class="button ${app.options.show_xtreme_anoms ? 'alt' : 'cool'}">▰</a>
-			<a href="#" click.delegate="app.ToggleOption('ai')" class="button ${app.options.ai ? 'alt' : 'cool'}">AI</a>
-			<a href="#" click.delegate="app.ToggleOption('soak')" class="button ${app.options.soak ? 'alt' : 'cool'}">Soak</a>
-			<a href="#" click.delegate="app.game.RotateMyCiv()" class="button cool">SwCiv</a>
 			<a href="#" click.delegate="app.ToggleOption('ship_scaling')" class="button ${app.options.ship_scaling ? 'alt' : 'cool'}">DS</a>
-			<a href="#" click.delegate="app.state_obj.DramaticIntro()" class="button">✈</a>
-			<a href="#" click.delegate="app.game.DoEvent()" class="button">EVENT</a>
+			<a href="#" click.delegate="app.ToggleOption('debug')" class="button ${app.options.debug ? 'alt' : 'cool'}">🐞</a>
+			<template containerless if.bind="app.options.debug">
+				<a href="#" click.delegate="app.ToggleOption('show_objectives')" class="button ${app.options.show_objectives ? 'alt' : 'cool'}">OBJ</a>				
+				<a href="#" click.delegate="app.ToggleOption('show_threats')" class="button ${app.options.show_threats ? 'alt' : 'cool'}">THR</a>
+				<a href="#" click.delegate="app.ToggleOption('show_empire_box')" class="button ${app.options.show_empire_box ? 'alt' : 'cool'}">BOX</a>
+				<a href="#" click.delegate="app.game.RotateMyCiv()" class="button cool">SwCiv</a>
+				<a href="#" click.delegate="app.ToggleOption('ai')" class="button ${app.options.ai ? 'alt' : 'cool'}">AI</a>
+				<a href="#" click.delegate="app.ToggleOption('soak')" class="button ${app.options.soak ? 'alt' : 'cool'}">Soak</a>
+			</template>
+<!-- 			<a href="#" click.delegate="app.state_obj.DramaticIntro()" class="button">✈</a> -->
+<!-- 			<a href="#" click.delegate="app.game.DoEvent()" class="button">EVENT</a> -->
 		</div>
 		
 	</div>

@@ -92,7 +92,6 @@ export default class Fleet {
 			this.troopcap += ship.bp.troopcap;
 			// AI milval level
 			this.milval += ship.bp.milval;
-			this.milval += ship.troops.length * 100;
 			// fleet health
 			this.health += ship.hull + ship.armor;
 			this.healthmax += ship.bp.hull + ship.bp.armor;

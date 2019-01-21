@@ -1184,8 +1184,8 @@ DIV.hyperlane {
 	width: 300px;
 	height: 300px;
 	position:absolute;
-	margin-left:-150px;
-	margin-top:-150px;
+	transform-origin: 50% 50% 0; 
+	transform: translateX(-50%) translateY(-50%);
 	top: 0;
 	left: 0;
 	border: 10px solid #FFF;
@@ -1198,15 +1198,51 @@ DIV.hyperlane {
 .ai_caret.small {	
 	width: 150px;
 	height: 150px;
-	position:absolute;
-	margin-left:-75px;
-	margin-top:-75px;
 	}
 .ai_caret.good {	border-color: #3F3; }
 .ai_caret.bad {	border-color: #D11; }
 .ai_caret.neutral {	border-color: #39F; }
 .ai_caret.shared {	border-style: dashed; }
+.ai_caret.threat {	
+	border-radius: 0;
+	border-style: double;
+	border-color: #F90;
+	opacity: 0.75;
+	padding: 5px;
+	box-sizing: content-box;
+	transform: translateX(-50%) translateY(-50%) rotate(45deg);
+	}
+.ai_caret.threat.system {
+	padding: 25px;
+	}
+.xtreme_zoom .ai_caret.threat {
+	padding: 20px;
+	opacity: 1;
+	}
+.xtreme_zoom .ai_caret.threat.system {
+	padding: 50px;
+	opacity: 1;
+	}
+.ai_caret.staging_pt { 
+	width: 400px;
+	height: 400px;
+	transform: translateX(-50%) translateY(-47.6%);
+	font-size: 400px; 
+	text-align:center; 
+	vertical-align:middle;
+	line-height: 400px; 
+	opacity: 0.15;
+	border:none;
+	}	
+.ai_caret.staging_pt:before { content: '✜'; } 
 	
+.empire_box {
+	position:absolute;
+	box-sizing: border-box;
+	border: 2px dashed #FFF;
+	z-index: -10;
+	}
+
 /* 
 Exploration and range status determine which parts are displayed 
 hidden: star is completely invisible on the map
@@ -1295,25 +1331,6 @@ invisible when unexplored, dim when explored */
 	background-position: 50% 50%;
 	text-shadow:none;
 	}	
-	
-.mapobj_container .staging_pt { 
-	position:absolute;
-	display:block !important;
-	width: 500% !important;
-	height: 400px !important;
-	margin-left: -200% !important;
-	margin-top: -125px !important;
-	font-size: 400px !important; 
-	text-align:center !important; 
-	vertical-align:middle !important;
-	line-height: 400px !important; 
-	opacity: 0.15;
-	z-index: -5;	
-	}	
-.xtreme_zoom .mapobj_container .staging_pt { 
-	opacity: 0.3;
-	}
-	
 
 	
 /* FLEETS EN ROUTE */
@@ -1386,7 +1403,7 @@ invisible when unexplored, dim when explored */
 	background: none;
 	border-radius: 0;
 	}
-.xtreme_zoom .fleet_en_route:after {
+.xtreme_zoom .fleet_en_route:before {
 	content:'◼';
 	font-size:40px;
 	text-decoration:none;

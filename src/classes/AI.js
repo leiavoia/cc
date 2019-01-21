@@ -77,11 +77,12 @@ export class AI {
 	}
 	
 export class CivAI extends AI {
-	threats = []; // fleets
+	threats = new Map; // fleets
 	staging_pts = []; // stars to send newly built ships, AKA "accumulators"
 	total_milval = 0;
 	avail_milval = 0;
 	total_threat = 0;
+	actual_threat = 0;
 	total_starvalue = 0;
 	num_uncolonized = 0;
 	total_troops = 0;
@@ -226,10 +227,12 @@ export class AIAnalyzeObjective extends AIObjective {
 	priority = 1;
 	EvaluateFunc( app, civ ) { 
 		// reset stats
+		civ.ai.threats.clear();
 		civ.ai.total_milval = 0;
 		civ.ai.avail_milval = 0;
 		civ.ai.total_starvalue = 0;
 		civ.ai.total_threat = 0;
+		civ.ai.actual_threat = 0;
 		civ.ai.total_troops = 0;
 		civ.ai.total_troopships = 0;
 		for ( let p of civ.planets ) { 
@@ -271,10 +274,10 @@ export class AIAnalyzeObjective extends AIObjective {
 					// unfriendly fleet, that should be a mild concern regardless
 					// of presence of any actual fleets right now.
 					for ( let f of c.fleets ) { 
-						if ( f.killme || f.mission || !f.fp ) { continue; }
+						if ( f.killme || f.mission || (!f.fp && !f.troops) ) { continue; }
 						let is_a_threat = false;
 						let fastrange = 1; // use later
-						let scanrange = 800*800; // don't care about targets outside 800px radius
+						let scanrange = civ.ship_speed * civ.ship_speed * 3.5 * 3.5;
 						// fleets en route - use their destination
 						if ( f.dest ) { 
 							// WARNING: we are assuming no subspace communications can reroute fleets in transit
@@ -293,34 +296,39 @@ export class AIAnalyzeObjective extends AIObjective {
 						// fleet is considered a threat - determine how much
 						if ( is_a_threat ) { 
 							let threat = f.milval;
+							threat += f.troops * 200; // troops have no firepower, but are very threatening
 							// fleets parked on me
-							if ( f.star == p.star ) { threat = f.milval; }
+							if ( f.star == p.star ) { threat *= 1.4; }
 							// fleets en route to me
-							else if ( f.dest == p.star ) { threat = f.milval; }
+							else if ( f.dest == p.star ) { threat *= 1.0; }
 							// fleets in the neighborhood
 							else {
 								// graduate threat over 7 turn ETA
 								let range_mod = 1 + (7 - Math.min( 7, Math.ceil( fastrange / (f.speed * f.speed) ) ) ) / 7;
 								// monsters are always a threat
 								if ( f.owner.race.is_monster ) { 
-									threat = f.milval * range_mod * 0.4;
+									threat *= range_mod * 0.4;
 									}
 								else { 
-									threat = f.milval * range_mod * 0.2;
+									threat *= range_mod * 0.2;
 									}
 								}
+							// NOTE: `total_threat` includes fleets that threaten multiple systems.
+							// We add them all together because systems use this number to normalize
+							// their respective threat level.
 							acct.ai.threat += threat;
 							civ.ai.total_threat += threat;
-// 							civ.ai.threats.push(f);
-// 							if ( p.owner == app.game.myciv ) { 
-// 								console.log(`${f.owner.name} fleet #${f.id} is a threat to ${p.star.name} [${threat}]`);
-// 								}
+							if ( !civ.ai.threats.has(f) || threat > civ.ai.threats.get(f) ) { 
+								civ.ai.threats.set(f,threat);
+								}
 							}
 						}
 					}
 				starsystems.push(p.star);
 				}
 			}
+		// summing threats after analysis means we don't get overlapping threats
+		civ.ai.threats.forEach( (v,k) => civ.ai.actual_threat += v );
 		// evaluate fleets
 		for ( let f of civ.fleets ) { 
 			if ( f.mission || f.killme || !f.ships.length ) { continue; }
@@ -343,7 +351,7 @@ export class AIAnalyzeObjective extends AIObjective {
 					/ ( civ.ai.strat.def_planetvalue_weight + civ.ai.strat.def_threat_weight );
 				}
 			}	
-		this.note = 'PowerScore ' + civ.power_score;
+		this.note = 'tracking threats: ' + civ.ai.threats.size;
 		}			
 	}
 
@@ -424,6 +432,9 @@ export class AIDefenseObjective extends AIObjective {
 	type = 'defense';
 	priority = 20;
 	EvaluateFunc( app, civ ) {
+	
+		this.note = 'threats: ' + civ.ai.threats.size;
+	
 		// BALANCED STRATEGY: calculate the ideal amount of ships for
 		// each system based on system value and current threat level. 
 		if ( civ.ai.strat.def == 'balanced' ) {
@@ -491,17 +502,6 @@ export class AIDefenseObjective extends AIObjective {
 					let helper = helpers.pop();
 					milval_needed -= civ.AI_PeelShipsForDefense( star, helper, milval_needed );
 					}
-				}
-			// if there is leftover undefended threat, add that to our AI needs
-			civ.ai.needs.combat_ships = 0;
-			while ( systems.length > 0 ) { 
-				let star = systems.pop();
-				let milval_needed = 
-					( star.accts.get(civ).ai.def_priority - star.accts.get(civ).ai.defense_norm ) 
-					* civ.ai.avail_milval
-					// - enroute // meh
-					;
-				civ.ai.needs.combat_ships += milval_needed;
 				}		
 			}
 			
@@ -556,14 +556,11 @@ export class AIDefenseObjective extends AIObjective {
 					milval_needed -= civ.AI_PeelShipsForDefense( star, helper, milval_needed );
 					}
 				}
-			// if there is leftover undefended threat, add that to our AI needs
-			civ.ai.needs.combat_ships = 0;
-			while ( systems.length > 0 ) { 
-				let star = systems.pop();
-				civ.ai.needs.combat_ships += star.accts.get(civ).ai.threat - star.accts.get(civ).ai.defense;
-				}
 			}
 			
+		// if there is leftover undefended threat, add that to our AI needs
+		civ.ai.needs.combat_ships = civ.ai.actual_threat - civ.ai.avail_milval;
+				
 		// see how many combat ships we already have in production. civ may
 		// indicate we need to build more or possibly cull some already queued.
 		for ( let p of civ.planets ) { 
