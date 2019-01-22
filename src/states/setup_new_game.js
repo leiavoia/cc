@@ -53,8 +53,12 @@ export class SetupNewGameState {
 			stars,
 			this.settings.galaxy_age
 			);
+		// TODO: change AddExploreDemo to something more robust when code matures.
 		let mystar = this.app.game.galaxy.AddExploreDemo(this.settings.num_civs);
-		this.app.game.SetMyCiv( 0 ); // could switch using debug stuff
+		// TODO: difficulty level: when assigning homeworlds, give player more or less
+		// room, and better or worse position as defined by the natural score of all
+		// planets within a "starting circle", then sort star systems by their totals.
+		this.app.game.SetMyCiv( 0 );
 		this.app.game.RecalcStarRanges();
 		this.app.game.RecalcFleetRanges();
 		this.app.game.RecalcCivContactRange();

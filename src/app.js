@@ -74,6 +74,7 @@ export class App {
 		Star.next_id = 1;
 		this.game = null;		
 		this.notes = [];
+
 // 		this.state = 'title';
 // 		this.state_obj = null;
 		}
@@ -81,8 +82,6 @@ export class App {
 	constructor() {
 		window.document.title = `Constellation Control v.${this.version}`;
 		this.LoadOptions();
-// 		this.state = 'title';
-// 		return;
 		// --------\/-- [!]DEBUG SHORTCUT --\/---------------------
 		this.game = new Game(this);
 		// create initial state
@@ -197,7 +196,7 @@ export class App {
 		if ( obj instanceof Planet ) { this.sidebar_mode = 'planet'; this.state_obj.SetCaret(obj.star); }
 		else if ( obj instanceof Star ) { this.sidebar_mode = 'star';  this.state_obj.SetCaret(obj); }
 		else if ( obj instanceof Anom ) { this.sidebar_mode = 'anom';  this.state_obj.SetCaret(obj); }
-		else if ( obj instanceof Fleet ) { this.sidebar_mode = 'fleet'; this.state_obj.SetCaret(obj); }
+		else if ( obj instanceof Fleet && !obj.killme && !obj.merged_into ) { this.sidebar_mode = 'fleet'; this.state_obj.SetCaret(obj); }
 // 		else if ( obj instanceof Constellation ) { this.sidebar_mode = 'constel'; }
 		else { this.sidebar_mode = false; }
 		this.sidebar_obj = obj;
@@ -230,10 +229,12 @@ export class App {
 	CloseSideBar() {
 		this.sidebar_mode = false;
 		this.sidebar_obj = null;
+		this.state_obj.SetCaret(null);
 		}
 	ReturnToMap() {
 		this.CloseMainPanel();
 		this.CloseSideBar();
+		this.state_obj.SetCaret(null);
 		}
 	ShowDialog( header, content, buttons = null ) { 
 		this.modal = { header, content, buttons };

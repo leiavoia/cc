@@ -51,7 +51,7 @@ export class PlayState {
 			this.caret.obj = obj.star;
 			this.caret.class = 'star';
 			}
-		else if ( obj instanceof Fleet && !obj.killme ) { 
+		else if ( obj instanceof Fleet && !obj.killme && !obj.merged_with ) { 
 			this.caret.x = obj.xpos; 
 			this.caret.y = obj.ypos; 
 			// HACK: if we are updating the caret and following the same fleet,
@@ -398,6 +398,7 @@ export class PlayState {
 		// [!]FUTURE-TODO - This is where the dramatic intro would go in the future.
 		if ( this.app.hilite_star ) { 
 			this.FocusMap( this.app.hilite_star );
+			this.app.hilite_star = null;
 			}
 		}
 		

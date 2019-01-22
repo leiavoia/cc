@@ -33,10 +33,13 @@ export class FleetDetailPane {
 		this.starclick_subsc = Signals.Listen('starclick', 
 			data => { if ( data.event.which > 1 ) { this.StarClickCallback(data.star) } }
 			);
-		this.turn_subscription = Signals.Listen( 'turn', data => this.UpdateStats() );
+		if ( !this.turn_subscription ) { 
+			this.turn_subscription = Signals.Listen( 'turn', data => this.UpdateStats() );
+			}
 		}
 		
 	unbind() { 	
+		if ( this.fleet ) { this.fleet.SetOnUpdate(null); }
 		// stop listening for starclicks
 		this.starclick_subsc.dispose();
 		this.turn_subscription.dispose();
@@ -89,12 +92,14 @@ export class FleetDetailPane {
 			}
 		}		
 	UpdateStats() { 
-		// fleet will have killme flag if it needs to be treated as deleted
+		// if fleet merged into another fleet, change focus to receiving fleet
 		if ( this.fleet.merged_with instanceof Fleet ) { 
+			this.fleet.SetOnUpdate(null);
 			this.app.SwitchSideBar( this.fleet.merged_with );
 			}
-		else if ( this.fleet.killme == true ) { 
-			this.mode = 'fleet';
+		// fleet will have killme flag if it needs to be treated as deleted
+		else if ( this.fleet.killme === true ) { 
+			this.fleet.SetOnUpdate(null);
 			this.app.CloseSideBar();
 			}
 		else {
@@ -379,7 +384,6 @@ export class FleetDetailPane {
 			}
 		}
 	ClickPlanetToInvade(p) { 
-		console.log(`clicked to invade ${p.name}`);
 		this.app.game.QueueGroundCombat( this.fleet, p );
 		this.app.game.PresentNextPlayerGroundCombat();	
 		}
@@ -389,7 +393,6 @@ export class FleetDetailPane {
 		let our_avg = trooplist.length ? (trooplist.reduce( f, 0 ) / trooplist.length) : 0;
 		let their_avg = p.troops.length ? (p.troops.reduce( f, 0 ) / p.troops.length) : 0;
 		let total = our_avg + their_avg;
-// 		console.log(`${our_avg} ${their_avg}`);
 		return total ? ( our_avg / total ) : 1; 
 		}
 		

@@ -4,6 +4,7 @@ import {Mod,Modlist} from './Mods';
 export default class Fleet {
 	
 	killme = false; // true if the fleet needs to be treated as deleted
+	merged_with = null; // if fleet merges into another fleet, set to receiving fleet
 	
 	id = 0;
 	star = null;
@@ -30,14 +31,18 @@ export default class Fleet {
 	MilvalAvailable() { return ( this.ai && 'milval' in this.ai ) ? ( this.milval - this.ai.milval ).clamp(0,null) : this.milval; }	
 	
 	onUpdate = null; // callback
-	SetOnUpdate( callback ) { 
-		if ( callback instanceof Function ) { 
+	SetOnUpdate( callback ) { // function or NULL
+		if ( callback instanceof Function || callback === null ) { 
 			this.onUpdate = callback;
 			}
 		}
 	FireOnUpdate() { 
 		if ( this.onUpdate instanceof Function ) { 
 			this.onUpdate( this );
+			// no more updates for you 
+			if ( this.killme || this.merged_with ) { 
+				this.onUpdate = null;
+				}
 			}		
 		}
 		
@@ -181,6 +186,7 @@ export default class Fleet {
 		this.owner.fleets.splice( this.owner.fleets.indexOf(this), 1 );
 		Fleet.all_fleets.splice( Fleet.all_fleets.indexOf(this), 1 );
 		this.FireOnUpdate();
+		this.SetOnUpdate(null);
 		}
 		
 	static KillAll() {

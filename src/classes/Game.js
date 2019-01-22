@@ -316,10 +316,19 @@ export default class Game {
 					}
 				};
 			// update caret (check for dead fleets removed from ship movement ) 
-			if ( this.app.state_obj.caret.obj instanceof Fleet && this.app.state_obj.caret.obj.killme ) { 
-				this.app.state_obj.caret.obj = null;
+			if ( this.app.state_obj.caret ) { 
+				this.app.state_obj.SetCaret( this.app.state_obj.caret.obj );
 				}
-			this.app.state_obj.SetCaret( this.app.state_obj.caret.obj );
+			if ( this.app.sidebar_obj instanceof Fleet && this.app.sidebar_obj.killme ) { 
+				this.app.sidebar_obj = null;
+				this.app.sidebar_mode = null;
+				}
+			if ( !this.app.sidebar_obj && this.app.sidebar_mode ) { 
+				this.app.sidebar_mode = null;
+				}
+			if ( this.app.sidebar_obj && !this.app.sidebar_mode ) { 
+				this.app.sidebar_obj = null;
+				}
 // 			console.timeEnd('Ship Movement');
 			
 			// RESEARCH
@@ -781,17 +790,6 @@ export default class Game {
 			}
 		}
 		
-	RegenerateGalaxy() {
-		this.app.sidebar_obj = null;
-		this.app.sidebar_mode = false;
-		// let there be light
-		this.galaxy.Make( 20, 10, 65, Math.random() );
-		this.RefactorPlanetList();
-		this.DeployVictoryIngredients();
-		this.victory_achieved = false;
-		Fleet.KillAll();
-		}
-	
 	// utility function
 	SetMyCiv( c ) { // id or Civ object
 		if ( Number.isInteger(c) ) { 
