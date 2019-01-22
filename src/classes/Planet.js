@@ -110,7 +110,7 @@ export default class Planet {
 			let ship = item.obj.Make();
 			// if this is a troop carrier, autoload troops if any available
 			if ( ship.bp.troopcap ) { // TODO: Make optional, but no access to app.options here???
-				while ( this.troops.length ) { 
+				while ( this.troops.length > 0 && ship.troops.length < ship.bp.troopcap ) { 
 					ship.troops.push( this.troops.pop() );
 					}
 				}

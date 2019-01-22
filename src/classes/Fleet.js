@@ -455,19 +455,26 @@ export default class Fleet {
 		
 	// dumps all troops from a planet into the fleet
 	TransferTroopsFromPlanet( planet, max ) {
+		if ( planet.owner != this.owner 
+			|| this.troops == this.troopcap 
+			|| !this.troopcap 
+			|| !planet.troops.length 
+			) { return; }
 		let moved = 0;
+		if ( !max ) { max = this.troopcap; }
+		max = Math.min( max, this.troopcap );
+		let ships = this.ships.filter( s => s.bp.troopcap > s.troops.length );
 		while ( planet.troops.length && this.troopcap > this.troops && moved <= max ) { 
 			let t = planet.troops[0];
-			// find a ship that can hold this unit
-			for ( let s of this.ships ) { // [!]OPTIMIZE this could be optimized
-				if ( s.bp.troopcap > s.troops.length ) { 
-					s.troops.push( t );
-					planet.troops.shift(); // remove from planet
-					moved++;
-					}
+			let s = ships[0];
+			if ( s.bp.troopcap > s.troops.length ) { 
+				s.troops.push( t );
+				planet.troops.shift(); // remove from planet
+				this.troops++;
+				moved++;
 				}
+			else { ships.shift(); }
 			}
-		this.ReevaluateStats();
 		}
 		
 	// dumps all troops from a fleet onto a planet
@@ -481,7 +488,7 @@ export default class Fleet {
 					}
 				}
 			}
-		this.ReevaluateStats();
+		this.troops = 0;
 		}
 		
 	SortShips() { 
