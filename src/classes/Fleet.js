@@ -27,8 +27,8 @@ export default class Fleet {
 	health = 0; // current hit points
 	healthmax = 0; // max hit points
 	ai = null; // ai objective
-	get reserved_milval() { return ( this.ai && 'milval' in this.ai ) ? this.ai.milval : 0; }	
-	MilvalAvailable() { return ( this.ai && 'milval' in this.ai ) ? ( this.milval - this.ai.milval ).clamp(0,null) : this.milval; }	
+	get reserved_milval() { return ( this.ai && 'reserved_milval' in this.ai ) ? this.ai.reserved_milval : 0; }	
+	MilvalAvailable() { return ( this.ai && 'reserved_milval' in this.ai ) ? ( this.milval - this.ai.reserved_milval ).clamp(0,null) : this.milval; }	
 	
 	onUpdate = null; // callback
 	SetOnUpdate( callback ) { // function or NULL
@@ -242,6 +242,8 @@ export default class Fleet {
 				this.merged_with = f; // hint for UI
 				// AI objectives: if either fleet has AI objective, dont lose it.
 				// TODO not sure how to handle both fleets having different objectives.
+				// for now, kill the objective for the this fleet and keep the receiving objective.
+				if ( f.ai && this.ai ) { this.ai.fleet = null; }
 				f.ai = f.ai || this.ai;
 				if ( f.ai ) { f.ai.fleet = f; }
 				this.Kill();
@@ -255,6 +257,7 @@ export default class Fleet {
 		}
 		
 	SetDest( dest ) { 
+		if ( !dest ) { return; }
 		// check to see if we're already there
 		if ( this.star && this.dest == this.star || dest == this.star ) { 
 			this.dest = null;

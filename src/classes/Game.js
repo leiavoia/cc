@@ -158,7 +158,7 @@ export default class Game {
 		// TODO: lock the UI
 		
 		for ( let t=0; t < num_turns; t++ ) { 
-			console.time('Turn Processor');
+// 			console.time('Turn Processor');
 			
 			// calculate how many material points (mining) we can afford 
 			// to distribute to those planets in need.
@@ -382,7 +382,7 @@ export default class Game {
 			
 			this.turn_num++;
 			
-			console.timeEnd('Turn Processor');
+// 			console.timeEnd('Turn Processor');
 			//
 			// At this point the turn is considered "processed",
 			// however the player may still need to complete
