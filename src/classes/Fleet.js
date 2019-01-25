@@ -14,7 +14,6 @@ export default class Fleet {
 	speed = 50.0;
 	colonize = false;
 	owner = false; // false indicates unowned. zero can be an index
-	ui_color = 'rgb(255,255,255)';
 	in_range = false; // UI hint for visibility - only matters for player perspective
 	ships = [];
 	research = false;
@@ -62,7 +61,6 @@ export default class Fleet {
 		this.ypos = star ? star.ypos : 0;
 		this.id = Fleet.NextUniqueID();
 		this.owner = owner;
-		this.ui_color = `rgb( ${owner.color_rgb[0]}, ${owner.color_rgb[1]}, ${owner.color_rgb[2]} )` ;
 		this.owner.fleets.push(this);
 		Fleet.all_fleets.push( this );
 		if ( star ) { star.fleets.push(this); }

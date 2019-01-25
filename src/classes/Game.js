@@ -364,17 +364,6 @@ export default class Game {
 				civ.CalcPowerScore();
 				}
 			
-			// [!]DEBUG: score every planet for the player
-			for ( let s of this.galaxy.stars ) { 
-				s.player_score = 0;
-				for ( let p of s.planets ) { 
-					p.player_score = p.ValueTo( this.myciv );
-					if ( !p.owner || p.owner == this.myciv ) { 
-						s.player_score += p.player_score;
-						}
-					}
-				}
-			
 			// compile stats
 			for ( let civ of this.galaxy.civs ) { 
 				civ.ArchiveStats();

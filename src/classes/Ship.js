@@ -17,7 +17,6 @@ export class Ship {
 		this.armor = blueprint.armor;
 		this.xp = 0; // crew experience
 		this.xplevel = 0; // crew experience level
-		this.kills = 0;
 		this.weapons = [];
 		this.troops = []; // list of GroundUnits onboard
 		this.selected = true; // for UI
@@ -67,13 +66,7 @@ export class Ship {
 					const hull_dmg = Math.min( target.hull, dmg );
 					target.hull -= hull_dmg;
 					log.hull= hull_dmg;
-					if ( !target.hull ) { 
-						log.killed = true;
-						this.kills++;
-						}
-					else {
-					
-						}
+					if ( !target.hull ) { log.killed = true; }
 					}
 				}
 			}

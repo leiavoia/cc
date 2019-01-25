@@ -54,14 +54,8 @@ export class GroundUnit {
 			log.target_dmg++;
 			log.dmg_received++;
 			} 
-		if ( !target.hp ) { 
-			log.target_died = true;
-			this.kills++;
-			}
-		if ( !this.hp ) { 
-			log.died = true;
-			target.kills++;
-			}
+		if ( !target.hp ) { log.target_died = true; }
+		if ( !this.hp ) { log.died = true; }
 		return log;
 		}
 				
