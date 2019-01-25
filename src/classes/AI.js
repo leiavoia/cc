@@ -431,6 +431,7 @@ export class AIMaintainStagingPtsObjective extends AIObjective {
 export class AIDefenseObjective extends AIObjective { 	
 	type = 'defense';
 	priority = 20;
+	prev_actual_threat = 0;
 	EvaluateFunc( app, civ ) {
 	
 		this.note = 'threats: ' + civ.ai.threats.size;
@@ -559,10 +560,20 @@ export class AIDefenseObjective extends AIObjective {
 			}
 			
 		// if there is leftover undefended threat, add that to our AI needs
-		civ.ai.needs.combat_ships = civ.ai.actual_threat - civ.ai.avail_milval;
-				
+		// NOTE: because threat is a "perceived" stat and not indicative of the
+		// total threat posed by neighboring empires, it tends to facilate
+		// endlessly. To prevent wild swings, keep track of previous turn's 
+		// threat and average over time.
+		const threat_decay_factor = 5;
+		civ.ai.needs.combat_ships = 
+			( ( threat_decay_factor * this.prev_actual_threat ) + civ.ai.actual_threat ) 
+			/ ( threat_decay_factor + 1 )
+			- civ.ai.avail_milval;
+		this.prev_actual_threat = civ.ai.actual_threat;
+		
 		// see how many combat ships we already have in production. civ may
 		// indicate we need to build more or possibly cull some already queued.
+		// [!]OPTIMIZE - we could track ships enqueued instead of counting every turn
 		for ( let p of civ.planets ) { 
 			for ( let i of p.prod_q ) { 
 				if ( i.type == 'ship' && i.obj.milval ) {
