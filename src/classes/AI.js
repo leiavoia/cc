@@ -1076,7 +1076,7 @@ export class AIInvadeObjective extends AIObjective {
 			else {
 				// TODO create a new fleet from bits and pieces around
 				this.note = 'no fleet available; rallying';
-				const pt = this.ClosestStagingPointTo( this.target );
+				const pt = this.ClosestStagingPointTo( this.target.star );
 				this.RallyTroopShips( pt, this.ttl-1 );
 				this.RallyCombatShips( pt, this.ttl-1 );
 				}
@@ -1124,7 +1124,7 @@ export class AIInvadeObjective extends AIObjective {
 				// if we are cowardly, run away!
 				if ( civ.ai.strat.posture < 0.34 || ( civ.ai.strat.posture < 0.67 && Math.random() > 0.5 ) ) {
 					this.note = "underpowered; running away";
-					this.fleet.SetDest( this.ClosestStagingPointTo( this.target ) );
+					this.fleet.SetDest( this.ClosestStagingPointTo( this.target.star ) );
 					return false;
 					}
 				// call for backup
@@ -1157,14 +1157,27 @@ export class AIInvadeObjective extends AIObjective {
 		
 	RallyTroopShips( star, within_time ) { 
 		if ( !star ) {return; }
-		this.civ.AI_AvailableFleets( star, this.ttl-1 )
-		.filter( f => f.troops && !f.ai )
-		.forEach( f => f.SplitBy( ship => ship.troops.length, star ) );
-		this.note = 'called for more troops';
+		
+		let troops_needed = this.AI_TroopsNeededToInvade(this.target);
+		if ( !this.FleetDestroyed() ) { troops_needed -= this.fleet.troops; }
+		let troops_enroute = this.civ.fleets.reduce( (total,f) => { 
+			return total + (f.dest == star ? f.troops : 0);			
+			}, 0);
+		troops_needed -= troops_enroute;
+		
+		if ( troops_needed > 0 ) { 
+			this.civ.AI_AvailableFleets( star, this.ttl-1 )
+			.filter( f => f.troops && !f.ai )
+			.forEach( f => f.SplitBy( ship => ship.troops.length, star ) );
+			this.note = 'rallying troops to ' + star.name;
+			}
+		else {
+			this.note = 'rallied troops to ' + star.name;
+			}
 		}
 		
 	RallyCombatShips( star, within_time ) { 
-		if ( !star ) {return; }
+		if ( !star ) { return; }
 		// make a list of nearest systems and peel off reinforcements.
 		// we need reinforcements *fast*
 		let fleets = this.civ.AI_AvailableFleets( star, within_time ).filter( f => f.fp && f.MilvalAvailable() );
@@ -1174,24 +1187,33 @@ export class AIInvadeObjective extends AIObjective {
 				let a_turns = utils.DistanceBetween( 
 					( a.star ? a.star.xpos : a.xpos ), 
 					( b.star ? b.star.xpos : b.xpos ), 
-					this.target.xpos, 
-					this.target.ypos 
+					star.xpos, 
+					star.ypos 
 					) / Math.ceil(a.speed);
 				let b_turns = utils.DistanceBetween( 
 					( a.star ? a.star.xpos : a.xpos ), 
 					( b.star ? b.star.xpos : b.xpos ), 
-					this.target.xpos, 
-					this.target.ypos 
+					star.xpos, 
+					star.ypos 
 					) / Math.ceil(a.speed);
 				return a_turns < b_turns ? -1 : 1;
 				});
-			let milval_needed = this.reserved_milval;
-			for ( let f of fleets ) { 
-				milval_needed -= this.civ.AI_PeelShipsForDefense( star, f, milval_needed );
-				if ( milval_needed <= 0 ) { break; }
+			let milval_enroute = this.civ.fleets.reduce( (total,f) => { 
+				return total + (f.dest == star ? f.milval : 0);			
+				}, 0);
+			let milval_needed = this.reserved_milval - milval_enroute;
+			if ( !this.FleetDestroyed() ) { milval_needed -= this.fleet.milval; }
+			if ( milval_needed > 0 ) { 
+				for ( let f of fleets ) { 
+					milval_needed -= this.civ.AI_PeelShipsForDefense( star, f, milval_needed );
+					if ( milval_needed <= 0 ) { break; }
+					}
+				if ( milval_needed > 0 ) {
+					this.note = 'calling meager reinforcements to ' + star.name;
+					}
 				}
-			if ( milval_needed > 0 ) {
-				this.note = 'calling meager reinforcements';
+			else {
+				this.note = 'rallying firepower to ' + star.name;
 				}
 			}
 		else {
@@ -1207,7 +1229,7 @@ export class AIInvadeObjective extends AIObjective {
 				let d = utils.DistanceBetween(pt.xpos,pt.ypos,star.xpos,star.ypos,true);
 				if ( !best_pt ) {
 					best_pt = pt;
-					best_dist = d
+					best_dist = d;
 					}
 				else if ( d < best_dist ) {
 					best_dist = d;
