@@ -215,6 +215,7 @@ export class AIMainObjective extends AIObjective {
 			civ.ai.objectives.push( new AIOffenseObjective() );
 			civ.ai.objectives.push( new AIColonizeObjective() );
 			civ.ai.objectives.push( new AIPlanetsObjective() );
+			civ.ai.objectives.push( new AIDiplomacyObjective() );
 			this.bootstrapped = true;
 			}
 		}			
@@ -973,6 +974,16 @@ export class AIPlanetsObjective extends AIObjective {
 	}
 
 
+
+// DIPLOMACY - Find good deals and negotiate with other civs
+export class AIDiplomacyObjective extends AIObjective { 	
+	type = 'diplomacy';
+	priority = 60;
+	EvaluateFunc( app, civ ) { 
+		}	
+	}
+	
+	
 // GUARD - Fleet will navigate to target star and sit there until TTL expires.
 export class AIGuardObjective extends AIObjective { 	
 	type = 'guard';
@@ -1243,4 +1254,46 @@ export class AIInvadeObjective extends AIObjective {
 			}
 		return null;
 		}
+	}
+
+// INTERCEPT - Navigate to and destroy enemy fleet
+export class AIInterceptObjective extends AIObjective { 	
+	type = 'intercept';
+	EvaluateFunc( app, civ ) { 
+		}	
+	}
+
+// BERZERK - Make trouble for the enemy in unpredictable ways
+export class AIBerzerkObjective extends AIObjective { 	
+	type = 'berzerk';
+	EvaluateFunc( app, civ ) { 
+		}	
+	}
+
+// BOMBARD - Navigate to and destroy enemy colony
+export class AIBombardObjective extends AIObjective { 	
+	type = 'bombard';
+	EvaluateFunc( app, civ ) { 
+		}	
+	}
+
+// SETTLE - Navigate to and settle a planet
+export class AISettleObjective extends AIObjective { 	
+	type = 'settle';
+	EvaluateFunc( app, civ ) { 
+		}	
+	}
+
+// SCOUT- Send fleet to scout nearby systems
+export class AIScoutObjective extends AIObjective { 	
+	type = 'scout';
+	EvaluateFunc( app, civ ) { 
+		}	
+	}
+
+// ANOMALY RESEARCH - Create a fleet and research anomalies
+export class AIAnomExploreObjective extends AIObjective { 	
+	type = 'anom';
+	EvaluateFunc( app, civ ) { 
+		}	
 	}
