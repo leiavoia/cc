@@ -38,6 +38,7 @@ export class App {
 		show_empire_box: true, // debug only
 		show_threats: true, // debug only
 		ship_scaling: true,
+		xtreme_zoom_at: 0.25,
 		debug: false,
 		ai: true, // process the AI each turn
 		soak: true, // run the game without player involvement
@@ -54,6 +55,22 @@ export class App {
 			research: false,
 			combat: true,
 			anom: true
+			},
+		setup: { 
+			AIs: 5,
+			AIs_randomize: false,
+			galaxy_size: 70,
+			galaxy_size_randomize: false,
+			galaxy_age: 0.5,
+			galaxy_age_randomize: false,
+			density: 0.5,
+			density_randomize: false,
+			difficulty: 0.5,
+			difficulty_randomize: false,
+			events: 0.5, 
+			events_randomize: false, 
+			crazy: 0.3,
+			crazy_randomize: false,
 			}
 		};
 	

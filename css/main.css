@@ -972,8 +972,12 @@ progress.skinny {
 	height:0.25em;
 	}
 
+INPUT.ghost, INPUT.disabled {
+	pointer-events: none; 
+	opacity: 0.25;
+	}	
 
-
+OUTPUT.random { font-style: italic; } 
 
 
 

@@ -1,17 +1,15 @@
 <template>
-<!-- <require from="../converters/SetupConverters"></require> -->
-
 <div id="layout_ui">
 	<div id="layout_ui_main" class="setup">
 		
 		<div id="setup_pane">
 			<h1>New Game</h2>
-			<p class="button_rack">
+<!--			<p class="button_rack">
 				<a href="#" class="button big ${show_pane == 'game' ? '' : 'cool'}" click.trigger="ChangePanel('game')">Game Setup</a>
 				<a href="#" class="button big ${show_pane == 'galaxy' ? '' : 'cool'}" click.trigger="ChangePanel('galaxy')">Galaxy Setup</a>
 				<a href="#" class="button big ${show_pane == 'race' ? '' : 'cool'} ghost" click.trigger="ChangePanel('race')">Race Setup</a>
-			</p>
-			<div id="game_setup_pane" class="pane" show.bind="show_pane == 'game'">
+			</p>-->
+<!--			<div id="game_setup_pane" class="pane" show.bind="show_pane == 'game'">
 				<div class="option">
 					<label for="diff">Difficulty</label>
 					<input id="diff" type="range" min="0.0" max="1.0" step="0.1" value.bind="settings.diff" /> 
@@ -46,36 +44,67 @@
 						<p class="disabled"><input type="checkbox" name="victory" value="baseball" /> Baseball</p>
 					</div>
 				</div>
-			</div>
+			</div>-->
+			
 			<div id="galaxy_setup_pane" class="pane" show.bind="show_pane == 'galaxy'">
+				
 				<div class="option">
-					<input type="checkbox" name="rand_size" />
+					<button class="${app.options.setup.galaxy_size_randomize ? 'alt' : ''}" 
+						click.delegate="app.options.setup.galaxy_size_randomize = !app.options.setup.galaxy_size_randomize"
+					>Randomize</button>
 					<label for="size">Galaxy Size</label>
-					<input id="size" type="range" min="16" max="800" step="1" value.bind="settings.galaxy_size" /> 
-					<output>${settings.galaxy_size} Sectors</output>
+					<input id="size" type="range" min="16" max="1000" step="1" value.bind="app.options.setup.galaxy_size" /> 
+					<output show.bind="!app.options.setup.galaxy_size_randomize">${app.options.setup.galaxy_size} sectors</output>
+					<output show.bind="app.options.setup.galaxy_size_randomize" class="random">Up to ${app.options.setup.galaxy_size} sectors </output>
 				</div>
+				
 				<div class="option">
-					<input type="checkbox" name="rand_age" />
+					<button class="${app.options.setup.galaxy_age_randomize ? 'alt' : ''}" 
+						click.delegate="app.options.setup.galaxy_age_randomize = !app.options.setup.galaxy_age_randomize"
+					 >Randomize</button>
 					<label for="age">Galaxy Age</label>
-					<input id="age" type="range" min="0.0" max="1.0" step="0.1" value.bind="settings.galaxy_age" /> 
-					<output>${settings.galaxy_age|galaxyAge}</output>
+					<input id="age" type="range" min="0.0" max="1.0" step="0.1" value.bind="app.options.setup.galaxy_age" 
+						class="${app.options.setup.galaxy_age_randomize ? 'disabled' : ''}" /> 
+					<output show.bind="!app.options.setup.galaxy_age_randomize">${app.options.setup.galaxy_age|galaxyAge}</output>
+					<output show.bind="app.options.setup.galaxy_age_randomize" class="random">Random</output>
 				</div>
+				
 				<div class="option">
-					<input type="checkbox" name="rand_stars" />
+					<button class="${app.options.setup.density_randomize ? 'alt' : ''}" 
+						click.delegate="app.options.setup.density_randomize = !app.options.setup.density_randomize"
+					 >Randomize</button>
 					<label for="stars">Star Density</label>
-					<input id="stars" type="range" min="0.0" max="1.0" step="0.1" value.bind="settings.num_stars" /> 
-					<output>${settings.num_stars|starDensity}</output>
+					<input id="stars" type="range" min="0.0" max="1.0" step="0.1" value.bind="app.options.setup.density" 
+						class="${app.options.setup.density_randomize ? 'disabled' : ''}" /> 
+					<output show.bind="!app.options.setup.density_randomize">${app.options.setup.density|starDensity}</output>
+					<output show.bind="app.options.setup.density_randomize" class="random">Random</output>
 				</div>
+				
 				<div class="option">
-					<input type="checkbox" name="rand_size" />
+					<button class="${app.options.setup.crazy_randomize ? 'alt' : ''}" 
+						click.delegate="app.options.setup.crazy_randomize = !app.options.setup.crazy_randomize"
+					 >Randomize</button>
 					<label for="crazyness">Crazyness</label>
-					<input id="crazyness" type="range" min="0.0" max="1.0" step="0.1" value.bind="settings.crazyness" /> 
-					<output>${settings.crazyness|minMax}</output>
+					<input id="crazyness" type="range" min="0.0" max="1.0" step="0.1" value.bind="app.options.setup.crazy" 
+						class="${app.options.setup.crazy_randomize ? 'disabled' : ''}" /> 
+					<output show.bind="!app.options.setup.crazy_randomize">${app.options.setup.crazy|minMax}</output>
+					<output show.bind="app.options.setup.crazy_randomize" class="random">Random</output>
 				</div>
-							
+				
+				<div class="option">
+					<button class="${app.options.setup.AIs_randomize ? 'alt' : ''}" 
+						click.delegate="app.options.setup.AIs_randomize = !app.options.setup.AIs_randomize"
+					 >Randomize</button>
+					<label for="num_civs">AI Empires</label>
+					<input id="num_civs" type="range" min="1" max="23" step="1" value.bind="app.options.setup.AIs" 
+						class="${app.options.setup.AIs_randomize ? 'disabled' : ''}" /> 
+					<output show.bind="!app.options.setup.AIs_randomize">${app.options.setup.AIs}</output>
+					<output show.bind="app.options.setup.AIs_randomize" class="random">Random</output>
+				</div>	
 				
 			</div>
-			<div id="race_setup_pane" class="pane" show.bind="show_pane == 'race'">
+			
+<!--			<div id="race_setup_pane" class="pane" show.bind="show_pane == 'race'">
 				<div class="option">
 					<h2>Organism</h2>
 				</div>
@@ -95,11 +124,13 @@
 					
 				</div>
 				
-			</div>
+			</div>-->
+			
 			<p class="button_rack right">
 				<a href="#" class="big" click.delegate="ConfirmSetup()">MAKE IT SO</a>
 				<a href="#" class="big bad" click.delegate="CancelSetup()">CANCEL</a>
 			</p>
+			
 		</div>
 		
 	</div>

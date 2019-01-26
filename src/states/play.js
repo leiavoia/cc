@@ -17,7 +17,7 @@ export class PlayState {
 	// map stuff
 	current_scale = 1.0;
 	max_scale = 1.0;
-	min_scale = 0.05;
+	min_scale = 0.025;
 	scaling_step = 0.125;
 	bg_img = 'img/map/bg/spacebg_031.jpg';
 	bg_img_w = 2500; // standardized bg img dims
@@ -219,11 +219,11 @@ export class PlayState {
 		
 		this.RecalcBGSize();
 		
-		if ( this.current_scale < 0.30 && document.body.className.indexOf('xtreme_zoom') == -1 ) {
+		if ( this.current_scale < this.app.options.xtreme_zoom_at && document.body.className.indexOf('xtreme_zoom') == -1 ) {
 			document.body.className += ' xtreme_zoom';
 			this.xtreme_zoom = true;
 			}
-		else if ( this.current_scale >= 0.30 && document.body.className.indexOf('xtreme_zoom') > -1 ) {
+		else if ( this.current_scale >= this.app.options.xtreme_zoom_at && document.body.className.indexOf('xtreme_zoom') > -1 ) {
 			document.body.className = document.body.className.replace('xtreme_zoom');
 			this.xtreme_zoom = false;
 			}
