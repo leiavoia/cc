@@ -83,8 +83,6 @@ export class App {
 		Fleet.KillAll();
 		Fleet.all_fleets = [];
 		Civ.total_civs = false; // next one will be zero
-		Civ.relation_matrix = [];
-		Civ.range_matrix = [];
 		Civ.flag_id_roster = null;
 		Civ.img_id_roster = null;
 		Planet.next_uid = 1;

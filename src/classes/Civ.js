@@ -62,54 +62,76 @@ export default class Civ {
 	
 	// diplomatic communication with other races is measured
 	// by comparing their overlapping line segments composed 
-	// of diplo_style +/- diplo_skill
+	// of diplo.style +/- diplo.skill
 	// US:   |----------------====#====-------|
 	// THEM: |---------======#======----------|
-	// the general spread of race types over diplo_style is (0..1) :
+	// the general spread of race types over diplo.style is (0..1) :
 	// rocks - plants - organic - cyborgs - robots - energy - trandimensional
-	diplo_style = 0.5; // 0..1, what kind of communication type this race uses 
-	diplo_skill = 0.25; // 0..1, the range of communication skills this race has.
-	diplo_dispo = 0.5; // 0..1, lovenub starting disposition when we meet other races.
-	// integrate this with above later
 	diplo = {
-		contactable: true
+		contacts: new Map(), // civ => { lovenub, annoyed, etc. }
+		contactable: true,
+		style: 0.5, // 0..1, what kind of communication type this race uses 
+		skill: 0.25, // 0..1, the range of communication skills this race has.
+		dispo: 0.5, // 0..1, lovenub starting disposition when we meet other races.
+		offer_ok_at: 0, // anything over is a good deal
+		offer_counter_at: -0.5, // anything beteen this and `ok` gets an automatic counter-offer 
+		offer_bad_at: -1.0, // anything between this and `counter` gets refused
+		// anything less than `bad` get refused and treated as an insult
+		annoyance_recharge: 0.1, // how much their annoy-o-meter recharges each turn
+		emotional: 1.0, // how much to multiply diplomatic effects		
 		};
 		
 	CommOverlapWith( civ ) { 
-		let min1 = utils.Clamp( this.diplo_style - this.diplo_skill, 0, 1 );
-		let max1 = utils.Clamp( this.diplo_style + this.diplo_skill, 0, 1 );
+		if ( !this.diplo.contactable || !civ.diplo.contactable ) { return 0; }
+		let min1 = utils.Clamp( this.diplo.style - this.diplo.skill, 0, 1 );
+		let max1 = utils.Clamp( this.diplo.style + this.diplo.skill, 0, 1 );
 		let range1 = max1 - min1;
-		let min2 = utils.Clamp( civ.diplo_style - civ.diplo_skill, 0, 1 );
-		let max2 = utils.Clamp( civ.diplo_style + civ.diplo_skill, 0, 1 );
+		let min2 = utils.Clamp( civ.diplo.style - civ.diplo.skill, 0, 1 );
+		let max2 = utils.Clamp( civ.diplo.style + civ.diplo.skill, 0, 1 );
 		let range2 = max2 - min2;
 		let overlap = Math.max(0, Math.min(max1, max2) - Math.max(min1, min2));
 		let ratio1 = range1 ? ( overlap / range1 ) : 0;
 		let ratio2 = range2 ? ( overlap / range2 ) : 0;
-		// console.log(`mystyle=${this.diplo_style},myrange=${this.diplo_skill},theirstyle=${civ.diplo_style},theirrange=${civ.diplo_skill}`);
+		// console.log(`mystyle=${this.diplo.style},myrange=${this.diplo.skill},theirstyle=${civ.diplo.style},theirrange=${civ.diplo.skill}`);
 		// console.log(`min1=${min1},max1=${max1},min2=${min2},max2=${max2},range1=${range1},range2=${range2},overlap=${overlap}`);
 		return Math.max(ratio1,ratio2); // return the greater of the ratios of overlap
 		}
 		
 	LoveNub( civ ) {
-		let key = Math.min(this.id,civ.id) + '-' + Math.max(this.id,civ.id);
-		if ( !(key in Civ.relation_matrix) ) { 
-			Civ.relation_matrix[key] = (this.diplo_dispo + civ.diplo_dispo ) * 0.5; 
-			}
-		return Civ.relation_matrix[key];
+		return this.diplo.contacts.has(civ) ? this.diplo.contacts.get(civ).lovenub : 0;
 		}
 		
 	InRangeOfCiv( civ ) {
-		let key = Math.min(this.id,civ.id) + '-' + Math.max(this.id,civ.id);
-		return !!Civ.range_matrix[key];
+		return this.diplo.contacts.has(civ) && this.diplo.contacts.get(civ).in_range;
 		}
 	
 	SetInRangeOfCiv( civ, in_range = false ) {
-		let key = Math.min(this.id,civ.id) + '-' + Math.max(this.id,civ.id);
-		Civ.range_matrix[key] = in_range;
+		if ( in_range ) { 
+			this.InitDiplomacyWith( civ );
+			civ.InitDiplomacyWith( this );
+			}
+		else { // don't delete entry and reset relationship, just set in_range = false
+			if ( this.diplo.contacts.has(civ) ) { 
+				this.diplo.contacts.get(civ).in_range = false;
+				}
+			if ( civ.diplo.contacts.has(this) ) { 
+				civ.diplo.contacts.get(this).in_range = false;
+				}
+			}
 		}
 	
+	InitDiplomacyWith( civ ) {
+		if ( !this.diplo.contacts.has(civ) ) { 
+			this.diplo.contacts.set( civ, { 
+				lovenub: Math.min( this.diplo.dispo, civ.diplo.dispo ), // whoever is grumpier
+				annoyed: 0.5,
+				in_range: true
+				});
+			}
+		}
+		
 	RecalcEmpireBox() { 
-		this.empire_box = {x1:100000,x2:0,y1:100000,y2:0};
+		this.empire_box = {x1:100000,x2:-100000,y1:100000,y2:-100000};
 		this.planets.forEach( (v, k, array) => {
 			this.empire_box.x1 = Math.min( this.empire_box.x1, v.star.xpos - this.ship_range );
 			this.empire_box.y1 = Math.min( this.empire_box.y1, v.star.ypos - this.ship_range );
@@ -136,9 +158,7 @@ export default class Civ {
 		return false;
 		}
 		
-	// The 'annoyed' meter relates to the player only. 
-	// Other races are free to cheat. The player has no 
-	// access to monitor inter-species communication.
+	// TODO KILLME - moved to matrix
 	annoyed = 0.5;
 	
 	research = 0; // to split into cats later
@@ -321,8 +341,6 @@ export default class Civ {
 		this.name_plural = this.name + 's';
 		Civ.IncTotalNumCivs();
 		this.id = Civ.total_civs;
-		if ( !Civ.relation_matrix ) { Civ.relation_matrix = []; }
-		if ( !Civ.range_matrix ) { Civ.range_matrix = []; }
 		// internal flag roster picks unique flags for each race
 		if ( !Civ.flag_id_roster ) { 
 			Civ.flag_id_roster = [];
@@ -435,14 +453,12 @@ export default class Civ {
 		let civ = new Civ;
 		civ.color_rgb = Civ.PickNextStandardColor();
 		civ.color = '#' + utils.DecToHex(civ.color_rgb[0]) + utils.DecToHex(civ.color_rgb[1]) + utils.DecToHex(civ.color_rgb[2]);
-		civ.lovenub = Math.random();
-		civ.annoyed = Math.random();
-		civ.diplo_dispo = Math.random();
-		civ.diplo_style = Math.random();
-		civ.diplo_skill = utils.BiasedRand(0.05, 0.25, 0.10, 0.5);
 		civ.race.env.atm = utils.BiasedRandInt(0, 4, 2, 0.5);
 		civ.race.env.temp = utils.BiasedRandInt(0, 4, 2, 0.5);
 		civ.race.env.grav = utils.BiasedRandInt(0, 4, 2, 0.5);
+		civ.diplo.dispo = Math.random();
+		civ.diplo.style = Math.random();
+		civ.diplo.skill = utils.BiasedRand(0.05, 0.25, 0.10, 0.5);
 		// AI / personality
 		civ.ai.strat.def = ['balanced', 'triage'/*, 'equal', null*/][ utils.RandomInt(0,1) ];
 		civ.ai.strat.def_threat_weight = Math.random();
@@ -636,6 +652,10 @@ export default class Civ {
 				}
 			return true;
 			} );
+		}
+	
+	AI_ScoreTradeOffer( deal ) { 
+		return utils.RandomFloat( -3, 3 ); // HACK	
 		}
 		
 	}

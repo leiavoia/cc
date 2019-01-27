@@ -86,19 +86,19 @@ export let Techs = {
 		name: "Xeno Communication Skills",
 		desc: '<b>+1 Communication</b>.',
 		img: 'img/workshop/tech/techmock.jpg',
-		onComplete( civ ) { civ.diplo_skill += 0.1; } 
+		onComplete( civ ) { civ.diplo.skill += 0.1; } 
 		},
 	XENOCOMM2: {
 		name: "Xeno Linguistic Mastery",
 		desc: '<b>+1 Communication</b>.',
 		img: 'img/workshop/tech/techmock.jpg',
-		onComplete( civ ) { civ.diplo_skill += 0.1; } 
+		onComplete( civ ) { civ.diplo.skill += 0.1; } 
 		},
 	XENOCOMM3: {
 		name: "Alien Negotiation Skills",
 		desc: '<b>+1 Communication</b>.',
 		img: 'img/workshop/tech/techmock.jpg',
-		onComplete( civ ) { civ.diplo_skill += 0.1; } 
+		onComplete( civ ) { civ.diplo.skill += 0.1; } 
 		}
 		
 		

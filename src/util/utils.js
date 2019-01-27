@@ -111,3 +111,13 @@ export function DecToHex( n ) {
 export function HexToDec( n ) { 
 	return parseInt(n, 16);
 	}
+
+// DJB2 hash - https://gist.github.com/eplawless/52813b1d8ad9af510d85
+export function hash(str) {
+	let len = str.length;
+	let hash = 5381;
+	for ( var idx = 0; idx < len; ++idx ) {
+		hash = 33 * hash + str.charCodeAt(idx);
+		}
+	return hash;
+	}

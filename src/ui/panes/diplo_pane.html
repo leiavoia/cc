@@ -1,27 +1,22 @@
 <template>
-<!--	<require from="./converters/percent"></require>
-	<require from="./converters/round"></require>-->
 
 	<div id="diplo_pane" class="pane">
 		<p style="float:right;"><a href="#"  click.delegate="ClosePanel()" class="button big">CLOSE</a></p>
 		<h1>Diplomacy</h1>
 		
 		<div id="civ_list">
-			<template containerless repeat.for="c of app.game.galaxy.civs">
-				<div if.bind="c.diplo.contactable && app.game.myciv != c && ( c.InRangeOf(app.game.myciv) || app.options.see_all )" 
+			<template containerless repeat.for="[c,acct] of app.game.myciv.diplo.contacts">
+				<div if.bind="c.diplo.contactable && c.planets.length" 
 					css="border-color: rgb( ${c.color_rgb[0]}, ${c.color_rgb[1]}, ${c.color_rgb[2]} ); 
-						background-color: rgba( ${c.color_rgb[0]}, ${c.color_rgb[1]}, ${c.color_rgb[2]}, 0.55 );">
+						background-color: rgba( ${c.color_rgb[0]}, ${c.color_rgb[1]}, ${c.color_rgb[2]}, 0.55 );
+						${!acct.in_range ? 'pointer-events:none; opacity:0.25;' : '' }
+						">
 					<img class="flag" src.one-time="c.flag_img" />
 					<h2>${c.name}</h2>
 					<img src.one-time="c.diplo_img_small" class="diplo_img" click.delegate="SpeakTo(c)" />
-<!-- 					<template containerless if.bind=""> -->
-						<div class="love_nub"><div class="nub" css="margin-left: calc(${c.LoveNub(app.game.myciv)} * (100% - 6em));">${c.LoveNub(app.game.myciv)|loveNub}</div></div>
-						<div class="annoyometer"><div class="nub" css="margin-left: calc(${c.annoyed} * (100% - 6em));">${c.annoyed|annoyometer}</div></div>
-<!-- 					</template> -->
+						<div class="love_nub"><div class="nub" css="margin-left: calc(${acct.lovenub} * (100% - 6em));">${acct.lovenub|loveNub}</div></div>
+						<div class="annoyometer"><div class="nub" css="margin-left: calc(${acct.annoyed} * (100% - 6em));">${acct.annoyed|annoyometer}</div></div>
 					<p>Communication: ${c.CommOverlapWith(app.game.myciv) | communicationAbility }</p>
-<!--					<p>Treasury: $${c.treasury}</p>
-					<p>Research: ${c.research}</p>
-					<p>Government: ${c.gov_type}</p>-->
 					<p>
 						<a href="" click.delegate="SpeakTo(c)" class="button">SPEAK TO</a>
 					</p>
@@ -31,7 +26,5 @@
 		
 		<p><a href="#"  click.delegate="ClosePanel()" class="button big">CLOSE</a></p>
 	</div>
-
-
 
 </template>
