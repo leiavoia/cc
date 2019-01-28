@@ -228,7 +228,7 @@ export class AIAnalyzeObjective extends AIObjective {
 	priority = 1;
 	EvaluateFunc( app, civ ) { 
 		// reset stats
-		civ.ai.threats.clear();
+		civ.ai.threats = new Map(); // TECHNICAL: Aurelia does not like .clear() when rapidly clicking through turns
 		civ.ai.total_milval = 0;
 		civ.ai.avail_milval = 0;
 		civ.ai.total_starvalue = 0;
