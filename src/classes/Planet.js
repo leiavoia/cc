@@ -1,5 +1,4 @@
 import Star from './Star';
-import Hyperlane from './Hyperlane';
 import Fleet from './Fleet';
 import RandomPicker from '../util/RandomPicker';
 import RandomName from '../util/RandomName';

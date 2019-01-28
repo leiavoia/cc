@@ -3,7 +3,6 @@ import Galaxy from './Galaxy';
 import Anom from './Anom';
 import Star from './Star';
 import Planet from './Planet';
-import Hyperlane from './Hyperlane';
 import Fleet from './Fleet';
 import * as utils from '../util/utils';
 import * as Signals from '../util/signals';

@@ -3,6 +3,7 @@ import Civ from './Civ';
 import Fleet from './Fleet';
 import * as utils from '../util/utils';
 import {Ship,ShipBlueprint} from './Ship';
+import * as Tech from './Tech';
 
 export default class TradeOffer {
 	from = null;
@@ -20,20 +21,28 @@ export default class TradeOffer {
 		this.offer = offer || [];
 		this.ask = ask || [];
 		this.tone = tone;
-		this.hash = utils.hash( from.id + to.id + JSON.stringify(offer) + JSON.stringify(ask) + tone );
+		this.hash = utils.hash( `${from.id}-${to.id}-` + JSON.stringify(offer) + JSON.stringify(ask) + tone );
 		}
 		
 	// returns true, false, or counter-offer (new TradeOffer)
 	Evaluate() { 
+		let acct = this.to.diplo.contacts.get(this.from);
+		
 		// can these two civ's contact each other?
-		if ( !this.from.InRangeOf(this.to) ) { 
+		if ( !this.from.InRangeOfCiv(this.to) ) { 
 			this.status = 'out of range'; 
 			return false; 
 			}
 		// can they communicate?
-		this.from.CommOverlapWith( this.to );
+		if ( this.from.CommOverlapWith( this.to ) <= 0 ) { 
+			this.status = 'can\'t communicate'; 
+			return false; 
+			}
 		// annoyance left?
-		// TODO
+		if ( this.to.diplo.contacts.get(this.from).annoyed <= 0.05 ) { 
+			this.status = 'annoyed'; 
+			return false; 
+			}
 		
 		// do we like the deal?
 		this.score = this.to.AI_ScoreTradeOffer(this);
@@ -62,7 +71,9 @@ export default class TradeOffer {
 		
 		// TODO +/- relationship for tone
 		
-		// TODO decrement annoyance level 
+		// be annoyed
+		acct.annoyed -= 0.4;
+		if ( acct.annoyed < 0 ) { acct.annoyed = 0; }
 		
 		return result;
 		}
@@ -70,9 +81,49 @@ export default class TradeOffer {
 	// finalizes the deal and handles who gets what
 	Exchange() {
 		// this.to receives this.offer
-		
+		if ( this.offer.length ) { this.Dispurse( this.from, this.to, this.offer ); }
 		// this.from receives this.ask
+		if ( this.ask.length ) { this.Dispurse( this.to, this.from, this.ask ); }
+		}
 		
+	Dispurse( from, to, items ) { 
+		for ( let i of items ) { 
+			switch ( i.type ) {
+				case 'technode': {
+					// dispurse any techs
+					if ( i.node.yields.length ) { 
+						for ( let t of i.node.yields ) { 
+							to.tech.techs.set(t,Tech.Techs[t]);
+							Tech.Techs[t].onComplete( to ); // run callback
+							}
+						}
+					// move node into the completed pile
+					console.log( to.name + ' is getting ' + i.node.key );
+					to.tech.nodes_compl.set( i.node.key, i.node );
+					to.tech.nodes_avail.delete( i.node.key );
+					to.RecalcAvailableTechNodes();
+					if ( to.tech.current_project == i.node ) { 
+						to.tech.current_project = null;
+						to.AI_ChooseNextResearchProject();
+						}
+					console.log(to.tech.nodes_compl);
+					break;
+					}
+				case 'cash': {
+					from.treasury -= i.amount;
+					to.treasury += i.amount;
+					break;
+					}
+				case 'treaty': {
+					// todo
+					break;
+					}
+				case 'planet': {
+					i.planet.BeConqueredBy(to);
+					break;
+					}
+				}
+			}
 		}
 		
 	MakeCounterOffer() {

@@ -1,6 +1,5 @@
 import Planet from './Planet';
 import Civ from './Civ';
-import Hyperlane from './Hyperlane';
 import RandomPicker from '../util/RandomPicker';
 import RandomName from '../util/RandomName';
 import * as utils from '../util/utils';

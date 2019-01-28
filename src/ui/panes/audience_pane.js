@@ -80,7 +80,7 @@ export class AudiencePane {
 				};
 			}
 		else { 
-			switch ( Math.round( this.civ.annoyed * 10 ) ) { // make integers
+			switch ( Math.round( this.civ.diplo.contacts.get(this.app.game.myciv).annoyed * 10 ) ) { // make integers
 				case 0: { this.text_response = `<p>We have heard enough of your blather. We will hear no more.</p>`; break; }
 				case 1: { this.text_response = `<p>It is only due to my great patience that this audience is granted. My time is costly and you are wasting it. Speak.</p>`; break; }
 				case 2: { this.text_response = `<p>You are wearing our patience thin. Be brief and then be gone.</p>`; break; }
@@ -111,28 +111,28 @@ export class AudiencePane {
 		this.text_response = `<p>Oh? Curious about something?</p>`;
 		let page = this;
 		this.options = [
-			{ text:"Can you tell me where the gold is hidden?", func:function(){ page.HandleDebugInquiry('gold'); } },
-			{ text:"When are the cats going to clean themselves?", func:function(){ page.HandleDebugInquiry('cats'); } },
-			{ text:"Who are your real friends?", func:function(){ page.HandleDebugInquiry('friends'); } },
-			{ text:"Where is ALF?", func:function(){ page.HandleDebugInquiry('alf'); } },
+			{ text:"Can you tell me where the gold is hidden?", func: () => this.HandleDebugInquiry('gold') },
+			{ text:"When are the cats going to clean themselves?", func: () => this.HandleDebugInquiry('cats') },
+			{ text:"Who are your real friends?", func: () => this.HandleDebugInquiry('friends') },
+			{ text:"Where is ALF?", func: () => this.HandleDebugInquiry('alf') },
 			];	
 		}
 		
 	SetStandardOptions() { 
-		let page = this;
 		this.options = [];
 		if ( this.comm >= 0.3 ) { 
-			if ( this.civ.annoyed >= 0.05 ) {
-				this.options.push({ text:"Let's trade.", func:function(){ page.Exit(); } });
-				this.options.push({ text:"Let's make a deal.", func:function(){ page.Exit(); } });
-				this.options.push({ text:"We want to know about ...", func:function(){ page.SelectWantToKnowInfoOption(); } });
-				this.options.push({ text:"We declare war on you.", func:function(){ page.Exit(); } });
+			if ( this.civ.diplo.contacts.get(this.app.game.myciv).annoyed >= 0.05 ) {
+				this.options.push({ text:"Let's trade.", func: () => this.Exit() });
+				this.options.push({ text:"Let's make a deal.", func: () => this.Exit() });
+				this.options.push({ text:"We want to know about ...", func: () => this.SelectWantToKnowInfoOption() });
+				this.options.push({ text:"We declare war on you.", func: () => this.Exit() });
 				}
 			}
-		this.options.push({ text:"End conversation.", func:function(){ 
-			page.civ.annoyed -= 0.05;
-			if ( page.civ.annoyed < 0 ) { page.civ.annoyed = 0; }
-			page.Exit();
+		this.options.push({ text:"End conversation.", func: () => {
+			let acct = this.civ.diplo.contacts.get(this.app.game.myciv);
+			acct.annoyed -= 0.05;
+			if ( acct.annoyed < 0 ) { acct.annoyed = 0; }
+			this.Exit();
 			} });
 		};
 		

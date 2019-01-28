@@ -114,10 +114,19 @@ export function HexToDec( n ) {
 
 // DJB2 hash - https://gist.github.com/eplawless/52813b1d8ad9af510d85
 export function hash(str) {
-	let len = str.length;
+// 	let len = str.length;
+// 	let hash = 5381;
+// 	for ( var idx = 0; idx < len; ++idx ) {
+// 		hash = 33 * hash + str.charCodeAt(idx);
+// 		}
+// 	return hash;function hash(str) {
 	let hash = 5381;
-	for ( var idx = 0; idx < len; ++idx ) {
-		hash = 33 * hash + str.charCodeAt(idx);
+	let i = str.length;
+	while( i ) {
+		hash = (hash * 33) ^ str.charCodeAt(--i);
 		}
-	return hash;
+	/* JavaScript does bitwise operations (like XOR, above) on 32-bit signed
+	* integers. Since we want the results to be always positive, convert the
+	* signed int to an unsigned by doing an unsigned bitshift. */
+	return hash >>> 0;
 	}

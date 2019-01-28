@@ -15,8 +15,19 @@
 			</p>
 			<div class="love_nub"><div class="nub" css="margin-left: calc(${civ.diplo.contacts.get(app.game.myciv).lovenub} * (100% - 6em));">${civ.diplo.contacts.get(app.game.myciv).lovenub|loveNub}</div></div>
 			<div class="annoyometer"><div class="nub" css="margin-left: calc(${civ.diplo.contacts.get(app.game.myciv).annoyed} * (100% - 6em));">${civ.diplo.contacts.get(app.game.myciv).annoyed|annoyometer}</div></div>
-			<p>Preferred Habitat: ${civ.race.env.atm} Atmosphere, ${civ.race.env.temp} Temperature, ${civ.race.env.grav} Gravity</p>
-			<p>Communication Ability: ${comm|communicationAbility}</p>
+			<p>
+				Preferred Habitat: ${civ.race.env.atm} Atmosphere, ${civ.race.env.temp} Temperature, ${civ.race.env.grav} Gravity<br/>
+				Communication Ability: ${comm|communicationAbility}<br/>
+				Annoyed: ${civ.diplo.contacts.get(app.game.myciv).annoyed | round:2}<br/>
+				Style: ${c.diplo.style|round:2}<br/>
+				Skill: ${civ.diplo.skill|round:2}<br/>
+				Disposition: ${civ.diplo.dispo|round:2}<br/>
+				Offer OK @ ${civ.diplo.offer_ok_at|round:2}<br/>
+				Offer Counter @ ${civ.diplo.offer_counter_at|round:2}<br/>
+				Offer Bad @ ${civ.diplo.offer_bad_at|round:2}<br/>
+				Annoyance Recharge: ${civ.diplo.annoyance_recharge|round:2}<br/>
+				Emotional: x${civ.diplo.emotional|round:2}
+			</p>			
 		</div>
 		<div id="audience_us" class="slideInRight" if.bind="ambassador_present">
 			<div id="speech_them" class="fadeIn" css="color: rgb( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]} );">

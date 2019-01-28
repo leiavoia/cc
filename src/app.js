@@ -3,12 +3,9 @@ import Galaxy from './classes/Galaxy';
 import Star from './classes/Star';
 import Anom from './classes/Anom';
 import Planet from './classes/Planet';
-import Hyperlane from './classes/Hyperlane';
 import Constellation from './classes/Constellation';
 import Fleet from './classes/Fleet';
 import Civ from './classes/Civ';
-import GroundCombat from './classes/GroundCombat';
-// import {Modlist,Mod} from './classes/Mods';
 import * as utils from './util/utils';
 import * as Signals from './util/signals';
 import * as CrazyBox from './classes/Crazy';
@@ -102,11 +99,11 @@ export class App {
 		// create initial state
 		this.game.InitGalaxy();
 // 		this.ChangeState('title');
-		this.game.galaxy.Make( 5,4,16,0.5 );
+		this.game.galaxy.Make( 9,6,50,0.5 );
 		this.game.DeployVictoryIngredients();
-		let mystar = this.game.galaxy.ThreatDemo( 2 );
-		CrazyBox.AddGiantSpaceAmoeba(this);
-		CrazyBox.AddRedSpaceAmoeba(this);
+		let mystar = this.game.galaxy.ThreatDemo( 6 );
+// 		CrazyBox.AddGiantSpaceAmoeba(this);
+// 		CrazyBox.AddRedSpaceAmoeba(this);
 		// CrazyBox.AddBlueSpaceAmoeba(this);
 		this.game.SetMyCiv( 0 ); // could switch using debug stuff
 		this.ChangeState('play');
@@ -115,23 +112,6 @@ export class App {
 		this.game.RecalcFleetRanges();
 		this.game.RecalcCivContactRange();
 		let app = this; // needed for callback
-		
-// 		// GROUND COMBAT DEMO
-// 		// create an enemy fleet around player's home planet
-// 		let fleet = new Fleet( this.game.galaxy.civs[1], this.game.galaxy.civs[1].planets[0].star );
-// 		for ( let i = 0; i < 3; i++ ) { 
-// 			let ship = this.game.galaxy.civs[1].ship_blueprints[6].Make();
-// 			ship.troops.push( 
-// 				this.game.galaxy.civs[1].groundunit_blueprints[0].Make()
-// 				);
-// 			fleet.AddShip( ship );
-// 			}
-// 		// attack the player
-// 		let gc = new GroundCombat( fleet, this.game.galaxy.civs[0].planets[0] );
-// 		let log = gc.Run();
-// 		console.log( log ) ;
-// 		console.log( gc.stats ) ;
-		
 		}
 		
 	ToggleNotification( o ) { 

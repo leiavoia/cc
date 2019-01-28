@@ -158,15 +158,12 @@ export default class Civ {
 		return false;
 		}
 		
-	// TODO KILLME - moved to matrix
-	annoyed = 0.5;
-	
 	research = 0; // to split into cats later
 	research_income = 0; // calculated per turn
 	
 	tech = {
 		techs: new Map(),
-		nodes_avail: new Map(),
+		nodes_avail: new Map(), // key => { node: t, rp: 0 }
 		nodes_compl: new Map(),
 		current_project: null
 		};
@@ -215,7 +212,7 @@ export default class Civ {
 							}
 						}
 					// all prerequisites met. add the node to available list
-					this.tech.nodes_avail.set( key, { node: t, key: key, rp: 0 } );
+					this.tech.nodes_avail.set( key, { node: t, rp: 0 } );
 					}
 				// else: this node has no prereqs, but these are 
 				// usually special seed nodes, so do NOT add them here.
@@ -251,8 +248,8 @@ export default class Civ {
 						);
 					}
 				// move node into the completed pile
-				this.tech.nodes_compl.set(this.tech.current_project.key, this.tech.current_project );
-				this.tech.nodes_avail.delete(this.tech.current_project.key);
+				this.tech.nodes_compl.set(this.tech.current_project.node.key, this.tech.current_project.node );
+				this.tech.nodes_avail.delete(this.tech.current_project.node.key);
 				this.tech.current_project = null;
 				// reevaluate our nodes available. completing the last node may have opened up new ones.
 				this.RecalcAvailableTechNodes();

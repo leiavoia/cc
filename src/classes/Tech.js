@@ -414,3 +414,7 @@ export let TechNodes = {
 // 		}
 		
 	};
+	
+// add keys to objects themselves for later self-reference
+for ( let k in Techs ) { Techs[k].key = k; }
+for ( let k in TechNodes ) { TechNodes[k].key = k; }
