@@ -21,7 +21,8 @@ export default class TradeOffer {
 		this.offer = offer || [];
 		this.ask = ask || [];
 		this.tone = tone;
-		this.hash = utils.hash( `${from.id}-${to.id}-` + JSON.stringify(offer) + JSON.stringify(ask) + tone );
+		// TODO: broken, cyclic references
+// 		this.hash = utils.hash( `${from.id}-${to.id}-` + JSON.stringify(offer) + JSON.stringify(ask) + tone );
 		}
 		
 	// returns true, false, or counter-offer (new TradeOffer)
@@ -39,7 +40,7 @@ export default class TradeOffer {
 			return false; 
 			}
 		// annoyance left?
-		if ( this.to.diplo.contacts.get(this.from).annoyed <= 0.05 ) { 
+		if ( this.to.diplo.contacts.get(this.from).annoyed < 0.05 ) { 
 			this.status = 'annoyed'; 
 			return false; 
 			}
@@ -91,18 +92,18 @@ export default class TradeOffer {
 			switch ( i.type ) {
 				case 'technode': {
 					// dispurse any techs
-					if ( i.node.yields.length ) { 
-						for ( let t of i.node.yields ) { 
+					if ( i.obj.yields.length ) { 
+						for ( let t of i.obj.yields ) { 
 							to.tech.techs.set(t,Tech.Techs[t]);
 							Tech.Techs[t].onComplete( to ); // run callback
 							}
 						}
 					// move node into the completed pile
-					console.log( to.name + ' is getting ' + i.node.key );
-					to.tech.nodes_compl.set( i.node.key, i.node );
-					to.tech.nodes_avail.delete( i.node.key );
+					console.log( to.name + ' is getting ' + i.obj.key );
+					to.tech.nodes_compl.set( i.obj.key, i.obj );
+					to.tech.nodes_avail.delete( i.obj.key );
 					to.RecalcAvailableTechNodes();
-					if ( to.tech.current_project == i.node ) { 
+					if ( to.tech.current_project == i.obj ) { 
 						to.tech.current_project = null;
 						to.AI_ChooseNextResearchProject();
 						}
@@ -119,7 +120,7 @@ export default class TradeOffer {
 					break;
 					}
 				case 'planet': {
-					i.planet.BeConqueredBy(to);
+					i.obj.BeConqueredBy(to);
 					break;
 					}
 				}

@@ -1,17 +1,18 @@
 <template>
-
 	<div id="audience_pane" class="pane">
+	
+	
 		<div id="audience_them" css="border-color: rgb( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]} ); 
 		background-color: rgba( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]}, 0.55 );">
 			<div class="diplo_img_wrapper trekIn" if.bind="ambassador_present">
-				<div class="diplo_img" css="background-image: url(${civ.diplo_img_small});"></div>
+				<div class="diplo_img ${mood}" css="background-image: url(${civ.diplo_img_small});"></div>
 			</div>
 			<h2><img class="flag" src.one-time="civ.flag_img" /> ${civ.name}</h2>
 			<p class="button_rack">
-				<a href="#" class="button big" if.bind="!ambassador_present" click.delegate="StartMeeting()" >Audience</a>
-				<a href="#" class="button big alt" if.bind="ambassador_present" click.delegate="Exit()" >Leave</a>
-				<a href="#" class="button big">Relations</a>
-				<a href="#" class="button big">Info</a>
+				<button class="big">Relations</button>
+				<button class="big">Info</button>
+				<button class="big" if.bind="!ambassador_present" click.delegate="StartMeeting()" >Audience</button>
+				<button class="big alt" if.bind="ambassador_present" click.delegate="Exit()" >Leave</button>
 			</p>
 			<div class="love_nub"><div class="nub" css="margin-left: calc(${civ.diplo.contacts.get(app.game.myciv).lovenub} * (100% - 6em));">${civ.diplo.contacts.get(app.game.myciv).lovenub|loveNub}</div></div>
 			<div class="annoyometer"><div class="nub" css="margin-left: calc(${civ.diplo.contacts.get(app.game.myciv).annoyed} * (100% - 6em));">${civ.diplo.contacts.get(app.game.myciv).annoyed|annoyometer}</div></div>
@@ -29,8 +30,10 @@
 				Emotional: x${civ.diplo.emotional|round:2}
 			</p>			
 		</div>
-		<div id="audience_us" class="slideInRight" if.bind="ambassador_present">
-			<div id="speech_them" class="fadeIn" css="color: rgb( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]} );">
+		
+		<!-- INTRO -->
+		<div id="audience_us" class="slideInRight" if.bind="ambassador_present && mode=='intro'">
+			<div id="speech_them" class="fadeIn" css="color: ${civ.color};">
 				<p><b style="font-weight:bold;">${civ.name} Ambassador:</b><p>
 				<div innerhtml.bind="text_response"></div>
 			</div>
@@ -41,6 +44,145 @@
 				</ol>
 			</div>
 		</div>
-	</div>
+		
+		<!-- CREATE OFFER -->
+		<div id="audience_us" class="createoffer" if.bind="ambassador_present && mode=='create_offer'">
+			<!-- annoyed - go away -->
+			<template if.bind="civ.diplo.contacts.get(app.game.myciv).annoyed < 0.05" containerless>
+				<div id="speech_them" class="fadeIn" css="color: ${civ.color};">
+					<p><b style="font-weight:bold;">${civ.name} Ambassador:</b><p>
+					<div>
+						<p>We will hear no more offers today.</p>
+					</div>
+					<button class="big" click.delegate="ReturnToMainMenu()">OK</button>
+				</div>
+			</template>
+			<!-- lets make a deal -->
+			<template if.bind="civ.diplo.contacts.get(app.game.myciv).annoyed >= 0.05" containerless>
+				<div>
+					<button class="right bad" click.delegate="ReturnToMainMenu()">CANCEL</button>
+					<h2>Create an Offer</h2>
+				</div>
+				<div class="divide avail_items" style="">
+					<div>
+						<div class="head">
+							<h3>Give:</h3>
+							<p class="button_rack button_rack_fill small">
+								<button>All</button>
+								<button>Cash</button>
+								<button>Tech</button>
+								<button>Treaties</button>
+								<button>Planets</button>
+							</p>
+						</div>
+						<div class="body trade_item_list">
+							<div repeat.for="i of our_trade_items" class="${i.type}" 
+								click.trigger="PutTradeItem(i,our_trade_items,offer.offer,$event)">${i.label}</div>
+						</div>
+					</div>
+					<div>
+						<div class="head">
+							<h3>Ask:</h3>
+						</div>
+						<div class="body trade_item_list">
+							<div repeat.for="i of their_trade_items" class="${i.type}" 
+								click.trigger="PutTradeItem(i,their_trade_items,offer.ask,$event)">${i.label}</div>
+						</div>
+					</div>
+				</div>
+				<div class="divide tabled_items">
+					<div class="trade_item_list">
+						<div repeat.for="i of offer.offer" class="${i.type}" 
+								click.trigger="PutTradeItem(i,offer.offer,our_trade_items,$event)">
+								${i.label}
+								<input if.bind="i.type=='cash' || i.type=='resource'" value.bind="i.amount" type="range" min="0" max.bind="i.max" class="pretty" />
+								<output if.bind="i.amount" value.bind="i.amount"></output>
+						</div>
+					</div>
+					<div class="trade_item_list">
+						<div repeat.for="i of offer.ask" class="${i.type}" 
+								click.trigger="PutTradeItem(i,offer.ask,their_trade_items,$event)">
+								${i.label}
+								<input if.bind="i.type=='cash' || i.type=='resource'" value.bind="i.amount" type="range" min="0" max.bind="i.max" class="pretty" />
+								<output if.bind="i.amount" value.bind="i.amount"></output>
+						</div>
+					</div>
+				</div>
+				<p class="button_rack">
+					<button class="big alt" click.delegate="SubmitOffer()">Make Offer</button>
+					<button class="big bad">Cancel</button>
+				</p>
+			</template>
+		</div>
+		
+		<!-- CONSIDER OFFER -->
+		<div id="audience_us" if.bind="mode=='consider_offer'">
+			<p style="text-align:center; font-size: 300%; margin-top: 3em;">Considering your offer...</p>
+			<p style="text-align:center; font-size: 300%; margin-top: 3em;">
+				<progress style="height: 1em; width: 10em;"/>
+			</p>
+		</div>
+		
+		<!-- OFFER ACCEPTED -->
+		<div id="audience_us" if.bind="mode=='offer_accepted'">
+			<div id="speech_them" class="fadeIn" css="color: ${civ.color};">
+				<p><b style="font-weight:bold;">${civ.name} Ambassador:</b><p>
+				<div>
+					<p>We happily accept your offer.</p>
+				</div>
+			</div>
+			<p>
+				<button click.delegate="ReturnToMainMenu()" class="big" >OK</button>
+			</p>	
+		</div>
+		
+		<!-- OFFER DECLINED -->
+		<div id="audience_us" if.bind="mode=='offer_declined'">
+			<div id="speech_them" class="fadeIn" css="color: ${civ.color};">
+				<p><b style="font-weight:bold;">${civ.name} Ambassador:</b><p>
+				<div>
+					<p>Your offer does not appeal to us at this time.</p>
+				</div>
+			</div>
+			<p>
+				<button click.delegate="ReturnToMainMenu()" class="big">OK</button>
+			</p>	
+		</div>	
 	
+		<!-- OFFER COUNTERED -->
+		<div id="audience_us" if.bind="mode=='offer_countered'">
+			<div id="speech_them" class="fadeIn" css="color: ${civ.color};">
+				<p><b style="font-weight:bold;">${civ.name} Ambassador:</b><p>
+				<div>
+					<p>Your offer is intriguing. Would you consider this instead?</p>
+				</div>
+			</div>
+			<div class="divide tabled_items">
+				<div class="trade_item_list">
+					<h3>We Give Them:</h3>
+					<div repeat.for="i of offer.ask" class="${i.type}" 
+							click.trigger="PutTradeItem(i,offer.ask,their_trade_items,$event)">
+							${i.label}
+							<input if.bind="i.type=='cash' || i.type=='resource'" value.bind="i.amount" type="range" min="0" max.bind="i.max" class="pretty" />
+							<output if.bind="i.amount" value.bind="i.amount"></output>
+					</div>
+				</div>
+				<div class="trade_item_list">
+					<h3>They Give Us:</h3>
+					<div repeat.for="i of offer.offer" class="${i.type}" 
+							click.trigger="PutTradeItem(i,offer.offer,our_trade_items,$event)">
+							${i.label}
+							<input if.bind="i.type=='cash' || i.type=='resource'" value.bind="i.amount" type="range" min="0" max.bind="i.max" class="pretty" />
+							<output if.bind="i.amount" value.bind="i.amount"></output>
+					</div>
+				</div>
+			</div>			
+			<p class="button_rack">
+				<button click.delegate="AcceptOffer()" class="big">Accept</button>
+				<button click.delegate="DeclineOffer()" class="big bad">Decline</button>
+				<button click.delegate="CounterOffer()" class="big alt ${civ.diplo.contacts.get(app.game.myciv).annoyed < 0.05 ? 'disabled' : ''}">Counter-Offer</button>
+			</p>	
+		</div>
+		
+	</div>
 </template>

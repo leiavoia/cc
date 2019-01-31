@@ -655,4 +655,31 @@ export default class Civ {
 		return utils.RandomFloat( -3, 3 ); // HACK	
 		}
 		
+	AI_ListItemsForTrade( civ ) {
+		let items = [];
+		
+		// cash
+		items.push({ type:'cash', label:'Cash', max:this.treasury, amount:0 });
+		
+		// treaties
+		items.push({ type:'treaty', label:'Non-Aggression Pact' });
+		items.push({ type:'treaty', label:'Alliance' });
+		items.push({ type:'treaty', label:'Putting Toilet Seat Down' });
+		
+		// tech
+		for ( let [key,node] of this.tech.nodes_compl ) { 
+			// trading partner already has this? 
+			if ( !civ.tech.nodes_compl.has(key) ) {
+				items.push({ type:'technode', obj:node, label:node.name });
+				}
+			}
+		
+		// planets
+		this.planets.forEach( p => {
+			items.push({ type:'planet', obj:p, label:p.name });
+			});
+			
+		return items;
+		}
+		
 	}

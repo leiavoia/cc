@@ -1,4 +1,5 @@
 import * as utils from '../../util/utils';
+import TradeOffer from '../../classes/TradeOffer';
 
 export class AudiencePane {
 		
@@ -12,12 +13,22 @@ export class AudiencePane {
 		this.civ = null;
 		this.data = null; // extra data in case we need to set up a situation
 		this.on_exit = 'diplo'; // can be '' or 'diplo' or any other main panel 
+		// --------------------
+		this.mode = 'intro';
+		this.mood = ''; // for portrait visual FX
+		this.our_trade_items = [];
+		this.their_trade_items = [];
 		}
 
 	activate(data) {
 		this.app = data.app;
 		this.civ = data.obj;
 		this.data = data.data;
+		}
+		
+	CreateTradeItemLists() { 
+		this.our_trade_items = this.app.game.myciv.AI_ListItemsForTrade( this.civ );
+		this.their_trade_items = this.civ.AI_ListItemsForTrade( this.app.game.myciv );
 		}
 		
 	ClosePanel() {
@@ -122,10 +133,10 @@ export class AudiencePane {
 		this.options = [];
 		if ( this.comm >= 0.3 ) { 
 			if ( this.civ.diplo.contacts.get(this.app.game.myciv).annoyed >= 0.05 ) {
-				this.options.push({ text:"Let's trade.", func: () => this.Exit() });
-				this.options.push({ text:"Let's make a deal.", func: () => this.Exit() });
-				this.options.push({ text:"We want to know about ...", func: () => this.SelectWantToKnowInfoOption() });
-				this.options.push({ text:"We declare war on you.", func: () => this.Exit() });
+				this.options.push({ text:"Let's make a deal.", func: () => this.StartTradeOffer() });
+// 				this.options.push({ text:"Let's make a deal.", func: () => this.Exit() });
+// 				this.options.push({ text:"We want to know about ...", func: () => this.SelectWantToKnowInfoOption() });
+// 				this.options.push({ text:"We declare war on you.", func: () => this.Exit() });
 				}
 			}
 		this.options.push({ text:"End conversation.", func: () => {
@@ -146,6 +157,75 @@ export class AudiencePane {
 		this.our_response = '';
 		this.GetResponse();
 		this.SetStandardOptions();
+		}
+		
+	StartTradeOffer() {
+		this.CreateTradeItemLists();
+		this.offer = new TradeOffer( this.app.game.myciv, this.civ );
+		this.mode = 'create_offer';
+		}
+		
+	AcceptOffer() {
+		this.offer.Exchange();
+		this.mood = 'happy';
+		setTimeout( () => this.mood='', 2000 );
+		this.mode = 'intro';
+		}
+		
+	DeclineOffer() {
+		this.offer = null;
+		this.mood = 'mad';
+		setTimeout( () => this.mood='', 2000 );
+		this.mode = 'intro';
+		}
+		
+	CounterOffer() {
+		this.CreateTradeItemLists();
+		this.offer = new TradeOffer( this.offer.to, this.offer.from, this.offer.ask, this.offer.offer );
+		for ( let item of this.offer.offer ) {
+			let i = this.our_trade_items.indexOf( item );
+			if ( i > -1 ) { this.our_trade_items.splice(i,1); }
+			}
+		for ( let item of this.offer.ask ) {
+			let i = this.their_trade_items.indexOf( item );
+			if ( i > -1 ) { this.their_trade_items.splice(i,1); }
+			}
+		this.mode = 'create_offer';
+		}
+		
+	SubmitOffer() {
+		this.mode = 'consider_offer';
+		this.mood = 'away';
+		let result = this.offer.Evaluate();
+		console.log( this.offer.status );
+		setTimeout( () => {
+			let new_mode = result ? 'offer_accepted' : 'offer_declined';
+			if ( this.offer.status == 'countered' ) { 
+				this.offer = result;
+				new_mode = 'offer_countered';
+				}
+			this.mode = new_mode;
+			this.mood = '';
+			}, 2500 );
+		}
+		
+	PutTradeItem( item, fromlist, tolist, event ) {
+		// handle nested slider
+		if ( event && event.target.tagName.toLowerCase() == 'input' ) { 
+			event.stopPropagation(); 
+			return; 
+			}
+		// regular functionality
+		let i = fromlist.indexOf(item);
+		if ( i > -1 ) { fromlist.splice(i,1); }
+		tolist.push(item);
+		// TODO: Sort lists?
+		}
+		
+	ReturnToMainMenu() {
+		this.SetStandardOptions();
+		this.offer = null;
+		this.mode = 'intro';
 		}
 		
 	Exit() { 
