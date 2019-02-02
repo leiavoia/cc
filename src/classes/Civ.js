@@ -286,14 +286,14 @@ export default class Civ {
 				[128, 0, 0], 		// maroon
 				[45, 130, 220], 	// blue
 				[219, 210, 72], 	// yellow
-				[10, 128, 30], 	// forest green
-				[15, 120, 155],	// teal
+				[10, 128, 30], 		// forest green
+				[15, 120, 155],		// teal
 				[192, 192, 192], 	// silver
 				[255, 0, 0], 		// red
 				[0, 220, 0], 		// green
 				[100, 100, 100], 	// grey
-				[128, 128, 0], 	// olive
-				[20, 66, 170], 	// navy
+				[128, 128, 0], 		// olive
+				[20, 66, 170], 		// navy
 				[255, 0, 255],		// fuschia
 				[128, 0, 128],		// purple
 				[0, 255, 255],		// aqua
@@ -309,6 +309,18 @@ export default class Civ {
 				[255,186,206]		// pink
 				];
 			Civ.colors.shuffle();
+			// random colors to finish off the set
+			for ( let n = 0; n < 124; ) {
+				let c = [ 
+					utils.RandomInt(0,255),
+					utils.RandomInt(0,255),
+					utils.RandomInt(0,255),
+					];
+				if ( c[0] + c[1] + c[2] > 200 ) { 
+					Civ.colors.push(c); 
+					n++;
+					}
+				}
 			} 
 		return Civ.colors;
 		}

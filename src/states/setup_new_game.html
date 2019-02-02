@@ -96,7 +96,7 @@
 						click.delegate="app.options.setup.AIs_randomize = !app.options.setup.AIs_randomize"
 					 >Randomize</button>
 					<label for="num_civs">AI Empires</label>
-					<input id="num_civs" type="range" min="1" max="23" step="1" value.bind="app.options.setup.AIs" 
+					<input id="num_civs" type="range" min="1" max="100" step="1" value.bind="app.options.setup.AIs" 
 						class="${app.options.setup.AIs_randomize ? 'disabled' : ''}" /> 
 					<output show.bind="!app.options.setup.AIs_randomize">${app.options.setup.AIs}</output>
 					<output show.bind="app.options.setup.AIs_randomize" class="random">Random</output>
