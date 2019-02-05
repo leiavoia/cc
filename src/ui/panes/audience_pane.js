@@ -91,7 +91,7 @@ export class AudiencePane {
 				};
 			}
 		else { 
-			switch ( Math.round( this.civ.diplo.contacts.get(this.app.game.myciv).annoyed * 10 ) ) { // make integers
+			switch ( Math.round( this.civ.diplo.contacts.get(this.app.game.myciv).attspan * 10 ) ) { // make integers
 				case 0: { this.text_response = `<p>We have heard enough of your blather. We will hear no more.</p>`; break; }
 				case 1: { this.text_response = `<p>It is only due to my great patience that this audience is granted. My time is costly and you are wasting it. Speak.</p>`; break; }
 				case 2: { this.text_response = `<p>You are wearing our patience thin. Be brief and then be gone.</p>`; break; }
@@ -132,7 +132,7 @@ export class AudiencePane {
 	SetStandardOptions() { 
 		this.options = [];
 		if ( this.comm >= 0.3 ) { 
-			if ( this.civ.diplo.contacts.get(this.app.game.myciv).annoyed >= 0.05 ) {
+			if ( this.civ.diplo.contacts.get(this.app.game.myciv).attspan >= 0.05 ) {
 				this.options.push({ text:"Let's make a deal.", func: () => this.StartTradeOffer() });
 // 				this.options.push({ text:"Let's make a deal.", func: () => this.Exit() });
 // 				this.options.push({ text:"We want to know about ...", func: () => this.SelectWantToKnowInfoOption() });
@@ -141,8 +141,8 @@ export class AudiencePane {
 			}
 		this.options.push({ text:"End conversation.", func: () => {
 			let acct = this.civ.diplo.contacts.get(this.app.game.myciv);
-			acct.annoyed -= 0.05;
-			if ( acct.annoyed < 0 ) { acct.annoyed = 0; }
+			acct.attspan -= 0.05;
+			if ( acct.attspan < 0 ) { acct.attspan = 0; }
 			this.Exit();
 			} });
 		};
@@ -197,7 +197,7 @@ export class AudiencePane {
 		this.mode = 'consider_offer';
 		this.mood = 'away';
 		let result = this.offer.Evaluate();
-		console.log( this.offer.status );
+		console.log( `${this.offer.status} @ ${this.offer.score}`);
 		setTimeout( () => {
 			let new_mode = result ? 'offer_accepted' : 'offer_declined';
 			if ( this.offer.status == 'countered' ) { 

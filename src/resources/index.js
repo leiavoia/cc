@@ -19,5 +19,6 @@ export function configure(config) {
   	'./value-converters/CommunicationAbility',
   	'./value-converters/PlanetSectPow',
   	'./value-converters/MoraleToMoodIcon',
+  	'./value-converters/DiploStatus',
   	]);
 }

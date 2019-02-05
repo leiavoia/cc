@@ -358,6 +358,8 @@ export default class Game {
 			this.RecalcFleetRanges(); 
 // 			console.timeEnd('Recalc Fleet Range');
 				
+			this.UpdateDiplomaticRelations();
+			
 			// calculate overall civ power scores
 			for ( let civ of this.galaxy.civs ) { 
 				civ.CalcPowerScore();
@@ -774,6 +776,41 @@ export default class Game {
 					}
 				// found nothing in range
 				civ1.SetInRangeOfCiv( civ2, false );
+				}
+			}
+		}
+		
+	UpdateDiplomaticRelations() { 
+		for ( let c of this.galaxy.civs ) { 
+			if ( c.is_monster ) { continue; } // no monsters 
+			if ( c.dead || !c.planets.length ) { continue; } // no zombies 
+			// note that we evaluate treaties (actually two) from each viewpoint
+			for ( let [civ, acct] of c.diplo.contacts.entries() ) { 
+				// no dead civs - TODO ideally move this to a KILL() function
+				if ( civ.dead || !civ.planets.length ) {
+					c.diplo.contacts.delete(civ);
+					continue;
+					} 
+				for ( let t of acct.treaties.values() ) { 
+					if ( 'onTurn' in t ) { 
+						t.onTurn( this.turn_num ); 
+						}
+					}
+				for ( let t of civ.diplo.contacts.get(c).treaties.values() ) { 
+					if ( 'onTurn' in t ) {
+						t.onTurn( this.turn_num ); 
+						}	
+					}
+				// regain attention span
+				if ( !c.is_player ) { 
+					acct.attspan += c.diplo.attspan_recharge; 
+					if ( acct.attspan > c.diplo.attspan_max ) { 
+						acct.attspan = c.diplo.attspan_max; 
+						}
+					}
+				// gravitate towards natural disposition (this is called 
+				// once for each civ, so it double dips - be careful)
+				if ( acct.lovenub > c.diplo.dispo ) { c.BumpLoveNub( civ, 0.001 ); }
 				}
 			}
 		}

@@ -3,6 +3,7 @@ import Civ from './Civ';
 import Fleet from './Fleet';
 import * as utils from '../util/utils';
 import {Ship,ShipBlueprint} from './Ship';
+import {Treaties,Treaty} from './Treaties';
 import * as Tech from './Tech';
 
 export default class TradeOffer {
@@ -39,8 +40,8 @@ export default class TradeOffer {
 			this.status = 'can\'t communicate'; 
 			return false; 
 			}
-		// annoyance left?
-		if ( this.to.diplo.contacts.get(this.from).annoyed < 0.05 ) { 
+		// attention span?
+		if ( this.to.diplo.contacts.get(this.from).attspan < 0.05 ) { 
 			this.status = 'annoyed'; 
 			return false; 
 			}
@@ -73,8 +74,8 @@ export default class TradeOffer {
 		// TODO +/- relationship for tone
 		
 		// be annoyed
-		acct.annoyed -= 0.4;
-		if ( acct.annoyed < 0 ) { acct.annoyed = 0; }
+		acct.attspan -= 0.4;
+		if ( acct.attspan < 0 ) { acct.attspan = 0; }
 		
 		return result;
 		}
@@ -99,7 +100,6 @@ export default class TradeOffer {
 							}
 						}
 					// move node into the completed pile
-					console.log( to.name + ' is getting ' + i.obj.key );
 					to.tech.nodes_compl.set( i.obj.key, i.obj );
 					to.tech.nodes_avail.delete( i.obj.key );
 					to.RecalcAvailableTechNodes();
@@ -107,7 +107,6 @@ export default class TradeOffer {
 						to.tech.current_project = null;
 						to.AI_ChooseNextResearchProject();
 						}
-					console.log(to.tech.nodes_compl);
 					break;
 					}
 				case 'cash': {
@@ -116,7 +115,19 @@ export default class TradeOffer {
 					break;
 					}
 				case 'treaty': {
-					// todo
+					// NOTE: the treaty type is actually a string as `i.obj`
+					const turn_num = 0; // TODO: DANG - where can we get turn num from?
+					if ( !from.diplo.contacts.get(to).treaties.has( i.obj ) ) { 
+						const t1 = Treaty( i.obj, from, to, turn_num );
+						from.diplo.contacts.get(to).treaties.set( i.obj, t1 );
+// 						if ( t1.hasOwnProperty('Init') ) { t1.Init(); }
+						}
+					if ( !to.diplo.contacts.get(from).treaties.has( i.obj ) ) { 
+						const t2 = Treaty( i.obj, to, from, turn_num );
+						to.diplo.contacts.get(from).treaties.set( i.obj, t2 );
+// 						if ( t2.hasOwnProperty('Init') ) { t2.Init(); }
+						}
+					// TODO: unilateral actions (may be a different item type altogether)
 					break;
 					}
 				case 'planet': {

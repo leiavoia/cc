@@ -14,13 +14,10 @@
 					<img class="flag" src.one-time="c.flag_img" />
 					<h2>${c.name}</h2>
 					<img src.one-time="c.diplo_img_small" class="diplo_img" click.delegate="SpeakTo(c)" />
-						<div class="love_nub"><div class="nub" css="margin-left: calc(${acct.lovenub} * (100% - 6em));">${acct.lovenub|loveNub}</div></div>
-						<div class="annoyometer"><div class="nub" css="
-							margin-left: calc(${c.diplo.contacts.get(app.game.myciv).annoyed} * (100% - 6em));">
-								${c.diplo.contacts.get(app.game.myciv).annoyed|annoyometer}
-						</div>
-					</div>
-					<p>Communication: ${c.CommOverlapWith(app.game.myciv) | communicationAbility }</p>
+					<div class="love_nub"><div class="nub" css="margin-left: calc(${acct.lovenub} * (100% - 6em));">${acct.lovenub|loveNub}</div></div>
+					<p>Relationship: <b>${c.diplo.contacts.get(app.game.myciv).status | diploStatus }</b></p>
+					<p>Communication: <b>${c.CommOverlapWith(app.game.myciv) | communicationAbility }</b></p>
+					<p>Attention Span: <b>${c.diplo.contacts.get(app.game.myciv).attspan|percent}%</b></p>
 					<p>
 						<a href="" click.delegate="SpeakTo(c)" class="button">SPEAK TO</a>
 					</p>

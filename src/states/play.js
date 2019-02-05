@@ -234,6 +234,7 @@ export class PlayState {
 		
 	RecalcBGSize() { 
 		let vp = document.getElementById('layout_viewport');
+		if ( !vp ) { return; }
 		// for that extra special effect, we can also zoom in on the background.
 		// note: background scale = 125% @ zoom = 1.0, 100% @ zoom = 0.0
 		var bgsize = 100.0 + (25.0 * this.current_scale);

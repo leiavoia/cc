@@ -9,6 +9,7 @@ import {GroundUnit,GroundUnitBlueprint} from './GroundUnit';
 import {WeaponList} from './WeaponList';
 import {ShipComponentList} from './ShipComponentList';
 import {Mod,Modlist} from './Mods';
+import {Treaties,Treaty} from './Treaties';
 import * as AI from './AI';
 
 export default class Civ {
@@ -68,7 +69,7 @@ export default class Civ {
 	// the general spread of race types over diplo.style is (0..1) :
 	// rocks - plants - organic - cyborgs - robots - energy - trandimensional
 	diplo = {
-		contacts: new Map(), // civ => { lovenub, annoyed, etc. }
+		contacts: new Map(), // civ => { lovenub, attspan, status, treaties, etc. }
 		contactable: true,
 		style: 0.5, // 0..1, what kind of communication type this race uses 
 		skill: 0.25, // 0..1, the range of communication skills this race has.
@@ -77,10 +78,35 @@ export default class Civ {
 		offer_counter_at: -0.5, // anything beteen this and `ok` gets an automatic counter-offer 
 		offer_bad_at: -1.0, // anything between this and `counter` gets refused
 		// anything less than `bad` get refused and treated as an insult
-		annoyance_recharge: 0.1, // how much their annoy-o-meter recharges each turn
-		emotional: 1.0, // how much to multiply diplomatic effects		
+		attspan_recharge: 0.05, // how much their attention space recharges each turn
+		attspan_max: 0.8, // maximum attention span
+		emotion: 1.0, // how much to multiply diplomatic effects		
 		};
 		
+	// bumping the lovenub of this civ will actually bump both nubs in sync.
+	// The `emotion` stat will be whichever is greater of the two civs.
+	BumpLoveNub( civ, amount /* 0..1 */ ) {
+		let acct = this.diplo.contacts.get(civ);
+		if ( acct ) { 
+			let emotion = civ.diplo.emotion;
+			if ( !this.is_player ) { emotion = Math.max(emotion, this.diplo.emotion); }
+			acct.lovenub = utils.Clamp( acct.lovenub + amount * emotion, 0, 1 );
+			let them = civ.diplo.contacts.get(this);
+			if ( them ) { 
+				them.lovenub = utils.Clamp( them.lovenub + amount * emotion, 0, 1 );
+				}
+			}
+		}
+		
+	// updates both civs in sync
+	UpdateDiploStatus( civ, state /* -2..+2 */ ) {
+		let us = this.diplo.contacts.get(civ);
+		let them = civ.diplo.contacts.get(this);
+		if ( us ) { us.status = state; } 
+		if ( them ) { them.status = state; } 
+		// TODO may also cancel treaties that no longer apply
+		}
+
 	CommOverlapWith( civ ) { 
 		if ( !this.diplo.contactable || !civ.diplo.contactable ) { return 0; }
 		let min1 = utils.Clamp( this.diplo.style - this.diplo.skill, 0, 1 );
@@ -120,12 +146,15 @@ export default class Civ {
 			}
 		}
 	
+	// AKA "AddContact"
 	InitDiplomacyWith( civ ) {
 		if ( !this.diplo.contacts.has(civ) ) { 
 			this.diplo.contacts.set( civ, { 
 				lovenub: Math.min( this.diplo.dispo, civ.diplo.dispo ), // whoever is grumpier
-				annoyed: 0.5,
-				in_range: true
+				status: 0, // -2 War, -1 Adversaries, 0 Neutral, +1 Friends, +2 Allies
+				attspan: ( this.is_player ? 1.0 : this.diplo.attspan_max ),
+				in_range: true,
+				treaties: new Map()
 				});
 			}
 		}
@@ -465,10 +494,17 @@ export default class Civ {
 		civ.race.env.atm = utils.BiasedRandInt(0, 4, 2, 0.5);
 		civ.race.env.temp = utils.BiasedRandInt(0, 4, 2, 0.5);
 		civ.race.env.grav = utils.BiasedRandInt(0, 4, 2, 0.5);
-		civ.diplo.dispo = Math.random();
+		// personality
 		civ.diplo.style = Math.random();
 		civ.diplo.skill = utils.BiasedRand(0.05, 0.25, 0.10, 0.5);
-		// AI / personality
+		civ.diplo.dispo = utils.BiasedRand(0.2, 0.8, 0.5, 0.75);
+		civ.diplo.emotion = utils.BiasedRand(0.25, 2.0, 1.0, 0.9);
+		civ.diplo.attspan_recharge = utils.BiasedRand(0.005, 0.1, 0.035, 0.5);
+		civ.diplo.attspan_max = utils.BiasedRandInt(2, 10, 6, 0.5) / 10;
+		civ.diplo.offer_ok_at = (Math.random() - 0.5); // anything over is a good deal
+		civ.diplo.offer_counter_at = ( ( civ.diplo.offer_ok_at - 0.75 ) + ( Math.random() * 0.5 ) ); // anything beteen this and `ok` gets an automatic counter-offer 
+		civ.diplo.offer_bad_at = ( ( civ.diplo.offer_counter_at - 0.75 ) + ( Math.random() * 0.5 ) ); // anything between this and `counter` gets refused
+		// AI
 		civ.ai.strat.def = ['balanced', 'triage'/*, 'equal', null*/][ utils.RandomInt(0,1) ];
 		civ.ai.strat.def_threat_weight = Math.random();
 		civ.ai.strat.def_planetvalue_weight = 1 - civ.ai.strat.def_threat_weight;
@@ -664,7 +700,7 @@ export default class Civ {
 		}
 	
 	AI_ScoreTradeOffer( deal ) { 
-		return utils.RandomFloat( -3, 3 ); // HACK	
+		return utils.RandomFloat( -1.5, 1.0 ); // HACK	
 		}
 		
 	AI_ListItemsForTrade( civ ) {
@@ -674,10 +710,13 @@ export default class Civ {
 		items.push({ type:'cash', label:'Cash', max:this.treasury, amount:0 });
 		
 		// treaties
-		items.push({ type:'treaty', label:'Non-Aggression Pact' });
-		items.push({ type:'treaty', label:'Alliance' });
-		items.push({ type:'treaty', label:'Putting Toilet Seat Down' });
-		
+		for ( let k of Object.keys( Treaties ) ) { 
+			const t = Treaties[k];
+			if ( t.AvailTo( this, civ ) ) { 
+				items.push({ type:'treaty', label:t.label, obj:t.type });
+				}
+			}
+			
 		// tech
 		for ( let [key,node] of this.tech.nodes_compl ) { 
 			// trading partner already has this? 

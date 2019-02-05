@@ -15,20 +15,26 @@
 				<button class="big alt" if.bind="ambassador_present" click.delegate="Exit()" >Leave</button>
 			</p>
 			<div class="love_nub"><div class="nub" css="margin-left: calc(${civ.diplo.contacts.get(app.game.myciv).lovenub} * (100% - 6em));">${civ.diplo.contacts.get(app.game.myciv).lovenub|loveNub}</div></div>
-			<div class="annoyometer"><div class="nub" css="margin-left: calc(${civ.diplo.contacts.get(app.game.myciv).annoyed} * (100% - 6em));">${civ.diplo.contacts.get(app.game.myciv).annoyed|annoyometer}</div></div>
+			<p class="bold">Relationship: ${app.game.myciv.diplo.contacts.get(civ).status | diploStatus}</p>
+			<div class="trade_item_list" if.bind="app.game.myciv.diplo.contacts.get(civ).treaties.size">
+				<div class="treaty" repeat.for="[type, treaty] of app.game.myciv.diplo.contacts.get(civ).treaties">
+					${treaty.label}
+				</div>
+			</div>
 			<p>
+				Attention Span: ${civ.diplo.contacts.get(app.game.myciv).attspan | percent}%<br/>
+				Communication: ${comm|communicationAbility}<br/>
 				Preferred Habitat: ${civ.race.env.atm} Atmosphere, ${civ.race.env.temp} Temperature, ${civ.race.env.grav} Gravity<br/>
-				Communication Ability: ${comm|communicationAbility}<br/>
-				Annoyed: ${civ.diplo.contacts.get(app.game.myciv).annoyed | round:2}<br/>
 				Style: ${c.diplo.style|round:2}<br/>
 				Skill: ${civ.diplo.skill|round:2}<br/>
 				Disposition: ${civ.diplo.dispo|round:2}<br/>
 				Offer OK @ ${civ.diplo.offer_ok_at|round:2}<br/>
 				Offer Counter @ ${civ.diplo.offer_counter_at|round:2}<br/>
 				Offer Bad @ ${civ.diplo.offer_bad_at|round:2}<br/>
-				Annoyance Recharge: ${civ.diplo.annoyance_recharge|round:2}<br/>
-				Emotional: x${civ.diplo.emotional|round:2}
-			</p>			
+				Attention Span Recharge: ${civ.diplo.attspan_recharge|round:2}<br/>
+				Attention Span Max: ${civ.diplo.attspan_max|round:2}<br/>
+				Emotion: x${civ.diplo.emotion|round:2}
+			</p>	
 		</div>
 		
 		<!-- INTRO -->
@@ -48,7 +54,7 @@
 		<!-- CREATE OFFER -->
 		<div id="audience_us" class="createoffer" if.bind="ambassador_present && mode=='create_offer'">
 			<!-- annoyed - go away -->
-			<template if.bind="civ.diplo.contacts.get(app.game.myciv).annoyed < 0.05" containerless>
+			<template if.bind="civ.diplo.contacts.get(app.game.myciv).attspan < 0.05" containerless>
 				<div id="speech_them" class="fadeIn" css="color: ${civ.color};">
 					<p><b style="font-weight:bold;">${civ.name} Ambassador:</b><p>
 					<div>
@@ -58,7 +64,7 @@
 				</div>
 			</template>
 			<!-- lets make a deal -->
-			<template if.bind="civ.diplo.contacts.get(app.game.myciv).annoyed >= 0.05" containerless>
+			<template if.bind="civ.diplo.contacts.get(app.game.myciv).attspan >= 0.05" containerless>
 				<div>
 					<button class="right bad" click.delegate="ReturnToMainMenu()">CANCEL</button>
 					<h2>Create an Offer</h2>
@@ -180,7 +186,7 @@
 			<p class="button_rack">
 				<button click.delegate="AcceptOffer()" class="big">Accept</button>
 				<button click.delegate="DeclineOffer()" class="big bad">Decline</button>
-				<button click.delegate="CounterOffer()" class="big alt ${civ.diplo.contacts.get(app.game.myciv).annoyed < 0.05 ? 'disabled' : ''}">Counter-Offer</button>
+				<button click.delegate="CounterOffer()" class="big alt ${civ.diplo.contacts.get(app.game.myciv).attspan < 0.05 ? 'disabled' : ''}">Counter-Offer</button>
 			</p>	
 		</div>
 		
