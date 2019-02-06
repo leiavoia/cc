@@ -788,7 +788,7 @@ export default class Game {
 			for ( let [civ, acct] of c.diplo.contacts.entries() ) { 
 				// no dead civs - TODO ideally move this to a KILL() function
 				if ( civ.dead || !civ.planets.length ) {
-					c.diplo.contacts.delete(civ);
+					// c.diplo.contacts.delete(civ);
 					continue;
 					} 
 				for ( let t of acct.treaties.values() ) { 
