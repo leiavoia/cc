@@ -29,6 +29,8 @@ export class AudiencePane {
 	CreateTradeItemLists() { 
 		this.our_trade_items = this.app.game.myciv.AI_ListItemsForTrade( this.civ );
 		this.their_trade_items = this.civ.AI_ListItemsForTrade( this.app.game.myciv );
+		// for improved UI intuition, we only put the treaties in the ASK column.
+		this.our_trade_items = this.our_trade_items.filter( i => i.type != 'treaty' );
 		}
 		
 	ClosePanel() {
