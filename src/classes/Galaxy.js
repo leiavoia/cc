@@ -95,6 +95,7 @@ export default class Galaxy {
 			// homeworld
 			let s = stars.pop();
 			let p = s.planets[0];
+			this.ForcePlanetEnvToMatchRace( p, c ); 
 			p.Settle( c );
 			if ( c.id == 0 ) { s.explored = true; }
 			this.AssignStartingFleet( c, s );
@@ -103,6 +104,7 @@ export default class Galaxy {
 			for ( let i=0, max = utils.RandomInt(1,2); stars.length && i < max; i++ ) { 
 				let next = stars.pop();
 				let p = next.planets[0];
+				this.ForcePlanetEnvToMatchRace( p, c );
 				p.Settle( c );
 				if ( c.id == 0 ) { next.explored = true; }
 				// defending fleet
@@ -113,6 +115,12 @@ export default class Galaxy {
 		return this.civs[0].homeworld.star;
 		}	
 			
+	ForcePlanetEnvToMatchRace( p, civ ) { 
+		p.atm = civ.race.env.atm;
+		p.temp = civ.race.env.temp;
+		p.grav = civ.race.env.grav;
+		}
+		
 	AddExploreDemo( num_civs=1 ) {
 
 		this.MakeCivs( num_civs );
@@ -125,6 +133,7 @@ export default class Galaxy {
 				let s = this.stars[star_i];
 				if ( s.planets.length ) { 
 					let p = s.planets[0];
+					this.ForcePlanetEnvToMatchRace( p, c );
 					p.Settle( c );
 					if ( c.id == 0 ) { 
 						s.explored = true;
@@ -153,6 +162,7 @@ export default class Galaxy {
 			for ( let p of s.planets ) { 
 				let i = utils.RandomInt( 0, this.civs.length-1 );
 				if ( i != this.civs.length ) { 
+					this.ForcePlanetEnvToMatchRace( p, this.civs[i] );
 					p.Settle( this.civs[i] );
 					}
 				}

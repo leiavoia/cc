@@ -501,9 +501,10 @@ export default class Civ {
 		civ.diplo.emotion = utils.BiasedRand(0.25, 2.0, 1.0, 0.9);
 		civ.diplo.attspan_recharge = utils.BiasedRand(0.005, 0.1, 0.035, 0.5);
 		civ.diplo.attspan_max = utils.BiasedRandInt(2, 10, 6, 0.5) / 10;
-		civ.diplo.offer_ok_at = (Math.random() - 0.5); // anything over is a good deal
-		civ.diplo.offer_counter_at = ( ( civ.diplo.offer_ok_at - 0.75 ) + ( Math.random() * 0.5 ) ); // anything beteen this and `ok` gets an automatic counter-offer 
-		civ.diplo.offer_bad_at = ( ( civ.diplo.offer_counter_at - 0.75 ) + ( Math.random() * 0.5 ) ); // anything between this and `counter` gets refused
+		civ.diplo.offer_ok_at = (0.3 * Math.random() - 0.11); // anything over this is a good deal
+		civ.diplo.offer_counter_at = ( ( civ.diplo.offer_ok_at - 0.3 ) + ( Math.random() * 0.2 ) ); // anything beteen this and `ok` gets an automatic counter-offer 
+		civ.diplo.offer_bad_at = ( ( civ.diplo.offer_counter_at - 0.3 ) + ( Math.random() * 0.2 ) ); // anything between this and `counter` gets refused
+		// anything below offer_bad_at is an insult
 		// AI
 		civ.ai.strat.def = ['balanced', 'triage'/*, 'equal', null*/][ utils.RandomInt(0,1) ];
 		civ.ai.strat.def_threat_weight = Math.random();
@@ -699,8 +700,90 @@ export default class Civ {
 			} );
 		}
 	
+	// returns float score -1 .. 1 (positive is good for our side)
 	AI_ScoreTradeOffer( deal ) { 
-		return utils.RandomFloat( -1.5, 1.0 ); // HACK	
+		// what they are offering us
+		let our_score = 0;
+		for ( let i of deal.offer ) {
+			let s = this.AI_ScoreTradeItem(i);
+			our_score += s;
+			console.log(`OFFERING: ${s} for ${i.label}`);
+			}
+		// what they are asking for
+		let their_score = 0;
+		for ( let i of deal.ask ) {
+			let s = this.AI_ScoreTradeItem(i);
+			their_score += s;
+			console.log(`ASKING: ${s} for ${i.label}`);
+			}
+		// the score is positive or negative depending on how it is viewed. 
+		// we cannot use a simple ratio which is always positive.
+		let our_score_norm = our_score / (our_score + their_score);
+		let their_score_norm = their_score / (our_score + their_score);
+		let score = our_score_norm - their_score_norm;
+		console.log(`TRADE SCORE: ${our_score_norm} - ${their_score_norm} = ${score} `);
+		return score;
+		}
+		
+	AI_ScoreTradeItem( i ) { 
+		switch ( i.type ) {
+			case 'cash' : {
+				return i.amount * this.ai.needs.cash;
+				}
+			case 'planet' : {
+				// base value
+				let score = i.obj.ValueTo(this) * 100;
+				// we naturally want to hold onto our own planets
+				if ( i.obj.owner == this ) { score *= 1.5; }
+				// how much do i need planets? 
+				score *= ( ( ( this.planets.length + 1 ) / this.planets.length) + 1 ) / 2;
+				// small bump if this is one of my staging points
+				if ( i.obj.owner == this && this.ai.staging_pts.indexOf(i.obj) > -1 ) { score *= 1.1; }
+				// we prefer planets in multiplanet systems
+				score *= 1 + i.obj.star.planets.length / 20;
+				// but we don't like sharing (especially with enemies)
+				for ( let p of i.obj.star.planets ) { 
+					if ( p != i.obj && p.owner != this ) {
+						const acct = this.diplo.contacts.get(p.owner);
+						if ( acct && acct.status == -1 ) { score *= 0.75; }
+						else if ( acct && acct.status == -2 ) { score *= 0.5; }
+						else { score *= 0.9; }
+						}
+					}
+				// give the AI some reproducable random attachment to certain planets (1.0 .. 1.25)
+				// see: http://indiegamr.com/generate-repeatable-random-numbers-in-js/
+				score *= 1.0 + ( ( (i.obj.id * 9301 + 49297) % 233280 ) / 233280 ) * (1.25 - 1.0);
+				// TODO AI preference for expansionism / xenophobia
+				return score;
+				}
+			case 'technode' : {
+				let score = i.obj.rp;
+				// how long would it take me to research this on my own? 
+				score *= Math.pow( ( i.obj.rp / (this.research_income || 10)), 0.3 );
+				// how does this compare to my overall tech situation?
+				let avg_rp = 0;
+				if ( this.tech.nodes_compl.size ) { 
+					let total_rp = 0;
+					for ( let n of this.tech.nodes_compl.values() ) { 
+						total_rp += n.rp;
+						}
+					avg_rp = total_rp / this.tech.nodes_compl.size;
+					score *= ( i.obj.rp / avg_rp );
+					}
+				// TODO: check for obsolete tiered techs
+				// TODO: AI tech preference
+				return score;
+				}
+			case 'treaty' : {
+				// (?) Who benefits the most from this deal? 
+				// (?) Will this get me in trouble with friends?
+				// (?) Do i want to be friends with you
+ 				// (?) Am i planning to conquer you soon?
+				// (?) AI stance on forming long term relationships (e.g. xenophobia)
+				// (?) Do i need what this treaty provides? 
+				return 100;
+				}
+			}
 		}
 		
 	AI_ListItemsForTrade( civ ) {
@@ -727,7 +810,12 @@ export default class Civ {
 		
 		// planets
 		this.planets.forEach( p => {
-			items.push({ type:'planet', obj:p, label:p.name });
+			if ( p.ValueTo(civ) // habitable and in range
+				&& p != this.homeworld // never trade our homeworld away
+				) { 
+				items.push({ type:'planet', obj:p, label:p.name });
+				}
+			// TODO: perhaps we only want to trade the stinkers?
 			});
 			
 		return items;
