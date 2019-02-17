@@ -11,6 +11,7 @@ import {ShipComponentList} from './ShipComponentList';
 import {Mod,Modlist} from './Mods';
 import {Treaties,Treaty} from './Treaties';
 import * as AI from './AI';
+import {App} from '../app';
 
 export default class Civ {
 	
@@ -37,7 +38,7 @@ export default class Civ {
 	// AI stuff
 	ai = null; // AI object
 		
-	power_score = 0;
+	power_score = 1;
 	
 	homeworld = null; // a Planet // TODO // necessary?
 	victory_ingredients = []; // list of VictoryIngredient objects
@@ -69,7 +70,7 @@ export default class Civ {
 	// the general spread of race types over diplo.style is (0..1) :
 	// rocks - plants - organic - cyborgs - robots - energy - trandimensional
 	diplo = {
-		contacts: new Map(), // civ => { lovenub, attspan, status, treaties, etc. }
+		contacts: new Map(), // civ => { lovenub, attspan, treaties, etc. }
 		contactable: true,
 		style: 0.5, // 0..1, what kind of communication type this race uses 
 		skill: 0.25, // 0..1, the range of communication skills this race has.
@@ -98,15 +99,6 @@ export default class Civ {
 			}
 		}
 		
-	// updates both civs in sync
-	UpdateDiploStatus( civ, state /* -2..+2 */ ) {
-		let us = this.diplo.contacts.get(civ);
-		let them = civ.diplo.contacts.get(this);
-		if ( us ) { us.status = state; } 
-		if ( them ) { them.status = state; } 
-		// TODO may also cancel treaties that no longer apply
-		}
-
 	CommOverlapWith( civ ) { 
 		if ( !this.diplo.contactable || !civ.diplo.contactable ) { return 0; }
 		let min1 = utils.Clamp( this.diplo.style - this.diplo.skill, 0, 1 );
@@ -148,10 +140,11 @@ export default class Civ {
 	
 	// AKA "AddContact"
 	InitDiplomacyWith( civ ) {
-		if ( !this.diplo.contacts.has(civ) ) { 
+		if ( !this.diplo.contacts.has(civ) ) {
+			// for two AIs, go with however is grumpier. For player, go with AI.
+			let lovenub = this.is_player ? civ.diplo.dispo :  Math.min( this.diplo.dispo, civ.diplo.dispo );
 			this.diplo.contacts.set( civ, { 
-				lovenub: Math.min( this.diplo.dispo, civ.diplo.dispo ), // whoever is grumpier
-				status: 0, // -2 War, -1 Adversaries, 0 Neutral, +1 Friends, +2 Allies
+				lovenub: lovenub,
 				attspan: ( this.is_player ? 1.0 : this.diplo.attspan_max ),
 				in_range: true,
 				treaties: new Map()
@@ -259,33 +252,46 @@ export default class Civ {
 			income -= rp_applied;
 			this.tech.current_project.rp += rp_applied;
 			// project completed?
-			if ( this.tech.current_project.rp >= this.tech.current_project.node.rp ) { 
-				// dispurse any techs
-				if ( this.tech.current_project.node.yields.length ) { 
-					for ( let t of this.tech.current_project.node.yields ) { 
-						this.tech.techs.set(t,Tech.Techs[t]);
-						Tech.Techs[t].onComplete( this ); // run callback
+			if ( this.tech.current_project.rp >= this.tech.current_project.node.rp ) { 					
+				// wrap it up
+				this.CompleteTechNode( this.tech.current_project.node );
+				// share this tech with our alliance members
+				for ( let [civ,acct] of this.diplo.contacts ) { 
+					if ( acct.treaties.has('TECH_ALLIANCE') ) { 
+						civ.CompleteTechNode( this.tech.current_project.node, this, true );
 						}
 					}
-				// note to player
-				if ( app.game.myciv == this && app.options.notify.research ) { 
-					app.AddNote(
-						'good',
-						`${this.tech.current_project.node.name} completed.`,
-						`Research on "${this.tech.current_project.node.name}" has been completed`,
-						function(){app.SwitchMainPanel('tech');}
-						);
-					}
-				// move node into the completed pile
-				this.tech.nodes_compl.set(this.tech.current_project.node.key, this.tech.current_project.node );
-				this.tech.nodes_avail.delete(this.tech.current_project.node.key);
-				this.tech.current_project = null;
-				// reevaluate our nodes available. completing the last node may have opened up new ones.
-				this.RecalcAvailableTechNodes();
-				// are there new nodes available?
-				this.AI_ChooseNextResearchProject();			
 				}
 			}
+		}
+		
+	CompleteTechNode( node, source_civ = null, notify_player = true ) {
+		// make note of source to handle tech-brokering agreements
+		node.source = source_civ; 
+		// dispurse any techs
+		if ( node.yields.length ) { 
+			for ( let t of node.yields ) { 
+				this.tech.techs.set(t,Tech.Techs[t]);
+				Tech.Techs[t].onComplete( this ); // run callback
+				}
+			}
+		// move node into the completed pile
+		this.tech.nodes_compl.set(node.key, node );
+		this.tech.nodes_avail.delete(node.key);
+		this.RecalcAvailableTechNodes();
+		if ( this.tech.current_project.node == node ) { 
+			this.tech.current_project = null;
+			this.AI_ChooseNextResearchProject();			
+			}
+		// note to player
+		if ( notify_player && App.instance.game.myciv == this && App.instance.options.notify.research ) { 
+			App.instance.AddNote(
+				'good',
+				`${node.name} completed.`,
+				`Research on "${node.name}" has been completed`,
+				function(){App.instance.SwitchMainPanel('tech');}
+				);
+			}			
 		}
 		
 	gov_type = 'feudal';
@@ -702,19 +708,20 @@ export default class Civ {
 	
 	// returns float score -1 .. 1 (positive is good for our side)
 	AI_ScoreTradeOffer( deal ) { 
+		// return 1000;
 		// what they are offering us
 		let our_score = 0;
 		for ( let i of deal.offer ) {
-			let s = this.AI_ScoreTradeItem(i);
-			our_score += s;
-			console.log(`OFFERING: ${s} for ${i.label}`);
+			i.score = this.AI_ScoreTradeItem(i,deal.from);
+			our_score += i.score;
+			console.log(`OFFERING: ${i.score} for ${i.label}`);
 			}
 		// what they are asking for
 		let their_score = 0;
 		for ( let i of deal.ask ) {
-			let s = this.AI_ScoreTradeItem(i);
-			their_score += s;
-			console.log(`ASKING: ${s} for ${i.label}`);
+			i.score = this.AI_ScoreTradeItem(i,deal.from);
+			their_score += i.score;
+			console.log(`ASKING: ${i.score} for ${i.label}`);
 			}
 		// the score is positive or negative depending on how it is viewed. 
 		// we cannot use a simple ratio which is always positive.
@@ -725,7 +732,7 @@ export default class Civ {
 		return score;
 		}
 		
-	AI_ScoreTradeItem( i ) { 
+	AI_ScoreTradeItem( i, civ ) { 
 		switch ( i.type ) {
 			case 'cash' : {
 				return i.amount * this.ai.needs.cash;
@@ -745,8 +752,8 @@ export default class Civ {
 				for ( let p of i.obj.star.planets ) { 
 					if ( p != i.obj && p.owner != this ) {
 						const acct = this.diplo.contacts.get(p.owner);
-						if ( acct && acct.status == -1 ) { score *= 0.75; }
-						else if ( acct && acct.status == -2 ) { score *= 0.5; }
+						if ( acct && acct.treaties.has('WAR') ) { score *= 0.5; }
+						else if ( acct && acct.lovenub < 0.35 ) { score *= 0.75; }
 						else { score *= 0.9; }
 						}
 					}
@@ -770,18 +777,131 @@ export default class Civ {
 					avg_rp = total_rp / this.tech.nodes_compl.size;
 					score *= ( i.obj.rp / avg_rp );
 					}
+				// cheaper if tech brokering agreement in effect
+				if ( this.diplo.contacts.get(civ).treaties.has('TECH_BROKERING') ) { 
+					score *= 0.75;
+					}
 				// TODO: check for obsolete tiered techs
 				// TODO: AI tech preference
 				return score;
 				}
 			case 'treaty' : {
+				let score = 0;
+							
 				// (?) Who benefits the most from this deal? 
-				// (?) Will this get me in trouble with friends?
+				const powergraph_spread = // -1 .. +1 
+					( this.power_score / ((this.power_score + civ.power_score) || 1) )
+					- ( civ.power_score / ((this.power_score + civ.power_score) || 1) );
+				const rp_spread = // -1 .. +1 
+					( this.research_income / ((this.research_income + civ.research_income) || 1) )
+					- ( civ.research_income / ((this.research_income + civ.research_income) || 1) );
+				const econ_spread = // -1 .. +1 
+					( this.econ.income / ((this.econ.income + civ.econ.income) || 1) )
+					- ( civ.econ.income / ((this.econ.income + civ.econ.income) || 1) );
+					
+				const powergraph_ratio = this.power_score / civ.power_score;
+				let my_team_power = this.power_score;
+				let their_team_power = civ.power_score;
+				for ( let [c,acct] of this.diplo.contacts ) {
+					if ( acct.lovenub > 0.65 ) { my_team_power += c.power_score; }
+					}
+				for ( let [c,acct] of civ.diplo.contacts ) {
+					if ( acct.lovenub > 0.65 ) { their_team_power += c.power_score; }
+					}
+				let team_power_ratio = my_team_power / their_team_power;
+				
+// 				// (?) Will this get me in trouble with friends?
+// 				let mutual_contacts = 0;
+// 				let mutual_friends = 0;
+// 				let mutual_enemies = 0;
+// 				let mutual_conflicts = 0; // our friends do not get along with their friends
+// 				for ( let [civ,our_acct] of this.diplo.contacts ) {
+// 					const their_acct = civ.diplo.contacts.get(civ);
+// 					if ( thier_account ) {
+// 						mutual_contacts++;
+// 						if ( their_acct.lovenub > 0.65 && our_acct.lovenub > 0.65 ) { 
+// 							mutual_friends++;
+// 							}
+// 						else if ( their_acct.lovenub < 0.35 && our_acct.lovenub < 0.35 ) { 
+// 							mutual_enemies++;
+// 							}
+// 						else if ( their_acct.lovenub > 0.65 && our_acct.lovenub < 0.35 ) { 
+// 							mutual_conflicts++;
+// 							}
+// 						else if ( their_acct.lovenub < 0.35 && our_acct.lovenub > 0.65 ) { 
+// 							mutual_conflicts++;
+// 							}
+// 						}
+// 					}
+					
 				// (?) Do i want to be friends with you
+				
  				// (?) Am i planning to conquer you soon?
+ 				
 				// (?) AI stance on forming long term relationships (e.g. xenophobia)
+				
 				// (?) Do i need what this treaty provides? 
-				return 100;
+				
+				switch ( i.obj ) { // the "obj" is just a string label, not an actual treaty at this point
+					case 'NON_AGGRESSION' : { 
+						// we want this if we are peacelike or they or their team are stronger than us.
+						// Rephrased: how much would we pay to not be attacked?
+						score = 1000 * ( this.ai.strat.posture - 0.5 ) * powergraph_spread;
+						break;
+						}
+					case 'ALLIANCE' : { 
+						score = 10000 * ( this.ai.strat.posture - 0.5 ) * powergraph_spread;
+						break;
+						}
+						
+					// if we want to go in deep
+					// but not help too much
+					case 'TECH_ALLIANCE' : { 
+						score = 10000 * ( rp_spread + 0.1 ); // 0.1 is our ego
+						break;
+						}  
+					case 'ECON_ALLIANCE' : { 
+						score = 10000 * ( econ_spread + 0.3 ); // generally no risk - TODO: need a reason to avoid econ alliance
+						break;
+						}  
+
+					// if we want to keep our distance.
+					case 'NO_STAR_SHARING' : { 
+						score = 1000 * ( this.ai.strat.posture - 0.5 ) * powergraph_spread;
+						break;
+						}  
+					
+					// no use to the AI
+					case 'SURVEIL' : { 
+						score = 2500 * this.ai.strat.posture;
+						break;
+						}  
+					
+					// helpful if we are underpowered
+					case 'RESEARCH' : { 
+						score = 2500 * ( rp_spread + 0.1 ); // 0.1 is our ego
+						break;
+						}  
+					case 'TRADE' : { 
+						score = 2500 * ( econ_spread + 0.1 );
+						break;
+						}  
+					
+					// not helpful unless we get a great deal
+					// makes us more likely to trade stuff in the future though.
+					case 'TECH_BROKERING' : { 
+						score = 1000 * ( rp_spread + 0.1 ) * powergraph_ratio; // 0.1 is our ego
+						break;
+						}  
+					
+					// only if we are losing or getting a great deal
+					case 'CEASEFIRE' : { 
+						score = 7500 * ( this.ai.strat.posture - 0.5 ) * powergraph_spread;
+						break;
+						} 
+					}
+					
+				return score;
 				}
 			}
 		}
@@ -795,17 +915,23 @@ export default class Civ {
 		// treaties
 		for ( let k of Object.keys( Treaties ) ) { 
 			const t = Treaties[k];
-			if ( t.AvailTo( this, civ ) ) { 
-				items.push({ type:'treaty', label:t.label, obj:t.type });
+			if ( k != 'WAR' && t.AvailTo( this, civ ) ) { 
+				items.push({ type:'treaty', label:t.label, obj:t.type, civ:civ });
 				}
 			}
 			
 		// tech
 		for ( let [key,node] of this.tech.nodes_compl ) { 
 			// trading partner already has this? 
-			if ( !civ.tech.nodes_compl.has(key) ) {
-				items.push({ type:'technode', obj:node, label:node.name });
+			if ( civ.tech.nodes_compl.has(key) ) { continue; }
+			// tech brokering agreement in effect?
+			if ( 'source' in node && node.source ) {
+				const acct = this.diplo.contacts.get( node.source );
+				if ( acct && acct.treaties.has('TECH_BROKERING') ) {
+					continue;
+					}
 				}
+			items.push({ type:'technode', obj:node, label:node.name });
 			}
 		
 		// planets

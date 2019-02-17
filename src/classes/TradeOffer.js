@@ -5,6 +5,7 @@ import * as utils from '../util/utils';
 import {Ship,ShipBlueprint} from './Ship';
 import {Treaties,Treaty} from './Treaties';
 import * as Tech from './Tech';
+import {App} from '../app';
 
 export default class TradeOffer {
 	from = null;
@@ -92,21 +93,7 @@ export default class TradeOffer {
 		for ( let i of items ) { 
 			switch ( i.type ) {
 				case 'technode': {
-					// dispurse any techs
-					if ( i.obj.yields.length ) { 
-						for ( let t of i.obj.yields ) { 
-							to.tech.techs.set(t,Tech.Techs[t]);
-							Tech.Techs[t].onComplete( to ); // run callback
-							}
-						}
-					// move node into the completed pile
-					to.tech.nodes_compl.set( i.obj.key, i.obj );
-					to.tech.nodes_avail.delete( i.obj.key );
-					to.RecalcAvailableTechNodes();
-					if ( to.tech.current_project == i.obj ) { 
-						to.tech.current_project = null;
-						to.AI_ChooseNextResearchProject();
-						}
+					to.CompleteTechNode( i.obj, from, false );
 					break;
 					}
 				case 'cash': {
@@ -116,16 +103,16 @@ export default class TradeOffer {
 					}
 				case 'treaty': {
 					// NOTE: the treaty type is actually a string as `i.obj`
-					const turn_num = 0; // TODO: DANG - where can we get turn num from?
+					const turn_num = App.instance.game.turn_num;
 					if ( !from.diplo.contacts.get(to).treaties.has( i.obj ) ) { 
 						const t1 = Treaty( i.obj, from, to, turn_num );
 						from.diplo.contacts.get(to).treaties.set( i.obj, t1 );
-// 						if ( t1.hasOwnProperty('Init') ) { t1.Init(); }
+						if ( 'Init' in t1 ) { t1.Init(); }
 						}
 					if ( !to.diplo.contacts.get(from).treaties.has( i.obj ) ) { 
 						const t2 = Treaty( i.obj, to, from, turn_num );
 						to.diplo.contacts.get(from).treaties.set( i.obj, t2 );
-// 						if ( t2.hasOwnProperty('Init') ) { t2.Init(); }
+						if ( 'Init' in t2 ) { t2.Init(); }
 						}
 					// TODO: unilateral actions (may be a different item type altogether)
 					break;

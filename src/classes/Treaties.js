@@ -1,5 +1,6 @@
 import Star from './Star';
 import Civ from './Civ';
+import {App} from '../app';
 import * as utils from '../util/utils';
 
 // NOTES: treaties are reciprocal. Each civ keeps a 
@@ -24,8 +25,6 @@ export function Treaty( type, us, them, turn_num, ttl = -1 ) {
 		if ( this.ttl > 0 ) { this.ttl--; }
 		return this.ttl === 0;
 		}
-	// Fire it up
-	if ( 'Init' in obj ) { obj.Init(); }
 	return obj;
 	}
 
@@ -35,7 +34,7 @@ export const Treaties = {
 		label: 'Non-Aggression Pact',
 		AvailTo: function (a,b) { 
 			const acct = a.diplo.contacts.get(b);
-			return acct.status >= -1 && acct.status < 1 && !acct.treaties.has(this.type);
+			return acct.lovenub >= 0.25 && acct.status < 1 && !acct.treaties.has(this.type);
 			},
 		// call this every turn. override to do anything you want.
 		// returns FALSE if it expired and needs removal.
@@ -48,35 +47,39 @@ export const Treaties = {
 				// change status
 			}
 		},
-	EXPLORATION : { 
-		label: 'Exploration Agreement',
-		AvailTo: function (a,b) { 
-			const acct = a.diplo.contacts.get(b);
-			return acct.status >= 0 && !acct.treaties.has(this.type);
-			},
-		onTurn: function ( turn_num ) {
-			this.us.BumpLoveNub( this.them, 0.01 );
-			}
-		},
 	SURVEIL : { 
 		label: 'Surveillance Agreement',
 		AvailTo: function (a,b) { 
 			const acct = a.diplo.contacts.get(b);
-			return acct.status >= 1 && !acct.treaties.has(this.type);
+			return acct.lovenub >= 0.6 && !acct.treaties.has(this.type);
 			},
 		onTurn: function ( turn_num ) {
 			// this.us.BumpLoveNub( this.them, 0.01 );
 			},
-		Init: function() { }
+		Init: function() { 
+			if ( this.us.is_player ) { 
+				App.instance.game.RecalcStarRanges();
+				App.instance.game.RecalcFleetRanges();
+				}
+			}
 		},
 	RESEARCH : { 
 		label: 'Research Sharing Agreement',
 		AvailTo: function (a,b) { 
 			const acct = a.diplo.contacts.get(b);
-			return acct.status >= 1 && !acct.treaties.has(this.type);
+			return acct.lovenub >= 0.65 && !acct.treaties.has(this.type);
 			},
 		onTurn: function ( turn_num ) {
-			// this.us.BumpLoveNub( this.them, 0.01 );
+			this.us.BumpLoveNub( this.them, 0.01 );
+			const maxpct = 0.15; // 15% of our per-turn RP when fully vested
+			let mod = utils.Clamp( ( turn_num - this.created_on ) / 50, 0, 1 );
+			const amount = Math.ceil( this.us.research_income * mod * maxpct );
+			this.them.research += amount;
+			this.them.research_income += amount;
+			// TODO: add to research accounting record
+			// NOTE: unlike money, `research_income` is processed based on income 
+			// from that turn. it would become self-referencing here, but it also 
+			// resets each turn, so seems to be okay, but not ideal.
 			},
 		Init: function() { }
 		},
@@ -84,21 +87,16 @@ export const Treaties = {
 		label: 'Trade Agreement',
 		AvailTo: function (a,b) { 
 			const acct = a.diplo.contacts.get(b);
-			return acct.status >= 0 && !acct.treaties.has(this.type);
+			return acct.lovenub >= 0.42 && !acct.treaties.has(this.type);
 			},
 		onTurn: function ( turn_num ) {
-			// this.us.BumpLoveNub( this.them, 0.01 );
-			},
-		Init: function() { }
-		},
-	RESOURCE : { 
-		label: 'Resource Exchange Agreement',
-		AvailTo: function (a,b) { 
-			const acct = a.diplo.contacts.get(b);
-			return acct.status >= 0 && !acct.treaties.has(this.type);
-			},
-		onTurn: function ( turn_num ) {
-			// this.us.BumpLoveNub( this.them, 0.01 );
+			this.us.BumpLoveNub( this.them, 0.01 );
+			const maxpct = 0.15; // 15% of our per-turn revenue when fully vested
+			let mod = utils.Clamp( ( turn_num - this.created_on ) / 50, 0, 1 );
+			const amount = Math.ceil( this.us.econ.income * mod * maxpct );
+			this.them.treasury += amount;
+			// TODO: add to accounting record
+			// NOTE: DO NOT add to `income`; it becomes self-referencing		
 			},
 		Init: function() { }
 		},
@@ -106,40 +104,17 @@ export const Treaties = {
 		label: 'Technology Rights Agreement',
 		AvailTo: function (a,b) { 
 			const acct = a.diplo.contacts.get(b);
-			return acct.status >= 0 && !acct.treaties.has(this.type);
+			return acct.lovenub >= 0.45 && !acct.treaties.has(this.type);
 			},
 		onTurn: function ( turn_num ) {
-			// this.us.BumpLoveNub( this.them, 0.01 );
 			},
-		Init: function() { }
-		},
-	CULTURE : { 
-		label: 'Cultural Exchange Program',
-		AvailTo: function (a,b) { 
-			const acct = a.diplo.contacts.get(b);
-			return acct.status >= 0 && !acct.treaties.has(this.type);
-			},
-		onTurn: function ( turn_num ) {
-			// this.us.BumpLoveNub( this.them, 0.01 );
-			},
-		Init: function() { }
-		},
-	ESPIONAGE : { 
-		label: 'Espionage Exchange',
-		AvailTo: function (a,b) { 
-			const acct = a.diplo.contacts.get(b);
-			return acct.status >= 1 && !acct.treaties.has(this.type);
-			},
-		onTurn: function ( turn_num ) {
-			// this.us.BumpLoveNub( this.them, 0.01 );
-			},
-		Init: function() { }
+		Init: function() { ;; }
 		},
 	NO_STAR_SHARING : { 
 		label: 'Stellar Exclusivity Agreement',
 		AvailTo: function (a,b) { 
 			const acct = a.diplo.contacts.get(b);
-			return acct.status >= -1 && !acct.treaties.has(this.type);
+			return acct.lovenub >= 0.2 && !acct.treaties.has(this.type);
 			},
 		onTurn: function ( turn_num ) {
 			// this.us.BumpLoveNub( this.them, 0.01 );
@@ -148,18 +123,15 @@ export const Treaties = {
 		},
 	ALLIANCE : { 
 		label: 'Political Alliance',
-		desc: 'Increases status to "Alliance". Both parties agree to work together closely and come to each other\'s aid in times of war. Allows deeper kinds of alliances.',
+		desc: 'Both parties agree to come to each other\'s aid in times of war.',
 		AvailTo: function (a,b) { 
 			const acct = a.diplo.contacts.get(b);
-			return acct.status == 1 && !acct.treaties.has(this.type);
+			return acct.lovenub >= 0.8 && !acct.treaties.has(this.type);
 			},
 		onTurn: function ( turn_num ) {
 			this.us.BumpLoveNub( this.them, 0.01 );
 			},
 		Init: function() {
-			this.us.UpdateDiploStatus( this.them, 2 );
-			this.us.diplo.contacts(this.them).treaties.delete('FRIENDSHIP');
-			this.them.diplo.contacts(this.us).treaties.delete('FRIENDSHIP');
 			}
 		},
 	TECH_ALLIANCE : { 
@@ -167,77 +139,125 @@ export const Treaties = {
 		desc: '',
 		AvailTo: function (a,b) { 
 			const acct = a.diplo.contacts.get(b);
-			return acct.status == 2 && !acct.treaties.has(this.type);
+			return acct.lovenub >= 0.89 && !acct.treaties.has(this.type);
 			},
 		onTurn: function ( turn_num ) {
 			this.us.BumpLoveNub( this.them, 0.01 );
 			},
 		Init: function() {
-			this.us.UpdateDiploStatus( this.them, 2 );
-			this.us.diplo.contacts(this.them).treaties.delete('FRIENDSHIP');
-			this.them.diplo.contacts(this.us).treaties.delete('FRIENDSHIP');
-			}
-		},
-	ECON_ALLIANCE : { 
-		label: 'Economic Alliance',
-		desc: '',
-		AvailTo: function (a,b) { 
-			const acct = a.diplo.contacts.get(b);
-			return acct.status == 2 && !acct.treaties.has(this.type);
-			},
-		onTurn: function ( turn_num ) {
-			this.us.BumpLoveNub( this.them, 0.01 );
-			},
-		Init: function() {
-			this.us.UpdateDiploStatus( this.them, 2 );
-			this.us.diplo.contacts(this.them).treaties.delete('FRIENDSHIP');
-			this.them.diplo.contacts(this.us).treaties.delete('FRIENDSHIP');
-			}
-		},
-	FRIENDSHIP : { 
-		label: 'Friendship Agreement',
-		desc: 'Increases status "Friendship". Makes a variety of sharing agreements possible.',
-		AvailTo: function (a,b) { 
-			const acct = a.diplo.contacts.get(b);
-			return acct.status == 0 && !acct.treaties.has(this.type);
-			},
-		onTurn: function ( turn_num ) {
-			this.us.BumpLoveNub( this.them, 0.01 );
-			},
-		Init: function() {
-			this.us.UpdateDiploStatus( this.them, 1 );
-			}
-		},
-	PEACE : { 
-		label: 'Peace Treaty',
-		desc: 'Ends hostilities between parties and puts them on "Neutral" status.',
-		AvailTo: function (a,b) { 
-			const acct = a.diplo.contacts.get(b);
-			return acct.status == -1 && !acct.treaties.has(this.type);
-			},
-		onTurn: function ( turn_num ) {
-			this.us.BumpLoveNub( this.them, 0.005 );
-			},
-		Init: function() {
-			this.us.UpdateDiploStatus( this.them, 0 );
-			this.us.diplo.contacts(this.them).treaties.delete('CEASEFIRE');
-			this.them.diplo.contacts(this.us).treaties.delete('CEASEFIRE');
+			let SwapFunc = function ( civ1, civ2 ) { 
+				// trade all techs between civs
+				for ( let [key,node] of civ1.tech.nodes_compl ) { 
+					// trading partner already has this? 
+					if ( civ2.tech.nodes_compl.has(key) ) { continue; }
+					// tech brokering agreement in effect?
+					if ( 'source' in node && node.source ) {
+						const acct = this.diplo.contacts.get( node.source );
+						if ( acct && acct.treaties.has('TECH_BROKERING') ) {
+							continue;
+							}
+						}
+					civ2.CompleteTechNode( node, civ1, false );
+					}
+				}
+			SwapFunc( this.us, this.them );
+			SwapFunc( this.them, this.us );
 			}
 		},
 	CEASEFIRE : { 
 		label: 'Cease-Fire',
-		desc: 'Increases status to "Adversaries". Both parties agree not to assault, invade, or spy on each other.',
+		desc: 'Both parties agree not to assault or invade each other.',
 		AvailTo: function (a,b) { 
 			const acct = a.diplo.contacts.get(b);
-			return acct.status == -2 && !acct.treaties.has(this.type);
+			return acct.treaties.has('WAR');
 			},
 		onTurn: function ( turn_num ) {
 			this.us.BumpLoveNub( this.them, 0.005 );
 			},
 		Init: function() {
-			this.us.UpdateDiploStatus( this.them, -1 );
+			this.us.BumpLoveNub( this.them, 0.05 );
+			// no hard feelin's
+			for ( let i = this.us.ai.objectives.length; i >= 0; i-- ) { 
+				let o = this.us.ai.objectives[i];
+				if ( ['invade','intercept','berzerk','bombard'].contains(o.type) ) {
+					if ( 'fleet' in o && o.fleet ) { o.fleet.ai = null; }
+					this.us.ai.objectives.splice(i,1);
+					}
+				}
 			}
 		},
+	WAR : { 
+		label: 'War',
+		desc: 'Parties are at war.',
+		AvailTo: function (a,b) { 
+			const acct = a.diplo.contacts.get(b);
+			return !acct.treaties.has('WAR');
+			},
+		onTurn: function ( turn_num ) {
+			this.us.BumpLoveNub( this.them, -1 );
+			},
+		Init: function() {
+			this.us.BumpLoveNub( this.them, -1 );
+			// TODO: all other treaties cancelled
+			}
+		},
+// 	ECON_ALLIANCE : { 
+// 		label: 'Economic Alliance',
+// 		desc: '',
+// 		AvailTo: function (a,b) { 
+// 			const acct = a.diplo.contacts.get(b);
+// 			return acct.lovenub >= 0.85 && !acct.treaties.has(this.type);
+// 			},
+// 		onTurn: function ( turn_num ) {
+// 			this.us.BumpLoveNub( this.them, 0.01 );
+// 			// TODO
+// 			},
+// 		Init: function() {
+// 			}
+// 		},
+// 	EXPLORATION : { 
+// 		label: 'Exploration Agreement',
+// 		AvailTo: function (a,b) { 
+// 			const acct = a.diplo.contacts.get(b);
+// 			return acct.status >= 0 && !acct.treaties.has(this.type);
+// 			},
+// 		onTurn: function ( turn_num ) {
+// 			this.us.BumpLoveNub( this.them, 0.01 );
+// 			}
+// 		},
+// 	RESOURCE : { 
+// 		label: 'Resource Exchange Agreement',
+// 		AvailTo: function (a,b) { 
+// 			const acct = a.diplo.contacts.get(b);
+// 			return acct.status >= 0 && !acct.treaties.has(this.type);
+// 			},
+// 		onTurn: function ( turn_num ) {
+// 			// this.us.BumpLoveNub( this.them, 0.01 );
+// 			},
+// 		Init: function() { }
+// 		},
+// 	CULTURE : { 
+// 		label: 'Cultural Exchange Program',
+// 		AvailTo: function (a,b) { 
+// 			const acct = a.diplo.contacts.get(b);
+// 			return acct.status >= 0 && !acct.treaties.has(this.type);
+// 			},
+// 		onTurn: function ( turn_num ) {
+// 			// this.us.BumpLoveNub( this.them, 0.01 );
+// 			},
+// 		Init: function() { }
+// 		},
+// 	ESPIONAGE : { 
+// 		label: 'Espionage Exchange',
+// 		AvailTo: function (a,b) { 
+// 			const acct = a.diplo.contacts.get(b);
+// 			return acct.status >= 1 && !acct.treaties.has(this.type);
+// 			},
+// 		onTurn: function ( turn_num ) {
+// 			// this.us.BumpLoveNub( this.them, 0.01 );
+// 			},
+// 		Init: function() { }
+// 		},
 	}
 	
 // add keys to objects themselves for later self-reference

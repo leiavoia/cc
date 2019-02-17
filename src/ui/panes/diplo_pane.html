@@ -1,7 +1,7 @@
 <template>
 
 	<div id="diplo_pane" class="pane">
-		<p style="float:right;"><a href="#"  click.delegate="ClosePanel()" class="button big">CLOSE</a></p>
+		<p style="float:right;"><button click.delegate="ClosePanel()" class="big">CLOSE</button></p>
 		<h1>Diplomacy</h1>
 		
 		<div id="civ_list">
@@ -15,17 +15,19 @@
 					<h2>${c.name}</h2>
 					<img src.one-time="c.diplo_img_small" class="diplo_img" click.delegate="SpeakTo(c)" />
 					<div class="love_nub"><div class="nub" css="margin-left: calc(${acct.lovenub} * (100% - 6em));">${acct.lovenub|loveNub}</div></div>
-					<p>Relationship: <b>${c.diplo.contacts.get(app.game.myciv).status | diploStatus }</b></p>
 					<p>Communication: <b>${c.CommOverlapWith(app.game.myciv) | communicationAbility }</b></p>
 					<p>Attention Span: <b>${c.diplo.contacts.get(app.game.myciv).attspan|percent}%</b></p>
 					<p>
-						<a href="" click.delegate="SpeakTo(c)" class="button">SPEAK TO</a>
+						<span repeat.for="[type,treaty] of acct.treaties" >⚑ ${treaty.label}<br/></span>
+					</p>
+					<p class="button_rack button_rack_fill">
+						<button click.delegate="SpeakTo(c)">SPEAK TO</button>
 					</p>
 				</div>
 			</template>
 		</div>
 		
-		<p><a href="#"  click.delegate="ClosePanel()" class="button big">CLOSE</a></p>
+		<p><button click.delegate="ClosePanel()" class="big">CLOSE</button></p>
 	</div>
 
 </template>

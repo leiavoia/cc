@@ -617,56 +617,81 @@ export default class Game {
 		// this may not be necessary as it is just for UI stuff
 		// but may become necessary to short circuit some 
 		// calculations later. Testing required.
-		let range = this.myciv.ship_range * this.myciv.ship_range ; // NOTE: avoid square rooting.
-		for ( let s of this.galaxy.stars ) { 
-			// do i live here?
-			if ( s.Acct(this.myciv) ) {
-				s.in_range = true;
+		// NOTE: `in_range` is code for "is visible on map for the player"
+		// and has no programmatic effect.
+		
+		// NOTE: SURVEILLENCE agreements can increase what is visible to the player
+		let civs = [this.myciv];
+		for ( let [c,acct] of this.myciv.diplo.contacts ) { 
+			if ( acct.treaties.has('SURVEIL') ) {
+				civs.push(c);
 				}
-			else {
-				s.in_range = false;
-				// use easy box test first
-				if ( utils.BoxPointIntersect( this.myciv.empire_box, s.xpos, s.ypos ) ) {
-					// how far am i from where i DO live?
-					for ( let p of this.myciv.planets ) { 
-						let dist = 
-							Math.pow( Math.abs(p.star.xpos - s.xpos), 2 )
-							+ Math.pow( Math.abs(p.star.ypos - s.ypos), 2 );
-						if ( dist <= range ) {
-							s.in_range = true;
-							break;
+			}
+		for ( let s of this.galaxy.stars ) { 
+			for ( let civ of civs ) { 
+				let range = civ.ship_range * civ.ship_range ; // NOTE: avoid square rooting.
+				// do i live here?
+				if ( s.Acct(civ) ) {
+					s.in_range = true;
+					break;
+					}
+				else {
+					s.in_range = false;
+					// use easy box test first
+					if ( utils.BoxPointIntersect( civ.empire_box, s.xpos, s.ypos ) ) {
+						// how far am i from where i DO live?
+						for ( let p of civ.planets ) { 
+							let dist = 
+								Math.pow( Math.abs(p.star.xpos - s.xpos), 2 )
+								+ Math.pow( Math.abs(p.star.ypos - s.ypos), 2 );
+							if ( dist <= range ) {
+								s.in_range = true;
+								break;
+								}
 							}
 						}
-					}
-				};
+					if ( s.in_range ) { break; } // don't check other civs
+					};
+				}
 			}
 		}
+	RecalcFleetRanges() {
 		
-	RecalcFleetRanges() { 
-		// same notes as star ranges
-		let range = this.myciv.ship_range * this.myciv.ship_range ; // NOTE: avoid square rooting.
-		for ( let f of Fleet.all_fleets ) { 
-			// all of my fleets are always visible
-			if ( f.owner == this.myciv ) {
-				f.in_range = true;
+		// NOTE: SURVEILLENCE agreements can increase what is visible to the player
+		let civs = [this.myciv];
+		for ( let [c,acct] of this.myciv.diplo.contacts ) { 
+			if ( acct.treaties.has('SURVEIL') ) {
+				civs.push(c);
 				}
-			// only check fleets in the air. parked fleets are handled by star range 
-			else if ( !f.star && f.dest && f.xpos && f.ypos ) {
-				f.in_range = false;
-				// use easy box test first
-				if ( utils.BoxPointIntersect( this.myciv.empire_box, f.xpos, f.ypos ) ) {
-					// how far am i from where i DO live?
-					for ( let p of this.myciv.planets ) { 
-						let dist = 
-							Math.pow( Math.abs(p.star.xpos - f.xpos), 2 )
-							+ Math.pow( Math.abs(p.star.ypos - f.ypos), 2 );
-						if ( dist <= range ) {
-							f.in_range = true;
-							break;
+			}
+		// same notes as star ranges
+		for ( let f of Fleet.all_fleets ) { 
+			for ( let civ of civs ) { 
+				let range = civ.ship_range * civ.ship_range ; // NOTE: avoid square rooting.
+				// all of my fleets are always visible
+				if ( f.owner == civ ) {
+					f.in_range = true;
+					break;
+					}
+				// only check fleets in the air. parked fleets are handled by star range 
+				else if ( !f.star && f.dest && f.xpos && f.ypos ) {
+					f.in_range = false;
+					// use easy box test first
+					if ( utils.BoxPointIntersect( civ.empire_box, f.xpos, f.ypos ) ) {
+						// how far am i from where i DO live?
+						for ( let p of civ.planets ) { 
+							let dist = 
+								Math.pow( Math.abs(p.star.xpos - f.xpos), 2 )
+								+ Math.pow( Math.abs(p.star.ypos - f.ypos), 2 );
+							if ( dist <= range ) {
+								f.in_range = true;
+								break;
+								}
 							}
 						}
-					}
-				};
+					if ( f.in_range ) { break; } // don't check other civs
+					};
+				}
 			}
 		}
 		

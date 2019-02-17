@@ -92,6 +92,15 @@ export class App {
 		}
 		
 	constructor() {
+	
+		// TECHNICAL: lots of deep-down game bits need access to settings
+		// and data that App maintains. In order to bypass dependency injection
+		// patterns and increase efficiency, we're going to just stick a 
+		// singleton instance reference right on the class itself for easy 
+		// reference by literally any other game component. USAGE:
+		// 	let app = App.instance;
+		App.instance = this;
+		
 		window.document.title = `Constellation Control v.${this.version}`;
 		this.LoadOptions();
 		// --------\/-- [!]DEBUG SHORTCUT --\/---------------------
@@ -111,7 +120,7 @@ export class App {
 		this.game.RecalcStarRanges();
 		this.game.RecalcFleetRanges();
 		this.game.RecalcCivContactRange();
-		let app = this; // needed for callback
+// 		let app = this; // needed for callback
 		}
 		
 	ToggleNotification( o ) { 

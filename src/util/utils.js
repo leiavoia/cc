@@ -32,6 +32,10 @@ Array.prototype.pickRandom = function() {
 	if ( this.length == 0 ) { return false; }
 	return this[ Math.floor( (Math.random() * (this.length+1) ) ) ];
 	}
+	
+Array.prototype.contains = function( obj ) {
+	return this.indexOf( obj ) > -1;
+	}
 
 export function Clamp( n, min, max ) { 
 	return Math.min(Math.max(n, min), max);
