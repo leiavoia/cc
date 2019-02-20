@@ -270,7 +270,12 @@ export class AIAnalyzeObjective extends AIObjective {
 					// tech note: monsters show up in the civ list, 
 					// but have no planets to calculate range.
 					if ( !c.InRangeOfCiv( civ ) && c.planets.length ) { continue; }
-					// TODO: factor in diplomatic situation
+					// diplomatic situation
+					const contact = civ.diplo.contacts.get(c);
+					// we don't consider partners a threat
+					if ( contact && contact.treaties.has('ALLIANCE') ) { continue; }
+					// however, we don't always fall for the ol' "let's be pals" trick
+					if ( contact && contact.treaties.has('NON_AGGRESSION') && civ.ai.strat.risk > 0.5 ) { continue; }
 					// TODO: if star is theoretically reachable by ANY
 					// unfriendly fleet, that should be a mild concern regardless
 					// of presence of any actual fleets right now.
@@ -306,14 +311,14 @@ export class AIAnalyzeObjective extends AIObjective {
 							else {
 								// graduate threat over 7 turn ETA
 								let range_mod = 1 + (7 - Math.min( 7, Math.ceil( fastrange / (f.speed * f.speed) ) ) ) / 7;
-								// monsters are always a threat
-								if ( f.owner.race.is_monster ) { 
-									threat *= range_mod * 0.4;
-									}
-								else { 
-									threat *= range_mod * 0.2;
-									}
+								threat *= range_mod * 0.2;
 								}
+							// monsters are always a threat
+							if ( f.owner.race.is_monster ) { threat *= 2; }
+							// at war
+							else if ( contact && contact.treaties.has('WAR') ) { threat *= 3; }
+							// not at war, but wary nonetheless
+							else if ( contact && contact.lovenub < 0.5 ) { threat *= 1.5; }
 							// NOTE: `total_threat` includes fleets that threaten multiple systems.
 							// We add them all together because systems use this number to normalize
 							// their respective threat level.
@@ -461,7 +466,7 @@ export class AIDefenseObjective extends AIObjective {
 			// find all fleets that can help defend
 			let helpers = [];
 			for ( let f of civ.fleets ) { 
-				if ( !f.dest && f.fp && f.star && !f.killme && !f.mission ) { 
+				if ( !f.dest && f.fp && f.star && !f.killme && !f.mission && !f.ai ) { 
 					let acct = f.star.accts.get(civ);
 					// dont grab fleets in our underdefended list
 					if ( systems.indexOf(f.star) > -1 ) { continue; } 
@@ -472,7 +477,6 @@ export class AIDefenseObjective extends AIObjective {
 							if ( diffpct > -threshold_diff ) { continue; }
 							}
 						}
-					// TODO dont grab fleets on AI missions
 					helpers.push(f);
 					}
 				}
@@ -685,9 +689,12 @@ export class AIOffenseObjective extends AIObjective {
 			for ( let p of c.planets ) { 
 				let score = p.ValueTo(civ);
 				if ( score ) { // must be at habitable at least
-					// TODO: at war? basically free for the taking!
-					// if ( 1 /* at war */ ) { score *= 2; }
-					// else if ( 0 /* at peace */ ) { score *= 0.5; }
+					// at war? basically free for the taking!
+					const contact = civ.diplo.contacts.get(c);
+					if ( contact && contact.treaties.has('WAR') ) { score *= 3; }
+					else if ( contact && contact.treaties.has('ALLIANCE') ) { score *= 0.05 * civ.ai.strat.posture; }
+					else if ( contact && contact.treaties.has('NON_AGGRESSION') ) { score *= 0.5 * civ.ai.strat.posture; }
+					else if ( contact ) { score *= (1.5 - contact.lovenub) * (0.5 + civ.ai.strat.posture); }
 					// defended?
 					let defender = p.OwnerFleet();
 					if ( defender && defender.fp && defender.milval ) { 
@@ -747,9 +754,21 @@ export class AIColonizeObjective extends AIObjective {
 		let targets = [];
 		for ( let s of app.game.galaxy.stars ) { 
 			for ( let p of s.planets ) {
-				if ( !p.owner && p.Habitable( civ.race ) && civ.InRangeOf(p.star.xpos, p.star.ypos) ) { 
-					targets.push(p);
+				// accessible?
+				if ( p.owner || p.Habitable( civ.race ) || civ.InRangeOf(p.star.xpos, p.star.ypos) ) { continue; }
+				// treaties apply? 
+				let has_treaty = false;
+				for ( let p2 of p.star.planets ) { 
+					if ( p2.owner && p2.owner != civ.owner ) {
+						const contact = civ.diplo.contacts.get(p2.owner);
+						if ( contact && contact.treaties.has('NO_STAR_SHARING') ) { 
+							has_treaty = true; 
+							break;
+							}
+						}
 					}
+				if ( has_treaty == true ) { continue; }
+				targets.push(p);
 				}
 			}
 		// have colony ships?
