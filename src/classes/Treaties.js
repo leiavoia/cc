@@ -9,7 +9,8 @@ import * as utils from '../util/utils';
 // or broken, it likely will need two actions to handle, 
 // one from each civ.
 
-// Creates a treaty. Also calls any Init().
+// Creates a treaty (does not require `new` keyword). 
+// Remember to call Init() afterwards if there is one.
 export function Treaty( type, us, them, turn_num, ttl = -1 ) { 
 	let obj = Object.create( Treaties[type] );
 	obj.us = us;
@@ -198,7 +199,17 @@ export const Treaties = {
 			},
 		Init: function() {
 			this.us.BumpLoveNub( this.them, -1 );
-			// TODO: all other treaties cancelled
+			const acct = this.us.diplo.contacts.get(this.them);
+			// cancel all treaties
+			if ( acct ) {
+				for ( let [type,treaty] of acct.treaties ) { 
+					if ( type != 'WAR' ) { 
+						acct.treaties.delete(type);
+						this.them.diplo.contacts.get(this.us).treaties.delete(type);
+						}
+					}
+				}
+			// [!]TODO How to handle alliances and love triangles?
 			}
 		},
 // 	ECON_ALLIANCE : { 

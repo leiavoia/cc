@@ -142,6 +142,8 @@ export default class ShipCombat {
 				}
 			else { team.fleet.Kill(); }
 			});
+		// diplomacy
+		this.teams[1].fleet.owner.DiplomaticEffectOfShipCombat( this.teams[0].fleet.owner, this );
 		// clean up battle-specific stuff
 		// NOTE: deleting the property break's Aurelia binding 
 		// for reasons unknown, so better just to leave it in.

@@ -723,6 +723,8 @@ export default class Civ {
 			their_score += i.score;
 			console.log(`ASKING: ${i.score} for ${i.label}`);
 			}
+		// better deals for better relationships
+		their_score *= 0.75 + this.LoveNub(deal.from) * 0.5;
 		// the score is positive or negative depending on how it is viewed. 
 		// we cannot use a simple ratio which is always positive.
 		let our_score_norm = our_score / (our_score + their_score);
@@ -945,6 +947,116 @@ export default class Civ {
 			});
 			
 		return items;
+		}
+		
+	DiplomaticEffectOfBreakingTreaty( civ, type ) { 
+		const acct = this.diplo.contacts.get(civ);
+		if ( acct ) { 
+			let amount = 0;
+			switch ( type ) {
+				// special exception for WAR which isn't actually a treaty
+				case 'WAR' : { break; }
+				// no big deals:
+				case 'SURVEIL' :
+				case 'NO_STAR_SHARING' :
+				case 'TECH_BROKERING' : 
+				case 'RESEARCH' : { 
+					amount = -0.1;
+					break;
+					}
+				// manageable, but shows lack of faith
+				case 'TECH_ALLIANCE' :
+				case 'TRADE' : { 
+					amount = -0.25;
+					break;
+					}
+				// considered a signal of potential aggression
+				case 'CEASEFIRE' :
+				case 'NON_AGGRESSION' : { 
+					amount = -0.3;
+					break;
+					}
+				// pretty big no no
+				case 'ALLIANCE' : {
+					amount = -0.45;
+					break;
+					}
+				default: { 
+					amount = -0.2;
+					break;
+					}
+				}
+			this.BumpLoveNub( civ, amount );	
+			}
+		}
+		
+	// assumes that `civ` is the aggressor and we were attacked
+	DiplomaticEffectOfShipCombat( civ, shipcombat ) { 
+		let outrage = 0.1;
+		const acct = this.diplo.contacts.get(civ);
+		// figure out if this was a small skirmish or an act of war.
+		const stats = shipcombat.stats[ shipcombat.teams[1].label ];
+// 		const myfleet = shipcombat.teams[1].fleet;
+		if ( stats.total_dmg_in > 200 ) { outrage += 0.2; }
+		// non-aggression pact?
+		if ( acct && acct.treaties.has('NON_AGGRESSION') ) { outrage += 0.5; }
+		// alliance?
+		if ( acct && acct.treaties.has('ALLIANCE') ) { outrage = 1.0; }
+		// effect
+		this.BumpLoveNub( civ, -outrage );
+		// cancel treaties if things are really bad
+		if ( acct && !acct.treaties.has('WAR') ) { 
+			let to_cancel = ['CEASEFIRE','TECH_ALLIANCE','SURVEIL'];
+			if ( acct.lovenub < 0.5 ) { 
+				to_cancel.concat(['NO_STAR_SHARING','TECH_BROKERING','RESEARCH','TRADE']);
+				}
+			if ( acct.lovenub < 0.25 || outrage > 0.75 ) { 
+				to_cancel = []; // empty array means just cancel everything
+				}
+			for ( let [type,treaty] of acct.treaties ) { 
+				if ( !to_cancel.length || to_cancel.indexOf(type) > -1 ) {
+					acct.treaties.delete(type);
+					civ.diplo.contacts.get(this).treaties.delete(type);
+					}
+				}
+			// declare war?
+			if ( acct.lovenub == 0 ) { 
+				this.CreateTreaty( 'WAR', civ );
+				}
+			// audience / scolding
+			if ( civ.is_player ) { 
+				// [!]TODO 
+				}							
+			}						
+		}
+		
+	// assumes that `civ` is the aggressor and we were attacked
+	DiplomaticEffectOfGroundCombat( civ, groundcombat ) { 
+		this.BumpLoveNub( civ, -1 );
+		const acct = this.diplo.contacts.get(civ);
+		// automatic war
+		if ( acct && !acct.treaties.has('WAR') ) { 
+			this.CreateTreaty( 'WAR', civ ); // this also cancels all other treaties
+			// audience / scolding
+			if ( civ.is_player ) { 
+				// [!]TODO 
+				}					
+			}						
+		}
+		
+	CreateTreaty( type, civ ) { 
+		const acct1 = this.diplo.contacts.get(civ);
+		if ( acct1 ) { 
+			const t1 = Treaty( type, this, civ, App.instance.game.turn_num );
+			acct1.treaties.set( type, t1 );
+			if ( 'Init' in t1 ) { t1.Init(); }
+			const acct2 = civ.diplo.contacts.get(this);
+			if ( acct2 ) { 
+				const t2 = Treaty( type, civ, this, App.instance.game.turn_num );
+				acct2.treaties.set( type, t2 );
+				if ( 'Init' in t2 ) { t2.Init(); }	
+				}
+			}
 		}
 		
 	}

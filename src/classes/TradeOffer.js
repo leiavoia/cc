@@ -55,7 +55,11 @@ export default class TradeOffer {
 		if ( this.score >= this.to.diplo.offer_ok_at ) {
 			result = true;
 			this.status = 'accepted';
-			// TODO bonus if we got a sweet deal
+			this.from.BumpLoveNub(0.025);
+			// sweet deal / gift
+			if ( this.score >= this.to.diplo.offer_good_at + 0.5 ) { 
+				this.from.BumpLoveNub(0.075);
+				}
 			this.Exchange();
 			}
 			
@@ -66,10 +70,12 @@ export default class TradeOffer {
 			}
 		
 		// declined
-		else if ( this.score >= this.to.diplo.offer_bad_at ) {
+		else {
 			result = false;
-			// TODO malus if this was a real stinker
 			this.status = 'declined';
+			if ( this.score < this.to.diplo.offer_bad_at ) {
+				this.from.BumpLoveNub(-0.05);
+				}
 			}
 		
 		// TODO +/- relationship for tone
@@ -103,24 +109,14 @@ export default class TradeOffer {
 					}
 				case 'treaty': {
 					// NOTE: the treaty type is actually a string as `i.obj`
-					const turn_num = App.instance.game.turn_num;
-					if ( !from.diplo.contacts.get(to).treaties.has( i.obj ) ) { 
-						const t1 = Treaty( i.obj, from, to, turn_num );
-						from.diplo.contacts.get(to).treaties.set( i.obj, t1 );
-						if ( 'Init' in t1 ) { t1.Init(); }
-						}
-					if ( !to.diplo.contacts.get(from).treaties.has( i.obj ) ) { 
-						const t2 = Treaty( i.obj, to, from, turn_num );
-						to.diplo.contacts.get(from).treaties.set( i.obj, t2 );
-						if ( 'Init' in t2 ) { t2.Init(); }
-						}
-					// TODO: unilateral actions (may be a different item type altogether)
+					from.CreateTreaty( i.obj, to ); // automatically reciprocal
 					break;
 					}
 				case 'planet': {
 					i.obj.BeConqueredBy(to);
 					break;
 					}
+				// TODO: unilateral actions (may be a different item type altogether)
 				}
 			}
 		}

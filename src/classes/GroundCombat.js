@@ -132,6 +132,9 @@ export default class GroundCombat {
 			// award experience to survivors
 			// TODO
 			
+			// diplomacy (must preceed ownership change)
+			this.teams[1].planet.owner.DiplomaticEffectOfGroundCombat( this.teams[0].fleet.owner, this );
+			
 			// if the invasion was successfull, revert planet ownership
 			if ( this.teams[0].status == 'victory' ) { 
 				this.teams[1].planet.BeConqueredBy( this.teams[0].fleet.owner );
@@ -139,9 +142,6 @@ export default class GroundCombat {
 				}
 		
 			// TODO: capture of planet may anihilate the civ
-			
-			// TODO: diplomacy affect
-			
 			}
 			
 		return turnlogs;
