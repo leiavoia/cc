@@ -176,9 +176,10 @@ export const Treaties = {
 			this.us.BumpLoveNub( this.them, 0.005 );
 			},
 		Init: function() {
+			this.us.EndTreaty('WAR',this.them);
 			this.us.BumpLoveNub( this.them, 0.05 );
 			// no hard feelin's
-			for ( let i = this.us.ai.objectives.length; i >= 0; i-- ) { 
+			for ( let i = this.us.ai.objectives.length-1; i >= 0; i-- ) { 
 				let o = this.us.ai.objectives[i];
 				if ( ['invade','intercept','berzerk','bombard'].contains(o.type) ) {
 					if ( 'fleet' in o && o.fleet ) { o.fleet.ai = null; }

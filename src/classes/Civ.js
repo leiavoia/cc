@@ -1059,4 +1059,18 @@ export default class Civ {
 			}
 		}
 		
+	EndTreaty( type, civ, diplo_fx = true ) { 
+		const acct1 = this.diplo.contacts.get(civ);
+		if ( acct1 ) { 
+			acct1.treaties.delete( type );
+			const acct2 = civ.diplo.contacts.get(this);
+			if ( acct2 ) { 
+				acct2.treaties.delete( type );
+				}
+			if ( diplo_fx ) { 
+				this.DiplomaticEffectOfBreakingTreaty( civ, type );	
+				}
+			}
+		}
+		
 	}

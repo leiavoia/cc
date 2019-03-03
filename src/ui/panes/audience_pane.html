@@ -41,10 +41,10 @@
 		<div id="audience_us" class="slideInRight" if.bind="ambassador_present && mode=='intro'">
 			<div id="speech_them" class="fadeIn" css="color: ${civ.color};">
 				<p><b style="font-weight:bold;">${civ.name} Ambassador:</b><p>
-				<div innerhtml.bind="text_response"></div>
+				<div innerhtml.bind="their_text"></div>
 			</div>
 			<div id="speech_us">
-				<div innerhtml.bind="our_response"></div>
+				<div innerhtml.bind="our_text"></div>
 				<ol>
 					<li repeat.for="option of options"><a href="#" click.delegate="option.func()">${option.text}</a></li>
 				</ol>
@@ -128,40 +128,12 @@
 				<progress style="height: 1em; width: 10em;"/>
 			</p>
 		</div>
-		
-		<!-- OFFER ACCEPTED -->
-		<div id="audience_us" if.bind="mode=='offer_accepted'">
-			<div id="speech_them" class="fadeIn" css="color: ${civ.color};">
-				<p><b style="font-weight:bold;">${civ.name} Ambassador:</b><p>
-				<div>
-					<p>We happily accept your offer.</p>
-				</div>
-			</div>
-			<p>
-				<button click.delegate="ReturnToMainMenu()" class="big" >OK</button>
-			</p>	
-		</div>
-		
-		<!-- OFFER DECLINED -->
-		<div id="audience_us" if.bind="mode=='offer_declined'">
-			<div id="speech_them" class="fadeIn" css="color: ${civ.color};">
-				<p><b style="font-weight:bold;">${civ.name} Ambassador:</b><p>
-				<div>
-					<p>Your offer does not appeal to us at this time.</p>
-				</div>
-			</div>
-			<p>
-				<button click.delegate="ReturnToMainMenu()" class="big">OK</button>
-			</p>	
-		</div>	
-	
+			
 		<!-- OFFER COUNTERED -->
 		<div id="audience_us" if.bind="mode=='offer_countered'">
 			<div id="speech_them" class="fadeIn" css="color: ${civ.color};">
 				<p><b style="font-weight:bold;">${civ.name} Ambassador:</b><p>
-				<div>
-					<p>Your offer is intriguing. Would you consider this instead?</p>
-				</div>
+				<div innerhtml.bind="their_text"></div>
 			</div>
 			<div class="divide tabled_items">
 				<div class="trade_item_list">
