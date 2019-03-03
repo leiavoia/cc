@@ -15,6 +15,7 @@ export default class TradeOffer {
 	tone = 'neutral'; // threat, insist, neutral, favor, beg
 	status = 'pending'; // pending, accepted, declined, countered
 	score = 0; // how recipient valued the deal
+	raw_diff = 0; // difference in scoring the deal. used for counter offers.
 	hash = 0; // for quickly comparing two deals
 	
 	constructor( from, to, offer, ask, tone = 'neutral' ) { 
@@ -65,7 +66,7 @@ export default class TradeOffer {
 			
 		// countered
 		else if ( this.score >= this.to.diplo.offer_counter_at ) {
-			result = this.MakeCounterOffer();
+			result = this.to.AI_CreateCounterOffer( this );
 			this.status = 'countered';
 			}
 		

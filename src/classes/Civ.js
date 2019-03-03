@@ -4,6 +4,7 @@ import RandomName from '../util/RandomName';
 import * as utils from '../util/utils';
 import * as Tech from './Tech';
 import Planet from './Planet';
+import TradeOffer from './TradeOffer';
 import {Ship,ShipBlueprint} from './Ship';
 import {GroundUnit,GroundUnitBlueprint} from './GroundUnit';
 import {WeaponList} from './WeaponList';
@@ -707,8 +708,8 @@ export default class Civ {
 		}
 	
 	// returns float score -1 .. 1 (positive is good for our side)
+	// raw_diff will be populated with a positive value used for counter offers
 	AI_ScoreTradeOffer( deal ) { 
-		// return 1000;
 		// what they are offering us
 		let our_score = 0;
 		for ( let i of deal.offer ) {
@@ -725,6 +726,8 @@ export default class Civ {
 			}
 		// better deals for better relationships
 		their_score *= 0.75 + this.LoveNub(deal.from) * 0.5;
+		// what would it take to make us say yes?
+		deal.raw_diff = our_score - their_score;
 		// the score is positive or negative depending on how it is viewed. 
 		// we cannot use a simple ratio which is always positive.
 		let our_score_norm = our_score / (our_score + their_score);
@@ -947,6 +950,37 @@ export default class Civ {
 			});
 			
 		return items;
+		}
+		
+	// returns item list with addition 'score' attribute
+	AI_ListItemsWantInTrade( civ ) {
+		let items = civ.AI_ListItemsForTrade(this);
+		for ( let item of items ) {
+			// scoring doesn't work for items that have a quantity, 
+			// so just pick a random amount up to half-max.
+			if ( 'amount' in item ) { 
+				item.amount = Math.ceil( Math.random() * item.max * 0.5 ); 
+				}
+			item.score = this.AI_ScoreTradeItem(item,civ);
+			}
+		return items;
+		}
+		
+		
+	AI_CreateCounterOffer( deal ) {
+		let newdeal = new TradeOffer( deal.to, deal.from, deal.ask, deal.offer );
+		let on_table = deal.ask.map( i => i.type + i.label ).concat( deal.offer.map( i => i.type + i.label ) );
+		let items = this.AI_ListItemsWantInTrade( deal.from ).filter( i => !on_table.contains(i.type + i.label) ).shuffle();	
+		let remaining_score = deal.raw_diff < 0 ? -deal.raw_diff : 0 ;
+		while ( remaining_score > 0 && items.length ) { 
+			let i = items.pop();
+			if ( i.score ) { 
+				newdeal.ask.push(i);
+				remaining_score -= i.score;
+				}
+			}
+		return newdeal;
+
 		}
 		
 	DiplomaticEffectOfBreakingTreaty( civ, type ) { 

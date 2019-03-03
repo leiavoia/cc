@@ -206,7 +206,6 @@ export class AudiencePane {
 			let i = this.their_trade_items.indexOf( item );
 			if ( i > -1 ) { this.their_trade_items.splice(i,1); }
 			}
-		this.their_text = `<p>Your offer is intriguing. Would you consider this instead?</p>`;
 		this.mode = 'create_offer';
 		}
 		
@@ -220,6 +219,7 @@ export class AudiencePane {
 			if ( this.offer.status == 'countered' ) { 
 				this.offer = result;
 				this.mode = 'offer_countered';
+				this.their_text = `<p>Your offer is intriguing. Would you consider this instead?</p>`;
 				}
 			else {
 				if ( result ) { 

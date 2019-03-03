@@ -26,6 +26,7 @@ Array.prototype.shuffle = function() {
 		this[i] = this[j];
 		this[j] = temp;
 		}
+	return this;
 	}
 	
 Array.prototype.pickRandom = function() {
