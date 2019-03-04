@@ -86,19 +86,40 @@ export let Techs = {
 		name: "Xeno Communication Skills",
 		desc: '<b>+1 Communication</b>.',
 		img: 'img/workshop/tech/techmock.jpg',
-		onComplete( civ ) { civ.diplo.skill += 0.1; } 
+		onComplete( civ ) { 
+			civ.diplo.skill += 0.1; 
+			for ( let [contact,acct] of civ.diplo.contacts ) {
+				const overlap = civ.CommOverlapWith(contact);
+				acct.comm = overlap;
+				contact.diplo.contacts.get(civ).comm = overlap;
+				}
+			} 
 		},
 	XENOCOMM2: {
 		name: "Xeno Linguistic Mastery",
 		desc: '<b>+1 Communication</b>.',
 		img: 'img/workshop/tech/techmock.jpg',
-		onComplete( civ ) { civ.diplo.skill += 0.1; } 
+		onComplete( civ ) { 
+			civ.diplo.skill += 0.1; 
+			for ( let [contact,acct] of civ.diplo.contacts ) {
+				const overlap = civ.CommOverlapWith(contact);
+				acct.comm = overlap;
+				contact.diplo.contacts.get(civ).comm = overlap;
+				}
+			} 
 		},
 	XENOCOMM3: {
 		name: "Alien Negotiation Skills",
 		desc: '<b>+1 Communication</b>.',
 		img: 'img/workshop/tech/techmock.jpg',
-		onComplete( civ ) { civ.diplo.skill += 0.1; } 
+		onComplete( civ ) { 
+			civ.diplo.skill += 0.1; 
+			for ( let [contact,acct] of civ.diplo.contacts ) {
+				const overlap = civ.CommOverlapWith(contact);
+				acct.comm = overlap;
+				contact.diplo.contacts.get(civ).comm = overlap;
+				}
+			} 
 		}
 		
 		

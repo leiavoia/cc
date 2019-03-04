@@ -9,19 +9,19 @@
 				<div if.bind="c.diplo.contactable && c.planets.length" 
 					css="border-color: rgb( ${c.color_rgb[0]}, ${c.color_rgb[1]}, ${c.color_rgb[2]} ); 
 						background-color: rgba( ${c.color_rgb[0]}, ${c.color_rgb[1]}, ${c.color_rgb[2]}, 0.55 );
-						${!acct.in_range ? 'pointer-events:none; opacity:0.25;' : '' }
-						">
+						"
+					class="${!acct.in_range ? 'ghost' : ''}">
 					<img class="flag" src.one-time="c.flag_img" />
 					<h2>${c.name}</h2>
-					<img src.one-time="c.diplo_img_small" class="diplo_img" click.delegate="SpeakTo(c)" />
+					<img src.one-time="c.diplo_img_small" class="diplo_img ${!acct.comm || !c.diplo.contacts.get(app.game.myciv).attspan ? 'nocomm' : ''}" click.delegate="SpeakTo(c)" />
 					<div class="love_nub"><div class="nub" css="margin-left: calc(${acct.lovenub} * (100% - 6em));">${acct.lovenub|loveNub}</div></div>
-					<p>Communication: <b>${c.CommOverlapWith(app.game.myciv) | communicationAbility }</b></p>
-					<p>Attention Span: <b>${c.diplo.contacts.get(app.game.myciv).attspan|percent}%</b></p>
+					<p>Communication: <b>${acct.comm | starRating : '5' : '★' : '' : 'None' }</b></p>
+					<p if.bind="acct.comm >= 0.3">Attention Span: <b>${c.diplo.contacts.get(app.game.myciv).attspan | starRating : 5 : '⚫' : '⚪' : 'Not Available' }</b></p>
 					<p>
 						<span repeat.for="[type,treaty] of acct.treaties" >⚑ ${treaty.label}<br/></span>
 					</p>
 					<p class="button_rack button_rack_fill">
-						<button click.delegate="SpeakTo(c)">SPEAK TO</button>
+						<button click.delegate="SpeakTo(c)" if.bind="c.diplo.contacts.get(app.game.myciv).attspan > 0 && acct.comm">SPEAK TO</button>
 					</p>
 				</div>
 			</template>

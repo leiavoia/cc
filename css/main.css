@@ -2639,6 +2639,10 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 /* 	min-width: 20%; */
 	max-width: 20%;
 	}
+#diplo_pane #civ_list > DIV.ghost {
+	pointer-events:none; 
+	opacity:0.30;
+	}
 #civ_list > DIV H2 {
 	
 	}
@@ -2648,6 +2652,9 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	display: inline-block;
 	margin: 0.5em 0;
 	cursor:pointer;
+	}
+#civ_list > DIV IMG.diplo_img.nocomm {
+	filter: saturate(0) brightness(0.35);
 	}
 #civ_list > DIV IMG.flag {
 	max-height: 22px;
@@ -2837,6 +2844,7 @@ DIV.annoyometer .nub {
 	width: 1.5em;
 	text-align:left;
 	}
+#audience_pane .trade_item_list DIV.ghost { opacity: 0.35; pointer-events:none; cursor:default; }
 #audience_pane .trade_item_list DIV.cash:before { content: '⛁'; }
 #audience_pane .trade_item_list DIV.cash { color: #54B848; }
 #audience_pane .trade_item_list DIV.planet { color: #D33; }

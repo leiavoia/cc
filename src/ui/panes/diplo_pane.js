@@ -10,7 +10,10 @@ export class DiploPane {
 		}
 
 	SpeakTo( civ ) { 
-		this.app.SwitchMainPanel( 'audience', civ, null, true );
+		let acct = civ.diplo.contacts.get(this.app.game.myciv);
+		if ( acct.attspan && acct.comm ) {
+			this.app.SwitchMainPanel( 'audience', civ, null, true );
+			}
 		}
 		
 	}

@@ -148,6 +148,7 @@ export default class Civ {
 				lovenub: lovenub,
 				attspan: ( this.is_player ? 1.0 : this.diplo.attspan_max ),
 				in_range: true,
+				comm: this.CommOverlapWith( civ ), // when technology changes, you need to update this!
 				treaties: new Map()
 				});
 			}
@@ -911,45 +912,58 @@ export default class Civ {
 			}
 		}
 		
-	AI_ListItemsForTrade( civ ) {
+	AI_ListItemsForTrade( civ, inc_not_avail = true ) {
+		const comm = this.CommOverlapWith(civ);
+		
 		let items = [];
 		
-		// cash
-		items.push({ type:'cash', label:'Cash', max:this.treasury, amount:0 });
+		// CASH
+		items.push({ type:'cash', label:'Cash', max:this.treasury, amount:0, avail:true });
 		
-		// treaties
+		// TREATIES
 		for ( let k of Object.keys( Treaties ) ) { 
 			const t = Treaties[k];
-			if ( k != 'WAR' && t.AvailTo( this, civ ) ) { 
-				items.push({ type:'treaty', label:t.label, obj:t.type, civ:civ });
+			if ( k != 'WAR' ) { 
+				items.push({ type:'treaty', label:t.label, obj:t.type, civ:civ, avail:t.AvailTo( this, civ ) });
 				}
 			}
 			
-		// tech
+		// TECH
+		// calculate partner's average tech
+		let avg_rp = 1; // avoid divide by zero
+		if ( civ.tech.nodes_compl.size ) { 
+			let total_rp = 0;
+			for ( let n of civ.tech.nodes_compl.values() ) { 
+				total_rp += n.rp;
+				}
+			avg_rp = total_rp / civ.tech.nodes_compl.size;
+			}
 		for ( let [key,node] of this.tech.nodes_compl ) { 
 			// trading partner already has this? 
 			if ( civ.tech.nodes_compl.has(key) ) { continue; }
 			// tech brokering agreement in effect?
 			if ( 'source' in node && node.source ) {
-				const acct = this.diplo.contacts.get( node.source );
+				let acct = this.diplo.contacts.get( node.source );
 				if ( acct && acct.treaties.has('TECH_BROKERING') ) {
 					continue;
 					}
 				}
-			items.push({ type:'technode', obj:node, label:node.name });
+			// advanced tech requires better communication
+			const avail = utils.Clamp(node.rp / (avg_rp*2), 0, 1) < comm;
+			items.push({ type:'technode', obj:node, label:node.name, avail });
 			}
 		
-		// planets
+		// PLANETS
 		this.planets.forEach( p => {
 			if ( p.ValueTo(civ) // habitable and in range
 				&& p != this.homeworld // never trade our homeworld away
 				) { 
-				items.push({ type:'planet', obj:p, label:p.name });
+				items.push({ type:'planet', obj:p, label:p.name, avail:(comm >= 0.6) });
 				}
 			// TODO: perhaps we only want to trade the stinkers?
 			});
 			
-		return items;
+		return inc_not_avail ? items : items.filter( i => i.avail );
 		}
 		
 	// returns item list with addition 'score' attribute
@@ -965,7 +979,6 @@ export default class Civ {
 			}
 		return items;
 		}
-		
 		
 	AI_CreateCounterOffer( deal ) {
 		let newdeal = new TradeOffer( deal.to, deal.from, deal.ask, deal.offer );

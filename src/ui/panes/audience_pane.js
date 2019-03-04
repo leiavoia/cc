@@ -85,13 +85,13 @@ export class AudiencePane {
 				};
 			}
 		// not interested in talking right now
-		else if ( this.civ.diplo.contacts.get(this.app.game.myciv).attspan < 0.1 ) { 
+		else if ( this.civ.diplo.contacts.get(this.app.game.myciv).attspan == 0 ) { 
 			this.their_text = `<p>I have no time for anything more today.</p>`;
 			}
 		// intro based on lovenub
 		else { 
 			switch ( Math.round( this.civ.diplo.contacts.get(this.app.game.myciv).lovenub * 10 ) ) { // make integers
-				case 0: { this.their_text = `<p>We have heard enough of your blather. We will hear no more.</p>`; break; }
+				case 0: { this.their_text = `<p>Enough of your blather. Get to the point.</p>`; break; }
 				case 1: { this.their_text = `<p>It is only due to my great patience that this audience is granted. My time is costly and you are wasting it. Speak.</p>`; break; }
 				case 2: { this.their_text = `<p>You are wearing our patience thin. Be brief and then be gone.</p>`; break; }
 				case 3: { this.their_text = `<p>Please keep your inquiries to a minimum. I have many meeting today after this one.</p>`; break; }
@@ -141,7 +141,7 @@ export class AudiencePane {
 	SetStandardOptions() { 
 		const acct = this.civ.diplo.contacts.get(this.app.game.myciv);
 		this.options = [];
-		if ( this.comm >= 0.3 && acct ) { 
+		if ( acct ) { 
 			if ( acct.attspan >= 0.05 ) {
 				this.options.push({ text:"Let's make a deal.", func: () => this.StartTradeOffer() });
 				}
@@ -157,13 +157,13 @@ export class AudiencePane {
 		
 			
 	bind( data ) {
-		this.comm = this.app.game.myciv.CommOverlapWith(this.civ);
+		const acct = this.civ.diplo.contacts.get(this.app.game.myciv);
+		this.comm = acct.comm;
 		/* i.e. first_contact */
 		if ( this.data && this.data.is_greeting  ) { 
 			this.on_exit = ''; // exit to map
 			}
 		// show anger if at war
-		const acct = this.civ.diplo.contacts.get(this.app.game.myciv);
 		if ( acct && acct.treaties.has('WAR') ) {
 			this.mood = 'mad';
 			}			

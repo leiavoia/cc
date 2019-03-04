@@ -15,15 +15,17 @@
 				<button class="big alt" if.bind="ambassador_present" click.delegate="Exit()" >Leave</button>
 			</p>
 			<div class="love_nub"><div class="nub" css="margin-left: calc(${civ.diplo.contacts.get(app.game.myciv).lovenub} * (100% - 6em));">${civ.diplo.contacts.get(app.game.myciv).lovenub|loveNub}</div></div>
-			<p class="bold">Relationship: ${app.game.myciv.diplo.contacts.get(civ).status | diploStatus}</p>
+			<p>
+				<progress style="width: 100%; height: 8px; margin: 2px 0; color: 181;" value.bind="civ.diplo.contacts.get(app.game.myciv).attspan"></progress>
+				<br/>Attention Span
+			</p>
 			<div class="trade_item_list" if.bind="app.game.myciv.diplo.contacts.get(civ).treaties.size">
 				<div class="treaty" repeat.for="[type, treaty] of app.game.myciv.diplo.contacts.get(civ).treaties">
 					${treaty.label}
 				</div>
 			</div>
 			<p>
-				Attention Span: ${civ.diplo.contacts.get(app.game.myciv).attspan | percent}%<br/>
-				Communication: ${comm|communicationAbility}<br/>
+				Communication: ${comm | starRating : '5' : '★' : '' : 'None' }<br/>
 				Preferred Habitat: ${civ.race.env.atm} Atmosphere, ${civ.race.env.temp} Temperature, ${civ.race.env.grav} Gravity<br/>
 				Style: ${c.diplo.style|round:2}<br/>
 				Skill: ${civ.diplo.skill|round:2}<br/>
@@ -82,7 +84,7 @@
 							</p>
 						</div>
 						<div class="body trade_item_list">
-							<div repeat.for="i of our_trade_items" class="${i.type}" 
+							<div repeat.for="i of our_trade_items" class="${i.type} ${i.avail ? '' : 'ghost'}" 
 								click.trigger="PutTradeItem(i,our_trade_items,offer.offer,$event)">${i.label}</div>
 						</div>
 					</div>
@@ -91,7 +93,7 @@
 							<h3>Ask:</h3>
 						</div>
 						<div class="body trade_item_list">
-							<div repeat.for="i of their_trade_items" class="${i.type}" 
+							<div repeat.for="i of their_trade_items" class="${i.type} ${i.avail ? '' : 'ghost'}" 
 								click.trigger="PutTradeItem(i,their_trade_items,offer.ask,$event)">${i.label}</div>
 						</div>
 					</div>
@@ -116,7 +118,7 @@
 				</div>
 				<p class="button_rack">
 					<button class="big alt" click.delegate="SubmitOffer()">Make Offer</button>
-					<button class="big bad">Cancel</button>
+					<button class="big bad" click.delegate="ReturnToMainMenu()">Cancel</button>
 				</p>
 			</template>
 		</div>

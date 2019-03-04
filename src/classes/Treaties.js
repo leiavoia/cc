@@ -35,7 +35,7 @@ export const Treaties = {
 		label: 'Non-Aggression Pact',
 		AvailTo: function (a,b) { 
 			const acct = a.diplo.contacts.get(b);
-			return acct.lovenub >= 0.25 && acct.status < 1 && !acct.treaties.has(this.type);
+			return acct.lovenub >= 0.25 && !acct.treaties.has(this.type) && acct.comm >= 0.2;
 			},
 		// call this every turn. override to do anything you want.
 		// returns FALSE if it expired and needs removal.
@@ -52,7 +52,7 @@ export const Treaties = {
 		label: 'Surveillance Agreement',
 		AvailTo: function (a,b) { 
 			const acct = a.diplo.contacts.get(b);
-			return acct.lovenub >= 0.6 && !acct.treaties.has(this.type);
+			return acct.lovenub >= 0.6 && !acct.treaties.has(this.type) && acct.comm >= 0.5;
 			},
 		onTurn: function ( turn_num ) {
 			// this.us.BumpLoveNub( this.them, 0.01 );
@@ -68,7 +68,7 @@ export const Treaties = {
 		label: 'Research Sharing Agreement',
 		AvailTo: function (a,b) { 
 			const acct = a.diplo.contacts.get(b);
-			return acct.lovenub >= 0.65 && !acct.treaties.has(this.type);
+			return acct.lovenub >= 0.65 && !acct.treaties.has(this.type) && acct.comm >= 0.7;
 			},
 		onTurn: function ( turn_num ) {
 			this.us.BumpLoveNub( this.them, 0.01 );
@@ -88,7 +88,7 @@ export const Treaties = {
 		label: 'Trade Agreement',
 		AvailTo: function (a,b) { 
 			const acct = a.diplo.contacts.get(b);
-			return acct.lovenub >= 0.42 && !acct.treaties.has(this.type);
+			return acct.lovenub >= 0.42 && !acct.treaties.has(this.type) && acct.comm >= 0.3;
 			},
 		onTurn: function ( turn_num ) {
 			this.us.BumpLoveNub( this.them, 0.01 );
@@ -105,7 +105,7 @@ export const Treaties = {
 		label: 'Technology Rights Agreement',
 		AvailTo: function (a,b) { 
 			const acct = a.diplo.contacts.get(b);
-			return acct.lovenub >= 0.45 && !acct.treaties.has(this.type);
+			return acct.lovenub >= 0.45 && !acct.treaties.has(this.type) && acct.comm >= 0.5;
 			},
 		onTurn: function ( turn_num ) {
 			},
@@ -115,7 +115,7 @@ export const Treaties = {
 		label: 'Stellar Exclusivity Agreement',
 		AvailTo: function (a,b) { 
 			const acct = a.diplo.contacts.get(b);
-			return acct.lovenub >= 0.2 && !acct.treaties.has(this.type);
+			return acct.lovenub >= 0.2 && !acct.treaties.has(this.type) && acct.comm >= 0.3;
 			},
 		onTurn: function ( turn_num ) {
 			// this.us.BumpLoveNub( this.them, 0.01 );
@@ -127,7 +127,7 @@ export const Treaties = {
 		desc: 'Both parties agree to come to each other\'s aid in times of war.',
 		AvailTo: function (a,b) { 
 			const acct = a.diplo.contacts.get(b);
-			return acct.lovenub >= 0.8 && !acct.treaties.has(this.type);
+			return acct.lovenub >= 0.8 && !acct.treaties.has(this.type) && acct.comm >= 0.6;
 			},
 		onTurn: function ( turn_num ) {
 			this.us.BumpLoveNub( this.them, 0.01 );
@@ -140,7 +140,7 @@ export const Treaties = {
 		desc: '',
 		AvailTo: function (a,b) { 
 			const acct = a.diplo.contacts.get(b);
-			return acct.lovenub >= 0.89 && !acct.treaties.has(this.type);
+			return acct.lovenub >= 0.89 && !acct.treaties.has(this.type) && acct.comm >= 0.8;
 			},
 		onTurn: function ( turn_num ) {
 			this.us.BumpLoveNub( this.them, 0.01 );

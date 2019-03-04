@@ -20,5 +20,6 @@ export function configure(config) {
   	'./value-converters/PlanetSectPow',
   	'./value-converters/MoraleToMoodIcon',
   	'./value-converters/DiploStatus',
+  	'./value-converters/starRating',
   	]);
 }
