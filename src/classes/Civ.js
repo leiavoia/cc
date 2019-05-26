@@ -309,7 +309,10 @@ export default class Civ {
 		income: 0,
 		warehouse : 0,
 		mp_need: 0,
-		mp_need_met: 0 // 0..1
+		mp_need_met: 0, // 0..1
+		ship_maint: 0,
+		troop_maint: 0,
+		planet_maint: 0
 		}; // how to structure???
 	policies = []; // how to structure???
 	
@@ -1119,5 +1122,35 @@ export default class Civ {
 				}
 			}
 		}
-		
+
+	DoAccounting( app ) {
+		this.econ.income = 0;
+		this.econ.net_rev = 0;
+		this.econ.planet_maint = 0;
+		this.econ.ship_maint = 0;
+		this.econ.troop_maint = 0;
+		for ( let p of this.planets ) {
+			this.econ.income += p.econ.tax_rev;
+			this.econ.planet_maint += p.econ.expenses.total;
+			for ( let t of p.troops ) { 
+				this.econ.troop_maint += t.bp.labor * 0.5; // HACK TODO tech and civ stats may change
+				}
+			}
+		for ( let f of this.fleets ) {
+			for ( let s of f.ships ) { 
+				this.econ.ship_maint += s.bp.labor * 0.05; // HACK TODO tech and civ stats may change
+				for ( let t of s.troops ) { 
+					this.econ.troop_maint += t.bp.labor * 0.5; // HACK TODO tech and civ stats may change
+					}
+				}
+			}
+		// stat tracking
+		this.econ.net_rev = this.econ.income; // collect taxes
+		this.econ.net_rev -= this.econ.ship_maint;
+		this.econ.net_rev -= this.econ.troop_maint;
+		this.econ.net_rev -= this.econ.planet_maint;
+		// show me the money
+		this.treasury += this.econ.net_rev;
+		}
+
 	}

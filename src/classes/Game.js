@@ -167,7 +167,6 @@ export default class Game {
 				// reset some stuff
 				civ.research_income = 0;
 // 				civ.gov_pts_income = 0;
-				civ.econ.income = 0;
 				civ.econ.mp_need = 0; // reset each turn loop;
 				for ( let p of civ.planets ) { 
 					if ( p.settled && p.mp_export < 0 ) {
@@ -221,10 +220,6 @@ export default class Game {
 // 						p.owner.gov_pts += p.sect.gov.output;
 // 						p.owner.gov_pts_income += p.sect.gov.output;
 						
-						// give or borrow money out of the civ treasury
-						p.owner.treasury += p.treasury_contrib;
-						p.owner.econ.income += p.treasury_contrib;
-						
 						// grow or shrink the infrastructure of each sector
 						for ( let k in p.sect ) {
 							let s = p.sect[k];
@@ -265,6 +260,11 @@ export default class Game {
 				}
 // 			console.timeEnd('Planetary Econ');
 			
+			// collects taxes, handles expenses, makes accounting records
+			for ( let civ of this.galaxy.civs ) {
+				civ.DoAccounting( this.app );
+				} 
+				
 			// restock weapons
 // 			console.time('Fleet Reloading');
 			for ( let f of this.galaxy.fleets ) { 

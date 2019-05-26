@@ -57,6 +57,7 @@ export default class Planet {
 	mp_export = 0; // how much we import (-) or export (+) this turn
 	mp_need_met = 1.0; // 0..1, how much of what we requested for import was actually delivered. 
 	econ = {
+		tax_rev: 0,
 		expenses: {
 			total: 0,
 			sectors: 0
@@ -371,20 +372,26 @@ export default class Planet {
 				this.sect[s].pct = 1.0 / n; 
 				}
 			}
+		// taxes 
+		this.econ.tax_rev = this.econ.GDP * this.tax_rate;
 		// recalc expenses
 		this.RecalcSectors();
 		}
 	RecalcSectors() { 
-		let taxes = this.tax;
 		let cost = 0;
 		this.econ.expenses.sectors = 0;
 		this.mp_need = 0; // material points (MP)
 		for ( let k in this.sect ) {
 			let s = this.sect[k];
+			// how much work we can do
 			s.work = this.total_pop * this.spending * s.pct * s.pow;
+			// how much of that work goes towards actual output (versus infrastructure upkeep)
+			s.output = Math.min(s.inf,s.work);
+			// what that work costs
 			cost += s.work * ( s.cost * (1-(this.age_level*0.05)) ) ; // we dont work for free. 
 			this.econ.expenses.sectors += s.work * s.cost;
-			s.output = Math.min(s.inf,s.work);
+			// work in excess of current infrastructure level grows the infrastructure.
+			// work less than current infrastructure reduces infrastructure ("rot").
 			let diff = s.work - s.inf;
 			s.growth = diff ? (0.2 * Math.pow( Math.abs(diff), 0.75 ) ) : 0;
 			if ( diff < 0 ) {  s.growth = -s.growth; } // invert if needed
@@ -392,7 +399,9 @@ export default class Planet {
 			else if ( s.growth < 0 && s.inf == 1.0 ) { s.growth = 0; } // 1.0 is minimum infrastructure.
 			}
 		// how much money we are making or losing
-		this.treasury_contrib = taxes - cost;	
+		this.econ.expenses.total = this.econ.expenses.sectors;
+		// TODO: add in non-sector colony expenses, maintenance, etc.
+		this.treasury_contrib = this.econ.tax_rev - cost;	
 		// add production queue item MP requirements
 		// (count tradegoods income while we're here too)
 		if ( this.sect.prod.output ) { 
@@ -594,7 +603,8 @@ export default class Planet {
 		let diff = this.econ.target_PCI - this.econ.PCI;
 		let growth = diff ? (0.4 * Math.pow( Math.abs(diff), 0.75 ) ) : 0; // rubber band growth
 		this.econ.PCI += ( diff > 0 ) ? growth : -growth ;	
-		this.econ.GDP = this.total_pop * this.econ.PCI; // fun stat, does nothing
+		this.econ.GDP = this.total_pop * this.econ.PCI;
+		this.econ.tax_rev = this.econ.GDP * this.tax_rate;
 		}
 		
 		
