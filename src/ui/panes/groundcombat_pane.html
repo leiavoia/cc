@@ -15,10 +15,10 @@
 				<template if.bind="!combat.status" containerless>
 				
 					<!-- purchase better odds slider -->
-					<template containerless if.bind="app.game.myciv.treasury > 0 && !processing">
+					<template containerless if.bind="app.game.myciv.resources.cash > 0 && !processing">
 						<p class="bold bottomless"> Improve your chance of victory: </p>
 						<p class="marginless">
-							<input type="range" min="0" max.bind="app.game.myciv.treasury" value.bind="oddscost_slider" id="odds_slider" style="width:100%;" />
+							<input type="range" min="0" max.bind="app.game.myciv.resources.cash" value.bind="oddscost_slider" id="odds_slider" style="width:100%;" />
 						</p>
 						<p class="topless" style="font-weight:bold; color: #AEA; font-size: 125%;"> 
 							<!--Odds: +${(odds?(odds-1):0)|percent}%,--> 

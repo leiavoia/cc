@@ -104,7 +104,7 @@ let anom_list = [
 		onComplete: function (fleet) { 
 			this.name = 'Abandoned Cargo';
 			let amount = Math.ceil( Math.random() * 500 ) * 10; 
-			fleet.owner.treasury += amount;
+			fleet.owner.resources.cash += amount;
 			this.post_desc = this.post_desc.replace('{AMOUNT}',amount);
 			}
 		},
@@ -114,7 +114,7 @@ let anom_list = [
 		onComplete: function (fleet) { 
 			this.name = 'Bonanza Asteroid';
 			let amount = Math.ceil( Math.random() * 500 ) * 10; 
-			fleet.owner.treasury += amount;
+			fleet.owner.resources.cash += amount;
 			this.post_desc = this.post_desc.replace('{AMOUNT}',amount);
 			}
 		},

@@ -300,7 +300,18 @@ export default class Civ {
 	gov_pts = 0;
 	gov_pts_income = 0;
 	
-	treasury = 10000;
+	resources = {
+		cash: 10000,
+		o:100, // organics
+		s:100, // silicates
+		m:100, // metals
+		r:0, // redium
+		g:0, // greenitoid
+		b:0, // bluetonium
+		c:0, // cyanite
+		v:0, // violetronium
+		y:0, // yellowtron	
+		}
 	
 	ships = [];
 	ship_designs;
@@ -569,7 +580,7 @@ export default class Civ {
 			+ ( ship_score * 0.03 )
 			+ ( ground_score * 2.0 )
 			+ ( tech_score * 0.1 )
-			+ ( this.treasury * 0.01 )
+			+ ( this.resources.cash * 0.01 )
 			);
 			
 		return this.power_score;
@@ -590,7 +601,7 @@ export default class Civ {
 			ships,
 			milval, 
 			planets: this.planets.length,
-			cash: this.treasury,
+			cash: this.resources.cash,
 			min_assault: ( this.ai.strat.min_assault_score > 500 ? 500 : this.ai.strat.min_assault_score )
 			});
 		}
@@ -921,7 +932,7 @@ export default class Civ {
 		let items = [];
 		
 		// CASH
-		items.push({ type:'cash', label:'Cash', max:this.treasury, amount:0, avail:true });
+		items.push({ type:'cash', label:'Cash', max:this.resources.cash, amount:0, avail:true });
 		
 		// TREATIES
 		for ( let k of Object.keys( Treaties ) ) { 
@@ -1150,7 +1161,7 @@ export default class Civ {
 		this.econ.net_rev -= this.econ.troop_maint;
 		this.econ.net_rev -= this.econ.planet_maint;
 		// show me the money
-		this.treasury += this.econ.net_rev;
+		this.resources.cash += this.econ.net_rev;
 		}
 
 	}

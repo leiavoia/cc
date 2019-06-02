@@ -220,7 +220,7 @@ export default class Planet {
 					pct: 0,
 					ProduceMe: function ( planet ) {
 						// TODO: add to accounting records
-						planet.owner.treasury += 10;	
+						planet.owner.resources.cash += 10;	
 						planet.econ.tradegoods += 10;
 						}
 					};

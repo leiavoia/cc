@@ -166,12 +166,15 @@
 		<!-- TOP VISOR -->
 		<div id="layout_ui_visor" class="fadeIn" if.bind="!app.main_panel_mode">
 			<span class="turn">TURN: ${app.game.turn_num}</span>
-			<span class="planets">PLANETS: ${app.game.myciv.planets.length}</span>
-			<span class="treasury">TREASURY: $${app.game.myciv.treasury|round:0} ${app.game.myciv.econ.net_rev > 0 ?'+':''}${app.game.myciv.econ.net_rev|round:0}</span>
-			<span class="sci">RESEARCH: <!--${app.game.myciv.research|round}--> +${app.game.myciv.research_income|round:0}</span>
+			<span class="planets">◉ ${app.game.myciv.planets.length}</span>
+			<span class="treasury"><b>$</b>${app.game.myciv.resources.cash|round:0} ${app.game.myciv.econ.net_rev >= 0 ?'+':''}${app.game.myciv.econ.net_rev|round:0}</span>
+			<span class="sci">💡 +${app.game.myciv.research_income|round:0}</span>
 			<span class="sci" if.bind="app.game.myciv.tech.current_project" click.delegate="app.SwitchMainPanel('tech')">
 				${( app.game.myciv.tech.current_project.rp / app.game.myciv.tech.current_project.node.rp) | percent}% of 	
 				${app.game.myciv.tech.current_project.node.name}  
+			</span>
+			<span class="resources">
+				<span repeat.for="k of ['o','s','m','r','g','b','c','v','y']" class="${k}">${app.game.myciv.resources[k]}</span>
 			</span>
 			<span>HAB: ${app.game.myciv.race.env.habitation}</span>
 			<span>ADAPT: ${app.game.myciv.race.env.adaptation}</span>

@@ -101,7 +101,7 @@ export class ShipDesignPane {
 				f.ships = f.ships.filter( s => this.bp != s.bp );
 				let num_scrapped = num_before - f.ships.length;
 				if ( num_scrapped ) {
-					this.app.game.myciv.treasury += num_scrapped * 0.1 * this.bp.mass; // or whatever
+					this.app.game.myciv.resources.cash += num_scrapped * 0.1 * this.bp.mass; // or whatever
 					if ( !f.ships.length ) { f.Kill(); }
 					}
 				});

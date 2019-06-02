@@ -339,7 +339,7 @@ body,html {
 #layout_ui_visor {
 	box-sizing:border-box;
 	overflow: auto;
-	background-color: rgba(0,0,0,0.3);
+	background-color: rgba(0,0,0,0.65);
 	color: #FFF;
 	text-shadow: 1px 1px 1px #000;
 	padding: 0.3em 1.5em 0.3em 0.5em ;
@@ -401,7 +401,7 @@ body,html {
 	background: rgba(0,0,0,1.0);
 	}
 	
-#layout_ui_visor SPAN { margin-right: 2em; }
+#layout_ui_visor SPAN { margin-right: 1em; }
 #layout_ui_visor .turn { color: #FFF; }
 #layout_ui_visor .pop { color: #FF2; }
 #layout_ui_visor .income { color: #AEA; }
@@ -1746,16 +1746,26 @@ DIV.planet.atm3.tmp4 { background-image: url(../img/planets/planet_12.png); }
 DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 
 /* resource colors */
+.resources .o { color:#AA7449; }
+.resources .s { color:#666666; }
+.resources .m { color:#DDDDDD; }
+.resources .r { color:#DD1111; }
+.resources .g { color:#00FF33; }
+.resources .b { color:#0033FF; }
+.resources .c { color:#11EEFF; }
+.resources .v { color:#EE11FF; }
+.resources .y { color:#FFFF00; }
+
 /* fun symbols we might use later: ◼ ● ◆ ▲ ▰ ⬣ ⬢ ⊕ ⏣ ✪ ▮ */
-.resources .o:before { content:'⬢'; color:#AA7449; }
-.resources .s:before { content:'⬢'; color:#666666; }
-.resources .m:before { content:'⬢'; color:#DDDDDD; }
-.resources .r:before { content:'⬢'; color:#DD1111; }
-.resources .g:before { content:'⬢'; color:#00FF33; }
-.resources .b:before { content:'⬢'; color:#0033FF; }
-.resources .c:before { content:'⬢'; color:#11EEFF; }
-.resources .v:before { content:'⬢'; color:#EE11FF; }
-.resources .y:before { content:'⬢'; color:#FFFF00; }
+.resources .o:before { content:'⬢'; }
+.resources .s:before { content:'⬢'; }
+.resources .m:before { content:'⬢'; }
+.resources .r:before { content:'⬢'; }
+.resources .g:before { content:'⬢'; }
+.resources .b:before { content:'⬢'; }
+.resources .c:before { content:'⬢'; }
+.resources .v:before { content:'⬢'; }
+.resources .y:before { content:'⬢'; }
 
 /* hivis letters for helping the color blind */
 .colorblind .resources .o:before { content:'O'; }
