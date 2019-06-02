@@ -800,18 +800,20 @@ export default class Planet {
 		planet.sect.prod.pow = planet.energy;
 		
 		// size is not dependent on star or galaxy. just random.
-		planet.size = ( Math.floor( utils.standardRandom() * 14 ) + 1 ) * 10 ;
+		planet.size = utils.BiasedRandInt(4, 25, 10, 0.5);
 		// ... unless you are a special color
-		if ( star.color == 'purple' ) { planet.size += 20; }
-		else if ( star.color == 'black' ) { planet.size += 40; }
-		else if ( star.color == 'green' ) { planet.size += 60; }
+		if ( star.color == 'purple' ) { planet.size += utils.RandomInt(0, 5); }
+		else if ( star.color == 'black' ) { planet.size += utils.RandomInt(0, 10); }
+		else if ( star.color == 'green' ) { planet.size += utils.RandomInt(0, 15); }
+		// 1% chance of getting a flat-out whopper
+		if ( Math.random() > 0.99 ) { planet.size = utils.RandomInt(25, 40); }
 		
 		// gravity generally coralates with size, except for weird stars
 		if ( star.color == 'black' || star.color == 'purple' || star.color == 'green' ) { 
 			planet.grav = utils.RandomInt(0,4);
 			}
 		else {
-			planet.grav = utils.Clamp( utils.BiasedRandInt(0, 4, ((planet.size-30)/100)*4.0, 1.0), 0, 4);
+			planet.grav = utils.Clamp( utils.BiasedRandInt(0, 4, planet.size/5, 1.0), 0, 4);
 			}
 			
 			
@@ -838,7 +840,8 @@ export default class Planet {
 		if ( Math.random() < 0.02 + rarity*0.075 + rarity_bonus + (planet.grav*0.05) ) { planet.resources.v = utils.BiasedRandInt(0, 5, 0, 0.9); }
 		if ( Math.random() < 0.02 + rarity*0.075 + rarity_bonus + ((4-planet.grav)*0.05) ) { planet.resources.y = utils.BiasedRandInt(0, 5, 0, 0.9); }
 		// throw a bone
-		if (  planet.resources.o 
+		let resource_total = 
+			planet.resources.o 
 			+ planet.resources.s
 			+ planet.resources.m
 			+ planet.resources.r
@@ -846,11 +849,14 @@ export default class Planet {
 			+ planet.resources.b
 			+ planet.resources.c
 			+ planet.resources.v
-			+ planet.resources.y == 0
-			) { 
+			+ planet.resources.y;
+		if ( resource_total == 0 ) { 
 			planet.resources[ ['o','s','m','r','g','b'][Math.floor(Math.random()*6)] ]
 				= utils.BiasedRandInt(1, 2, 1, 0.5);
 			}
+		// planets with a lot of resource get extra gravity as punishment
+		if ( resource_total > 10 && planet.grav < 4 && Math.random() > 0.25 ) { planet.grav++; }
+		else if ( resource_total > 15 && planet.grav < 4 && Math.random() > 0.25 ) { planet.grav = Math.min( planet.grav + 2, 4 ); }
 		
 		// special attributes (AKA "goodies")
 		let selector = Planet.AttributeSelector();
@@ -874,7 +880,7 @@ export default class Planet {
 		for ( let k of Object.keys(planet.sect) ) { 
 			planet.score += planet.sect[k].pow * 2;
 			}
-		planet.score += planet.size * 0.1;
+		planet.score += planet.size;
 		planet.score += planet.maxslots *0.25;
 		// TODO calculate goodies
 		

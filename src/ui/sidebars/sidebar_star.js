@@ -38,15 +38,9 @@ export class StarDetailPane {
 		}
 		
 	PlanetSizeCSS( planet ) {
-		let size = Math.round(planet.size * 0.572);
-		if ( planet.size < 130 ) {
-			let pos = 35 - (size * 0.5);
-			return `background-size: ${size}px; background-position: ${pos}px 0%`;
-			}
-		else {
-			let pos = 0; //75 - size;
-			return `background-size: ${size}px; background-position: ${pos}px 0%`;
-			}
+		let size = Math.min( 75, Math.round( Math.pow(planet.size-3,0.45)*16 ) );
+		let pos = Math.max( 0, 35 - (size * 0.5) );
+		return `background-size: ${size}px; background-position: ${pos}px 0%`;
 		}
 		
 	ToggleNameEdit() { 
