@@ -20,13 +20,17 @@
 						<div class="size" style="margin: 0; padding: 0;">
 							<span class="pop" if.bind="p.owner !== false">${p.total_pop|round}<br/><span class="pop">POP</span></span>
 							<span class="size">${p.size}<br/><span class="size">SIZE</span></span>							
-							<span class="mine">${p.rich}x<br/><span class="mine">MINING</span></span>
-							<span class="en">${p.energy}x<br/><span class="en">ENERGY</span></span>
+<!-- 							<span class="en">${p.energy}x<br/><span class="en">ENERGY</span></span> -->
 							<span class="${calc_vals[p.id].hab ? (calc_vals[p.id].adapt < 0 ? 'alert' : 'good') : 'bad'}">
 								${(calc_vals[p.id].adapt >= 0) ? '+' : ''}${calc_vals[p.id].adapt}<br/>
 								<span class="">ENV</span>
 							</span>
 						</div>			
+						<div class="resources">
+							<template repeat.for="k of p.resources|props" containerless>
+								<span repeat.for="i of p.resources[k]" class="${k}"></span>
+							</template>
+						</div>
 					</div>
 				</div>
 			</div>

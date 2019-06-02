@@ -34,6 +34,17 @@ export default class Planet {
 	physattr = [];
 	slots = [];
 	maxslots = 0;
+	resources = {
+		o:0, // organics
+		s:0, // silicates
+		m:0, // metals
+		r:0, // redium
+		g:0, // greenitoid
+		b:0, // bluetonium
+		c:0, // cyanite
+		v:0, // violetronium
+		y:0, // yellowtron
+		};
 	
 	// AI ------------------------------------------------
 	score = 0; // AI score of natural attributes
@@ -744,21 +755,6 @@ export default class Planet {
 			planet.temp = utils.BiasedRandInt(0, 4, (1.0-star_age)*4.0, 0.3);
 			}
 			
-		let rarity = Math.abs( planet.atm - planet.temp ); // high number = more off the main line of probability.
-		
-		// galaxy age influences the richness of the planet.
-		// younger galaxies have less resources.
-		let rich_salt = 0.8 + (star_age - 0.5);
-		if ( star.color == 'purple' ) { rich_salt += 0.6; }
-		if ( star.color == 'black' ) { rich_salt += 0.8; }
-		if ( star.color == 'green' ) { rich_salt += 1.0; } 
-		planet.rich = Math.pow( utils.BiasedRand(0.3, 1.732, rich_salt, 1.0), 2 );
-		// rarer planet types get a direct boost to richness to make them worth colonizing.
-		if ( rarity == 3 ) { planet.rich += utils.RandomFloat( 0.5, 2.5 ); }
-		else if ( rarity == 4 ) { planet.rich += utils.RandomFloat( 1.0, 5.0 ); }
-		planet.rich = parseFloat( planet.rich.toFixed(1) );
-		planet.sect.mine.pow = planet.rich;
-		
 		// younger stars have more energy potential, making them better for industry
 		let energy_salt = 0.8 + ((1.0-star_age) - 0.5);
 		planet.energy = Math.pow( utils.BiasedRand(0.3, 1.732, energy_salt, 0.8), 2 );
@@ -784,10 +780,43 @@ export default class Planet {
 			planet.grav = utils.Clamp( utils.BiasedRandInt(0, 4, ((planet.size-30)/100)*4.0, 1.0), 0, 4);
 			}
 			
-		// for reasons beyond science, other market sectors have random powers
-		if ( Math.random() < 0.5 ) { planet.sect.sci.pow = parseFloat( (1.5 - utils.BiasedRand(0.0, 1.0, 0.75, 0.5)).toFixed(1) ); }
-// 		if ( Math.random() < 0.5 ) { planet.sect.def.pow = parseFloat( (1.5 - utils.BiasedRand(0.0, 1.0, 0.75, 0.5)).toFixed(1) ); }
-// 		if ( Math.random() < 0.5 ) { planet.sect.esp.pow = parseFloat( (1.5 - utils.BiasedRand(0.0, 1.0, 0.75, 0.5)).toFixed(1) ); }
+			
+		let rarity = Math.abs( planet.atm - planet.temp ); // high number = more off the main line of probability.		
+		let rarity_bonus = 0;
+		if ( star.color == 'purple' ) { rarity_bonus = 0.2; }
+		if ( star.color == 'black' ) { rarity_bonus = 0.35; }
+		if ( star.color == 'green' ) { rarity_bonus = 0.5; } 
+		
+		// resources are integers 0..5
+		// organics determined by proximity to atm/temp sweet spot at 2,2
+		let sweetspot_offset = Math.min( 5, Math.abs(2-planet.atm) + Math.abs(2-planet.temp) );
+		if ( Math.random() > sweetspot_offset * 0.28 ) { planet.resources.o = utils.BiasedRandInt(1, 5, 5-sweetspot_offset, 0.0); }
+		// silicates totally random
+		if ( Math.random() < 0.5 ) { planet.resources.s = utils.BiasedRandInt(0, 5, 1, 0.35); }
+		// metals more common in old stars
+		if ( Math.random() < star_age ) { planet.resources.m = utils.BiasedRandInt(0, 5, 1+star_age*2, 0.0); }
+		// uncommon resources vary on star age
+		if ( Math.random() < 0.5-(1-star_age)*0.5 ) { planet.resources.r = utils.BiasedRandInt(0, 5, 1, 0.75); }
+		if ( Math.random() < 0.25 ) { planet.resources.g = utils.BiasedRandInt(0, 5, 1, 0.75); }
+		if ( Math.random() < 0.5-star_age*0.5 ) { planet.resources.b = utils.BiasedRandInt(0, 5, 1, 0.75); }
+		// rare resources get a boost for rare planet types (makes them worth colonizing)
+		if ( Math.random() < 0.02 + rarity*0.075 + rarity_bonus ) { planet.resources.c = utils.BiasedRandInt(0, 5, 0, 0.9); }
+		if ( Math.random() < 0.02 + rarity*0.075 + rarity_bonus + (planet.grav*0.05) ) { planet.resources.v = utils.BiasedRandInt(0, 5, 0, 0.9); }
+		if ( Math.random() < 0.02 + rarity*0.075 + rarity_bonus + ((4-planet.grav)*0.05) ) { planet.resources.y = utils.BiasedRandInt(0, 5, 0, 0.9); }
+		// throw a bone
+		if (  planet.resources.o 
+			+ planet.resources.s
+			+ planet.resources.m
+			+ planet.resources.r
+			+ planet.resources.g
+			+ planet.resources.b
+			+ planet.resources.c
+			+ planet.resources.v
+			+ planet.resources.y == 0
+			) { 
+			planet.resources[ ['o','s','m','r','g','b'][Math.floor(Math.random()*6)] ]
+				= utils.BiasedRandInt(1, 2, 1, 0.5);
+			}
 		
 		// special attributes (AKA "goodies")
 		let selector = Planet.AttributeSelector();
@@ -806,9 +835,6 @@ export default class Planet {
 			planet.physattr.push( selector.Pick() );
 			}
 		planet.physattr;// = planet.physattr.unique();		
-		
-		// feature slots
-		planet.maxslots = utils.BiasedRandInt(0, 5, 1, 0.5);
 		
 		// calculate natural score
 		for ( let k of Object.keys(planet.sect) ) { 

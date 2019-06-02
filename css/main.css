@@ -1745,6 +1745,30 @@ DIV.planet.atm2.tmp4 { background-image: url(../img/planets/planet_10.png); }
 DIV.planet.atm3.tmp4 { background-image: url(../img/planets/planet_12.png); }
 DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 
+/* resource colors */
+/* fun symbols we might use later: ◼ ● ◆ ▲ ▰ ⬣ ⬢ ⊕ ⏣ ✪ ▮ */
+.resources .o:before { content:'⬢'; color:#AA7449; }
+.resources .s:before { content:'⬢'; color:#666666; }
+.resources .m:before { content:'⬢'; color:#DDDDDD; }
+.resources .r:before { content:'⬢'; color:#DD1111; }
+.resources .g:before { content:'⬢'; color:#00FF33; }
+.resources .b:before { content:'⬢'; color:#0033FF; }
+.resources .c:before { content:'⬢'; color:#11EEFF; }
+.resources .v:before { content:'⬢'; color:#EE11FF; }
+.resources .y:before { content:'⬢'; color:#FFFF00; }
+
+/* hivis letters for helping the color blind */
+.colorblind .resources .o:before { content:'O'; }
+.colorblind .resources .s:before { content:'S'; }
+.colorblind .resources .m:before { content:'M'; }
+.colorblind .resources .r:before { content:'R'; }
+.colorblind .resources .g:before { content:'G'; }
+.colorblind .resources .b:before { content:'B'; }
+.colorblind .resources .c:before { content:'C'; }
+.colorblind .resources .v:before { content:'V'; }
+.colorblind .resources .y:before { content:'Y'; }
+
+				
 #layout_ui_side .planet .data SPAN {
 	flex:1;
 	flex-basis: auto;

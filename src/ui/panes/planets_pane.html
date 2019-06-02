@@ -19,16 +19,15 @@
 				<th>Size</th>
 				<th>Environment</th>
 				<th>ATM</th>
-				<th>TEMP</th>
-				<th>GRAV</th>
-				<th>HABT</th>
+				<th>TMP</th>
+				<th>GRV</th>
+				<th>HAB</th>
 				<th>Resource</th>
 				<th>Energy</th>
 				<th>Pop</th>
 				<th>Tax%</th>
 				<th>Spend</th>
 				<th>Income</th>
-				<th repeat.for="k of planets[0].sect|props">${k|uppercaseFirst}</th>
 			</tr>
 			<template repeat.for="p of planets" containerless>
 				<tr if.bind="(show_mine && p.owner == myciv) || (show_unclaimed && !p.owner) || (show_foreign && p.owner != myciv && p.owner)"
@@ -42,13 +41,18 @@
 					<td>${p.temp}</td>
 					<td>${p.grav}</td>
 					<td class="${p.Habitable(app.game.myciv.race) ? (p.Adaptation(app.game.myciv.race) < 0 ? 'alert' : 'good') : 'bad'}">${p.Adaptation(app.game.myciv.race)}</td>
-					<td>${p.rich}x</td>
+					
+					<td class="resources">
+						<template repeat.for="k of p.resources|props" containerless>
+							<span repeat.for="i of p.resources[k]" class="${k}"></span>
+						</template>
+					</td>
+					
 					<td>${p.energy}x</td>
 					<td class="i">${p.total_pop|round:1}</td>
 					<td class="t">${p.tax_rate|percent}</td>
 					<td class="t">${p.spending|percent}</td>
 					<td class="${p.treasury_contrib >= 0 ? 'good' : 'bad'}">${p.treasury_contrib >= 0 ? '+' : ''}${p.treasury_contrib|round}</td>
-					<td repeat.for="k of p.sect|props">${p.sect[k].output|round}</td>
 				</tr>
 			</template>
 		</table>
