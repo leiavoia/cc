@@ -27,6 +27,9 @@ export default class RandomPicker {
 		let low = 0;
 		let probe = 0;
 		
+		if ( this.items.length == 0 ) { return null; }
+		if ( this.items.length == 1 ) { return this.items[0]; }
+		
 		while ( low < high ) {
 			probe = Math.ceil( (high+low)/2 );
 			if ( this.items[probe][1] < needle ) {

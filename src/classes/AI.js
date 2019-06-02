@@ -36,6 +36,7 @@
 
 
 import * as utils from '../util/utils';
+import RandomPicker from '../util/RandomPicker';
 import Fleet from './Fleet';
 
 export class AI {
@@ -896,21 +897,21 @@ export class AIPlanetsObjective extends AIObjective {
 			// to build, if anything at all.
 			let RollForBuildItem = () => { 
 				let weights = [
-					{ need: 'colony_ships', score: 1.0 * civ.ai.needs.colony_ships },
-					{ need: 'combat_ships', score: civ.ai.needs.combat_ships / avg_milval },
-					{ need: 'troop_ships', score: 1.0 * civ.ai.needs.troop_ships },
-					{ need: 'research_ships', score: 1.0 * civ.ai.needs.research_ships },
-					{ need: 'scout_ships', score: 1.0 * civ.ai.needs.scout_ships },
-					{ need: 'troops', score: 1.0 * civ.ai.needs.troops },
-// 					{ need: 'tech', score: 1.0 * civ.ai.needs.tech },
-// 					{ need: 'cash', score: 1.0 * civ.ai.needs.cash },
+					['colony_ships', 1.0 * civ.ai.needs.colony_ships ],
+					['combat_ships', civ.ai.needs.combat_ships / avg_milval ],
+					['troop_ships', 1.0 * civ.ai.needs.troop_ships ],
+					['research_ships', 1.0 * civ.ai.needs.research_ships ],
+					['scout_ships', 1.0 * civ.ai.needs.scout_ships ],
+					['troops', 1.0 * civ.ai.needs.troops ],
+// 					['tech', 1.0 * civ.ai.needs.tech ],
+// 					['cash', 1.0 * civ.ai.needs.cash ],
 					]
-					.filter( i => i.score > 0 );
-				weights.sort( (a,b) => a-b );
-				let thing = weights.pop();
-				return thing ? thing.need : null;
+					.filter( i => i[1] > 0 );
+				let picker = new RandomPicker(weights);
+				return picker.Pick();
 				};
 				
+			
 			if ( p.prod_q.length < 7 ) { // dont overload the queue
 				let thing_to_build = RollForBuildItem();
 				if ( thing_to_build ) { 
