@@ -191,6 +191,11 @@ export default class Game {
 				for ( let p of s.planets ) {
 					if ( p.settled ) {  
 					
+						// HACK zone production
+						for ( let z of p.zones ) {
+							z.Do(p);
+							}
+							
 						// Planets will mine resources and stock their local warehouses.
 						p.DoMining(); 
 						// collect exports from planets

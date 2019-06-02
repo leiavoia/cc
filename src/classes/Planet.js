@@ -7,6 +7,7 @@ import {computedFrom} from 'aurelia-framework';
 import {Ship,ShipBlueprint} from './Ship';
 import {GroundUnit,GroundUnitBlueprint} from './GroundUnit';
 import {Mod,Modlist} from './Mods';
+import {ZoneList} from './ZoneList';
 
 export default class Planet {
 	
@@ -53,6 +54,8 @@ export default class Planet {
 	ai_defense = 0;
 	
 	// ECONOMY -------------------------------------------
+	zones = [];
+	zoned = 0; // number of sectors that have been zoned 
 	tax_rate = 0.2;
 	treasury_contrib = 0; // contributions or allowances from the global treasury
 	use_global_tax_rate = false;
@@ -115,6 +118,37 @@ export default class Planet {
 	// Valid options: NULL (here), '@' (nearest rondezvous point), Star (object)
 	ship_dest = null; 
 	
+	// returns true on success, false on failure
+	AddZone( key, size = 1 ) {		
+		// NOTE: BUG: using object.assign avoids aurelia binding bugs
+		// but also radically increases memory usage for ships. Switch 
+		// these lines if memory performance isn't a problem and we
+		// still can't find a solution for aurelia bugs.
+// 		let o = Object.assign( {}, WeaponList[tag] );
+		let o = Object.create( ZoneList[key] );
+		o.size = Math.min( size, o.max_size ); 
+		if ( this.zoned + o.size > this.size ) { return false; } // too big for planet
+		this.zoned += o.size;
+		o.val = 0;
+		o.level = 1;
+		o.insuf = false;
+		o.last_output = {}; // TODO not sure what to do with this yet
+		this.zones.push(o);
+		return true;
+		}
+	
+	// returns true on success, false on failure
+	RemoveZone( z ) {
+		let i = this.zones.indexOf(z);
+		if ( i >= 0 ) { 
+			this.zoned -= this.zones[i].size;
+			this.zones.splice( i, 1 );
+			// TODO recalc stats
+			return true;
+			}
+		return false;
+		}
+		
 	ProduceBuildQueueItem( item ) {
 		// ships
 		if ( item.type == 'ship' ) { 
@@ -889,10 +923,20 @@ export default class Planet {
 		this.econ.PCI = this.base_PCI + this.bonus_PCI;
 		this.econ.GF = 1.0;
 		
+		if ( !this.zones.length ) { 
+			if ( !owner.planets.length ) { 
+				this.AddZone( 'CIVCAPITOL', 1 ); 
+				}
+			else {
+				this.AddZone( 'COLONY', 1 ); 
+				}
+			}
+			
 		this.AddBuildQueueMakeworkProject('tradegoods');
 			
 		this.RecalcSectors();	
 		this.UpdateOwnership();
+		
 		} // end Settle
 
 	RemoveDeadTroops() { 
