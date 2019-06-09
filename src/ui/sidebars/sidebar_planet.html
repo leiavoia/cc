@@ -33,12 +33,10 @@
 		
 		<div class="phys">
 	
-			<p class="env_label">${planet.gravDisplayName} ${planet.envDisplayName}
-<!-- 						<span style="font-size: 150%;">${planet.size}</span>  -->
-			</p>
+			<p class="env_label">${planet.gravDisplayName} ${planet.envDisplayName}</p>
 			
 			<div class="size">
-				<span class="pop" if.bind="planet.owner !== false">${planet.total_pop|round} / ${planet.maxpop|round}<br/><span class="pop">POP / MAX</span></span>
+				<span class="pop" if.bind="planet.owner !== false">${planet.total_pop|round} / ${planet.maxpop|round}<br/><span class="pop">POPULATION</span></span>
 				<span class="size">${planet.size}<br/><span class="size">SIZE</span></span>					
 				<span class="${habitable ? (habitat < 0 ? 'alert' : 'good') : 'bad'}">	
 					${(habitat >= 0 ? '+' : '')}${habitat}<br /> 
@@ -48,48 +46,77 @@
 					<img src.bind="planet.morale | moraleToMoodIcon"  style="width: 1.1em; height: 1.1em;" /><br/>
 				</span>
 			</div>
-<!--					<p class="bold ${habitable ? (habitat < 0 ? 'alert' : 'good') : 'bad'}">	
-			${(habitat >= 0 ? '+' : '')}${habitat} <span class="">${habitable ? "HABITABILITY" : "UNINHABITABLE"}</span>
-			</p>-->
-<!-- 					<p class="env_stats">ATM:${planet.atm} TMP:${planet.temp} GRAV:${planet.grav}</p> -->
-						
-		
 			<div class="resources">
 				<template repeat.for="k of planet.resources|props" containerless>
 					<span repeat.for="i of planet.resources[k]" class="${k}"></span>
 				</template>
 			</div>
 			
-			
 		</div> 
 		
 		<template containerless if.bind="app.options.see_all || planet.owner == app.game.myciv">
 			
 			<!-- Spending Levels -->
-			<div class="spending" if.bind="planet.owner">
-				<div class="spending_stackbar"><!-- css="width:${planet.slider_spending / planet.max_spending | percent:3}%" -->
-					<div class="p" css="width:${planet.sect.prod.pct | percent:3}%">P</div>
-					<div class="m" css="width:${planet.sect.mine.pct | percent:3}%">M</div>
-<!-- 					<div class="e" css="width:${planet.sect.esp.pct | percent:3}%">E</div> -->
-					<div class="s" css="width:${planet.sect.sci.pct | percent:3}%">S</div>
-<!-- 					<div class="g" css="width:${planet.sect.gov.pct | percent:3}%">G</div> -->
-<!-- 					<div class="d" css="width:${planet.sect.def.pct | percent:3}%">D</div> -->
-	<!-- 				<div class="m" css="width:${planet.sect.com.pct | percent:3}%"></div> -->
-				</div>
-				<div class="p"><span>PROD</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_prod" /><span>${planet.sect.prod.output|round:1}➞${planet.sect.prod.work|round:1}&nbsp;${planet.sect.prod.growth > 0.01 ? '▲' : (planet.sect.prod.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
-				<div class="m"><span>MINE</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_mine" /><span>${planet.sect.mine.output|round:1}➞${planet.sect.mine.work|round:1}&nbsp;${planet.sect.mine.growth > 0.01 ? '▲' : (planet.sect.mine.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
-<!-- 				<div class="e"><span>ESP</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_esp" /><span>${planet.sect.esp.output|round:1}➞${planet.sect.esp.work|round:1}&nbsp;${planet.sect.esp.growth > 0.01 ? '▲' : (planet.sect.esp.growth < -0.01 ? '▼' : '\u2003')}</span></div>  -->
-				<div class="s"><span>SCI</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_sci" /><span>${planet.sect.sci.output|round:1}➞${planet.sect.sci.work|round:1}&nbsp;${planet.sect.sci.growth > 0.01 ? '▲' : (planet.sect.sci.growth < -0.01 ? '▼' : '\u2003')}</span></div> 
-<!-- 				<div class="g"><span>GOV</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_gov" /><span>${planet.sect.gov.output|round:1}➞${planet.sect.gov.work|round:1}&nbsp;${planet.sect.gov.growth > 0.01 ? '▲' : (planet.sect.gov.growth < -0.01 ? '▼' : '\u2003')}</span></div>  -->
-<!-- 				<div class="d"><span>DEF</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_def" /><span>${planet.sect.def.output|round:1}➞${planet.sect.def.work|round:1}&nbsp;${planet.sect.def.growth > 0.01 ? '▲' : (planet.sect.def.growth < -0.01 ? '▼' : '\u2003')}</span></div>  -->
-	<!-- 			<div class="c"><span>COM</span><input type="range" min="0" max="1.0" step="0.01" value.bind="planet.slider_com" /><span>${planet.sect.com.output|round:1}➞${planet.sect.com.work|round:1}&nbsp;${planet.sect.com.growth > 0.01 ? '▲' : (planet.sect.com.growth < -0.01 ? '▼' : '\u2003')}</span></div>  -->
-				<br/>
+			<div class="spending " if.bind="planet.owner">
 				<div class="t"><span>TAX</span><input type="range"  min="0" max="0.5" step="0.01" value.bind="planet.slider_taxrate" /><span>${planet.tax_rate | percent}%</span></div> 
 				<div class="th"><span>SPEND</span><input type="range" min="0" max.bind="planet.max_spending" step="0.01" value.bind="planet.slider_spending" /><span>${planet.spending | percent}%</span></div> 
 			</div>
 			
+			<!-- zoning -->
+			<div class="zones " if.bind="planet.owner">
+				<div repeat.for="z of planet.zones" click.delegate="ClickZone(z)"
+					class="zone clickable ${z==sel_zone?'hilite':''} ${z.type} L${z.level} 
+					${z.size==1 ? 'only' : ( $i==0 ? 'first' : ($i==z.size-1 ? 'last' : 'mid') ) }
+					pct${z.val%10|floor}
+					"></div>
+				<div repeat.for="z of (planet.size - planet.zoned)" class="zone empty" click.delegate="ClickEmptyZone()"></div>
+			</div>
+			
+			<!-- zone detail -->
+			<div class="zone_detail wrapper ${sel_zone.type}" if.bind="planet.owner && sel_zone && !show_add_zone_panel">
+				<div>
+					<p class="name">${sel_zone.name}</p>
+					<p class="type">${sel_zone.type}</p>
+					<p class="desc">${sel_zone.desc}</p>
+					<p class="stats">	
+						Level: <b>${sel_zone.level} / ${sel_zone.max_level}</b> &nbsp; 
+						Size: <b>${sel_zone.size}</b>
+					</p>
+				</div>
+				<div>
+					<div class="zone ${sel_zone.type} ${sel_zone.level} only"></div>
+					<div class="button_rack button_rack_fill">
+						<button class="bad" click.delegate="RemoveZone()">DEMOLISH</button>
+					</div>
+				</div>
+			</div>
+			
+			<!-- add-zone selection detail -->
+			<div class="zone_detail wrapper" if.bind="planet.owner && zone_to_add && show_add_zone_panel">
+				<div>
+					<p class="name">${zone_to_add.name}</p>
+					<p class="type">${zone_to_add.type}</p>
+					<p class="desc">${zone_to_add.desc}</p>
+					<p class="stats">	
+						Max Level: <b>${zone_to_add.max_level}</b> &nbsp; 
+						Max Size: <b>${zone_to_add.max_size}</b>
+					</p>
+				</div>
+				<div>
+					<div class="zone ${zone_to_add.type} only"></div>
+					<div class="button_rack " if.bind="planet.zoned < planet.size">
+<!-- 						<input type="number" name="size" value="1" min="1" max.bind="zone_to_add.max_level" style="width:2em;" /> -->
+						<button click.delegate="AddZone()">ADD</button>
+					</div>
+				</div>
+			</div>	
+			<select value.bind="zone_to_add" show.bind="show_add_zone_panel" style="width:100%; margin-bottom:1em;">
+				<option repeat.for="z of app.game.myciv.avail_zones" model.bind="z">${z.type}: ${z.name}</option>
+			</select>	
+			
+			
 			<!-- Colony Data -->
-			<div class="data" if.bind="planet.owner">
+			<div class="data wrapper" if.bind="planet.owner">
 				
 				<!-- DEBUG -->
 				<div if.bind="app.options.debug">
@@ -143,7 +170,7 @@
 				</p>
 			</div>
 			
-			<div class="defenses" if.bind="planet.owner">
+			<div class="defenses wrapper" if.bind="planet.owner">
 				<h3>Defenses:</h3>
 				<div repeat.for="[bp,count] of planet.ListUniqueGroundUnits()" style="display:inline-block;">
 					<img src="img/ground/tank_transp.png" 

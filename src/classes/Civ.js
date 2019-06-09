@@ -8,6 +8,7 @@ import TradeOffer from './TradeOffer';
 import {Ship,ShipBlueprint} from './Ship';
 import {GroundUnit,GroundUnitBlueprint} from './GroundUnit';
 import {WeaponList} from './WeaponList';
+import {ZoneList} from './ZoneList';
 import {ShipComponentList} from './ShipComponentList';
 import {Mod,Modlist} from './Mods';
 import {Treaties,Treaty} from './Treaties';
@@ -51,6 +52,7 @@ export default class Civ {
 	max_hull_size = 800; // HACK HARDSET FOR DEVELOPMENT
 	avail_ship_comps = []; // components we can equip on ships
 	avail_ship_weapons = []; // weapons we can equip on ships
+	avail_zones = [];
 	
 	vis_level = 0; // HACK : 0 = space, 1 = hyperspace, 2 = subspace
 	empire_box = {x1:0,x2:0,y1:0,y2:0};
@@ -417,6 +419,19 @@ export default class Civ {
 		this.ai = new AI.CivAI(this);
 		this.InitResearch();
 		
+		// starting zones available
+		this.avail_zones = [
+			ZoneList.HOUSING01,
+			ZoneList.MINE01,
+			ZoneList.RES01,
+			ZoneList.ECON01,
+			ZoneList.GOV01,
+			ZoneList.SPECIAL01,
+			ZoneList.MIL01,
+			ZoneList.SHIP01,
+			ZoneList.SPY01,
+			];
+			
 		// starting ship bits:
 		this.avail_ship_comps = [
 			ShipComponentList.ENGINE1,

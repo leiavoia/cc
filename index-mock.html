@@ -1281,7 +1281,7 @@
 
 <!-- UI layer -->
 <div id="layout_ui">
-	<div id="layout_ui_main"><!-- style="visibility:visible;" control panel visibility here to bypass default CSS state -->
+	<div id="layout_ui_main" style="visibility:visible;"><!--  control panel visibility here to bypass default CSS state -->
 	
 		<div id="layout_ui_visor" style="display:none;">
 			<span>TURN: ${turn_num}</span>
@@ -1324,7 +1324,7 @@
 			</div>
 			
 			<!-- use class "active" to darken background and bypass FF scrollbar bug -->
-			<div id="layout_ui_content" > <!-- class="active" -->
+			<div id="layout_ui_content" class=""> <!-- class="active" -->
 			
 	
 	<!--	
@@ -1460,11 +1460,11 @@
 		</div>-->
 		
 
-		
-<!--		<div id="audience_pane" class="pane">
+		<!--
+		<div id="audience_pane" class="pane" >
 			<div id="audience_them" style="border-color: #D92; background-color: rgba(200,128,32,0.55);">
 				<div class="diplo_img_wrapper">
-					<div src.one-time="c.diplo_img_small" class="diplo_img trekIn"></div>
+					<div style="background-image: url(img/races/alien_014.jpg);" class="diplo_img trekIn away"></div>
 				</div>
 				<h2><img class="flag" src.one-time="c.flag_img" src="img/flags/flag_000.png" /> ${c.name}</h2>
 				<p class="button_rack">
@@ -1478,38 +1478,121 @@
 				<p>Research: ${c.research}</p>
 				<p>Government: ${c.gov_type}</p>
 			</div>
-			<div id="audience_us">
-				<div id="speech_them" style="color: #D92;" class="fadeIn">
-					<p>${c.name} Ambassador:<p>
-					<q>Nobody loves you and you're ugly.</q>
-					<p>The rebel group is believed to have access to a stockpile of Scud ballistic missiles and home-grown variants. Saudi forces have previously brought them down with Patriot surface-to-air missiles bought from the US.</p>
-					<p>The Houthis fired a missile towards Riyadh in May, a day before US President Donald Trump was due to arrive in the city for a visit, but it was shot down 200km (120 miles) from the capital.</p>
+			<div id="audience_us" class="createoffer">
+					<div>
+						<button class="right bad" click.delegate="ReturnToMainMenu()">CANCEL</button>
+						<h2>Create an Offer</h2>
+						<p style="text-align:center; display:inline-block; text-rendering: geometricPrecision;">
+							<span style="color: #F00; letter-spacing: -0.6em; font-size: 100%; font-family:monospace;">⬢<span style="font-weight:bold; color: #FFF; font-size: 65%;">R</span><span>
+						</p>
+						<br/>
+						<p style="text-align:center; display:inline-block; text-rendering: geometricPrecision;">
+							<span style="color: #FA0; letter-spacing: -0.6em; font-size: 150%; font-family:monospace;">⬢<span style="font-weight:bold; color: #FFF; font-size: 65%;">O</span><span>
+						</p>
+						<br/>
+						<p style="text-align:center; display:inline-block; text-rendering: geometricPrecision;">
+							<span style="color: #FF0; letter-spacing: -0.6em; font-size: 200%; font-family:monospace;">⬢<span style="font-weight:bold; color: #FFF; font-size: 65%;">Y</span><span>
+						</p>
+						<br/>
+						<p style="text-align:center; display:inline-block; text-rendering: geometricPrecision;">
+							<span style="color: #0B0; letter-spacing: -0.6em; font-size: 200%; font-family:monospace;">⬢<span style="font-weight:bold; color: #FFF; font-size: 65%;">G</span><span>
+						</p>
+						<br/>
+						<p style="text-align:center; display:inline-block; text-rendering: geometricPrecision;">
+							<span style="color: #13F; letter-spacing: -0.6em; font-size: 250%; font-family:monospace;">⬢<span style="font-weight:bold; color: #FFF; font-size: 65%;">B</span><span>
+						</p>
+						<br/>
+						<p style="text-align:center; display:inline-block; text-rendering: geometricPrecision;">
+							<span style="color: #61F; letter-spacing: -0.6em; font-size: 300%; font-family:monospace;">⬢<span style="font-weight:bold; color: #FFF; font-size: 65%;">V</span><span>
+						</p>
+					</div>
+					<div class="divide avail_items" style="">
+						<div>
+							<div class="head">
+								<h3>Give:</h3>
+								<p class="button_rack button_rack_fill small">
+									<button>★</button>
+									<button>⦿</button>
+									<button>⚔</button>
+									<button>⚙</button>
+									<button>⚛</button>
+									<button>⚫</button>
+									<button>⛁</button>
+									<button>⚑</button>
+								</p>
+							</div>
+							<div class="body">
+								<div class="cash"><output>5,600</output> Cash
+									<input type="range" min="0" max="10000" value="5600" class="pretty" />
+								</div>
+								<div class="technode">WIndow Ceaner</div>
+								<div class="technode">Hyper Brownie Mix</div>
+								<div class="technode">Chapchae Recipe</div>
+								<div class="technode">Fugu</div>
+								<div class="planet">Nice planet Prime</div>
+								<div class="treaty">Non-Aggression Pact</div>
+								<div class="treaty">Technology Alliance</div>
+								<div class="resource"><output>6</output> Redium
+									<input type="range" min="0" max="8" value="6" class="pretty" />
+								</div>
+								<div class="resource"><output>2</output> Violetronium
+									<input type="range" min="0" max="8" value="2" class="pretty" />
+								</div>
+							</div>
+						</div>
+						<div>
+							<div class="head">
+								<h3>Ask:</h3>
+								<p class="button_rack button_rack_fill small">
+									<button>☉</button>
+									<button>☉</button>
+									<button>☉</button>
+								</p>
+							</div>
+							<div class="body">
+								<div>Thing</div>
+								<div>Thing</div>
+								<div>Thing</div>
+								<div>Thing</div>
+								<div>Thing</div>
+								<div>Thing</div>
+								<div>Thing</div>
+								<div>Thing</div>
+								<div>Thing</div>
+								<div>Thing</div>
+							</div>
+						</div>
+					</div>
+					<div class="divide tabled_items">
+						<div>
+							<p style="text-align:center; margin:-1em 0 0 0; font-size:500%; text-shadow: 2px 2px 2px #666;">▼</p>
+							<ul>
+							<li>;slejg</li>
+							<li>;slejg</li>
+							<li>;slejg</li>
+							<li>;slejg</li>
+							</ul>
+						</div>
+						<div>
+							<p style="text-align:center; margin:-1em 0 0 0; font-size:500%; text-shadow: 2px 2px 2px #666;">▼</p>
+							<ul>
+							<li>;slejg</li>
+							<li>;slejg</li>
+							</ul>
+						</div>
+						
+					</div>
+					<p class="button_rack">
+						<button class="big alt">Make Offer</button>
+						<button class="big bad">Cancel</button>
+					</p>
 				</div>
-				<div id="speech_us">
-					<ul>
-						<li><a href="#">My mom told me otherwise!</a></li>
-						<li><a href="#">Who are you calling ugly?</a></li>
-					</ul>
-					<p>Yemen has been devastated by a war between forces loyal to the internationally recognised government of President Abdrabbuh Mansour Hadi and those allied to the Houthi rebel movement.</p>
-					<p>The conflict has also left 20.7 million people in need of humanitarian assistance, created the world's largest food security emergency, and led to a cholera outbreak that is believed to have affected 884,000 people and caused 2,184 deaths.</p>
-				</div>
-
-			</div>
 		</div>-->
 			
-		<div id="tech_pane" class="pane" style="display:none;">
-<!-- 			<p style="float:right;"><a href="#"  click.delegate="ClosePanel()" class="button big">CLOSE</a></p> -->
+<!--		<div id="tech_pane" class="pane" style="display:none;">
 
 			<h1>Research</h1>
 			
-<!-- 			<div id="outer_wrapper"> -->
-<!--				<div id="now_researching">
-					<h2>Now Researching: Xploder Thing</h2>
-					<p>
-						<progress value="70" max="100">70% (4-6 turns remaining)</progress>
-					</p>
-				</div>-->
-				
 				<div id="inner_wrapper">
 					<div id="available" class="techlist">
 						<h2>Available</h2>
@@ -1573,7 +1656,7 @@
 							<li>[=] Enhances motorcycle</li>
 						</ul>
 					</div>
-				</div>
+				</div>-->
 <!-- 			</div> -->
 					
 					
@@ -1591,7 +1674,6 @@
 							stroke-dasharray: 100 100;					
 							" />
 					</svg>-->
-		</div>
 		
 		
 		
@@ -1600,51 +1682,125 @@
 		</div>
 	</div>
 	
-<!--	<div id="layout_ui_side" class="planet trekIn">
-		<div class="planet">
-			<nav>
-				<a href="#" class="button left" click.delegate="PressPrevPlanetButton()"> PREV </a><a href="#" class="button center" click.delegate="PressStarButton()"> STAR </a><a href="#" class="button right" click.delegate="PressNextPlanetButton()"> NEXT </a>
-			</nav>	
-			<img class="flag" src="img/workshop/flag_mock.gif" />
-			<h2><span>Aryracyd</span></h2>
-			<p class="alert">Blockaded</p>
-			<div class="phys" >
-				<div class="" >
-					<p class="env_label">Mountainous</p>
-					<p class="env_stats">ATM: 2, TEMP: 3</p>
-					<p class="size">SIZE: 180</p>
-					<p class="special">Perfect Alignment</p>
-					<p class="special">Rings</p>
-				</div>	
-				<div class="">
-					<div class="env_box">
-						<div class="target"></div>
+	<div id="layout_ui_side" class="planet trekIn" style="visibility:visible; ">
+
+		<div class="planet atm2 tmp2 grav2" style="min-height:300px; background-size: auto 300px; background-position: 50% 15px ;">
+			
+			<p class="button_rack button_rack_fill small">
+				<button click.delegate="OpenDetailsPane()">INFO</button>
+				<button click.delegate="PressStarButton()">STAR</button>
+				<button click.delegate="PressPrevPlanetButton()">◀</button>
+				<button click.delegate="PressNextPlanetButton()">▶</button>
+				<button if.bind="planet.owner == app.game.myciv"
+					click.delegate="ToggleStagingPoint()" 
+						class="${planet.star.accts.get(planet.owner).ai.staging_pt ? 'alt' : ''}">✜STAGING</button>
+			</p>
+							
+			<!-- enemy fleet attack option --> 
+			<p class="button_rack button_rack_fill" if.bind="planet.settled && !planet.owner.is_player && playerHasLocalFleet">
+				<button class="alt" click.delegate="AttackTargetWithLocalFleet()">ATTACK</button>
+			</p>
+		
+			<h2 if.bind="!planet.owner">${planet.name}</h2>
+			<p class="age" if.bind="planet.age_level">XXXXX</p>
+			
+			<div class="phys">
+		
+				<p class="env_label">Big Ol Planet</p>
+				
+				<div class="size">
+					<span class="pop" if.bind="planet.owner !== false">1 /2<br/><span class="pop">POPULATION</span></span>
+					<span class="size">20<br/><span class="size">SIZE</span></span>					
+					<span class="good">	
+						+2<br /> 
+						<span class="">HABITABILITY</span>
+					</span>
+					<span if.bind="planet.owner !== false">
+						<img src.bind="planet.morale | moraleToMoodIcon"  style="width: 1.1em; height: 1.1em;" /><br/>
+					</span>
+				</div>
+				<div class="resources">
+					<span repeat.for="i of planet.resources[k]" class="o"></span>
+					<span repeat.for="i of planet.resources[k]" class="s"></span>
+					<span repeat.for="i of planet.resources[k]" class="m"></span>
+					<span repeat.for="i of planet.resources[k]" class="m"></span>
+				</div>
+				
+			</div> 
+		
+			<!-- Spending Levels -->
+			<div class="spending" if.bind="planet.owner">
+				<div class="t"><span>TAX</span><input type="range"  min="0" max="0.5" step="0.01" value.bind="planet.slider_taxrate" /><span>100%</span></div> 
+				<div class="th"><span>SPEND</span><input type="range" min="0" max.bind="planet.max_spending" step="0.01" value.bind="planet.slider_spending" /><span>100%</span></div> 
+			</div>
+			
+			<!-- zoning -->
+			<div class="zones" if.bind="planet.owner" click.delegate="OpenDetailsPane()" css="">
+				<div class="zone capitol only L1 pct0" alt="this is the title"></div>
+				<div class="zone mining only L2 pct100"></div>
+				<div class="zone mining only L0 start pct10"></div>
+				<div class="zone mining only L0 end pct10"></div>
+				<div class="zone government only L5 start pct20 hilite"></div>
+				<div class="zone government only L5 mid pct20 hilite"></div>
+				<div class="zone government only L5 end pct20 hilite"></div>
+				<div class="zone government only L8 pct30"></div>
+				<div class="zone stardock only L9 pct40"></div>
+				<div class="zone housing only L10 pct50"></div>
+				<div class="zone housing L5 only pct60"></div>
+				<div class="zone housing L5 start pct70"></div>
+				<div class="zone housing L5 end pct70"></div>
+				<div class="zone research L5 start pct80"></div>
+				<div class="zone research L5 mid pct80"></div>
+				<div class="zone research L5 mid pct80 trim"></div>
+				<div class="zone research L5 mid pct80"></div>
+				<div class="zone research L5 mid pct80"></div>
+				<div class="zone research L5 end pct80"></div>
+				
+				<div class="zone mining only L2 pct90"></div>
+				<div class="zone mining only L4  pct100"></div>
+				<div class="zone special only L7" ></div>
+				<div class="zone special only L5"></div>
+				<div class="zone special only L2"></div>
+				<div class="zone stardock only L2" ></div>
+				<div class="zone stardock start pct80"></div>
+				<div class="zone stardock end pct80"></div>
+				<div class="zone stardock L2 only "></div>
+				
+				<div class="zone mining only L2 "></div>
+				<div class="zone economy only L7 "></div>
+				<div class="zone economy only "></div>
+				<div class="zone espionage only L2 "></div>
+				<div class="zone military only L10"></div>
+				<div class="zone military L2 only"></div>
+								
+				<div class="zone"></div>
+				<div class="zone"></div>
+				<div class="zone"></div>
+				<div class="zone"></div>
+				<div class="zone"></div>
+			</div>
+			<div class="zone_detail capitol">
+				<div>
+					<p class="name">Civilization Capital</p>
+					<p class="type">Capitol</p>
+					<p class="desc">This is place where you call home. Includes hammocks.</p>
+					<p class="stats">	
+						Max Level: 4<br/>
+						Max Size: 1
+					</p>
+				</div>
+				<div>
+					<div class="zone capitol L6 only"></div>
+					<div class="button_rack button_rack_fill">
+						<button class="bad">DEMOLISH</button>
 					</div>
-				</div>	
+				</div>
 			</div>
-			<div class="data" >
-				<span>INF: 1850 / 2460</span>
-				<span>POP: 1245</span>
-				<span>MIG: 1850</span>
-				<span>GDP: 1850</span>
-				<span>PCI: 1850</span>
-				<span>GF: 1850</span>
-				<span>MORALE: 73%</span>
-				<span>UNEMP: 12%</span>
-				<span>POLICIES: 167bc</span>
-			</div>
-			<div class="spending">
-				<div><span>TAX:</span><input type="range" name="tax" min="0" max="50" step="1" value="20" /><span>20%</span></div> 
-				<div><span>SPEND:</span><input type="range" name="tax" min="0" max="100" step="1" value="100" /><span>100%</span></div> 
-				<div><span>INF:</span><input type="range" name="tax" min="0" max="100" step="1" value="60" /><span>60%</span></div> 
-				<div><span>PROD:</span><input type="range" name="tax" min="0" max="100" step="1" value="20" /><span>20%</span></div> 
-				<div><span>RES:</span><input type="range" name="tax" min="0" max="100" step="1" value="20" /><span>20%</span></div> 
-				<div><span>CIV?:</span><input type="range" name="tax" min="0" max="100" step="1" value="0" /><span>0%</span></div> 
-			</div>
+			
 		</div>
-	</div>-->
+	</div>
 	
-<!--<div id="layout_ui_side" style="visibility:visible; ">
+<!-- <div id="layout_ui_side" style="visibility:visible; ">
 	<div style="visibility:visible; display:block; min-height: 173.628px; background-size: auto 173.628px; background-position: calc(100% + 30px) -30px;" au-target-id="126" class="au-target planet atm1 tmp1">
 		
 		<nav>

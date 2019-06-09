@@ -130,7 +130,7 @@ export default class Planet {
 		if ( this.zoned + o.size > this.size ) { return false; } // too big for planet
 		this.zoned += o.size;
 		o.val = 0;
-		o.level = 1;
+		o.level = 0;
 		o.insuf = false;
 		o.last_output = {}; // TODO not sure what to do with this yet
 		this.zones.push(o);
@@ -934,7 +934,7 @@ export default class Planet {
 				this.AddZone( 'CIVCAPITOL', 1 ); 
 				}
 			else {
-				this.AddZone( 'COLONY', 1 ); 
+				this.AddZone( 'HOUSING01', 1 ); 
 				}
 			}
 			

@@ -14,6 +14,9 @@ export class PlanetDetailPane {
 		this.planetChanged( this.planet );
 		this.sel_build_item = null;
 		this.turn_subscription = Signals.Listen('turn', data => this.planetChanged() );
+		this.sel_zone = null;
+		this.show_add_zone_panel = false;
+		this.zone_to_add = null;
 		}
 		
 	unbind() { 	
@@ -92,6 +95,37 @@ export class PlanetDetailPane {
 		this.planet.owner.AI_ToggleStagingPoint( this.planet.star );
 		}
 		
+	ClickZone(z,sticky) {
+		if ( this.sel_zone == z ) { 
+			this.sel_zone = null;
+			}
+		else {
+			this.sel_zone = z;
+			}
+		this.show_add_zone_panel = false;
+		}
+	ClearSelectedZone( match=null ) {
+		if ( !match || match == this.sel_zone ) { 
+			this.sel_zone = null;	
+			}
+		}	
+	ClickEmptyZone() { 
+		this.sel_zone = null;
+		this.show_add_zone_panel = !this.show_add_zone_panel;
+		this.zone_to_add = this.planet.owner.avail_zones[0];
+		}
+	AddZone( size = 1 ) {
+		if ( this.zone_to_add ) { 
+			if ( !size ) { size = 1; }
+			this.planet.AddZone( this.zone_to_add.key, 1 ); 
+			}
+		}
+	RemoveZone() {
+		if ( this.sel_zone ) { 
+			this.planet.RemoveZone( this.sel_zone ); 
+			this.sel_zone = null;
+			}
+		}
 	BuildQueueMoveItemUp( index ) {
 		// tech note: aurelia doesn't recognize that anything changed if you 
 		// use the old fashioned "swap from temp" technique

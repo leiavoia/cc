@@ -31,6 +31,14 @@
 								<span repeat.for="i of p.resources[k]" class="${k}"></span>
 							</template>
 						</div>
+						<div class="zones mini" if.bind="p.owner && (p.owner.is_player || app.options.see_all)">
+							<div repeat.for="z of p.zones"
+								class="zone clickable ${z==sel_zone?'hilite':''} ${z.type} L${z.level} 
+								${z.size==1 ? 'only' : ( $i==0 ? 'first' : ($i==z.size-1 ? 'last' : 'mid') ) }
+								pct${z.val%10|floor}
+								"></div>
+							<div repeat.for="z of (p.size - p.zoned)" class="zone empty"></div>
+						</div>						
 					</div>
 				</div>
 			</div>
