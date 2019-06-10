@@ -27,14 +27,11 @@ export default class Planet {
 	
 	// PHYSICAL ATTRIBUTES -------------------------------
 	energy = 1.0; // represents production bonus
-	rich = 0;
 	size = 0;
 	atm = 0;
 	temp = 0;
 	grav = 0;
 	physattr = [];
-	slots = [];
-	maxslots = 0;
 	resources = {
 		o:0, // organics
 		s:0, // silicates
@@ -56,13 +53,17 @@ export default class Planet {
 	// ECONOMY -------------------------------------------
 	zones = [];
 	zoned = 0; // number of sectors that have been zoned 
+	output_rec = { $:0, o:0, s:0, m:0, r:0, g:0, b:0, c:0, v:0, y:0, ship:0, def:0, pop:0, esp:0, res:0 };
+	resource_rec = { $:0, o:0, s:0, m:0, r:0, g:0, b:0, c:0, v:0, y:0, };
+	
 	tax_rate = 0.2;
 	treasury_contrib = 0; // contributions or allowances from the global treasury
 	use_global_tax_rate = false;
-	spending = 0.75;
-	max_spending = 2.0 // may be modable with technology improvements
-	buildings = [];
-	building_fund = 0;
+	spending = 1.0;
+	// max spending may be modable with technology improvements. 
+	// zones support >100% spending values, but there is no 
+	// penalty or cost increase for going over 100% yet.
+	max_spending = 1.0 
 	base_PCI = 10.0; // per capita income
 	bonus_PCI = 0.0;	
 	warehouse = 0;
@@ -119,20 +120,22 @@ export default class Planet {
 	ship_dest = null; 
 	
 	// returns true on success, false on failure
-	AddZone( key, size = 1 ) {		
+	AddZone( key ) {		
 		// NOTE: BUG: using object.assign avoids aurelia binding bugs
-		// but also radically increases memory usage for ships. Switch 
+		// but also radically increases memory usage. Switch 
 		// these lines if memory performance isn't a problem and we
 		// still can't find a solution for aurelia bugs.
-// 		let o = Object.assign( {}, WeaponList[tag] );
+// 		let o = Object.assign( {}, ZoneList[tag] );
 		let o = Object.create( ZoneList[key] );
-		o.size = Math.min( size, o.max_size ); 
-		if ( this.zoned + o.size > this.size ) { return false; } // too big for planet
+		if ( o.size > this.size - this.zoned ) { return false; }
 		this.zoned += o.size;
 		o.val = 0;
-		o.level = 0;
+		o.level = 0; // TODO might skip this / cosmetic only
 		o.insuf = false;
-		o.last_output = {}; // TODO not sure what to do with this yet
+		o.output_rec = {}
+		o.resource_rec = {};
+		for ( let k in o.outputs ) { o.output_rec[k]=0; } ; // prepopulate keys
+		for ( let k in o.inputs ) { o.resource_rec[k]=0; } ; // prepopulate keys
 		this.zones.push(o);
 		return true;
 		}
@@ -631,7 +634,7 @@ export default class Planet {
 		// we want PCI=10 for new vanilla colonies
 		let resource_mod = 20; 
 		// establish a base economic rate based on planet resources
-		let target_PCI = ((this.rich + this.energy) / 2) * resource_mod;
+		let target_PCI = ((/* TODO resource richness + */ this.energy) / 2) * resource_mod;
 		// adjust by the planet's age (doubles after 100 turns)
 		target_PCI *= 1 + (this.age/50);
 		// taxes modify the base rate
@@ -644,7 +647,7 @@ export default class Planet {
 		this.econ.target_PCI = Math.pow( target_PCI, 0.65 ); // diminishing returns
 		if ( this.econ.target_PCI < min_PCI ) { this.econ.target_PCI = min_PCI; }
 		
-		// grow economy in stages, like sector infrastructure, but faster
+		// grow economy in stages
 		let diff = this.econ.target_PCI - this.econ.PCI;
 		let growth = diff ? (0.4 * Math.pow( Math.abs(diff), 0.75 ) ) : 0; // rubber band growth
 		this.econ.PCI += ( diff > 0 ) ? growth : -growth ;	

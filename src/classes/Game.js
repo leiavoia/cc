@@ -162,6 +162,8 @@ export default class Game {
 			// calculate how many material points (mining) we can afford 
 			// to distribute to those planets in need.
 			for ( let civ of this.galaxy.civs ) { 
+				civ.EstimateResources();
+
 				// recalculate box filter while we're here
 // 				civ.RecalcEmpireBox();
 				// reset some stuff
@@ -192,9 +194,9 @@ export default class Game {
 					if ( p.settled ) {  
 					
 						// HACK zone production
-						for ( let z of p.zones ) {
-							z.Do(p);
-							}
+						for ( let k in p.output_rec ) { p.output_rec[k] = 0; }
+						for ( let k in p.resource_rec ) { p.resource_rec[k] = 0; }
+						for ( let z of p.zones ) { z.Do(p); }
 							
 						// Planets will mine resources and stock their local warehouses.
 						p.DoMining(); 

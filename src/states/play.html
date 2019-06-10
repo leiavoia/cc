@@ -167,14 +167,15 @@
 		<div id="layout_ui_visor" class="fadeIn" if.bind="!app.main_panel_mode">
 			<span class="turn">TURN: ${app.game.turn_num}</span>
 			<span class="planets">◉ ${app.game.myciv.planets.length}</span>
-			<span class="treasury"><b>$</b>${app.game.myciv.resources.cash|round:0} ${app.game.myciv.econ.net_rev >= 0 ?'+':''}${app.game.myciv.econ.net_rev|round:0}</span>
+			<span class="treasury"><b>$</b>${app.game.myciv.resources.$|round:0} ${app.game.myciv.econ.net_rev >= 0 ?'+':''}${app.game.myciv.econ.net_rev|round:0}</span>
+			<span class="resources">
+				<span repeat.for="k of ['o','s','m','r','g','b','c','v','y']" class="${k}">${app.game.myciv.resources[k]|floor}</span>
+<!-- 				<span repeat.for="k of app.game.myciv.resources|props" class="${k}">${app.game.myciv.resources[k]|floor}</span> -->
+			</span>
 			<span class="sci">💡 +${app.game.myciv.research_income|round:0}</span>
 			<span class="sci" if.bind="app.game.myciv.tech.current_project" click.delegate="app.SwitchMainPanel('tech')">
 				${( app.game.myciv.tech.current_project.rp / app.game.myciv.tech.current_project.node.rp) | percent}% of 	
 				${app.game.myciv.tech.current_project.node.name}  
-			</span>
-			<span class="resources">
-				<span repeat.for="k of ['o','s','m','r','g','b','c','v','y']" class="${k}">${app.game.myciv.resources[k]}</span>
 			</span>
 			<span>HAB: ${app.game.myciv.race.env.habitation}</span>
 			<span>ADAPT: ${app.game.myciv.race.env.adaptation}</span>
@@ -189,6 +190,14 @@
 				<span style="padding: 0.1em 1em; color:#FFF;text-shadow:1px 1px 0 #000; background-color: ${app.game.myciv.color}">${app.game.myciv.name}</span><br/>
 				<br/>
 				staging: <span repeat.for="pt of app.game.myciv.ai.staging_pts">${pt.name} </span><br/>
+				<br/>
+				<span repeat.for="k of app.game.myciv.resource_estm|props">
+					r_estm.${k}: ${app.game.myciv.resource_estm[k]|round:3}<br/>
+				</span>
+				<br/>
+				<span repeat.for="k of app.game.myciv.resource_supply|props">
+					r_supply.${k}: ${app.game.myciv.resource_supply[k]|round:3}<br/>
+				</span>
 				<br/>
 				needs.colony_ships: ${app.game.myciv.ai.needs.colony_ships|round}<br/>
 				needs.combat_ships: ${app.game.myciv.ai.needs.combat_ships|round}<br/>

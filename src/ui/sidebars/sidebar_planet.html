@@ -30,7 +30,6 @@
 		">${planet.name}</h2>
 		<h2 if.bind="!planet.owner">${planet.name}</h2>
 		<p class="age" if.bind="planet.age_level">${'🟊'.repeat(planet.age_level)}</p>
-		
 		<div class="phys">
 	
 			<p class="env_label">${planet.gravDisplayName} ${planet.envDisplayName}</p>
@@ -63,12 +62,16 @@
 			</div>
 			
 			<!-- zoning -->
-			<div class="zones " if.bind="planet.owner">
-				<div repeat.for="z of planet.zones" click.delegate="ClickZone(z)"
-					class="zone clickable ${z==sel_zone?'hilite':''} ${z.type} L${z.level} 
-					${z.size==1 ? 'only' : ( $i==0 ? 'first' : ($i==z.size-1 ? 'last' : 'mid') ) }
-					pct${z.val%10|floor}
-					"></div>
+			<div class="zones" if.bind="planet.owner">
+				<template containerless repeat.for="z of planet.zones">
+					<div repeat.for="s of z.size" click.delegate="ClickZone(z)"
+						class="zone clickable ${z==sel_zone?'hilite':''} ${z.type} L${z.level} 
+						${z.size==1 ? 'only' : ( s==0 ? 'start' : (s==z.size-1 ? 'end' : 'mid') ) }
+						pct${(z.val==z.levels ? 1.0 : z.val%1)|round:1|percent}
+						">
+						<span if.bind="z.insuf && s==0">⚠️</span><!-- TODO may remove this-->	
+					</div>
+				</template>
 				<div repeat.for="z of (planet.size - planet.zoned)" class="zone empty" click.delegate="ClickEmptyZone()"></div>
 			</div>
 			
@@ -79,8 +82,16 @@
 					<p class="type">${sel_zone.type}</p>
 					<p class="desc">${sel_zone.desc}</p>
 					<p class="stats">	
-						Level: <b>${sel_zone.level} / ${sel_zone.max_level}</b> &nbsp; 
+						Level: <b>${sel_zone.val|round:1} / ${sel_zone.levels}</b> &nbsp; 
 						Size: <b>${sel_zone.size}</b>
+						<br/>
+						Growth: <b>${sel_zone.gf|percent:1}%</b> &nbsp;
+						Bonus: <b>${sel_zone.bonus|percent:1}%</b> &nbsp;
+						<br/>
+						<!-- could also use zone.resource_estm data here -->
+						Costs [<span class="k" repeat.for="k of sel_zone.resource_rec|props">${k|uppercase}:<b>${sel_zone.resource_rec[k]|round:1}</b>&nbsp;</span>]
+						<br/>
+						Output [<span class="k" repeat.for="k of sel_zone.output_rec|props">${k|uppercase}:<b>${sel_zone.output_rec[k]|round:1}</b>&nbsp;</span>]
 					</p>
 				</div>
 				<div>
@@ -92,48 +103,61 @@
 			</div>
 			
 			<!-- add-zone selection detail -->
-			<div class="zone_detail wrapper" if.bind="planet.owner && zone_to_add && show_add_zone_panel">
-				<div>
-					<p class="name">${zone_to_add.name}</p>
-					<p class="type">${zone_to_add.type}</p>
-					<p class="desc">${zone_to_add.desc}</p>
-					<p class="stats">	
-						Max Level: <b>${zone_to_add.max_level}</b> &nbsp; 
-						Max Size: <b>${zone_to_add.max_size}</b>
-					</p>
-				</div>
-				<div>
-					<div class="zone ${zone_to_add.type} only"></div>
-					<div class="button_rack " if.bind="planet.zoned < planet.size">
-<!-- 						<input type="number" name="size" value="1" min="1" max.bind="zone_to_add.max_level" style="width:2em;" /> -->
-						<button click.delegate="AddZone()">ADD</button>
+			<div class="wrapper" if.bind="planet.owner && zone_to_add && show_add_zone_panel && planet.size - planet.zoned > 0">
+				<select value.bind="zone_to_add" class="select-css" style="width:100%; margin-bottom:1em;">
+					<option repeat.for="z of app.game.myciv.avail_zones" model.bind="z"
+						disabled.bind="z.size > (planet.size - planet.zoned)"
+						class="${z.type}"
+						>${z.type|uppercaseFirst}: ${z.name}</option>
+				</select>	
+				<div class="zone_detail ${zone_to_add.size <= (planet.size - planet.zoned) ? 'available' : 'unavailable'}">
+					<div>
+						<p class="name">${zone_to_add.name}</p>
+						<p class="type">${zone_to_add.type}</p>
+						<p class="desc">${zone_to_add.desc}</p>
+						<p class="stats">	
+							Levels: <b>${zone_to_add.levels}</b> &nbsp; 
+							Size: <b>${zone_to_add.size}</b><br/>
+							Growth: <b>${zone_to_add.gf|percent:1}%</b> &nbsp;
+							Bonus: <b>${zone_to_add.bonus|percent:1}%</b> &nbsp;
+							<br/>
+							Costs [<span class="k" repeat.for="k of zone_to_add.inputs|props">${k|uppercase}:<b>${zone_to_add.inputs[k]|round:1}</b>&nbsp;</span>]
+							<br/>
+							Output [<span class="k" repeat.for="k of zone_to_add.outputs|props">${k|uppercase}:<b>${zone_to_add.outputs[k]|round:1}</b>&nbsp;</span>]
+						</p>
 					</div>
-				</div>
-			</div>	
-			<select value.bind="zone_to_add" show.bind="show_add_zone_panel" style="width:100%; margin-bottom:1em;">
-				<option repeat.for="z of app.game.myciv.avail_zones" model.bind="z">${z.type}: ${z.name}</option>
-			</select>	
-			
+					<div>
+						<div class="zone ${zone_to_add.type} only"></div>
+						<div class="button_rack button_rack_fill " if.bind="zone_to_add.size <= planet.size - planet.zoned">
+							<button click.delegate="AddZone()">ADD</button>
+						</div>
+					</div>
+				</div>	
+			</div>
 			
 			<!-- Colony Data -->
 			<div class="data wrapper" if.bind="planet.owner">
-				
-				<!-- DEBUG -->
-				<div if.bind="app.options.debug">
-					<span class="${planet.treasury_contrib >= 0 ? 'good' : 'bad'}">Taxes: ${planet.treasury_contrib >= 0 ? '+' : ''}${planet.treasury_contrib|round:1}</span>,
-					<span if.bind="planet.mp_export >= 0" class="good">Exporting: ${planet.mp_export|round:1}</span>
-					<span if.bind="planet.mp_export < 0" class="alert">Importing: ${-planet.mp_export|round:1}</span>,
-					<span>Warehouse: ${planet.warehouse|round:1}</span>
-					<br />
-					<span>GDP: ${planet.econ.GDP|round:1}</span>
-					<span>PCI: ${planet.econ.PCI|round:1} ➞ ${planet.econ.target_PCI|round:1} </span>
-		<!-- 			<span>GF: ${planet.econ.GF|round:4}</span> -->
-					<span>TradeGoods: ${planet.econ.tradegoods|round:1}</span>
-					<span>Morale: ${planet.morale|round:2}</span>
-					<br />
-					<br />
-				</div>
-				
+				<span class="${k}" repeat.for="k of ['$','o','s','m','r','g','b','c','v','y','ship','def','esp','res','def','gov','pop']"
+					style="width: 23%; margin: 0.5%; padding: 0.5%; border-radius:2px; display: inline-block; height:0.8em;line-height:0.8em;">
+					${k|uppercase}:
+					<b style="color:#D11;" if.bind="planet.resource_rec[k] > 0">-${planet.resource_rec[k]|ceil}</b>
+					<b style="color:#AEA;" if.bind="planet.output_rec[k] > 0">+${planet.output_rec[k]|ceil}</b>
+				</span>
+				<span class="" style="width: 23%; margin: 0.5%; padding: 0.5%; border-radius:2px; display: inline-block; height:0.8em;line-height:0.8em;">
+					TAX: <b style="color:#AEA;">+${planet.econ.tax_rev|ceil}</b>
+				</span>				
+				<span class="" style="width: 23%; margin: 0.5%; padding: 0.5%; border-radius:2px; display: inline-block; height:0.8em;line-height:0.8em;">
+					GDP: <b>${planet.econ.GDP|round:1}</b>
+				</span>				
+				<span class="" style="width: 23%; margin: 0.5%; padding: 0.5%; border-radius:2px; display: inline-block; height:0.8em;line-height:0.8em;">
+					PCI: <b>${planet.econ.PCI|round:1}</b> ➞ <b>${planet.econ.target_PCI|round:1}</b>
+				</span>				
+				<span class="" style="width: 23%; margin: 0.5%; padding: 0.5%; border-radius:2px; display: inline-block; height:0.8em;line-height:0.8em;">
+					Morale: <b>${planet.morale|percent}%</b>
+				</span>
+			</div>
+			
+			<div class="wrapper" if.bind="planet.owner">
 				<h3>Now Building:</h3>
 				<table class="prod_queue">
 					<tr repeat.for="item of planet.prod_q">
@@ -142,7 +166,7 @@
 						<td><a href="#" click.delegate="BuildQueueMoveItemUp($index)" if.bind="$index > 0">▲</a></td>
 						<td><a href="#" click.delegate="BuildQueueMoveItemDown($index)" if.bind="$index != (planet.prod_q.length-1)">▼</a></td>
 						<td>
-							<select value.bind="item.qty">
+							<select value.bind="item.qty" style="width:3em;">
 								<option repeat.for="option of prod_q_repeat_vals" model.bind="option.value">${option.name}</option>
 							</select>			
 						</td>
@@ -150,7 +174,7 @@
 					</tr>
 				</table>
 				<p>
-					<select value.bind="sel_build_item">
+					<select value.bind="sel_build_item" style="display:inline-block;">
 						<option repeat.for="bp of planet.owner.ship_blueprints" model.bind="bp">${bp.name}</option>
 						<option repeat.for="bp of planet.owner.groundunit_blueprints" model.bind="bp">${bp.name}</option>
 						<option repeat.for="bp of planet.ListMakeworkProjects()" model.bind="bp">${bp.name}</option>

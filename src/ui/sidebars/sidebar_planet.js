@@ -114,10 +114,9 @@ export class PlanetDetailPane {
 		this.show_add_zone_panel = !this.show_add_zone_panel;
 		this.zone_to_add = this.planet.owner.avail_zones[0];
 		}
-	AddZone( size = 1 ) {
+	AddZone() {
 		if ( this.zone_to_add ) { 
-			if ( !size ) { size = 1; }
-			this.planet.AddZone( this.zone_to_add.key, 1 ); 
+			this.planet.AddZone( this.zone_to_add.key ); 
 			}
 		}
 	RemoveZone() {
