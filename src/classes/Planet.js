@@ -7,7 +7,7 @@ import {computedFrom} from 'aurelia-framework';
 import {Ship,ShipBlueprint} from './Ship';
 import {GroundUnit,GroundUnitBlueprint} from './GroundUnit';
 import {Mod,Modlist} from './Mods';
-import {ZoneList} from './ZoneList';
+import {Zone,ZoneList} from './Zones';
 
 export default class Planet {
 	
@@ -126,16 +126,9 @@ export default class Planet {
 		// these lines if memory performance isn't a problem and we
 		// still can't find a solution for aurelia bugs.
 // 		let o = Object.assign( {}, ZoneList[tag] );
-		let o = Object.create( ZoneList[key] );
+		let o = Zone(key);
 		if ( o.size > this.size - this.zoned ) { return false; }
 		this.zoned += o.size;
-		o.val = 0;
-		o.level = 0; // TODO might skip this / cosmetic only
-		o.insuf = false;
-		o.output_rec = {}
-		o.resource_rec = {};
-		for ( let k in o.outputs ) { o.output_rec[k]=0; } ; // prepopulate keys
-		for ( let k in o.inputs ) { o.resource_rec[k]=0; } ; // prepopulate keys
 		this.zones.push(o);
 		return true;
 		}

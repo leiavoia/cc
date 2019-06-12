@@ -8,7 +8,7 @@ import TradeOffer from './TradeOffer';
 import {Ship,ShipBlueprint} from './Ship';
 import {GroundUnit,GroundUnitBlueprint} from './GroundUnit';
 import {WeaponList} from './WeaponList';
-import {ZoneList} from './ZoneList';
+import {ZoneList} from './Zones';
 import {ShipComponentList} from './ShipComponentList';
 import {Mod,Modlist} from './Mods';
 import {Treaties,Treaty} from './Treaties';
