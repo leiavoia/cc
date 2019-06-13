@@ -18,7 +18,8 @@ export default class Planet {
 	owner = false; // false indicates unowned. zero can be an index
 	name = 'UNKNOWN';
 	total_pop = 0;
-	pop = [];
+	maxpop = 10;
+	popmax_contrib = 0; // used to calculate housing development from zones. resets every turn.
 	morale = 1.0;	// multiplier, default 1.0, range 0-2
 	age = 0;
 	age_level = 0;
@@ -53,7 +54,7 @@ export default class Planet {
 	// ECONOMY -------------------------------------------
 	zones = [];
 	zoned = 0; // number of sectors that have been zoned 
-	output_rec = { $:0, o:0, s:0, m:0, r:0, g:0, b:0, c:0, v:0, y:0, ship:0, def:0, pop:0, esp:0, res:0 };
+	output_rec = { $:0, o:0, s:0, m:0, r:0, g:0, b:0, c:0, v:0, y:0, ship:0, def:0, hou:0, esp:0, res:0 };
 	resource_rec = { $:0, o:0, s:0, m:0, r:0, g:0, b:0, c:0, v:0, y:0, };
 	
 	tax_rate = 0.2;
@@ -300,18 +301,7 @@ export default class Planet {
 		else if ( x > 0 ) { return utils.Clamp( x*0.1, 0, 1.0 ); }
 		return 0;
 		}
-	
-	_MaxPop( race ) {
-		let a = this.age_level * 0.05; // age bonus
-		let b = 0.0; // this.HabitationBonus( race );
-		return ( this.size * (1+b+a) ) / race.size;
-		}
-		
-	@computedFrom('age_level','owner','size','owner.adaptation')
-	get maxpop () { 
-		return this.owner ? this._MaxPop( this.owner.race ) : this.size;
-		}
-		
+			
 	@computedFrom('total_pop','tax_rate','econ.PCI')
 	get tax() { 
 		return this.total_pop * this.tax_rate * this.econ.PCI;
@@ -586,7 +576,6 @@ export default class Planet {
 			};
 		// crowding (sigmoid function)
 		// see: https://www.desmos.com/calculator/5uo3t7mqnj
-		// TODO: factor in multiracial
 		factors.crowding = { 
 			fx: ( 1.5 / ( 1 + Math.pow( Math.E, (-6 + (9*( this.total_pop/this.maxpop )) ) ) ) ) + 0.5,
 			weight: 4.0
@@ -650,24 +639,23 @@ export default class Planet {
 		
 		
 	GrowPop() { 
-		// growth rate is square root of difference between max pop and current pop, divided by 50.
-		let maxpop = this.maxpop; // TODO: factor in multiracial
-		let diff = maxpop - this.total_pop; 
+		// popmax is actually our current infrastructure level from Housing zones.
+		// This means that if Housing zones are removed or underfunded, infrastructure
+		// crumbles and we can have more pops than popmax (causing unhappiness).
+		this.maxpop = 10 + this.popmax_contrib;
+		this.popmax_contrib = 0;
+		// growth rate is square root of difference between max pop and current pop, divided by 60.
+		let diff = this.maxpop - this.total_pop; 
 		let divisor = 60.0;
-		let hitmaxpop = false;
 		if ( diff > 0 ) { // pop growth
 			let max_diff = 50.0;
 			let rate  = ( Math.sqrt( diff > max_diff ? max_diff : diff ) / divisor ) + 1.0;
 			this.total_pop = (this.total_pop * rate) + 0.05; // the 0.05 just helps it move along
-			if ( this.total_pop >= maxpop ) {
-				hitmaxpop = true;
-				}
 			}
-// 		else if ( diff < -5 ) { // pop decline - we outstripped allowable space somehow
-// 			this.total_pop *= 1.0 - ((( this.total_pop / maxpop ) - 1.0) * 0.2);
-// 			}
-		if ( this.total_pop > maxpop ) { this.total_pop = maxpop; }
-		return hitmaxpop; // let the app know if we hit max pop and maybe issue a message
+		else if ( diff < 0 ) { // pop decline - we outstripped allowable space somehow
+			this.total_pop *= 1.0 - ((( this.total_pop / this.maxpop ) - 1.0) * 0.2);
+			}
+// 		if ( this.total_pop > this.maxpop ) { this.total_pop = this.maxpop; }
 		}
 		
 	// temp => atm

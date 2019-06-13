@@ -1864,8 +1864,9 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	box-sizing: border-box;
 	position: relative;
 	background-color: #222;
-	background-size: 18px 18px !important;
+	background-size: 22px 22px !important;
 	cursor: help;
+	overflow:hidden;
 	}
 .planet .zone.empty {
 	border: 1px solid #333;
@@ -1875,47 +1876,54 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 .star .planet .zone.empty {
 	cursor: inherit;
 	}
-.planet .zone.capitol {
-	background:#666 url(../img/workshop/icons/icomoon_42_icons/PNG/building.png) 50% 50% no-repeat; 
-	border-color: #666;
-	}
 .planet .zone.mining {
-	background:#fa9a30 url(../img/workshop/icons/3dbox_64px.png) 50% 50% no-repeat; 
+	background:#fa9a30 url(../img/workshop/icons/SVG/cube01.svg) 50% 50% no-repeat; 
 	border-color: #fa9a30;
 	}
 .planet .zone.stardock {
-	background:#D11 url(../img/workshop/icons/icomoon_42_icons/PNG/transport.png) 50% 50% no-repeat; 
+	background:#D11 url(../img/workshop/icons/SVG/transport.svg) 50% 50% no-repeat; 
 	border-color: #D11;
 	}
 .planet .zone.research {
-	background:#14A url(../img/workshop/icons/icomoon_42_icons/PNG/tool.png) 50% 50% no-repeat; 
+	background:#14A url(../img/workshop/icons/SVG/tool.svg) 50% 50% no-repeat; 
 	border-color: #14A;
 	}
 .planet .zone.government {
-	background:#666 url(../img/workshop/icons/icomoon_42_icons/PNG/interface.png) 50% 50% no-repeat; 
+	background:#666 url(../img/workshop/icons/SVG/building.svg) 50% 50% no-repeat; 
 	border-color: #666;
 	}
 .planet .zone.housing {
-	background:#4cb0e9 url(../img/workshop/icons/icomoon_42_icons/PNG/city.png) 50% 50% no-repeat; 
+	background:#4cb0e9 url(../img/workshop/icons/SVG/home.svg) 50% 50% no-repeat; 
 	border-color: #4cb0e9;
 	}
 .planet .zone.economy {
-	background:#296 url(../img/workshop/icons/icomoon_42_icons/PNG/coins-1.png) 50% 50% no-repeat; 
+	background:#296 url(../img/workshop/icons/SVG/coins-1.svg) 50% 50% no-repeat; 
 	border-color: #296;
 	}
 .planet .zone.espionage {
-	background:#6c13b3 url(../img/workshop/icons/icomoon_42_icons/PNG/medical.png) 50% 50% no-repeat; 
+	background:#6c13b3 url(../img/workshop/icons/SVG/medical.svg) 50% 50% no-repeat; 
 	border-color: #6c13b3;
 	}
 .planet .zone.military {
-	background: #98543D url(../img/workshop/icons/icomoon_42_icons/PNG/game.png) 50% 50% no-repeat; 
+	background: #98543D url(../img/workshop/icons/SVG/game.svg) 50% 50% no-repeat; 
 	border-color: #98543D;
 	}
 .planet .zone.special {
-	background: #AA509F url(../img/workshop/icons/icomoon_42_icons/PNG/decoration.png) 50% 50% no-repeat; 
+	background: #AA509F url(../img/workshop/icons/SVG/decoration.svg) 50% 50% no-repeat; 
 	border-color: #AA509F;
 	}
 	
+/* 
+specialized zone images for higher techs
+if this gets too fiddly, we could also put the svg filename
+right in the zone data and use Aurelia css="background-image: ${zone.img}"
+*/
+.planet .zone.CIVCAPITOL { background-image: url(../img/workshop/icons/SVG/building22.svg); }
+.planet .zone.HOUSING10 { background-image: url(../img/workshop/icons/SVG/city.svg); }
+.planet .zone.HOUSING20 { background-image: url(../img/workshop/icons/SVG/city08.svg); }
+.planet .zone.HOUSING30 { background-image: url(../img/workshop/icons/SVG/city02.svg); }
+.planet .zone.HOUSING40 { background-image: url(../img/workshop/icons/SVG/city03.svg); }
+
 .planet .zones .start, 
 .planet .zones .mid { 
 	border-right-width:0 !important; 
@@ -2050,12 +2058,14 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	content:none !important;
 	}
 
+.planet .zones .insuf {
+	border: 3px solid #E33;
+	}
 .planet .zones .hilite {
 	border: 3px solid #2F8;
 	}
 	
 /* progress bar */
-
 .planet .zones DIV:after { 
 	content: '';
 	display:block;

@@ -21,5 +21,6 @@ export function configure(config) {
   	'./value-converters/MoraleToMoodIcon',
   	'./value-converters/DiploStatus',
   	'./value-converters/starRating',
+  	'./value-converters/ZoneGrowth',
   	]);
 }

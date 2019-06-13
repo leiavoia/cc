@@ -450,7 +450,11 @@ export default class Civ {
 		
 		// starting zones available
 		this.avail_zones = [
-			ZoneList.HOUSING01,
+			ZoneList.HOUSING00,
+			ZoneList.HOUSING10,
+			ZoneList.HOUSING20,
+			ZoneList.HOUSING30,
+			ZoneList.HOUSING40,
 			ZoneList.MINE01,
 			ZoneList.RES01,
 			ZoneList.ECON01,

@@ -65,18 +65,18 @@
 			<div class="zones" if.bind="planet.owner">
 				<template containerless repeat.for="z of planet.zones">
 					<div repeat.for="s of z.size" click.delegate="ClickZone(z)"
-						class="zone clickable ${z==sel_zone?'hilite':''} ${z.type} L${z.level} 
+						class="zone clickable ${z==sel_zone?'hilite':''} ${z.type} ${z.key} L${z.level} 
+						${z.insuf ? 'insuf' : ''}
 						${z.size==1 ? 'only' : ( s==0 ? 'start' : (s==z.size-1 ? 'end' : 'mid') ) }
 						pct${(z.val==z.levels ? 1.0 : z.val%1)|round:1|percent}
 						">
-						<span if.bind="z.insuf && s==0">⚠️</span><!-- TODO may remove this-->	
 					</div>
 				</template>
 				<div repeat.for="z of (planet.size - planet.zoned)" class="zone empty" click.delegate="ClickEmptyZone()"></div>
 			</div>
 			
 			<!-- zone detail -->
-			<div class="zone_detail wrapper ${sel_zone.type}" if.bind="planet.owner && sel_zone && !show_add_zone_panel">
+			<div class="zone_detail wrapper ${sel_zone.type} ${sel_zone.key}" if.bind="planet.owner && sel_zone && !show_add_zone_panel">
 				<div>
 					<p class="name">${sel_zone.name}</p>
 					<p class="type">${sel_zone.type}</p>
@@ -85,17 +85,18 @@
 						Level: <b>${sel_zone.val|round:1} / ${sel_zone.levels}</b> &nbsp; 
 						Size: <b>${sel_zone.size}</b>
 						<br/>
-						Growth: <b>${sel_zone.gf|percent:1}%</b> &nbsp;
-						Bonus: <b>${sel_zone.bonus|percent:1}%</b> &nbsp;
+						Growth: <b>${sel_zone.gf|zoneGrowth}</b> &nbsp;
+						Bonus: <b>${sel_zone.level * sel_zone.bonus|percent}%</b> &nbsp;
 						<br/>
-						<!-- could also use zone.resource_estm data here -->
-						Costs [<span class="k" repeat.for="k of sel_zone.resource_rec|props">${k|uppercase}:<b>${sel_zone.resource_rec[k]|round:1}</b>&nbsp;</span>]
+						<!-- could also use zone.resource_rec data here -->
+						Costs [<span class="k" repeat.for="k of sel_zone.resource_estm|props">${k|uppercase}:<b>${sel_zone.resource_estm[k]|round:1}</b>&nbsp;</span>]
 						<br/>
 						Output [<span class="k" repeat.for="k of sel_zone.output_rec|props">${k|uppercase}:<b>${sel_zone.output_rec[k]|round:1}</b>&nbsp;</span>]
 					</p>
+					<p if.bind="sel_zone.insuf" class="nag bad">⚠️ Zone in Decline</p>
 				</div>
 				<div>
-					<div class="zone ${sel_zone.type} ${sel_zone.level} only"></div>
+					<div class="zone ${sel_zone.type} ${sel_zone.level} ${sel_zone.key} only"></div>
 					<div class="button_rack button_rack_fill">
 						<button class="bad" click.delegate="RemoveZone()">DEMOLISH</button>
 					</div>
@@ -118,8 +119,8 @@
 						<p class="stats">	
 							Levels: <b>${zone_to_add.levels}</b> &nbsp; 
 							Size: <b>${zone_to_add.size}</b><br/>
-							Growth: <b>${zone_to_add.gf|percent:1}%</b> &nbsp;
-							Bonus: <b>${zone_to_add.bonus|percent:1}%</b> &nbsp;
+							Growth: <b>${zone_to_add.gf|zoneGrowth}</b> &nbsp;
+							Bonus: <b>${zone_to_add.bonus|percent:1}% p/Level</b> &nbsp;
 							<br/>
 							Costs [<span class="k" repeat.for="k of zone_to_add.inputs|props">${k|uppercase}:<b>${zone_to_add.inputs[k]|round:1}</b>&nbsp;</span>]
 							<br/>
@@ -127,7 +128,7 @@
 						</p>
 					</div>
 					<div>
-						<div class="zone ${zone_to_add.type} only"></div>
+						<div class="zone ${zone_to_add.type} ${zone_to_add.key} only"></div>
 						<div class="button_rack button_rack_fill " if.bind="zone_to_add.size <= planet.size - planet.zoned">
 							<button click.delegate="AddZone()">ADD</button>
 						</div>
@@ -137,7 +138,7 @@
 			
 			<!-- Colony Data -->
 			<div class="data wrapper" if.bind="planet.owner">
-				<span class="${k}" repeat.for="k of ['$','o','s','m','r','g','b','c','v','y','ship','def','esp','res','def','gov','pop']"
+				<span class="${k}" repeat.for="k of ['$','o','s','m','r','g','b','c','v','y','ship','def','esp','res','def','gov','hou']"
 					style="width: 23%; margin: 0.5%; padding: 0.5%; border-radius:2px; display: inline-block; height:0.8em;line-height:0.8em;">
 					${k|uppercase}:
 					<b style="color:#D11;" if.bind="planet.resource_rec[k] > 0">-${planet.resource_rec[k]|ceil}</b>
