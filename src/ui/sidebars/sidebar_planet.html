@@ -97,7 +97,7 @@
 				<div>
 					<div class="zone ${sel_zone.type} ${sel_zone.level} ${sel_zone.key} only"></div>
 					<div class="button_rack button_rack_fill">
-						<button class="bad" click.delegate="RemoveZone()">DEMOLISH</button>
+						<button class="bad" click.delegate="RemoveZone()" if.bind="!sel_zone.perma">DEMOLISH</button>
 					</div>
 				</div>
 			</div>

@@ -132,14 +132,19 @@ export default class Planet {
 		let o = Zone(key);
 		if ( o.size > this.size - this.zoned ) { return false; }
 		this.zoned += o.size;
+		// some zones are "instant" and do not grow to size.
+		if ( !o.gf ) { o.val = 1; }
 		this.zones.push(o);
 		return true;
 		}
 	
-	// returns true on success, false on failure
-	RemoveZone( z ) {
+	// returns true on success, false on failure.
+	// `force` will remove permanent zones.
+	RemoveZone( z, force = false ) {
 		let i = this.zones.indexOf(z);
-		if ( i >= 0 ) { 
+		if ( i >= 0 ) {
+			// some zones are permanent and cannot be removed 
+			if ( this.zones[i].perma && !force ) { return false; }
 			this.zoned -= this.zones[i].size;
 			this.zones.splice( i, 1 );
 			// TODO recalc stats
@@ -926,7 +931,7 @@ export default class Planet {
 				this.AddZone( 'CIVCAPITOL', 1 ); 
 				}
 			else {
-				this.AddZone( 'HOUSING01', 1 ); 
+				this.AddZone( 'PLANETCAPITOL', 1 ); 
 				}
 			}
 		this.AddBuildQueueMakeworkProject('tradegoods');

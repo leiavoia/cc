@@ -114,9 +114,20 @@ export const ZoneList = {
 		type: 'government',
 		desc: 'Provides bonuses for your home planet.',
 		inputs: {},
-		outputs: { $: 10 }, // TODO Do() something special instead
+		outputs: { hou: 20 }, // TODO Do() something special instead
 		size: 2,
-		gf: 40,
+		gf: 0, // instant
+		perma: true
+		},
+	PLANETCAPITOL: {
+		name: 'Planetary Capitol',
+		type: 'government',
+		desc: 'Provides basic services to new colonies',
+		inputs: { $: 1 },
+		outputs: { hou: 5 },
+		size: 1,
+		gf: 0, // instant
+		perma: true
 		},
 	HOUSING00: {
 		name: 'Colonial Settlement',
