@@ -328,6 +328,7 @@ export default class Civ {
 		for ( let k of Object.keys(this.resource_estm) ) { this.resource_estm[k]=0; }
 		// sum up
 		for ( let p of this.planets ) { 
+			p.RecalcZoneHabMod();
 			for ( let z of p.zones ) { 
 				let estm = z.EstimateResources(p);
 				for ( let k of Object.keys(estm) ) { 

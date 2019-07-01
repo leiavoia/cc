@@ -18,15 +18,9 @@ let ZoneProto = {
 	type: 'unknown',
 	// how many sectors the zone occupies
 	size: 1,
-	// Growth Factor - amount a zone will grow each turn (up to 1.0)
-	// recommended growth factor levels:
-	//		0.2 : 5 turns (rapid)
-	//		0.1 : 10 turns (fast)
-	//		0.05 : 20 turns (normal)
-	//		0.033 : 30 turns (slow)
-	//		0.025 : 40 turns (very slow)
-	//		0.02 : 50 turns (glacial)
-	gf: 0.1,
+	// Growth Factor - turns required to mature.
+	// Modified by a planet's energy level when calculating growth.
+	gf: 10,
 	// inputs and outputs are normalized per-sector and are
 	// multiplied by the zone's size when calculating activity
 	inputs: {},
@@ -42,11 +36,12 @@ let ZoneProto = {
 		// lack of funding or lack of resources determine how much work we can actually do
 		let ratio = min_resource_ratio * planet.spending; // game already took into account +/- spending levels
 		// ideally we want enough resources to do our job and grow the maximum allowed amount.
-		let amount_requesting = this.val + Math.min( this.gf, 1.0 - this.val );
-		let amount_receiving = amount_requesting * ratio;
+		let amount_receiving = ( this.val + Math.min( planet.energy/this.gf, 1.0 - this.val ) ) * ratio;
 		// reduce resources of civ
 		for ( let k of Object.keys(this.inputs) ) {
-			let amount = this.inputs[k] * this.size * amount_receiving;
+			// NOTE: planet environmental effects are applied here to +/- resources costs, 
+			// but not to the work formula itself. Costs change but work stays the same.
+			let amount = this.inputs[k] * this.size * amount_receiving * planet.zone_hab_mod;
 			planet.owner.resources[k] -= amount;
 			this.resource_rec[k] = amount;
 			planet.resource_rec[k] += amount; // assume it gets zero'd out before this function is called
@@ -59,7 +54,7 @@ let ZoneProto = {
 		this.Output( planet, work );
 		// grow or shrink depending on our funding
 		let diff = amount_receiving - this.val;
-		this.val += (diff >= 0) ? (diff * planet.spending) : (diff * this.gf * 2);
+		this.val += (diff >= 0) ? (diff * planet.spending) : (diff * (1/this.gf) * 2);
 		this.val = this.val.clamp(0,1);
 		// if we shrank, warn player
 		this.insuf = diff < 0;
@@ -86,12 +81,11 @@ let ZoneProto = {
 			}
 		},
 	EstimateResources( planet ) { 
-		// TODO: planet energy?
 		// ideally we want enough resources to do our job and grow the maximum allowed amount.
-		let amount_requesting = planet.spending * ( this.val + Math.min( this.gf, 1.0 - this.val ) );
+		let amount_requesting = planet.zone_hab_mod * planet.spending * ( this.val + Math.min( planet.energy/this.gf, 1.0 - this.val ) );
 		for ( let k of Object.keys(this.inputs) ) {
 			this.resource_estm[k] = this.inputs[k] * this.size * amount_requesting;
-			}
+		}
 		return this.resource_estm;
 		},
 	// used for internal reference
@@ -122,7 +116,7 @@ export const ZoneList = {
 		inputs: {},
 		outputs: { $: 10 }, // TODO Do() something special instead
 		size: 2,
-		gf: 0.025, // 2.5% of one unit per turn 
+		gf: 40,
 		},
 	HOUSING00: {
 		name: 'Colonial Settlement',
@@ -131,7 +125,7 @@ export const ZoneList = {
 		inputs: { $: 1 },
 		outputs: { hou: 2 },
 		size: 1,
-		gf: 0.05
+		gf: 20
 		},
 	HOUSING10: {
 		name: 'City',
@@ -140,7 +134,7 @@ export const ZoneList = {
 		inputs: { $: 2, o: 1, s: 2, m: 1 },
 		outputs: { hou: 1.5 },
 		size: 2,
-		gf: 0.05
+		gf: 20
 		},
 	HOUSING20: {
 		name: 'Metropolis',
@@ -149,7 +143,7 @@ export const ZoneList = {
 		inputs: { $: 5, o: 2, s: 5, m: 3 },
 		outputs: { hou: 2 },
 		size: 4,
-		gf: 0.033
+		gf: 30
 		},
 	HOUSING30: {
 		name: 'Megalopolis',
@@ -158,7 +152,7 @@ export const ZoneList = {
 		inputs: { $: 10, o: 4, s: 12, m: 8 },
 		outputs: { hou: 4 },
 		size: 8,
-		gf: 0.033
+		gf: 30
 		},
 	HOUSING40: {
 		name: 'Ecumenopolis',
@@ -167,7 +161,7 @@ export const ZoneList = {
 		inputs: { $: 25, o: 5, s: 9, m: 14 },
 		outputs: { hou: 6 },
 		size: 12,
-		gf: 0.025
+		gf: 40
 		},
 	MINE01: {
 		name: 'Basic Resource Processor',
@@ -176,7 +170,7 @@ export const ZoneList = {
 		inputs: { $: 5 },
 		outputs: { o: 1, s: 1, m: 1 },
 		size: 1,
-		gf: 0.1
+		gf: 10
 		},
 	SHIP01: {
 		name: 'Basic Stardock',

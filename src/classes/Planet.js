@@ -27,7 +27,7 @@ export default class Planet {
 	prod_q = [];
 	
 	// PHYSICAL ATTRIBUTES -------------------------------
-	energy = 1.0; // represents production bonus
+	energy = 1.0; // speeds up zone development
 	size = 0;
 	atm = 0;
 	temp = 0;
@@ -56,6 +56,8 @@ export default class Planet {
 	zoned = 0; // number of sectors that have been zoned 
 	output_rec = { $:0, o:0, s:0, m:0, r:0, g:0, b:0, c:0, v:0, y:0, ship:0, def:0, hou:0, esp:0, res:0 };
 	resource_rec = { $:0, o:0, s:0, m:0, r:0, g:0, b:0, c:0, v:0, y:0, };
+	
+	zone_hab_mod = 1.0; // precalculated HabitationBonus() to avoid calling millions of times each turn.
 	
 	tax_rate = 0.2;
 	treasury_contrib = 0; // contributions or allowances from the global treasury
@@ -301,7 +303,15 @@ export default class Planet {
 		else if ( x > 0 ) { return utils.Clamp( x*0.1, 0, 1.0 ); }
 		return 0;
 		}
-			
+	RecalcZoneHabMod() { 
+		if ( !this.owner ) { return; } 
+		// zone_hab_mod is a cost modifier, so values <1.0 represent cost SAVINGS:
+		// +25% for each negative, -15% for each positive
+		let x = this.Adaptation( this.owner.race );
+		if ( x < 0 ) this.zone_hab_mod = 1+x*0.25;
+		else if ( x > 0 ) this.zone_hab_mod = utils.Clamp( 1-x*0.15, 0.1, 1.0 );
+		else this.zone_hab_mod = 1.0;
+		}
 	@computedFrom('total_pop','tax_rate','econ.PCI')
 	get tax() { 
 		return this.total_pop * this.tax_rate * this.econ.PCI;
@@ -903,16 +913,14 @@ export default class Planet {
 		
 	// owner must be a civ object, not an index ID
 	Settle( owner ) {
-		
 		this.owner = owner;
 		this.total_pop = 0.5;
 		this.settled = true;
 		this.explored = true;
-		
 		this.econ.GDP = 0;
 		this.econ.PCI = this.base_PCI + this.bonus_PCI;
 		this.econ.GF = 1.0;
-		
+		this.RecalcZoneHabMod();
 		if ( !this.zones.length ) { 
 			if ( !owner.planets.length ) { 
 				this.AddZone( 'CIVCAPITOL', 1 ); 
@@ -921,13 +929,10 @@ export default class Planet {
 				this.AddZone( 'HOUSING01', 1 ); 
 				}
 			}
-			
 		this.AddBuildQueueMakeworkProject('tradegoods');
-			
 		this.RecalcSectors();	
 		this.UpdateOwnership();
-		
-		} // end Settle
+		}
 
 	RemoveDeadTroops() { 
 		this.troops = this.troops.filter( t => t.hp );

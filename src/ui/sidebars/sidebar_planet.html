@@ -36,7 +36,8 @@
 			
 			<div class="size">
 				<span class="pop" if.bind="planet.owner !== false">${planet.total_pop|round} / ${planet.maxpop|round}<br/><span class="pop">POPULATION</span></span>
-				<span class="size">${planet.size}<br/><span class="size">SIZE</span></span>					
+				<span class="size">${planet.size}<br/><span class="size">SIZE</span></span>
+				<span class="en">${planet.energy}<br/><span class="en">ENERGY</span></span>			
 				<span class="${habitable ? (habitat < 0 ? 'alert' : 'good') : 'bad'}">	
 					${(habitat >= 0 ? '+' : '')}${habitat}<br /> 
 					<span class="">${habitable ? "HABITABILITY" : "UNINHABITABLE"}</span>
@@ -82,11 +83,9 @@
 					<p class="type">${sel_zone.type}</p>
 					<p class="desc">${sel_zone.desc}</p>
 					<p class="stats">	
-						Level: <b>${sel_zone.val|round:1} / ${sel_zone.levels}</b> &nbsp; 
 						Size: <b>${sel_zone.size}</b>
 						<br/>
-						Growth: <b>${sel_zone.gf|zoneGrowth}</b> &nbsp;
-						Bonus: <b>${sel_zone.level * sel_zone.bonus|percent}%</b> &nbsp;
+						Matures In: <b>${(1-sel_zone.val) / (1/(sel_zone.gf * planet.zone_hab_mod)) | ceil} turns</b> &nbsp;
 						<br/>
 						<!-- could also use zone.resource_rec data here -->
 						Costs [<span class="k" repeat.for="k of sel_zone.resource_estm|props">${k|uppercase}:<b>${sel_zone.resource_estm[k]|round:1}</b>&nbsp;</span>]
@@ -117,10 +116,8 @@
 						<p class="type">${zone_to_add.type}</p>
 						<p class="desc">${zone_to_add.desc}</p>
 						<p class="stats">	
-							Levels: <b>${zone_to_add.levels}</b> &nbsp; 
 							Size: <b>${zone_to_add.size}</b><br/>
-							Growth: <b>${zone_to_add.gf|zoneGrowth}</b> &nbsp;
-							Bonus: <b>${zone_to_add.bonus|percent:1}% p/Level</b> &nbsp;
+							Matures In: <b>${zone_to_add.gf * planet.zone_hab_mod | ceil} turns</b> &nbsp;
 							<br/>
 							Costs [<span class="k" repeat.for="k of zone_to_add.inputs|props">${k|uppercase}:<b>${zone_to_add.inputs[k]|round:1}</b>&nbsp;</span>]
 							<br/>
