@@ -317,8 +317,8 @@ export default class Civ {
 	// the sum of all resources being demanded from all sources
 	resource_estm = { $:0, o:0, s:0, m:0, r:0, g:0, b:0, c:0, v:0, y:0 };
 	
-	// supply/demand ratio per resource type. <0.0 indicates shortfall
-	resource_supply = { $:0, o:0, s:0, m:0, r:0, g:0, b:0, c:0, v:0, y:0 };
+	// supply/demand ratio per resource type. <1.0 indicates shortfall
+	resource_supply = { $:1, o:1, s:1, m:1, r:1, g:1, b:1, c:1, v:1, y:1 };
 	
 	// resources that were actually consumed last turn
 	resource_rec = { $:0, o:0, s:0, m:0, r:0, g:0, b:0, c:0, v:0, y:0 };

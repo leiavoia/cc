@@ -90,7 +90,7 @@
 				</div>
 				<!-- AI DEBUG -->
 				<p if.bind="app.options.debug && star.settled_by[app.game.myciv.id]"
-					style="box-style: border-box; margin-left: -200%; margin-top: -92px; width: 500%; text-align:center;" 
+					style="box-sizing: border-box; margin-left: -200%; margin-top: -92px; width: 500%; text-align:center;" 
 					>
 					<span style="color: #AFA;">
 						VAL: ${star.accts.get(app.game.myciv).ai.value | round}
@@ -169,7 +169,7 @@
 			<span class="planets">◉ ${app.game.myciv.planets.length}</span>
 			<span class="treasury"><b>$</b>${app.game.myciv.resources.$|round:0} ${app.game.myciv.econ.net_rev >= 0 ?'+':''}${app.game.myciv.econ.net_rev|round:0}</span>
 			<span class="resources">
-				<span repeat.for="k of ['o','s','m','r','g','b','c','v','y']" class="${k}">${app.game.myciv.resources[k]|floor}</span>
+				<span repeat.for="k of ['o','s','m','r','g','b','c','v','y']" class="${k}">${app.game.myciv.resources[k]|floor}<template containerless if.bind="app.game.myciv.resource_supply[k] &lt; 1.0">⚠️</template></span>
 <!-- 				<span repeat.for="k of app.game.myciv.resources|props" class="${k}">${app.game.myciv.resources[k]|floor}</span> -->
 			</span>
 			<span class="sci">💡 +${app.game.myciv.research_income|round:0}</span>
@@ -187,7 +187,7 @@
 		
 			<!-- AI DEBUG -->
 			<div id="layout_ai_headsup" if.bind="app.options.debug && !app.main_panel_mode">
-				<span style="padding: 0.1em 1em; color:#FFF;text-shadow:1px 1px 0 #000; background-color: ${app.game.myciv.color}">${app.game.myciv.name}</span><br/>
+				<span css="padding: 0.1em 1em; color:#FFF;text-shadow:1px 1px 0 #000; background-color: ${app.game.myciv.color}">${app.game.myciv.name}</span><br/>
 				<br/>
 				staging: <span repeat.for="pt of app.game.myciv.ai.staging_pts">${pt.name} </span><br/>
 				<br/>

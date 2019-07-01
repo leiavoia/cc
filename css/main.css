@@ -352,6 +352,7 @@ body,html {
 	color: #FFF;
 	text-shadow: 1px 1px 1px #000;
 	padding: 0.3em 1.5em 0.3em 0.5em ;
+	line-height: 1.2em; /* fixes problems with unicode / emojis */
 	pointer-events: auto; /* capture click events */
 	}
 #layout_ui_center {
@@ -1185,10 +1186,10 @@ DIV.hyperlane {
 	border-color:rgba(255,255,255,0.55);
 	border-width:10px;
 	}
-.mapobj_container.out_range {
-/*   pointer-events: none; */
-/*   cursor: not-allowed; */
-	}
+/*.mapobj_container.out_range {
+	pointer-events: none;
+	cursor: not-allowed;
+	}*/
 .mapobj_container H2,
 .mapobj_container H3 {
 	color: #FFF;
@@ -1672,9 +1673,9 @@ invisible when unexplored, dim when explored */
 	font-size: 130%;
 	padding-top: 0.35em;
 	}
-#layout_ui_side .star .planet .phys DIV.size SPAN > SPAN {
-/* 	display:none; */
-	}
+/*#layout_ui_side .star .planet .phys DIV.size SPAN > SPAN {
+ 	display:none; 
+	}*/
 #layout_ui_side  .planet .phys DIV.size SPAN.pop { color: #FAA; }
 #layout_ui_side  .planet .phys DIV.size SPAN.inf { color: #FF3; }
 #layout_ui_side  .planet .phys DIV.size SPAN.size { color: #29F; }
@@ -1940,9 +1941,6 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	border-top-left-radius: 0 !important;
 	border-bottom-left-radius: 0 !important;
 	background-image:none !important;
-	}
-.planet .zones .mid {
-/* 	background-image:none !important; */
 	}
 	
 /* pips / counters */
@@ -2546,7 +2544,7 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 #layout_ui_side > .planet .th input[type=range]::-moz-range-track 				{ background: #CCCCCC; }
 #layout_ui_side > .planet .th input[type=range]::-moz-range-thumb 				{ background: #FFFFFF; }
 #layout_ui_side > .planet .th input[type=range]::-ms-fill-lower 					{ background: #CCCCCC; }
-#layout_ui_side > .planet .th input[typ#27ae60e=range]::-ms-fill-upper 			{ background: #CCCCCC; }
+#layout_ui_side > .planet .th input[type=range]::-ms-fill-upper 			{ background: #CCCCCC; }
 #layout_ui_side > .planet .th input[type=range]::-ms-thumb 						{ background: #FFFFFF; }
 	
 	
@@ -3062,9 +3060,6 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	pointer-events:none; 
 	opacity:0.30;
 	}
-#civ_list > DIV H2 {
-	
-	}
 #civ_list > DIV IMG.diplo_img {
 	width: 100%;
 	max-width: 100%;
@@ -3103,7 +3098,7 @@ DIV.annoyometer .nub {
 	margin: 0;
 	width:6em;
 	height: 100%;
-	box-sizing:border:box;
+	box-sizing:border-box;
 	padding: 0.2em 0;
 	text-align: center;
 	font-weight: bold;
@@ -3347,7 +3342,6 @@ DIV.annoyometer .nub {
 	}
 #tech_pane .techlist SPAN {
 	display: inline-block;
-	float: right;
 	font-size: 1rem;
 	color:  #3C96BA;
 	}
