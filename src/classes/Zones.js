@@ -123,7 +123,7 @@ export const ZoneList = {
 		name: 'Planetary Capitol',
 		type: 'government',
 		desc: 'Provides basic services to new colonies',
-		inputs: { $: 1 },
+		inputs: { $: 50 },
 		outputs: { hou: 5 },
 		size: 1,
 		gf: 0, // instant

@@ -313,7 +313,7 @@ export default class Planet {
 		// zone_hab_mod is a cost modifier, so values <1.0 represent cost SAVINGS:
 		// +25% for each negative, -15% for each positive
 		let x = this.Adaptation( this.owner.race );
-		if ( x < 0 ) this.zone_hab_mod = 1+x*0.25;
+		if ( x < 0 ) this.zone_hab_mod = 1 + -x*0.25;
 		else if ( x > 0 ) this.zone_hab_mod = utils.Clamp( 1-x*0.15, 0.1, 1.0 );
 		else this.zone_hab_mod = 1.0;
 		}
@@ -657,7 +657,7 @@ export default class Planet {
 		// popmax is actually our current infrastructure level from Housing zones.
 		// This means that if Housing zones are removed or underfunded, infrastructure
 		// crumbles and we can have more pops than popmax (causing unhappiness).
-		this.maxpop = 10 + this.popmax_contrib;
+		this.maxpop = this.popmax_contrib || 1;
 		this.popmax_contrib = 0;
 		// growth rate is square root of difference between max pop and current pop, divided by 60.
 		let diff = this.maxpop - this.total_pop; 
@@ -670,7 +670,6 @@ export default class Planet {
 		else if ( diff < 0 ) { // pop decline - we outstripped allowable space somehow
 			this.total_pop *= 1.0 - ((( this.total_pop / this.maxpop ) - 1.0) * 0.2);
 			}
-// 		if ( this.total_pop > this.maxpop ) { this.total_pop = this.maxpop; }
 		}
 		
 	// temp => atm
