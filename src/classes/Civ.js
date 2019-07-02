@@ -451,19 +451,11 @@ export default class Civ {
 		
 		// starting zones available
 		this.avail_zones = [
-			ZoneList.HOUSING00,
-			ZoneList.HOUSING10,
-			ZoneList.HOUSING20,
-			ZoneList.HOUSING30,
-			ZoneList.HOUSING40,
-			ZoneList.MINE01,
-			ZoneList.RES01,
-			ZoneList.ECON01,
-			ZoneList.GOV01,
-			ZoneList.SPECIAL01,
-			ZoneList.MIL01,
-			ZoneList.SHIP01,
-			ZoneList.SPY01,
+			ZoneList.HOUSING0A,
+			ZoneList.MINE0A,
+			ZoneList.RES0,
+			ZoneList.ECON0,
+			ZoneList.SHIP0,
 			];
 			
 		// starting ship bits:

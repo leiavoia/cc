@@ -13,7 +13,7 @@ export function Zone( key ) {
 
 let ZoneProto = {
 	key: 'UNKNOWN',
-	// Catgegory of zone - determines UI colors and symbols.
+	// Category of zone - determines UI colors and symbols.
 	// One of: ['special','housing','research','military','espionage','government','stardock','mining']
 	type: 'unknown',
 	// how many sectors the zone occupies
@@ -109,6 +109,8 @@ let ZoneProto = {
 	}
 	
 export const ZoneList = {
+	
+	// ------[ GOVERNMENT ]-----------------\/------------------------
 	CIVCAPITOL: {
 		name: 'Civilization Capitol',
 		type: 'government',
@@ -129,85 +131,217 @@ export const ZoneList = {
 		gf: 0, // instant
 		perma: true
 		},
-	HOUSING00: {
+	GOV01: {
+		name: 'Government Office',
+		type: 'government',
+		desc: 'Increases beaurocracy.',
+		inputs: { $: 10 },
+		size: 1,
+		},		
+		
+	// ------[ HOUSING ]-----------------\/------------------------
+	HOUSING0A: {
 		name: 'Colonial Settlement',
 		type: 'housing',
 		desc: 'Provides basic civil services, allowing population to grow.',
-		inputs: { $: 1 },
-		outputs: { hou: 2 },
-		size: 1,
-		gf: 20
-		},
-	HOUSING10: {
-		name: 'City',
-		type: 'housing',
-		desc: 'Planned cities house more population than settlements, but require added resources.',
-		inputs: { $: 2, o: 1, s: 2, m: 1 },
-		outputs: { hou: 1.5 },
-		size: 2,
-		gf: 20
-		},
-	HOUSING20: {
-		name: 'Metropolis',
-		type: 'housing',
-		desc: 'A metropolis is expensive to maintain but greatly increases maximum population.',
-		inputs: { $: 5, o: 2, s: 5, m: 3 },
-		outputs: { hou: 2 },
-		size: 4,
-		gf: 30
-		},
-	HOUSING30: {
-		name: 'Megalopolis',
-		type: 'housing',
-		desc: 'A thriving region that maximizes population.',
-		inputs: { $: 10, o: 4, s: 12, m: 8 },
+		inputs: { $: 5, o: 1, s: 1, m: 1 },
 		outputs: { hou: 4 },
-		size: 8,
-		gf: 30
-		},
-	HOUSING40: {
-		name: 'Ecumenopolis',
-		type: 'housing',
-		desc: 'A planet-spanning city is the ultimate housing development.',
-		inputs: { $: 25, o: 5, s: 9, m: 14 },
-		outputs: { hou: 6 },
-		size: 12,
-		gf: 40
-		},
-	MINE01: {
-		name: 'Basic Resource Processor',
-		type: 'mining',
-		desc: 'Entry-level mining operation that can process local metals, silicates, and organic materials.',
-		inputs: { $: 5 },
-		outputs: { o: 1, s: 1, m: 1 },
 		size: 1,
 		gf: 10
 		},
-	SHIP01: {
-		name: 'Basic Stardock',
-		type: 'stardock',
-		desc: 'Allows planet to build spacecraft.',
-		inputs: { $: 5, m: 5, o: 1 },
-		outputs: { ship: 1 },
-		size: 1,
+	HOUSING0B: {
+		name: 'High Density Settlement',
+		type: 'housing',
+		desc: 'Improved higher density housing requires more metal but less cash.',
+		inputs: { $: 4, o: 1, s: 1, m: 2 },
+		outputs: { hou: 6 },
+		size: 2,
+		gf: 15
 		},
-	SPY01: {
-		name: 'Intelligence Office',
-		type: 'espionage',
-		desc: 'Allows us to launch espionage campaigns.',
+	HOUSING1A: {
+		name: 'City',
+		type: 'housing',
+		desc: 'Cities house more population than settlements, but require added resources.',
+		inputs: { $: 5, o: 1.5, s: 1.5, m: 1.5 },
+		outputs: { hou: 8 },
+		size: 2,
+		gf: 20
+		},
+	HOUSING1B: {
+		name: 'High Density City',
+		type: 'housing',
+		desc: 'Efficiently planned cities build upward instead of outward, but require Redium.',
+		inputs: { $: 4, o: 1, s: 1, m: 1, r:1 },
+		outputs: { hou: 11 },
+		size: 2,
+		gf: 30
+		},
+	HOUSING2A: {
+		name: 'Metropolis',
+		type: 'housing',
+		desc: 'A metropolis is expensive to maintain but greatly increases maximum population.',
+		inputs: { $: 8, o: 2, s: 2, m: 2, b: 1 },
+		outputs: { hou: 12 },
+		size: 4,
+		gf: 30
+		},
+	HOUSING2B: {
+		name: 'High Density Metropolis',
+		type: 'housing',
+		desc: 'AI-planned metropolii makes efficient use of limited space.',
+		inputs: { $: 8, o: 2, s: 2, m: 2, b: 2, r:1 },
+		outputs: { hou: 16 },
+		size: 4,
+		gf: 40
+		},
+	HOUSING3A: {
+		name: 'Megalopolis',
+		type: 'housing',
+		desc: 'A thriving region that maximizes population.',
+		inputs: { $: 10, o: 2.5, s: 2.5, m: 2.5, c: 2 },
+		outputs: { hou: 20 },
+		size: 8,
+		gf: 40
+		},
+	HOUSING3B: {
+		name: 'Megalopolis',
+		type: 'housing',
+		desc: 'A thriving region that maximizes population.',
+		inputs: { $: 12, o: 2.5, s: 2.5, m: 2.5, c: 3, v: 3 },
+		outputs: { hou: 26 },
+		size: 8,
+		gf: 50
+		},
+	HOUSING4A: {
+		name: 'Ecumenopolis',
+		type: 'housing',
+		desc: 'A planet-spanning city is the ultimate housing development.',
+		inputs: { $: 15, o: 4, s: 4, m: 4, c: 2, v: 2 },
+		outputs: { hou: 40 },
+		size: 12,
+		gf: 60
+		},
+		
+	// ------[ MINING ]-----------------\/--------------------------
+	MINE0A: {
+		name: 'Basic Resource Processor',
+		type: 'mining',
+		desc: 'Entry-level mining operation that can process local metals, silicates, and organic materials.',
 		inputs: { $: 10 },
-		outputs: { esp: 1 },
+		outputs: { o: 2, s: 2, m: 2 },
+		size: 4,
+		gf: 10
+		},
+	MINE0B: {
+		name: 'Basic Resource Nano-Cluster',
+		type: 'mining',
+		desc: 'Next generation mining operations are more expensive but improve output with a smaller footprint.',
+		inputs: { $: 15 },
+		outputs: { o: 3, s: 3, m: 3 },
+		size: 2,
+		gf: 30
+		},
+	MINE0C: {
+		name: 'Basic Resource Mega-Cluster',
+		type: 'mining',
+		desc: 'Cost effective, high yield mining if you can make space for it.',
+		inputs: { $: 5 },
+		outputs: { o: 5, s: 5, m: 5 },
+		size: 8,
+		gf: 50
+		},
+	MINE1A: {
+		name: 'Xeno Resource Processor',
+		type: 'mining',
+		desc: 'Mines Redium, Verdagen, and Bluetonium.',
+		inputs: { $: 15 },
+		outputs: { r: 2, g: 2, b: 2 },
+		size: 4,
+		gf: 20
+		},
+	MINE1B: {
+		name: 'Xeno Resource Nano-Cluster',
+		type: 'mining',
+		desc: 'Improved output on Redium, Verdagen, and Bluetonium mining.',
+		inputs: { $: 25, o: 1 },
+		outputs: { r: 3, g: 3, b: 3 },
+		size: 2,
+		gf: 35
+		},
+	MINE1C: {
+		name: 'Xeno Resource Mega-Cluster',
+		type: 'mining',
+		desc: 'Cost effective, high yield mining of Redium, Verdagen, and Bluetonium.',
+		inputs: { $: 10, o: 1 },
+		outputs: { r: 5, g: 5, b: 5 },
+		size: 8,
+		gf: 50
+		},
+	MINE2A: {
+		name: 'Exotic Resource Processor',
+		type: 'mining',
+		desc: 'Mines Cyanite, Yellotron, and Violetronium.',
+		inputs: { $: 20 },
+		outputs: { c: 2, y: 2, v: 2 },
+		size: 4,
+		gf: 20
+		},
+	MINE2B: {
+		name: 'Exotic Resource Nano-Cluster',
+		type: 'mining',
+		desc: 'Improved output on Cyanite, Yellowtron, and Violetronium mining.',
+		inputs: { $: 30, r: 1 },
+		outputs: { c: 3, y: 3, v: 3 },
+		size: 2,
+		gf: 35
+		},
+	MINE2C: {
+		name: 'Exotic Resource Mega-Cluster',
+		type: 'mining',
+		desc: 'Cost effective, high yield mining of Cyanite, Yellowtron, and Violetronium.',
+		inputs: { $: 15, r: 1 },
+		outputs: { c: 5, y: 5, v: 5 },
+		size: 8,
+		gf: 60
+		},
+		
+	// ------[ RESEARCH ]-----------------\/------------------------
+	RES0: {
+		name: 'Research Lab',
+		type: 'research',
+		desc: 'Adds to scientific research projects.',
+		inputs: { $: 10 },
+		outputs: { res: 5 },
 		size: 1,
 		},
-	MIL01: {
-		name: 'Military Base',
-		type: 'military',
-		desc: 'Allows troops to be trained.',
-		inputs: { $: 8 },
-		outputs: { def: 1 },
-		size: 1,
+	RES1: {
+		name: 'Research Center',
+		type: 'research',
+		desc: 'Adds to scientific research projects.',
+		inputs: { $: 15 },
+		outputs: { res: 10 },
+		size: 2,
 		},
-	ECON01: {
+	RES2: {
+		name: 'Research Complex',
+		type: 'research',
+		desc: 'Adds to scientific research projects.',
+		inputs: { $: 15, g: 2 },
+		outputs: { res: 15 },
+		size: 3,
+		},
+	RES3: {
+		name: 'Research Network',
+		type: 'research',
+		desc: 'Adds to scientific research projects.',
+		inputs: { $: 20, g: 2, y: 1 },
+		outputs: { res: 25 },
+		size: 5,
+		},
+				
+		
+	// ------[ ECONOMIC ]-----------------\/------------------------
+	ECON0: {
 		name: 'Planetary Bank',
 		type: 'economy',
 		desc: 'Helps the local economy, boosting tax income.',
@@ -215,26 +349,75 @@ export const ZoneList = {
 		outputs: { $: 20 },
 		size: 1,
 		},
-	SPECIAL01: {
+				
+	// ------[ SHIP BUILDING / STARDOCK ]-----------------\/---------
+	SHIP0: {
+		name: 'Basic Stardock',
+		type: 'stardock',
+		desc: 'Allows planet to build fighter-scale spacecraft.',
+		inputs: { $: 5, m: 5, o: 1 },
+		outputs: { ship: 1 },
+		size: 1,
+		},
+	SHIP2: {
+		name: 'Orbital Shipyard',
+		type: 'stardock',
+		desc: 'Allows planet to build cruiser-scale spacecraft.',
+		inputs: { $: 8, m: 5, o: 1 },
+		outputs: { ship: 2 },
+		size: 2,
+		},
+	SHIP3: {
+		name: 'Orbital Foundry',
+		type: 'stardock',
+		desc: 'Allows planet to build destroyer-scale spacecraft.',
+		inputs: { $: 10, m: 3, b: 2 },
+		outputs: { ship: 3 },
+		size: 4,
+		},
+	SHIP4: {
+		name: 'Naval Mega-Factory',
+		type: 'stardock',
+		desc: 'Allows planet to build battleship-scale spacecraft.',
+		inputs: { $: 15, m: 2, b: 2, c: 1 },
+		outputs: { ship: 5 },
+		size: 8,
+		},
+	SHIP5: {
+		name: 'Naval Giga-Factory',
+		type: 'stardock',
+		desc: 'Allows planet to build dreadnought-scale spacecraft.',
+		inputs: { $: 20, m: 2, b: 5, c: 2 },
+		outputs: { ship: 8 },
+		size: 12,
+		},
+		
+	// ------[ ESPIONAGE ]-----------------\/------------------------
+	SPY0: {
+		name: 'Intelligence Office',
+		type: 'espionage',
+		desc: 'Allows us to launch espionage campaigns.',
+		inputs: { $: 10 },
+		outputs: { esp: 1 },
+		size: 1,
+		},
+		
+	// ------[ MILITARY ]-----------------\/------------------------
+	MIL0: {
+		name: 'Military Base',
+		type: 'military',
+		desc: 'Allows troops to be trained.',
+		inputs: { $: 8 },
+		outputs: { def: 1 },
+		size: 2,
+		},
+		
+	// ------[ SPECIALS ]-----------------\/------------------------
+	SPECIAL0: {
 		name: 'Special Area',
 		type: 'special',
 		desc: 'Placeholder for your hopes and dreams.',
 		inputs: {},
-		size: 1,
-		},
-	GOV01: {
-		name: 'Government Office',
-		type: 'government',
-		desc: 'Increases beaurocracy.',
-		inputs: { $: 10 },
-		size: 1,
-		},
-	RES01: {
-		name: 'Research Center',
-		type: 'research',
-		desc: 'Adds to scientific research projects.',
-		inputs: { $: 10 },
-		outputs: { res: 5 },
 		size: 1,
 		},
 	};
