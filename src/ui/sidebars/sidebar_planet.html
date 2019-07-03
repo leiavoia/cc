@@ -66,10 +66,10 @@
 			<div class="zones" if.bind="planet.owner">
 				<template containerless repeat.for="z of planet.zones">
 					<div repeat.for="s of z.size" click.delegate="ClickZone(z)"
-						class="zone clickable ${z==sel_zone?'hilite':''} ${z.type} ${z.key} L${z.level} 
+						class="zone clickable ${z==sel_zone?'hilite':''} ${z.type} ${z.key} 
 						${z.insuf ? 'insuf' : ''}
 						${z.size==1 ? 'only' : ( s==0 ? 'start' : (s==z.size-1 ? 'end' : 'mid') ) }
-						pct${(z.val==z.levels ? 1.0 : z.val%1)|round:1|percent}
+						pct${z.val|round:1|percent}
 						">
 					</div>
 				</template>

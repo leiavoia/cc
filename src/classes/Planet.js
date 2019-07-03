@@ -129,7 +129,7 @@ export default class Planet {
 		// these lines if memory performance isn't a problem and we
 		// still can't find a solution for aurelia bugs.
 // 		let o = Object.assign( {}, ZoneList[tag] );
-		let o = Zone(key);
+		let o = new Zone(key);
 		if ( o.size > this.size - this.zoned ) { return false; }
 		this.zoned += o.size;
 		// some zones are "instant" and do not grow to size.

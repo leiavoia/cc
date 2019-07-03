@@ -1,32 +1,31 @@
-export function Zone( key ) {
-	let o = Object.create( ZoneList[key] );
-	o.val = 0;
-	o.insuf = false;
-	o.output_rec = {}
-	o.resource_rec = {};
-	o.resource_estm = {}; // we may want this some day, but saves memory if we dont
-	for ( let k in o.outputs ) { o.output_rec[k]=0; } ; // prepopulate keys
-	for ( let k in o.inputs ) { o.resource_rec[k]=0; } ; // prepopulate keys
-	for ( let k in o.inputs ) { o.resource_estm[k]=0; } ; // prepopulate keys
-	return o;
-	};
-
-let ZoneProto = {
-	key: 'UNKNOWN',
-	// Category of zone - determines UI colors and symbols.
-	// One of: ['special','housing','research','military','espionage','government','stardock','mining']
-	type: 'unknown',
-	// how many sectors the zone occupies
-	size: 1,
-	// Growth Factor - turns required to mature.
-	// Modified by a planet's energy level when calculating growth.
-	gf: 10,
-	// inputs and outputs are normalized per-sector and are
-	// multiplied by the zone's size when calculating activity
-	inputs: {},
-	outputs: {},
+export class Zone {
+	
+	constructor( key ) { 
+		this.key = key;
+		// Category of zone - determines UI colors and symbols.
+		// One of: ['special','housing','research','military','espionage','government','stardock','mining']
+		this.type = 'housing';
+		// how many sectors the zone occupies
+		this.size = 1;
+		// Growth Factor - turns required to mature.
+		// Modified by a planet's energy level when calculating growth.
+		this.gf = 10;
+		// inputs and outputs are normalized per-sector and are
+		// multiplied by the zone's size when calculating activity
+		this.val = 0;
+		this.insuf = false;
+		this.inputs = {};
+		this.outputs = {};
+		this.output_rec = {}
+		this.resource_rec = {};
+		this.resource_estm = {}; // we may want this some day, but saves memory if we dont
+		Object.assign( this, ZoneList[key] );
+		for ( let k in this.outputs ) { this.output_rec[k]=0; } ; // prepopulate keys
+		for ( let k in this.inputs ) { this.resource_rec[k]=0; } ; // prepopulate keys
+		for ( let k in this.inputs ) { this.resource_estm[k]=0; } ; // prepopulate keys
+		}
+		
 	Do( planet ) { 
-		// TODO: planet energy
 		// evaluate our allotment of resources in case there is a global shortage
 		// ( you're only as good as your most limited resource )
 		let min_resource_ratio = 1.0;
@@ -58,11 +57,12 @@ let ZoneProto = {
 		this.val = this.val.clamp(0,1);
 		// if we shrank, warn player
 		this.insuf = diff < 0;
-		},
+		}
+		
 	Output( planet, work ) { 
 		if ( work ) { 
 			for ( let type of Object.keys(this.outputs) ) { 
-				if ( typeof(this.standard_outputs[type]) === 'function' ) {
+				if ( typeof(standard_outputs[type]) === 'function' ) {
 					let amount = this.outputs[type] * this.size * work;
 					// If this is a mining zone, the output is modified by local resource availabilty.
 					// However it is also possible to synthesize new resources as outputs that
@@ -73,13 +73,14 @@ let ZoneProto = {
 							amount *= planet.resources[type];
 							}
 						}
-					this.standard_outputs[type]( planet, amount ); // do it
+					standard_outputs[type]( planet, amount ); // do it
 					this.output_rec[type] = amount; 
 					planet.output_rec[type] += amount; // assume it gets zero'd out before this function is called
 					}
 				}
 			}
-		},
+		}
+		
 	EstimateResources( planet ) { 
 		// ideally we want enough resources to do our job and grow the maximum allowed amount.
 		let amount_requesting = planet.zone_hab_mod * planet.spending * ( this.val + Math.min( planet.energy/this.gf, 1.0 - this.val ) );
@@ -87,27 +88,29 @@ let ZoneProto = {
 			this.resource_estm[k] = this.inputs[k] * this.size * amount_requesting;
 		}
 		return this.resource_estm;
-		},
-	// used for internal reference
-	standard_outputs: {
-		$: 		function( planet, amount ) { planet.owner.resources.$ += amount },
-		o: 		function( planet, amount ) { planet.owner.resources.o += amount },
-		s: 		function( planet, amount ) { planet.owner.resources.s += amount },
-		m: 		function( planet, amount ) { planet.owner.resources.m += amount },
-		r: 		function( planet, amount ) { planet.owner.resources.r += amount },
-		g: 		function( planet, amount ) { planet.owner.resources.g += amount },
-		b: 		function( planet, amount ) { planet.owner.resources.b += amount },
-		c: 		function( planet, amount ) { planet.owner.resources.c += amount },
-		v: 		function( planet, amount ) { planet.owner.resources.v += amount },
-		y: 		function( planet, amount ) { planet.owner.resources.y += amount },
-		ship: 	function( planet, amount ) { planet.ship_labor += amount }, // TODO
-		def: 	function( planet, amount ) { planet.def_labor += amount }, // TODO
-		res: 	function( planet, amount ) { planet.owner.research_income += amount },
-		esp: 	function( planet, amount ) { planet.owner.esp_labor += amount }, // TODO
-		hou: 	function( planet, amount ) { planet.popmax_contrib += amount },
-		},	
-	}
-	
+		}	
+			
+	};
+
+// used for internal reference
+let standard_outputs = {
+	$: 		function( planet, amount ) { planet.owner.resources.$ += amount },
+	o: 		function( planet, amount ) { planet.owner.resources.o += amount },
+	s: 		function( planet, amount ) { planet.owner.resources.s += amount },
+	m: 		function( planet, amount ) { planet.owner.resources.m += amount },
+	r: 		function( planet, amount ) { planet.owner.resources.r += amount },
+	g: 		function( planet, amount ) { planet.owner.resources.g += amount },
+	b: 		function( planet, amount ) { planet.owner.resources.b += amount },
+	c: 		function( planet, amount ) { planet.owner.resources.c += amount },
+	v: 		function( planet, amount ) { planet.owner.resources.v += amount },
+	y: 		function( planet, amount ) { planet.owner.resources.y += amount },
+	ship: 	function( planet, amount ) { planet.ship_labor += amount }, // TODO
+	def: 	function( planet, amount ) { planet.def_labor += amount }, // TODO
+	res: 	function( planet, amount ) { planet.owner.research_income += amount },
+	esp: 	function( planet, amount ) { planet.owner.esp_labor += amount }, // TODO
+	hou: 	function( planet, amount ) { planet.popmax_contrib += amount },
+	};
+		
 export const ZoneList = {
 	
 	// ------[ GOVERNMENT ]-----------------\/------------------------
@@ -313,7 +316,8 @@ export const ZoneList = {
 		inputs: { $: 10 },
 		outputs: { res: 5 },
 		size: 1,
-		},
+		gf: 10
+	},
 	RES1: {
 		name: 'Research Center',
 		type: 'research',
@@ -321,7 +325,8 @@ export const ZoneList = {
 		inputs: { $: 15 },
 		outputs: { res: 10 },
 		size: 2,
-		},
+		gf: 15
+	},
 	RES2: {
 		name: 'Research Complex',
 		type: 'research',
@@ -329,7 +334,8 @@ export const ZoneList = {
 		inputs: { $: 15, g: 2 },
 		outputs: { res: 15 },
 		size: 3,
-		},
+		gf: 20
+	},
 	RES3: {
 		name: 'Research Network',
 		type: 'research',
@@ -337,9 +343,10 @@ export const ZoneList = {
 		inputs: { $: 20, g: 2, y: 1 },
 		outputs: { res: 25 },
 		size: 5,
-		},
-				
-		
+		gf: 30
+	},
+	
+	
 	// ------[ ECONOMIC ]-----------------\/------------------------
 	ECON0: {
 		name: 'Planetary Bank',
@@ -348,8 +355,9 @@ export const ZoneList = {
 		inputs: { $: 10 },
 		outputs: { $: 20 },
 		size: 1,
-		},
-				
+		gf: 10
+	},
+	
 	// ------[ SHIP BUILDING / STARDOCK ]-----------------\/---------
 	SHIP0: {
 		name: 'Basic Stardock',
@@ -358,7 +366,8 @@ export const ZoneList = {
 		inputs: { $: 5, m: 5, o: 1 },
 		outputs: { ship: 1 },
 		size: 1,
-		},
+		gf: 10
+	},
 	SHIP2: {
 		name: 'Orbital Shipyard',
 		type: 'stardock',
@@ -366,7 +375,8 @@ export const ZoneList = {
 		inputs: { $: 8, m: 5, o: 1 },
 		outputs: { ship: 2 },
 		size: 2,
-		},
+		gf: 15
+	},
 	SHIP3: {
 		name: 'Orbital Foundry',
 		type: 'stardock',
@@ -374,7 +384,8 @@ export const ZoneList = {
 		inputs: { $: 10, m: 3, b: 2 },
 		outputs: { ship: 3 },
 		size: 4,
-		},
+		gf: 20
+	},
 	SHIP4: {
 		name: 'Naval Mega-Factory',
 		type: 'stardock',
@@ -382,7 +393,8 @@ export const ZoneList = {
 		inputs: { $: 15, m: 2, b: 2, c: 1 },
 		outputs: { ship: 5 },
 		size: 8,
-		},
+		gf: 30
+	},
 	SHIP5: {
 		name: 'Naval Giga-Factory',
 		type: 'stardock',
@@ -390,7 +402,8 @@ export const ZoneList = {
 		inputs: { $: 20, m: 2, b: 5, c: 2 },
 		outputs: { ship: 8 },
 		size: 12,
-		},
+		gf: 40
+	},
 		
 	// ------[ ESPIONAGE ]-----------------\/------------------------
 	SPY0: {
@@ -400,6 +413,7 @@ export const ZoneList = {
 		inputs: { $: 10 },
 		outputs: { esp: 1 },
 		size: 1,
+		gf: 10
 		},
 		
 	// ------[ MILITARY ]-----------------\/------------------------
@@ -410,6 +424,7 @@ export const ZoneList = {
 		inputs: { $: 8 },
 		outputs: { def: 1 },
 		size: 2,
+		gf: 10
 		},
 		
 	// ------[ SPECIALS ]-----------------\/------------------------
@@ -419,13 +434,17 @@ export const ZoneList = {
 		desc: 'Placeholder for your hopes and dreams.',
 		inputs: {},
 		size: 1,
+		gf: 10
 		},
 	};
 
-// upgrade each data blob into a full-fledged ZonePrototype
 for ( let k in ZoneList ) {
-	let o = Object.create( ZoneProto );
-	o = Object.assign( o, ZoneList[k] );
-	ZoneList[k] = o;
 	ZoneList[k].key = k; // add keys to objects themselves for later self-reference
+	ZoneList[k].type = ZoneList[k].type || 'housing';
+	ZoneList[k].desc = ZoneList[k].desc || 'missing description';
+	ZoneList[k].name = ZoneList[k].name || 'UNKNOWN';
+	ZoneList[k].size = ZoneList[k].size || 1;
+	ZoneList[k].gf = ZoneList[k].gf || 10;
+	ZoneList[k].inputs = ZoneList[k].inputs || {};
+	ZoneList[k].outputs = ZoneList[k].outputs || {};
 	}
