@@ -147,7 +147,7 @@ export const ZoneList = {
 		name: 'Colonial Settlement',
 		type: 'housing',
 		desc: 'Provides basic civil services, allowing population to grow.',
-		inputs: { $: 5, o: 1, s: 1, m: 1 },
+		inputs: { o: 1, s: 1, m: 1 },
 		outputs: { hou: 4 },
 		size: 1,
 		gf: 10
@@ -156,7 +156,7 @@ export const ZoneList = {
 		name: 'High Density Settlement',
 		type: 'housing',
 		desc: 'Improved higher density housing requires more metal but less cash.',
-		inputs: { $: 4, o: 1, s: 1, m: 2 },
+		inputs: { o: 1, s: 1, m: 2 },
 		outputs: { hou: 6 },
 		size: 2,
 		gf: 15
@@ -165,7 +165,7 @@ export const ZoneList = {
 		name: 'City',
 		type: 'housing',
 		desc: 'Cities house more population than settlements, but require added resources.',
-		inputs: { $: 5, o: 1.5, s: 1.5, m: 1.5 },
+		inputs: { o: 1.5, s: 1.5, m: 1.5 },
 		outputs: { hou: 8 },
 		size: 2,
 		gf: 20
@@ -174,7 +174,7 @@ export const ZoneList = {
 		name: 'High Density City',
 		type: 'housing',
 		desc: 'Efficiently planned cities build upward instead of outward, but require Redium.',
-		inputs: { $: 4, o: 1, s: 1, m: 1, r:1 },
+		inputs: { o: 1, s: 1, m: 1, r:1 },
 		outputs: { hou: 11 },
 		size: 2,
 		gf: 30
@@ -183,7 +183,7 @@ export const ZoneList = {
 		name: 'Metropolis',
 		type: 'housing',
 		desc: 'A metropolis is expensive to maintain but greatly increases maximum population.',
-		inputs: { $: 8, o: 2, s: 2, m: 2, b: 1 },
+		inputs: { o: 2, s: 2, m: 2, b: 1 },
 		outputs: { hou: 12 },
 		size: 4,
 		gf: 30
@@ -192,7 +192,7 @@ export const ZoneList = {
 		name: 'High Density Metropolis',
 		type: 'housing',
 		desc: 'AI-planned metropolii makes efficient use of limited space.',
-		inputs: { $: 8, o: 2, s: 2, m: 2, b: 2, r:1 },
+		inputs: { o: 2, s: 2, m: 2, b: 2, r:1 },
 		outputs: { hou: 16 },
 		size: 4,
 		gf: 40
@@ -201,7 +201,7 @@ export const ZoneList = {
 		name: 'Megalopolis',
 		type: 'housing',
 		desc: 'A thriving region that maximizes population.',
-		inputs: { $: 10, o: 2.5, s: 2.5, m: 2.5, c: 2 },
+		inputs: { o: 2.5, s: 2.5, m: 2.5, c: 2 },
 		outputs: { hou: 20 },
 		size: 8,
 		gf: 40
@@ -210,7 +210,7 @@ export const ZoneList = {
 		name: 'Megalopolis',
 		type: 'housing',
 		desc: 'A thriving region that maximizes population.',
-		inputs: { $: 12, o: 2.5, s: 2.5, m: 2.5, c: 3, v: 3 },
+		inputs: { o: 2.5, s: 2.5, m: 2.5, c: 3, v: 3 },
 		outputs: { hou: 26 },
 		size: 8,
 		gf: 50
@@ -219,7 +219,7 @@ export const ZoneList = {
 		name: 'Ecumenopolis',
 		type: 'housing',
 		desc: 'A planet-spanning city is the ultimate housing development.',
-		inputs: { $: 15, o: 4, s: 4, m: 4, c: 2, v: 2 },
+		inputs: { o: 4, s: 4, m: 4, c: 2, v: 2 },
 		outputs: { hou: 40 },
 		size: 12,
 		gf: 60
@@ -233,7 +233,7 @@ export const ZoneList = {
 		inputs: { $: 10 },
 		outputs: { o: 2, s: 2, m: 2 },
 		size: 4,
-		gf: 10
+		gf: 15
 		},
 	MINE0B: {
 		name: 'Basic Resource Nano-Cluster',
@@ -368,7 +368,7 @@ export const ZoneList = {
 		size: 1,
 		gf: 10
 	},
-	SHIP2: {
+	SHIP1: {
 		name: 'Orbital Shipyard',
 		type: 'stardock',
 		desc: 'Allows planet to build cruiser-scale spacecraft.',
@@ -377,7 +377,7 @@ export const ZoneList = {
 		size: 2,
 		gf: 15
 	},
-	SHIP3: {
+	SHIP2: {
 		name: 'Orbital Foundry',
 		type: 'stardock',
 		desc: 'Allows planet to build destroyer-scale spacecraft.',
@@ -386,7 +386,7 @@ export const ZoneList = {
 		size: 4,
 		gf: 20
 	},
-	SHIP4: {
+	SHIP3: {
 		name: 'Naval Mega-Factory',
 		type: 'stardock',
 		desc: 'Allows planet to build battleship-scale spacecraft.',
@@ -395,7 +395,7 @@ export const ZoneList = {
 		size: 8,
 		gf: 30
 	},
-	SHIP5: {
+	SHIP4: {
 		name: 'Naval Giga-Factory',
 		type: 'stardock',
 		desc: 'Allows planet to build dreadnought-scale spacecraft.',

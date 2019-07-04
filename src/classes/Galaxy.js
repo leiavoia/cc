@@ -96,20 +96,23 @@ export default class Galaxy {
 			let s = stars.pop();
 			let p = s.planets[0];
 			this.ForcePlanetEnvToMatchRace( p, c ); 
+			p.resources.o = 3;
+			p.resources.s = 3;
+			p.resources.m = 3;
 			p.Settle( c );
 			if ( c.id == 0 ) { s.explored = true; }
 			this.AssignStartingFleet( c, s );
 			c.homeworld = p;
-			// colonies
-			for ( let i=0, max = utils.RandomInt(1,2); stars.length && i < max; i++ ) { 
-				let next = stars.pop();
-				let p = next.planets[0];
-				this.ForcePlanetEnvToMatchRace( p, c );
-				p.Settle( c );
-				if ( c.id == 0 ) { next.explored = true; }
-				// defending fleet
-				this.CreateRandomFleet( c, next );
-				}
+// 			// colonies
+// 			for ( let i=0, max = utils.RandomInt(1,2); stars.length && i < max; i++ ) { 
+// 				let next = stars.pop();
+// 				let p = next.planets[0];
+// 				this.ForcePlanetEnvToMatchRace( p, c );
+// 				p.Settle( c );
+// 				if ( c.id == 0 ) { next.explored = true; }
+// 				// defending fleet
+// 				this.CreateRandomFleet( c, next );
+// 				}
 			}
 		
 		return this.civs[0].homeworld.star;

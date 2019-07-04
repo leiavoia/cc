@@ -196,15 +196,13 @@ export default class Civ {
 		
 	// set the civ up with starting technology roster
 	InitResearch() { 
-		// commit free seed nodes
-// 		this.tech.nodes_compl.set( 'NODE0', {
-// 			node: Tech.TechNodes.NODE0,
-// 			key: 'NODE0',
-// 			rp: 0 // how much research we've committed so far
-// 			});
+		for ( let key in Tech.TechNodes ) { 
+			if ( !Tech.TechNodes[key].requires.length && !Tech.TechNodes[key].rp ) { 
+				this.CompleteTechNode( Tech.TechNodes[key], null, false );
+				}
+			}
 		this.RecalcAvailableTechNodes();
 		this.AI_ChooseNextResearchProject();
-		// TODO: some civs may get free techs or have other seed nodes
 		}
 		
 	SelectResearchProject( key ) {
@@ -214,13 +212,12 @@ export default class Civ {
 		}
 		
 	AI_ChooseNextResearchProject() { 
-		if ( !this.tech.current_project ) { 
-			if ( !this.tech.nodes_avail.size ) { 
-// 				console.warn(`CIV #${this.id} "${this.name}" ran out of research projects.`);
-				}
-			else {
-				this.tech.current_project = this.tech.nodes_avail.values().next().value; // first item in list
-				}
+		if ( !this.tech.current_project && this.tech.nodes_avail.size ) { 
+			// TODO: AI personality will influance tech selection.
+			let SortFunc = (a,b) => a.node.rp - b.node.rp;
+			this.tech.current_project = 
+				Array.from( this.tech.nodes_avail.values() )
+				.sort(SortFunc).shift();
 			}	
 		}
 		
@@ -231,17 +228,15 @@ export default class Civ {
 			if ( !this.tech.nodes_avail.has(key) && !this.tech.nodes_compl.has(key) ) { 
 				// check the prerequisites against our completed nodes
 				let t = Tech.TechNodes[key];
-				if ( t.requires ) { 
+				if ( t.requires && t.requires.length ) { 
 					for ( let req of t.requires ) { 
 						if ( !this.tech.nodes_compl.has(req) ) { 
 							continue nodescannerloop;
 							}
 						}
-					// all prerequisites met. add the node to available list
-					this.tech.nodes_avail.set( key, { node: t, rp: 0 } );
 					}
-				// else: this node has no prereqs, but these are 
-				// usually special seed nodes, so do NOT add them here.
+				// all prerequisites met. add the node to available list
+				this.tech.nodes_avail.set( key, { node: t, rp: 0 } );
 				}
 			}
 		}
@@ -283,7 +278,7 @@ export default class Civ {
 		this.tech.nodes_compl.set(node.key, node );
 		this.tech.nodes_avail.delete(node.key);
 		this.RecalcAvailableTechNodes();
-		if ( this.tech.current_project.node == node ) { 
+		if ( this.tech.current_project && this.tech.current_project.node == node ) { 
 			this.tech.current_project = null;
 			this.AI_ChooseNextResearchProject();			
 			}
@@ -448,30 +443,7 @@ export default class Civ {
 		this.mods = new Modlist( this.race );
 		this.ai = new AI.CivAI(this);
 		this.InitResearch();
-		
-		// starting zones available
-		this.avail_zones = [
-			ZoneList.HOUSING0A,
-			ZoneList.MINE0A,
-			ZoneList.RES0,
-			ZoneList.ECON0,
-			ZoneList.SHIP0,
-			];
-			
-		// starting ship bits:
-		this.avail_ship_comps = [
-			ShipComponentList.ENGINE1,
-			ShipComponentList.ARMOR1,
-			ShipComponentList.SHIELD1,
-			ShipComponentList.COLONY1,
-			ShipComponentList.RESEARCHLAB1,
-			];
-		this.avail_ship_weapons = [
-			WeaponList.LASER,
-			WeaponList.RAYGUN,
-			WeaponList.MISSILE
-			];
-	
+
 		// default ship set
 		let colonizer = new ShipBlueprint();
 		colonizer.name = 'Colony Ship';
