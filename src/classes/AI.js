@@ -852,6 +852,12 @@ export class AIPlanetsObjective extends AIObjective {
 	type = 'planets';
 	priority = 50;
 	EvaluateFunc( app, civ ) {
+		// zone any planets not already zoned
+		for ( let p of civ.planets ) {
+			if ( p.zoned < p.size ) { 
+				p.AI_ZonePlanet();
+				}
+			}
 				
 		// what is our average combat ship milval?
 		let combat_bps = civ.ship_blueprints.filter( bp => bp.role == 'combat' );
