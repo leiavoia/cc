@@ -756,7 +756,7 @@ export class AIColonizeObjective extends AIObjective {
 		for ( let s of app.game.galaxy.stars ) { 
 			for ( let p of s.planets ) {
 				// accessible?
-				if ( p.owner || p.Habitable( civ.race ) || civ.InRangeOf(p.star.xpos, p.star.ypos) ) { continue; }
+				if ( p.owner || !p.Habitable( civ.race ) || !civ.InRangeOf(p.star.xpos, p.star.ypos) ) { continue; }
 				// treaties apply? 
 				let has_treaty = false;
 				for ( let p2 of p.star.planets ) { 
