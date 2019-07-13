@@ -335,8 +335,11 @@ export default class Civ {
 		// particularly with cash.
 		
 		// calc supply vs demand
-		for ( let k of Object.keys(this.resource_supply) ) { 
-			this.resource_supply[k] = Math.max( 0, this.resources[k] / this.resource_estm[k] ); 
+		for ( let k in this.resource_supply ) { 
+			this.resource_supply[k] = 
+				( this.resource_estm[k] && this.resources[k] )
+				? Math.max( 0, this.resources[k] / this.resource_estm[k] ) 
+				: 1.0; 
 			}
 		}
 		
@@ -529,7 +532,7 @@ export default class Civ {
 		civ.race.env.atm = utils.BiasedRandInt(0, 4, 2, 0.5);
 		civ.race.env.temp = utils.BiasedRandInt(0, 4, 2, 0.5);
 		civ.race.env.grav = utils.BiasedRandInt(0, 4, 2, 0.5);
-		// personality
+		// diplomatic personality
 		civ.diplo.style = Math.random();
 		civ.diplo.skill = utils.BiasedRand(0.05, 0.25, 0.10, 0.5);
 		civ.diplo.dispo = utils.BiasedRand(0.2, 0.8, 0.5, 0.75);
@@ -540,13 +543,33 @@ export default class Civ {
 		civ.diplo.offer_counter_at = ( ( civ.diplo.offer_ok_at - 0.3 ) + ( Math.random() * 0.2 ) ); // anything beteen this and `ok` gets an automatic counter-offer 
 		civ.diplo.offer_bad_at = ( ( civ.diplo.offer_counter_at - 0.3 ) + ( Math.random() * 0.2 ) ); // anything between this and `counter` gets refused
 		// anything below offer_bad_at is an insult
-		// AI
+		// AI combat strategy traits
 		civ.ai.strat.def = ['balanced', 'triage'/*, 'equal', null*/][ utils.RandomInt(0,1) ];
 		civ.ai.strat.def_threat_weight = Math.random();
 		civ.ai.strat.def_planetvalue_weight = 1 - civ.ai.strat.def_threat_weight;
 		civ.ai.strat.offense_ratio = Math.random();
 		civ.ai.strat.risk = Math.random();
 		civ.ai.strat.posture = Math.random();
+		// how AI weights various levels of zoning needs
+		civ.ai.strat.zoning_weights = {
+			local: utils.BiasedRandInt(1, 5, 4, 0.2),
+			global: utils.BiasedRandInt(1, 5, 3, 0.2),
+			ai: utils.BiasedRandInt(1, 5, 3, 0.2)
+			};
+		let zoning_weight_total = 0;
+		for ( let k in civ.ai.strat.zoning_weights ) { zoning_weight_total += civ.ai.strat.zoning_weights[k]; }
+		for ( let k in civ.ai.strat.zoning_weights ) { civ.ai.strat.zoning_weights[k] /= zoning_weight_total; }
+		// ideal zoning preference ("play style")
+		civ.ai.strat.ideal_zoning = {
+			housing: utils.BiasedRandInt(6, 12, 5, 0.5),
+			mining: utils.BiasedRandInt(5, 12, 5, 0.5),
+			stardock: utils.BiasedRandInt(5, 12, 5, 0.5),
+			economy: utils.BiasedRandInt(3, 9, 5, 0.5),
+			research: utils.BiasedRandInt(6, 12, 5, 0.5),			
+			}
+		let ideal_zone_total = 0;
+		for ( let k in civ.ai.strat.ideal_zoning ) { ideal_zone_total += civ.ai.strat.ideal_zoning[k]; }
+		for ( let k in civ.ai.strat.ideal_zoning ) { civ.ai.strat.ideal_zoning[k] /= ideal_zone_total; }
 		return civ;
 		}
 		

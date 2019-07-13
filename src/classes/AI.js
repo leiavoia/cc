@@ -858,6 +858,8 @@ export class AIPlanetsObjective extends AIObjective {
 				this.ZonePlanet(p);
 				}
 			}
+		// TODO: we may want to rezone planets if we are running very low on resources or money.
+		// TODO: consider rezoning any planet on an anniversary of its settlement just to keep it fresh.
 				
 		// what is our average combat ship milval?
 		let combat_bps = civ.ship_blueprints.filter( bp => bp.role == 'combat' );
@@ -998,52 +1000,86 @@ export class AIPlanetsObjective extends AIObjective {
 			
 		}
 		
+	// returns a list of zone *types* in preferred order of building
 	ZoneSuggester( p ) { 
+		// TODO: in the future we may tear down old zones build new ones.
+		// For now, just refuse further zoning if planet is full.
 		if ( p.zoned == p.size ) { return null; }
 					
-		// let l1 = {
-		// 	a: 10,
-		// 	b: 10,
-		// 	c: 10,
-		// 	d: 10
-		// 	};
+		// 1) LOCAL:
+		// 		Resources available
+		// 		size left (versus zones vailable)
+		// 		local bonuses
+		// 		proximity to enemy
+		// 		minimum unit requirements (trade hubs and such)
+		// 		environment
+		// 		local culture
+		// 		candidate for specialization
+		// 		buildings with synergistic effects
+		// 		special buildings or designations
+		// 2) GLOBAL:
+		// 		at war? winning?
+		// 		tech era / turn num
+		// 		need for resources
+		// 		need for cash
+		// 		need for research (are we behind?)
+		// 		military threat levels
+		// 		troop levels
+		//		total existing zones per type across empire
+		// 3) FORECAST
+		// 		num opponants
+		// 		colonies not colonized
+		// 		num opponants
+		// 4) AI PERSONALITY
+		// 		preference for specialization (gung ho)
+		// 		preference for zone types (static plan)
 			
-		// let l2 = {
-		// 	a: 1,
-		// 	b: 6,
-		// 	c: 1,
-		// 	d: 4
-		// 	};
-				
-		// // total and normalize layer 1
-		// let l1total = 0;
-		// for ( let k in l1 ) { l1total += l1[k]; } 	
-		// for ( let k in l1 ) { l1[k] /= l1total; } 	
-
-		// // total and normalize layer 2
-		// let l2total = 0;
-		// for ( let k in l2 ) { l2total += l2[k]; } 	
-		// for ( let k in l2 ) { l2[k] /= l2total; } 	
-
-		// // we can skip an extra normalizing step by making sure these values add to 1.0:
-		// let l1_weight = 0.4;
-		// let l2_weight = 0.6;
-
-		// // create l3
-		// let l3 = {};
-		// for ( let k in l1 ) { 
-		// 	l3[k] = (l1[k] * l1_weight) + (l2[k] * l2_weight);
-		// 	} 	
-			
-		// ideal ratios we would like to have:
-		let ideal = {
-			housing: 0.3,
-			mining: 0.3,
-			stardock: 0.1,
-			economy: 0.1,
-			research: 0.2
+		// LOCAL ZONING -----------------------------------------------------------------
+		// put whatever is immediately important to this planet here.
+		let local_zoning = {
+			housing: 10,
+			mining: 0, // no mining if no resources available
+			stardock: 10,
+			economy: 6,
+			research: 10
 			};
-			
+		// good resources available? (this factors in current supply and demand)
+		for ( let k in p.resources ) { local_zoning.mining += p.resources[k] * (1/((p.owner.resource_supply[k]+2)/4)); }
+		
+		// housing situation?
+		local_zoning.housing += 2 * p.Adaptation( p.owner.race );
+		// normalize
+		let local_zone_total = 0;
+		for ( let k in local_zoning ) { local_zone_total += local_zoning[k]; }
+		for ( let k in local_zoning ) { local_zoning[k] /= local_zone_total; }
+		
+		// GLOBAL ZONING -----------------------------------------------------------------
+		// put issues of current strategic importantce here
+		// TODO: this could be moved up a layer and done once per turn instead.
+		let global_zoning = {
+			housing: 3,
+			mining: 3,
+			stardock: 2,
+			economy: 1,
+			research: 3
+			};
+		// if we need cash, we need taxes, so we need people
+		if ( p.owner.resources.$ < 500 ) { global_zoning.housing += 5; }
+		if ( p.owner.econ.net_rev < 0 ) { global_zoning.housing += 10; }
+		if ( p.owner.econ.net_rev / (p.owner.resources.$ + 1 ) < 0.025 ) { global_zoning.housing += 5; }
+		// normalize
+		let global_zone_total = 0;
+		for ( let k in global_zoning ) { global_zone_total += global_zoning[k]; }
+		for ( let k in global_zoning ) { global_zoning[k] /= global_zone_total; }
+		
+		// BLEND TOGETHER -----------------------------------------------------------------
+		let ideal = {};
+		for ( let k in p.owner.ai.strat.ideal_zoning ) { 
+			ideal[k] = 
+				  (local_zoning[k] * p.owner.ai.strat.zoning_weights.local)
+				+ (global_zoning[k] * p.owner.ai.strat.zoning_weights.global)
+				+ (p.owner.ai.strat.ideal_zoning[k] * p.owner.ai.strat.zoning_weights.ai)
+			} 
 		// actual ratios we have
 		let actual = {};
 		for ( let z of p.zones ) { 
@@ -1062,12 +1098,40 @@ export class AIPlanetsObjective extends AIObjective {
 	// Completely zones a planet. Can be used for AI or automation settings
 	ZonePlanet( p ) {
 		while (p.zoned < p.size ) { 
+			// the zone suggester will indicate what general type of zone we should build next
 			let needs = this.ZoneSuggester(p);
 			// pick a specific zone to make.
 			for ( let ztype of needs ) { 
+				// find all zones that fit in the space left
 				let maxsize = p.size - p.zoned;
 				let candidates = p.owner.avail_zones.filter( z => z.type == ztype && z.size <= maxsize );
-				if ( candidates.length ) { 
+				// no zones that require special resources we don't have
+				candidates = candidates.filter( z => {
+					for ( let k in z.inputs ) {
+						if ( p.owner.resources[k] <= 0 ) { return false; }
+						}	
+					return true;
+					} );
+				// if choosing a mining zone, make sure we have those resources available
+				if ( ztype == 'mining' ) { 
+					candidates = candidates.filter( z => {
+						for ( let k in z.outputs ) { if ( p.resources[k] ) { return true; } }
+						return false;
+						} );
+					if ( candidates.length ) { 
+						// let natural_values = { o:3, s:1, m:2, r:4, g:4, b:4, c:7, v:9, y:8, };
+						let zone = candidates.sort( (a,b) => {
+							let a_total = 0, b_total = 0;
+							for ( let k in a.outputs ) { a_total += p.resources[k] * (1/p.owner.resource_supply[k]); }
+							for ( let k in b.outputs ) { b_total += p.resources[k] * (1/p.owner.resource_supply[k]); }
+							return a_total - b_total;
+							}).pop();
+						p.AddZone(zone.key);
+						break;
+						}
+					}
+				// regular zones just choose the largest available
+				else if ( candidates.length ) { 
 					let zone = candidates.sort( (a,b) => b.size - a.size ).pop();
 					p.AddZone(zone.key);
 					break;
