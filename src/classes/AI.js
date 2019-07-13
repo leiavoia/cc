@@ -855,7 +855,7 @@ export class AIPlanetsObjective extends AIObjective {
 		// zone any planets not already zoned
 		for ( let p of civ.planets ) {
 			if ( p.zoned < p.size ) { 
-				p.AI_ZonePlanet();
+				this.ZonePlanet(p);
 				}
 			}
 				
@@ -996,7 +996,86 @@ export class AIPlanetsObjective extends AIObjective {
 				}
 			}	
 			
-		}			
+		}
+		
+	ZoneSuggester( p ) { 
+		if ( p.zoned == p.size ) { return null; }
+					
+		// let l1 = {
+		// 	a: 10,
+		// 	b: 10,
+		// 	c: 10,
+		// 	d: 10
+		// 	};
+			
+		// let l2 = {
+		// 	a: 1,
+		// 	b: 6,
+		// 	c: 1,
+		// 	d: 4
+		// 	};
+				
+		// // total and normalize layer 1
+		// let l1total = 0;
+		// for ( let k in l1 ) { l1total += l1[k]; } 	
+		// for ( let k in l1 ) { l1[k] /= l1total; } 	
+
+		// // total and normalize layer 2
+		// let l2total = 0;
+		// for ( let k in l2 ) { l2total += l2[k]; } 	
+		// for ( let k in l2 ) { l2[k] /= l2total; } 	
+
+		// // we can skip an extra normalizing step by making sure these values add to 1.0:
+		// let l1_weight = 0.4;
+		// let l2_weight = 0.6;
+
+		// // create l3
+		// let l3 = {};
+		// for ( let k in l1 ) { 
+		// 	l3[k] = (l1[k] * l1_weight) + (l2[k] * l2_weight);
+		// 	} 	
+			
+		// ideal ratios we would like to have:
+		let ideal = {
+			housing: 0.3,
+			mining: 0.3,
+			stardock: 0.1,
+			economy: 0.1,
+			research: 0.2
+			};
+			
+		// actual ratios we have
+		let actual = {};
+		for ( let z of p.zones ) { 
+			if ( z.type == 'government' ) { continue; }
+			actual[z.type] = (actual[z.type]||0) + (z.size / (p.size-1)); // factor out civ capital
+			}
+		// pick the neediest of the bunch
+		let need = [];
+		for ( let k in ideal ) { 
+			need.push( [ k, ideal[k] - (actual[k]||0) ] );
+			}
+		need.sort( (a,b) => b[1] - a[1] );
+		return need.map( x => x[0] );		
+		}
+		
+	// Completely zones a planet. Can be used for AI or automation settings
+	ZonePlanet( p ) {
+		while (p.zoned < p.size ) { 
+			let needs = this.ZoneSuggester(p);
+			// pick a specific zone to make.
+			for ( let ztype of needs ) { 
+				let maxsize = p.size - p.zoned;
+				let candidates = p.owner.avail_zones.filter( z => z.type == ztype && z.size <= maxsize );
+				if ( candidates.length ) { 
+					let zone = candidates.sort( (a,b) => b.size - a.size ).pop();
+					p.AddZone(zone.key);
+					break;
+					}
+				}
+			}
+		}
+		
 	}
 
 

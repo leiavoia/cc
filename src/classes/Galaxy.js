@@ -101,7 +101,7 @@ export default class Galaxy {
 			p.resources.m = 3;
 			p.Settle( c );
 			if ( c.id == 0 ) { s.explored = true; }
-			else { p.AI_ZonePlanet(); }
+			else { p.ZonePlanet(); }
 			this.AssignStartingFleet( c, s );
 			c.homeworld = p;
 // 			// colonies
@@ -111,7 +111,7 @@ export default class Galaxy {
 // 				this.ForcePlanetEnvToMatchRace( p, c );
 // 				p.Settle( c );
 // 				if ( c.id == 0 ) { next.explored = true; }
-//				else { p.AI_ZonePlanet(); }
+//				else { p.ZonePlanet(); }
 // 				// defending fleet
 // 				this.CreateRandomFleet( c, next );
 // 				}
@@ -141,7 +141,7 @@ export default class Galaxy {
 					this.ForcePlanetEnvToMatchRace( p, c );
 					p.Settle( c );
 					if ( c.id == 0 ) { s.explored = true; }
-					else { p.AI_ZonePlanet(); }
+					else { p.ZonePlanet(); }
 					this.AssignStartingFleet( c, s );
 					c.homeworld = p;
 					star_i--;
