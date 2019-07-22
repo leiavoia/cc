@@ -42,8 +42,9 @@
 					<img src.bind="bp.img" class="zoomzoom" style="width: 100%; min-width: 100px;"/>
 				</div>
 				<h2>${bp.name} <span style="color:#4BA5CC;">${bp.sizeclass}-Class</span></h2>
-				<p>Structure: ${bp.hull} Hull, ${bp.armor} Armor,  ${bp.shield} Shielding</p>
-				<p>Manufacture: ${bp.mass} Mass, ${bp.labor} Labor, ${bp.num_built} Made (${bp.bulk_discount}% discount)</p>
+				<p>Structure: <b>${bp.mass}</b> Mass, <b>${bp.hull}</b> Hull, <b>${bp.armor}</b> Armor,  <b>${bp.shield}</b> Shielding</p>
+				<p>Costs: <span repeat.for="k of bp.cost|props" style="margin-right:1em; display:inline-block;">${k}:${bp.cost[k]}</span></p>
+				<p>Discount: ${bp.bulk_discount}% (${bp.num_built} Made)</p>
 				<p>Firepower: ${bp.fp}</p>
 				<p>AI Threat: ${bp.threat}</p>
 				<p>Map Speed: ${bp.drive}</p>
@@ -61,6 +62,7 @@
 						<td>${w.shots}</td>
 						<td>^${w.reload}</td>
 						<td>~${w.accu}</td>
+						<td>Costs: <span repeat.for="k of w.cost|props" style="margin-right:1em; display:inline-block;">${k}:${w.cost[k]}</span></td>
 					</tr>
 				</table>
 				<p if.bind="!bp.weapons.length">None</p>
@@ -71,6 +73,7 @@
 						<td><b>${c.name}</b></td>
 						<td>${c.desc}</td>
 						<td><span repeat.for="m of c.mods">${m.op}${m.val} ${m.abil} </span> </td>
+						<td>Costs: <span repeat.for="k of c.cost|props" style="margin-right:1em; display:inline-block;">${k}:${c.cost[k]}</span></td>
 					</tr>
 				</table>			
 				<p if.bind="!bp.comps.length">None</p>
@@ -97,8 +100,12 @@
 					<b>${(((newbp.mass||1) / max_hull_size ) * 100) | round}%</b> Maximum Capacity
 					
 				</p> 
-				<p>Structure: ${newbp.hull} Hull, ${newbp.armor} Armor,  ${newbp.shield} Shielding</p>
-				<p>Manufacture: ${newbp.mass} Mass, ${newbp.labor} Labor, ${newbp.num_built} Made (${newbp.bulk_discount}% discount)</p>
+				<p>Structure: <b>${newbp.mass}</b> Mass, <b>${newbp.hull}</b> Hull, <b>${newbp.armor}</b> Armor,  <b>${newbp.shield}</b> Shielding</p>
+				<p>Costs: 
+					<span repeat.for="k of ['labor','$','o','s','m','r','g','b','c','y','v']" style="margin-right:1em; display:inline-block;">
+						<template containerless if.bind="newbp.cost[k]">${k}:${newbp.cost[k]}</template>
+					</span>
+				</p>
 				<p>Firepower: ${newbp.fp}</p>
 				<p>Map Speed: ${newbp.drive}</p>
 				<p>Combat Speed: ${newbp.speed}</p>
@@ -126,6 +133,7 @@
 						<td>${w.shots}</td>
 						<td>^${w.reload}</td>
 						<td>~${w.accu}</td>
+						<td>Costs: <span repeat.for="k of w.cost|props" style="margin-right:1em; display:inline-block;">${k}:${bwp.cost[k]}</span></td>
 					</tr>
 				</table>
 				<p class="button_rack">
@@ -140,6 +148,7 @@
 						</td>
 						<td><b>${c.name}</b></td>
 						<td>${c.desc}</td>
+						<td>Costs: <span repeat.for="k of c.cost|props" style="margin-right:1em; display:inline-block;">${k}:${c.cost[k]}</span></td>
 						<td><span repeat.for="m of c.mods">${m.op}${m.val} ${m.abil} </span> </td>
 					</tr>
 				</table>
@@ -181,6 +190,7 @@
 						<td>${w.shots}</td>
 						<td>^${w.reload}</td>
 						<td>~${w.accu}</td>
+						<td>Costs: <span repeat.for="k of w.cost|props" style="margin-right:1em; display:inline-block;">${k}:${w.cost[k]}</span></td>
 					</tr>
 				</table>
 			</div>
@@ -199,6 +209,7 @@
 						<td><b>${c.name}</b></td>
 						<td>${c.desc}</td>
 						<td><span repeat.for="m of c.mods">${m.op}${m.val} ${m.abil} </span> </td>
+						<td>Costs: <span repeat.for="k of c.cost|props" style="margin-right:1em; display:inline-block;">${k}:${c.cost[k]}</span></td>
 					</tr>
 				</table>
 			</div>

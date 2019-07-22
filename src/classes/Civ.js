@@ -520,7 +520,7 @@ export default class Civ {
 		troop1.mindmg = 0;
 		troop1.maxdmg = 5;
 		troop1.mass = 5;
-		troop1.labor = 5;
+		troop1.cost.labor = 5;
 		troop1.hp = 1;
 		this.groundunit_blueprints.push( troop1 );
 		}
@@ -1180,14 +1180,14 @@ export default class Civ {
 			this.econ.income += p.econ.tax_rev;
 			this.econ.planet_maint += p.econ.expenses.total;
 			for ( let t of p.troops ) { 
-				this.econ.troop_maint += t.bp.labor * 0.5; // HACK TODO tech and civ stats may change
+				this.econ.troop_maint += t.bp.cost.labor * 0.5; // HACK TODO tech and civ stats may change
 				}
 			}
 		for ( let f of this.fleets ) {
 			for ( let s of f.ships ) { 
-				this.econ.ship_maint += s.bp.labor * 0.05; // HACK TODO tech and civ stats may change
+				this.econ.ship_maint += s.bp.cost.labor * 0.05; // HACK TODO tech and civ stats may change
 				for ( let t of s.troops ) { 
-					this.econ.troop_maint += t.bp.labor * 0.5; // HACK TODO tech and civ stats may change
+					this.econ.troop_maint += t.bp.cost.labor * 0.5; // HACK TODO tech and civ stats may change
 					}
 				}
 			}

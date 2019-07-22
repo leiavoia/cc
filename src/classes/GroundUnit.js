@@ -70,7 +70,7 @@ export class GroundUnitBlueprint {
 		this.mindmg = 0;
 		this.maxdmg = 1;		
 		this.mass = 0;
-		this.labor = 0;
+		this.cost = { labor:1 };
 		this.hp = 1;
 		this.img = 'img/ground/tank.png';
 		this.num_built = 0;

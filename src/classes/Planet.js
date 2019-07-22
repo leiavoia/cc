@@ -210,7 +210,7 @@ export default class Planet {
 			type: 'ship',
 			obj: bp,
 			name: bp.name,
-			labor: bp.labor, // "cost" in hammers
+			labor: bp.cost.labor, // "cost" in hammers
 			mp: bp.mass, // material points
 			spent: 0,
 			qty: 1,
@@ -226,7 +226,7 @@ export default class Planet {
 			type: 'groundunit',
 			obj: bp,
 			name: bp.name,
-			labor: bp.labor, // "cost" in hammers
+			labor: bp.cost.labor, // "cost" in hammers
 			mp: bp.mass, // material points
 			spent: 0,
 			qty: 1,
@@ -492,13 +492,10 @@ export default class Planet {
 		this.warehouse += this.sect.mine.output;
 		// let the turn processor handle resource import/export
 		}
+	PercentageOfQueueItemThatIsBuildable( item ) { 
+		
+		}
 	DoProduction( ) { 
-		//
-		// TODO:
-		// Mining resources are required for building infrastructure and production
-		// (and possibly robots), so these functions need to coordinate any
-		// potential MP deficiencies so that one function does not steal everything.
-		//
 		if ( this.sect.prod.output && this.prod_q.length && this.warehouse ) { 
 			// produce as many items in the queue as we can 
 			let labor_available = this.sect.prod.output;

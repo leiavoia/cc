@@ -111,6 +111,7 @@ export class ShipBlueprint {
 		this.name = 'Ship Name';
 		this.role = 'scout'; // helps AI. ['scout','combat','colonizer','carrier','research']
 		this.weapons = [];
+		this.comps = []; // non-weapon ship components. 
 		this.mass = 0;
 		this.hull = 1;
 		this.armor = 1;
@@ -118,8 +119,8 @@ export class ShipBlueprint {
 		this.drive = 1;
 		this.img = 'img/ships/ship1_mock.png';
 		this.speed = 100; // [!]HACK see: owner.ship_speed
-		this.comps = []; // non-weapon ship components. 
 		this.mods = new Modlist; // value modifiers, often from components
+		this.cost = {}; // calculated from individual components
 		this.colonize = false;
 		this.research = 0;    
 		this.troopcap = 0; // number of ground units we can carry    
@@ -209,15 +210,28 @@ export class ShipBlueprint {
 		
 	RecalcStats( parent = null ) { 
 		this.mass = 0;
-		this.labor = 0;
+		for ( let k in this.costs ) { this.cost[k] = 0; } // not reassigning entire object preserves auralia binding.
 		this.weapons.forEach( w => { 
 			this.mass += w.mass * w.qty; 
-			this.labor += w.labor * w.qty; 
+			for ( let k in w.cost ) { 
+				if ( !(k in this.cost) ) { this.cost[k] = 0; }
+				this.cost[k] += w.cost[k] * w.qty; 
+				} 
 			});
 		this.mass = Math.ceil( this.mods.Apply( this.mass, 'mass', parent ) );
-		this.labor = Math.ceil( this.mods.Apply( this.labor, 'labor', parent ) );
 		if ( !this.mass ) { this.mass = 1; }
-		if ( !this.labor ) { this.labor = 1; }
+		if ( !this.cost.labor ) { this.cost.labor = 1; }
+		this.comps.forEach( c => { 
+			for ( let k in c.cost ) { 
+				if ( !(k in this.cost) ) { this.cost[k] = 0; }
+				this.cost[k] += c.cost[k] * ( c.scaled ? this.mass : 1 ); 
+				} 
+			});
+		this.cost.labor = this.mods.Apply( this.cost.labor, 'labor', parent );
+		for ( let k in this.cost ) { 
+			this.cost[k] = Math.ceil( this.cost[k] );
+			}
+		
 		// TODO: evaluate to see if this feels right
 		// however, adding armor also adds mass, but armor itself adds mass, which adds to the hull ...
 		this.hull = this.mass; 
