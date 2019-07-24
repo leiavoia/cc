@@ -210,11 +210,9 @@ export default class Planet {
 			type: 'ship',
 			obj: bp,
 			name: bp.name,
-			labor: bp.cost.labor, // "cost" in hammers
-			mp: bp.mass, // material points
-			spent: 0,
+			cost: bp.cost,
 			qty: 1,
-			turns_left: 0,
+			turns_left: ( Math.min( 999, Math.ceil( bp.cost.labor/this.output_rec.ship ) ) || '-'),
 			pct: 0
 			};
 		this.prod_q.push(item);
@@ -226,11 +224,9 @@ export default class Planet {
 			type: 'groundunit',
 			obj: bp,
 			name: bp.name,
-			labor: bp.cost.labor, // "cost" in hammers
-			mp: bp.mass, // material points
-			spent: 0,
+			cost: bp.cost,
 			qty: 1,
-			turns_left: 0,
+			turns_left: ( Math.min( 999, Math.ceil( bp.cost.labor/this.output_rec.def ) ) || '-'),
 			pct: 0
 			};
 		this.prod_q.push(item);
@@ -247,11 +243,9 @@ export default class Planet {
 					type: 'makework',
 					name: 'Trade Goods',
 					obj: 'tradegoods',
-					labor: 3, // "cost" in hammers
-					mp: 1, // material points
-					spent: 0,
+					cost: { labor: 3 }, // "cost" in hammers
 					qty: -1, // default infinity
-					turns_left: 0,
+					turns_left: '-',
 					pct: 0,
 					ProduceMe: function ( planet ) {
 						// TODO: add to accounting records
@@ -492,68 +486,92 @@ export default class Planet {
 		this.warehouse += this.sect.mine.output;
 		// let the turn processor handle resource import/export
 		}
-	PercentageOfQueueItemThatIsBuildable( item ) { 
-		
-		}
 	DoProduction( ) { 
-		if ( this.sect.prod.output && this.prod_q.length && this.warehouse ) { 
-			// produce as many items in the queue as we can 
-			let labor_available = this.sect.prod.output;
-			let ok = true;
-			while ( ok ) { 
-				let item = this.prod_q[0];
-// 				console.log(item);
-				// each queue item also has a quantity
-				if ( item.qty ) { 
-					// how much can i build next turn?
-					let labor_per_mp = item.labor / item.mp;
-					let mp_remaining = item.mp - item.spent;
-					let mp_committed = Math.min( mp_remaining, this.warehouse ); // can't use resources we dont have
-					let labor_needed = mp_committed * labor_per_mp;
-// 					console.log(`${item.labor}H / ${item.mp}MP, labor_per_mp = ${labor_per_mp}, mp_remaining = ${mp_remaining}, mp_committed = ${mp_committed}, labor_needed = ${labor_needed}, `);
-					// can't use labor we dont have either
-					if ( labor_needed > labor_available ) { 
-// 						console.log(`don't have enough labor to finish project (${labor_available}H), so only comitting ${mp_committed} MP  (${labor_needed}H)`);
-						mp_committed = labor_available / labor_per_mp;
+		if ( !this.prod_q.length ) { return; } 
+		// produce as many items in the queue as we can 
+		let ship_labor_avail = this.output_rec.ship;
+		let def_labor_avail = this.output_rec.def;
+		for ( let i = 0; i < this.prod_q.length; i++ ) {
+			// no labor to do any work
+			if ( ship_labor_avail + def_labor_avail <= 0 ) { break; }
+			let item = this.prod_q[i];
+			// each queue item also has a quantity
+			if ( !item.qty ) { continue; }
+			else { 
+				
+				// impossible to build - delete
+				if ( item.cost.labor && item.type == 'ship' && !this.output_rec.ship ) { this.prod_q.splice( i--, 1 ); continue; }
+				if ( item.cost.labor && item.type == 'groundunit' && !this.output_rec.def ) { this.prod_q.splice( i--, 1 ); continue; }
+				
+				// how much can i build next turn?
+				let maxpct = 1 - item.pct; // account for partially completed items
+				for ( let k in item.cost ) { 
+					// "labor" can be either ship points or defense points, depending on context
+					if ( k == 'labor' && item.type == 'ship' ) { 
+						maxpct = Math.min( maxpct, 1.0, ship_labor_avail/item.cost[k] );
 						}
-					// do some work
-					labor_available -= labor_needed;
-					this.warehouse -= mp_committed;	
-					item.spent += mp_committed;
-					// did something get built?
-					if ( item.spent >= (item.mp - 0.0001) ) { // slop room
-// 						console.log(`item completed.`);
-						this.ProduceBuildQueueItem( item );
-						// reset
-						item.spent = 0;
-						item.pct = 0;
-						item.turns_left = 0; // Math.ceil( item.cost / this.sect.prod.output ) ;
-						// decrement if they wanted more than one
-						if ( item.qty > 0 ) {
-							item.qty -= 1;
-							}
-						// pop from list if we reached zero
-						if ( item.qty == 0 ) {
-// 							console.log(`popped from list`);
-							this.prod_q.shift()
-// 							this.buildings.push( this.prod_q.shift() );
-							}
+					else if ( k == 'labor' && item.type == 'groundunit' ) { 
+						maxpct = Math.min( maxpct, 1.0, def_labor_avail/item.cost[k] );
 						}
-					// update the stats
-					else {
-// 						console.log(`item unfinished. item.turns_left = ${item.turns_left}, item.pct = ${item.pct}`);
-						item.turns_left = Math.ceil( ((item.mp - item.spent) * labor_per_mp) / this.sect.prod.output ) ;
-						item.pct = ( item.spent / item.mp) * 100;
+					else if ( k == 'labor' && item.type == 'makework' ) { 
+						maxpct = Math.min( maxpct, 1.0, (ship_labor_avail+def_labor_avail)/item.cost[k] );
 						}
-					// exhausted?
-					if ( this.warehouse <= 0 || labor_available <= 0 || !this.prod_q.length ) {
-// 						console.log(`labor exhausted. done building for this turn.`);
-						ok = false;
+					else { 
+						maxpct = Math.min( maxpct, 1.0, this.owner.resources[k]/item.cost[k]  );
 						}
 					}
-				else { ok = false; }
+					
+				// no work can be done; skip item
+				if ( maxpct <= 0 ) { continue; }
+				
+				// do the work and decrement resources
+				item.pct += maxpct;
+				for ( let k in item.cost ) { 
+					if ( k == 'labor' && item.type == 'ship' ) { 
+						ship_labor_avail -= maxpct * item.cost[k];
+						}
+					else if ( k == 'labor' && item.type == 'groundunit' ) { 
+						def_labor_avail -= maxpct * item.cost[k];
+						}
+					else if ( k == 'labor' && item.type == 'makework' ) { 
+						ship_labor_avail -= maxpct * item.cost[k];
+						if ( ship_labor_avail < 0 ) { 
+							def_labor_avail += ship_labor_avail; 
+							ship_labor_avail = 0;
+							if ( def_labor_avail < 0 ) { def_labor_avail = 0; }
+							}
+						}
+					else { 
+						this.owner.resources[k] -= maxpct * item.cost[k];
+						}
+					}
+				
+				// did something get built?
+				if ( item.pct >= 0.99999 ) { // slop room
+					this.ProduceBuildQueueItem( item );
+					// reset
+					item.pct = 0;
+					item.turns_left = '-';
+					// decrement if they wanted more than one
+					if ( item.qty > 0 ) { item.qty -= 1; }
+					// pop from list if we reached zero
+					if ( item.qty == 0 ) {
+						this.prod_q.splice( i--, 1 ); // backsliding index
+						}
+					}
+				// update the stats
+				else {
+					let maxlabor = item.type=='ship' ? this.output_rec.ship : this.output_rec.def;
+					item.turns_left = Math.min( 999, Math.ceil( ( 1 - item.pct ) / (maxlabor/item.cost.labor) ) ); // assumes full resource availability
+					}
+					
+				// exhausted?
+				let labor_left = ship_labor_avail + def_labor_avail;
+				if ( labor_left <= 0 || !this.prod_q.length ) {
+					break;
+					}
 				}
-			}	
+			}
 		}
 		
   	UpdateMorale() {

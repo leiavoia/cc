@@ -159,8 +159,8 @@
 				<h3>Now Building:</h3>
 				<table class="prod_queue">
 					<tr repeat.for="item of planet.prod_q">
-						<td>${item.turns_left}</td>
-						<td><progress max="100" value="${item.pct|round}"></progress><p>${item.name}</p></td>
+						<td>${item.turns_left >= 999 ? '-' : item.turns_left}</td>
+						<td><progress max="100" value="${item.pct*100|floor}"></progress><p>${item.name}</p></td>
 						<td><a href="#" click.delegate="BuildQueueMoveItemUp($index)" if.bind="$index > 0">▲</a></td>
 						<td><a href="#" click.delegate="BuildQueueMoveItemDown($index)" if.bind="$index != (planet.prod_q.length-1)">▼</a></td>
 						<td>
