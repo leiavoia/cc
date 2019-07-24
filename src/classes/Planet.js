@@ -651,11 +651,13 @@ export default class Planet {
 		// popmax is actually our current infrastructure level from Housing zones.
 		// This means that if Housing zones are removed or underfunded, infrastructure
 		// crumbles and we can have more pops than popmax (causing unhappiness).
-		this.maxpop = this.popmax_contrib || 1;
+		this.maxpop = this.popmax_contrib + this.size;
 		this.popmax_contrib = 0;
+		// environment reduces popmax
+		this.maxpop *= 1 + this.HabitationBonus( this.owner.race );
 		// growth rate is square root of difference between max pop and current pop, divided by 60.
 		let diff = this.maxpop - this.total_pop; 
-		let divisor = 60.0;
+		let divisor = 60.0; // TODO: [!]GROWTHRATE replace this with growth rate when implemented
 		if ( diff > 0 ) { // pop growth
 			let max_diff = 50.0;
 			let rate  = ( Math.sqrt( diff > max_diff ? max_diff : diff ) / divisor ) + 1.0;
@@ -670,11 +672,11 @@ export default class Planet {
 	static EnvNames() {
 		return [
 		// THIN ---------------------------------------------------- DENSE
-		['Bleak',		'Barren',		'Polar',		'Frozen',	'Iceball'], //	COLD
+		['Bleak',		'Barren',	'Polar',		'Frozen',	'Iceball'], //	COLD
 		['Dead',		'Glacial',	'Mountainous',	'Tundra',	'Arctic'],
-		['Dune',		'Steppe',		'Temperate',	'Jungle',	'Ocean'],
-		['Wasteland',	'Desert',		'Arid',		'Swamp',	'Sauna'],
-		['Inferno',	'Scorched',	'Parched',	'Torrid',	'Cauldron'] //	HOT	
+		['Dune',		'Steppe',	'Temperate',	'Jungle',	'Ocean'],
+		['Wasteland',	'Desert',	'Arid',			'Swamp',	'Vaporous'], // volatile would also work here
+		['Inferno',		'Scorched',	'Parched',		'Torrid',	'Venutian'] //	HOT	
 		]; }
 	static GravNames() {
 		return ['Weak','Light','Medium','Heavy','Crushing' ]; 
@@ -919,6 +921,7 @@ export default class Planet {
 		this.econ.PCI = this.base_PCI + this.bonus_PCI;
 		this.econ.GF = 1.0;
 		this.RecalcZoneHabMod();
+		this.maxpop = this.size * ( 1 + this.HabitationBonus( this.owner.race ) );
 		if ( !this.zones.length ) { 
 			if ( !owner.planets.length ) { 
 				this.AddZone( 'CIVCAPITOL', 1 ); 
