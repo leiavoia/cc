@@ -173,9 +173,7 @@
 				</table>
 				<p>
 					<select value.bind="sel_build_item" style="display:inline-block;">
-						<option repeat.for="bp of planet.owner.ship_blueprints" model.bind="bp">${bp.name}</option>
-						<option repeat.for="bp of planet.owner.groundunit_blueprints" model.bind="bp">${bp.name}</option>
-						<option repeat.for="bp of planet.ListMakeworkProjects()" model.bind="bp">${bp.name}</option>
+						<option repeat.for="i of build_queue_items" model.bind="i" disabled.bind="i.turns >= 999 || !i.turns">${i.bp.name} (${i.turns}t)</option>
 					</select>
 					<button click.delegate="AddSelectedItemToBuildQueue()">Add</button>
 				</p>

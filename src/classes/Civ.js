@@ -1198,6 +1198,7 @@ export default class Civ {
 		this.econ.net_rev -= this.econ.planet_maint;
 		// show me the money
 		this.resources.$ += this.econ.net_rev;
+		if ( this.resources.$ < 0 ) { this.resources.$ = 0; }
 		}
 		
 	AddAvailZoneType( z ) { 

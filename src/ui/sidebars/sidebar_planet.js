@@ -6,6 +6,7 @@ export class PlanetDetailPane {
 
 	constructor() { 
 		this.playerHasLocalFleet = false;
+		this.build_queue_items = [];
 		}
 		
 	activate(data) {
@@ -45,7 +46,44 @@ export class PlanetDetailPane {
 			this.habitable = planet.Habitable( this.app.game.myciv.race );
 			this.habitat_bonus = planet.HabitationBonus( this.app.game.myciv.race );
 			this.playerHasLocalFleet = planet.star.PlayerHasLocalFleet;
+			this.CompileBuildQueueItemList();
 			}
+		}
+		
+	CompileBuildQueueItemList() {
+		if ( !this.planet.owner || !this.planet.owner.is_player ) { return; }
+		this.build_queue_items.splice(0,this.build_queue_items.length);
+		let turns = 1;
+		let output = 0;
+		for ( let bp of this.planet.owner.ship_blueprints ) { 
+			let maxpct = 1;
+			for ( let k in bp.cost ) {
+				output = ( k == 'labor' ) ? this.planet.output_rec.ship : this.planet.owner.resources[k];
+				maxpct = Math.min( maxpct, 1, output / bp.cost[k] );
+				}
+			turns = Math.max( 0, Math.min( 999, Math.ceil(1/maxpct) ) );
+			// TODO: size constraint;
+			this.build_queue_items.push( { bp, turns } );
+			}
+		for ( let bp of this.planet.owner.groundunit_blueprints ) { 
+			let maxpct = 1;
+			for ( let k in bp.cost ) {
+				let output = ( k == 'labor' ) ? this.planet.output_rec.def : this.planet.owner.resources[k];
+				maxpct = Math.min( maxpct, 1, output / bp.cost[k] );
+				// TODO: size constraint;
+				}
+			turns = Math.max( 0, Math.min( 999, Math.ceil(1/maxpct) ) );
+			this.build_queue_items.push( { bp, turns } );
+			}
+		for ( let bp of this.planet.ListMakeworkProjects() ) { 
+			let maxpct = 1;
+			for ( let k in bp.cost ) {
+				let output = ( k == 'labor' ) ? (this.planet.output_rec.ship + this.planet.output_rec.def) : this.planet.owner.resources[k];
+				maxpct = Math.min( maxpct, 1, output / bp.cost[k] );
+				}
+			turns = Math.max( 0, Math.min( 999, Math.ceil(1/maxpct) ) );
+			this.build_queue_items.push( { bp, turns } );
+			}	
 		}
 		
 	PressNextPlanetButton() { 
@@ -144,14 +182,14 @@ export class PlanetDetailPane {
 		}
 	AddSelectedItemToBuildQueue() { 
 		// ships
-		if ( this.sel_build_item instanceof ShipBlueprint ) {
-			this.planet.AddBuildQueueShipBlueprint( this.sel_build_item );
+		if ( this.sel_build_item.bp instanceof ShipBlueprint ) {
+			this.planet.AddBuildQueueShipBlueprint( this.sel_build_item.bp );
 			}
-		else if ( this.sel_build_item instanceof GroundUnitBlueprint ) {
-			this.planet.AddBuildQueueGroundUnitBlueprint( this.sel_build_item );
+		else if ( this.sel_build_item.bp instanceof GroundUnitBlueprint ) {
+			this.planet.AddBuildQueueGroundUnitBlueprint( this.sel_build_item.bp );
 			}
-		else if ( typeof(this.sel_build_item) == 'object' && 'type' in this.sel_build_item ) { 
-			this.planet.AddBuildQueueMakeworkProject( this.sel_build_item.type );
+		else if ( typeof(this.sel_build_item.bp) == 'object' && 'type' in this.sel_build_item.bp ) { 
+			this.planet.AddBuildQueueMakeworkProject( this.sel_build_item.bp.type );
 			}
 		}
 	// for clicking attack planet with a local player fleet

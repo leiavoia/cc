@@ -206,6 +206,7 @@ export default class Planet {
 		}
 		
 	AddBuildQueueShipBlueprint( bp ) { 
+		if ( !this.output_rec.ship ) { return false; }
 		let item = {
 			type: 'ship',
 			obj: bp,
@@ -217,9 +218,11 @@ export default class Planet {
 			};
 		this.prod_q.push(item);
 		this.BuildQueueShuffleDownInfiniteProjects();
+		return true;
 		}
 		
 	AddBuildQueueGroundUnitBlueprint( bp ) { 
+		if ( !this.output_rec.def ) { return false; }
 		let item = {
 			type: 'groundunit',
 			obj: bp,
@@ -231,6 +234,7 @@ export default class Planet {
 			};
 		this.prod_q.push(item);
 		this.BuildQueueShuffleDownInfiniteProjects();
+		return false;
 		}
 		
 	AddBuildQueueMakeworkProject( type = 'tradegoods' ) { 
@@ -258,6 +262,7 @@ export default class Planet {
 			}
 		this.prod_q.push(item);
 		this.BuildQueueShuffleDownInfiniteProjects();
+		return true;
 		}
 
 	BuildQueueShuffleDownInfiniteProjects() { 
@@ -543,6 +548,7 @@ export default class Planet {
 						}
 					else { 
 						this.owner.resources[k] -= maxpct * item.cost[k];
+						this.owner.resource_rec[k] += maxpct * item.cost[k];
 						}
 					}
 				
