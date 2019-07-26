@@ -16,6 +16,7 @@ export let Techs = {
 			civ.AddAvailZoneType(ZoneList.RES0);
 			civ.AddAvailZoneType(ZoneList.ECON0);
 			civ.AddAvailZoneType(ZoneList.SHIP0);
+			civ.AddAvailZoneType(ZoneList.MIL0); // NOTE: TESTING ONLY
 			// starting ship bits:
 			civ.avail_ship_comps = [
 				ShipComponentList.ENGINE1,

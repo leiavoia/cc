@@ -1041,7 +1041,8 @@ export class AIPlanetsObjective extends AIObjective {
 			mining: 0, // no mining if no resources available
 			stardock: 10,
 			economy: 6,
-			research: 10
+			research: 10,
+			military: 5
 			};
 		// good resources available? (this factors in current supply and demand)
 		for ( let k in p.resources ) { local_zoning.mining += p.resources[k] * (1/((p.owner.resource_supply[k]+2)/4)); }
@@ -1061,7 +1062,8 @@ export class AIPlanetsObjective extends AIObjective {
 			mining: 3,
 			stardock: 2,
 			economy: 1,
-			research: 3
+			research: 3,
+			military: 2
 			};
 		// if we need cash, we need taxes, so we need people
 		if ( p.owner.resources.$ < 500 ) { global_zoning.housing += 5; }

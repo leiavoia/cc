@@ -566,6 +566,7 @@ export default class Civ {
 			stardock: utils.BiasedRandInt(5, 12, 5, 0.5),
 			economy: utils.BiasedRandInt(3, 9, 5, 0.5),
 			research: utils.BiasedRandInt(6, 12, 5, 0.5),			
+			military: utils.BiasedRandInt(6, 12, 5, 0.5),			
 			}
 		let ideal_zone_total = 0;
 		for ( let k in civ.ai.strat.ideal_zoning ) { ideal_zone_total += civ.ai.strat.ideal_zoning[k]; }
