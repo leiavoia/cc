@@ -301,12 +301,12 @@ export default class Civ {
 		o:1000, // organics
 		s:1000, // silicates
 		m:1000, // metals
-		r:0, // redium
-		g:0, // verdagen
-		b:0, // bluetonium
-		c:0, // cyanite
-		v:0, // violetronium
-		y:0, // yellowtron	
+		r:10000, // redium
+		g:10000, // verdagen
+		b:10000, // bluetonium
+		c:10000, // cyanite
+		v:10000, // violetronium
+		y:10000, // yellowtron	
 		}
 	
 	// the sum of all resources being demanded from all sources
@@ -1198,6 +1198,15 @@ export default class Civ {
 		this.econ.net_rev -= this.econ.planet_maint;
 		// show me the money
 		this.resources.$ += this.econ.net_rev;
+		}
+		
+	AddAvailZoneType( z ) { 
+		this.avail_zones.push(z);
+		this.avail_zones.sort( (a,b) => { 
+			if ( a.type > b.type ) return 1;
+			else if ( a.type < b.type ) return -1;
+			else return a.size - b.size; 	
+			});
 		}
 
 	}
