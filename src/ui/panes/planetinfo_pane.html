@@ -6,76 +6,68 @@
 		<p style="float:right;"><a href="#"  click.delegate="ClosePanel()" class="button big">CLOSE</a></p>
 		<h1>${planet.name}</h1>
 					
-
-		
 		<div class="flexwrap" if.bind="planet.owner">
 			
-			<!-- Colony Data -->
+			<div class="content acct_graph" style="min-width: 85%;">
+				<h2>Accounting History</h2>
+				<canvas id="acct_graph"></canvas>
+			</div>
 		
-			<div class="content data">
-				<h2>Sector&nbsp;Activity</h2>
-				<table style="width:100%;">
+			<div class="content data" style="min-width: 45%;">
+				<h2>Accounting</h2>
+				<table class="small wide">
 					<tr>
 						<th></th>
-						<th>%</th>
-<!-- 						<th>relpct</th> -->
-						<th>Power</th>
-						<th>Work</th>
-						<th>Output</th>
-						<th>Infr.</th>
-						<th>Growth</th>
+						<th>Name</th>
+						<th>$</th>
+						<th>Sh</th>
+						<th>Df</th>
+						<th>Hs</th>
+						<th>Rs</th>
+						<th>O</th>
+						<th>S</th>
+						<th>M</th>
+						<th>R</th>
+						<th>G</th>
+						<th>B</th>
+						<th>C</th>
+						<th>Y</th>
+						<th>V</th>
 					</tr>
-					<tr repeat.for="k of planet.sect|props">
-						<td>${k}</td>
-						<td>${planet.sect[k].pct|percent}%</td>
-<!-- 						<td>${planet.sect[k].relpct|round:1}</td> -->
-						<td>${planet.sect[k].pow|round:1}</td>
-						<td>${planet.sect[k].work|round:2}</td>
-						<td>${planet.sect[k].output|round:2}</td>
-						<td>${planet.sect[k].inf|round:2}</td>
-						<td>${planet.sect[k].growth|round:3}</td>
+					<tr class="bold">
+						<td></td>
+						<td>TOTALS</td>
+						<td repeat.for="k of ['$','ship','def','hou','res','o','s','m','r','g','b','c','y','v']"
+						class="${planet.acct_total[k] > 0 ? 'good' : (planet.acct_total[k] < 0 ? 'bad' : 'zero')}">${planet.acct_total[k]|round}</td>
+					</tr>
+					<tr repeat.for="row of planet.acct_ledger">
+						<td class="zero right">${row.type}</td>
+						<td>${row.name}</td>
+						<td repeat.for="k of ['$','ship','def','hou','res','o','s','m','r','g','b','c','y','v']"
+						class="${row[k] > 0 ? 'good' : (row[k] < 0 ? 'bad' : 'zero')}">${row[k]|round}</td>
 					</tr>
 				</table>		
 			</div>
 			
-			<div class="content data">
+			<!-- <div class="content data">
 				<h2>Summary</h2>
 				<span>POP: ${planet.total_pop|round:1}</span>
-				<span>MORALE: ${planet.morale|percent}%</span>
-				<span>UNEMP: ${planet.unempl|percent}%</span>
-				<span>WRHS: ${planet.warehouse|round:2}</span>
-			</div>
-			
-			<div class="content resources">
-				<h2>Resources</h2>
-				<span>Keep in Stock:</span>
-				<input type="text" style="width: 4em" value.bind="planet.min_warehouse" pattern="\d+" />
-				<span>Needed: ${planet.mp_need|round:2}</span>
-				<span>Mined: ${planet.sect.mine.output|round:2}</span>
-				<span>Warehouse: ${planet.warehouse|round:2}</span>
-				<span>Export: ${planet.mp_export|round:2}</span>
-<!-- 				<span class="${planet.mp_export > 0 ? 'good' : ''}">Exported: ${ (planet.mp_export > 0 ? planet.mp_export : 0 ) |round:2}</span> -->
-<!-- 				<span class="${planet.mp_export < 0 ? 'alert' : ''}">Imported: ${(-planet.mp_export*planet.mp_need_met)|round:2}</span> -->
-<!-- 				<span class="${planet.mp_need_met < 1.0 ? 'bad' : ''}">Unmet Need: ${(planet.mp_export*(planet.mp_need_met-1.0))|round:2}</span> -->
-				<span>Civ Need: ${planet.owner.econ.mp_need|round:2}</span>
-				<span>Civ Need Met: ${planet.owner.econ.mp_need_met|percent:2}</span>
-				<span>Civ Warehouse: ${planet.owner.econ.warehouse|round:2}</span>
-			</div>
+			</div> -->
 			
 			<div class="content financial">
 				<h2>Financial</h2>
 				<span>Tax Rate: ${(planet.tax_rate)|percent}%</span>
-				<span>Tax Income: ${(planet.tax)|round}</span>
-				<span>Sector Expenses: ${(planet.econ.expenses.sectors)|round}</span>
-				<span class="${planet.treasury_contrib < 0 ? 'bad' : ''}">Profit/Loss: ${(planet.treasury_contrib)|round:1}</span>
+				<span>Tax Income: ${(planet.econ.tax_rev)|round}</span>
 				<br>
 				<span>GDP: ${planet.econ.GDP|round:1}</span>
 				<span>PCI: ${planet.econ.PCI|round:1} ➞ ${planet.econ.target_PCI|round:1} </span>
 			</div>
 						
+			<!--
+				
 			<div class="content production">
 				<h2>Production</h2>
-				<span>Currently Building: ${planet.prod_q[0].name}</span>
+				<span>Currently Building: ${planet.prod_q[0].name} FIXME - AURELIA BINDING PROBLEM</span>
 				<span>Complete In: ${planet.prod_q[0].turns_left} turns</span>
 				<p><b>When ships are completed, send them to:</b></p>
 				<select value.bind="planet.ship_dest">
@@ -83,16 +75,7 @@
 				</select>
 			</div>
 			
-			<div class="content policies">
-				<h2>Policies</h2>
-				<span><input type="checkbox" /> Foreign Policy</span>
-				<span><input type="checkbox" checked /> Breakfast Policy</span>
-				<span><input type="checkbox" checked /> Education Policy</span>
-				<span><input type="checkbox" /> Allow Gambling?</span>
-				<span><input type="checkbox" checked /> Eat xenomorphs?</span>
-				<span><input type="checkbox" /> Enslave Tourists?</span>
-				<span><input type="checkbox" checked /> Create Toys?</span>
-			</div>
+			-->
 			
 		</div>
 		

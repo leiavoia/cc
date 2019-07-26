@@ -1178,6 +1178,9 @@ export default class Civ {
 		this.econ.ship_maint = 0;
 		this.econ.troop_maint = 0;
 		for ( let p of this.planets ) {
+			p.acct_ledger.unshift( { name:'Tax Income', type:'tax', $:p.econ.tax_rev } );
+			p.acct_total.$ = (p.acct_total.$||0) + p.econ.tax_rev;
+			p.RecordHistory();
 			this.econ.income += p.econ.tax_rev;
 			this.econ.planet_maint += p.econ.expenses.total;
 			for ( let t of p.troops ) { 

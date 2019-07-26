@@ -25,7 +25,7 @@ export default class Planet {
 	age = 0;
 	age_level = 0;
 	troops = []; // list of GroundUnits defending planet.
-	prod_q = [];
+	prod_q = []; // list of { item, turns }
 	
 	// PHYSICAL ATTRIBUTES -------------------------------
 	energy = 1.0; // speeds up zone development
@@ -57,6 +57,9 @@ export default class Planet {
 	zoned = 0; // number of sectors that have been zoned 
 	output_rec = { $:0, o:0, s:0, m:0, r:0, g:0, b:0, c:0, v:0, y:0, ship:0, def:0, hou:0, esp:0, res:0 };
 	resource_rec = { $:0, o:0, s:0, m:0, r:0, g:0, b:0, c:0, v:0, y:0, };
+	acct_ledger = []; // list of { name, ... optional resources types ... }
+	acct_total = {}; // totalled values of acct_ledger. This includes stuff not in resource_rec and output_rec
+	acct_hist = []; 
 	
 	zone_hab_mod = 1.0; // precalculated HabitationBonus() to avoid calling millions of times each turn.
 	
@@ -252,9 +255,11 @@ export default class Planet {
 					turns_left: '-',
 					pct: 0,
 					ProduceMe: function ( planet ) {
-						// TODO: add to accounting records
 						planet.owner.resources.cash += 10;	
 						planet.econ.tradegoods += 10;
+						let row = planet.acct_ledger.filter( r => r.name=='Trade Goods' )[0];
+						row.$ = (row.$||0) + 10;
+						planet.acct_total.$ = (planet.acct_total.$||0) + 10;
 						}
 					};
 				break;
@@ -529,6 +534,13 @@ export default class Planet {
 				// no work can be done; skip item
 				if ( maxpct <= 0 ) { continue; }
 				
+				// accounting: each build item is a separate record,
+				// except makework projects which are combined into one record
+				let accounting = { name:item.name, type:'project' };
+				if ( item.type=='makework' ) { 
+					accounting = this.acct_ledger.filter( r => r.name==item.name ).shift() || accounting;
+					}
+					
 				// do the work and decrement resources
 				item.pct += maxpct;
 				for ( let k in item.cost ) { 
@@ -547,10 +559,14 @@ export default class Planet {
 							}
 						}
 					else { 
-						this.owner.resources[k] -= maxpct * item.cost[k];
-						this.owner.resource_rec[k] += maxpct * item.cost[k];
+						let total = maxpct * item.cost[k];
+						this.owner.resources[k] -= total;
+						this.owner.resource_rec[k] += total;
+						accounting[k] = (accounting[k]||0) - total;
+						this.acct_total[k] = (this.acct_total[k]||0) - total;
 						}
 					}
+				this.acct_ledger.push(accounting);
 				
 				// did something get built?
 				if ( item.pct >= 0.99999 ) { // slop room
@@ -1022,6 +1038,18 @@ export default class Planet {
 	ZonePlanet() {
 		let ai = new AIPlanetsObjective();
 		ai.ZonePlanet(this);
+		}
+		
+	RecordHistory() { 
+		let rec = {};
+		for ( let k of ['$','ship','def','hou','res','o','s','m','r','g','b','c','y','v'] ) { 
+			rec[k] = this.acct_total[k] || 0 ;
+			}
+		rec.pop = this.total_pop;
+		rec.morale = this.morale;
+		rec.pci = this.econ.pci;
+		this.acct_hist.push( rec );
+		// if ( p.acct_hist.length > 200 ) { p.shift(); } 
 		}
 				
 	}

@@ -729,8 +729,10 @@ h3 { font-size: 135%; }
 
 A {color:white;}
 
-TD,TH { padding: 0.2em; }
-
+TD,TH { padding: 0.2em; text-align:left; }
+TD.center, TH.center { text-align:center; }
+TD.right, TH.right { text-align:right; }
+TD.left, TH.left { text-align:left; }
 
 TABLE {
 	margin: 1em 0;
@@ -741,9 +743,8 @@ TABLE.full {
 	
 	}
 	
-TABLE.tight TD, TABLE.tight TH {
-	padding: 0.15em;
-	}
+TABLE.tight TD, TABLE.tight TH { padding: 0.15em; }
+TABLE.wide TD, TABLE.wide TH { padding-right: 0.5em; padding-left: 0.5em; }
 	
 TABLE.borderless, TABLE.borderless TD, TABLE.borderless TH {
 	border:none;
@@ -769,9 +770,10 @@ TABLE.env TD.ideal {
 	border-color: #FFF;
 }
 
-.good { color: #00AD23; }
-.bad { color: #C40000; }
+.good { color: #AEA; }
+.bad { color: #D21; }
 .alert { color: #FCF742; }
+.zero { color: #666; }
 
 .topless {margin-top: 0 !important;}
 .bottomless {margin-bottom: 0 !important;}

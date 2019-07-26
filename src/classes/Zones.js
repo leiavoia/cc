@@ -26,6 +26,7 @@ export class Zone {
 		}
 		
 	Do( planet ) { 
+		let accounting = { name:this.name, type:'zone' }; // start acounting record for UI
 		// evaluate our allotment of resources in case there is a global shortage
 		// ( you're only as good as your most limited resource )
 		let min_resource_ratio = 1.0;
@@ -44,13 +45,16 @@ export class Zone {
 			planet.owner.resources[k] -= amount;
 			this.resource_rec[k] = amount;
 			planet.resource_rec[k] += amount; // assume it gets zero'd out before this function is called
+			accounting[k] = -amount;
+			planet.acct_total[k] = (planet.acct_total[k] || 0 ) - amount;
 			}
 		// output
 		let work = amount_receiving;
 		// EXCEPTION: for housing zones, the "work" is the current zone value itself.
 		// This represents housing availability current being provided for by the zone.
 		if ( this.type == 'housing' ) { work = this.val; }
-		this.Output( planet, work );
+		this.Output( planet, work, accounting );
+		planet.acct_ledger.push( accounting );
 		// grow or shrink depending on our funding
 		let diff = amount_receiving - this.val;
 		this.val += (diff >= 0) ? (diff * planet.spending) : (diff * (1/this.gf) * 2);
@@ -59,7 +63,7 @@ export class Zone {
 		this.insuf = diff < 0;
 		}
 		
-	Output( planet, work ) { 
+	Output( planet, work, accounting ) { 
 		if ( work ) { 
 			for ( let type of Object.keys(this.outputs) ) { 
 				if ( typeof(standard_outputs[type]) === 'function' ) {
@@ -76,6 +80,8 @@ export class Zone {
 					standard_outputs[type]( planet, amount ); // do it
 					this.output_rec[type] = amount; 
 					planet.output_rec[type] += amount; // assume it gets zero'd out before this function is called
+					accounting[type] = (accounting[type]||0) + amount;
+					planet.acct_total[type] = ( planet.acct_total[type] || 0 ) + amount;
 					}
 				}
 			}

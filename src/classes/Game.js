@@ -193,9 +193,11 @@ export default class Game {
 				for ( let p of s.planets ) {
 					if ( p.settled ) {  
 					
-						// HACK zone production
+						// HACK zone production; TODO: MOVE THIS TO planet.js
+						for ( let k in p.acct_total ) { p.acct_total[k] = 0; }
 						for ( let k in p.output_rec ) { p.output_rec[k] = 0; }
 						for ( let k in p.resource_rec ) { p.resource_rec[k] = 0; }
+						p.acct_ledger.splice(0, p.acct_ledger.length); // clear accounting records
 						for ( let z of p.zones ) { z.Do(p); }
 							
 						// Planets will mine resources and stock their local warehouses.
@@ -261,7 +263,6 @@ export default class Game {
 						
 						// Update this again because infrastructure levels changed
 						p.RecalcSectors();
-						
 						}
 					}
 				}

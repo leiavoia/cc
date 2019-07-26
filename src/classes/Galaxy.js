@@ -99,6 +99,7 @@ export default class Galaxy {
 			p.resources.o = 3;
 			p.resources.s = 3;
 			p.resources.m = 3;
+			p.size = 20;
 			p.Settle( c );
 			if ( c.id == 0 ) { s.explored = true; }
 			else { p.ZonePlanet(); }
@@ -139,6 +140,7 @@ export default class Galaxy {
 				if ( s.planets.length ) { 
 					let p = s.planets[0];
 					this.ForcePlanetEnvToMatchRace( p, c );
+					p.size = 20;
 					p.Settle( c );
 					if ( c.id == 0 ) { s.explored = true; }
 					else { p.ZonePlanet(); }
@@ -167,6 +169,7 @@ export default class Galaxy {
 				let i = utils.RandomInt( 0, this.civs.length-1 );
 				if ( i != this.civs.length ) { 
 					this.ForcePlanetEnvToMatchRace( p, this.civs[i] );
+					p.size = 20;
 					p.Settle( this.civs[i] );
 					}
 				}
