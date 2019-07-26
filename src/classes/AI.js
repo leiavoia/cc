@@ -807,7 +807,7 @@ export class AIColonizeObjective extends AIObjective {
 								let t = targets.shift();
 // 								console.log(`Best planet was ${t.name} @ ${t.ValueTo(civ)}`);
 // 								for ( let x of targets ) { 
-// 									console.log(`Runnerup: ${x.name} @ ${x.ValueTo(civ)} :: size ${x.size}, SLOT: ${x.maxslots}, HAB ${x.Adaptation(civ.race)} MINE ${x.sect.mine.pow}, PROD ${x.sect.prod.pow}, SCI ${x.sect.sci.pow}, DEF ${x.sect.def.pow}, ESP ${x.sect.esp.pow}, `);
+// 									console.log(`Runnerup: ${x.name} @ ${x.ValueTo(civ)} :: size ${x.size}`);
 // 									}
 								let myfleet = null;
 								// split fleet if more than 1 ship in fleet

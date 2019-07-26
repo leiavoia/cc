@@ -34,7 +34,7 @@
 					click.delegate="ClickPlanet(p)" 
 					>
 					<td><img if.bind="p.owner" class="flag" src.bind="p.owner.flag_img" style="max-height: 16px;" /></td>
-					<td><b style="color: ${p.owner ? p.owner.color : 'inherit'};">${p.name}</b></td>
+					<td><b css="color: ${p.owner ? p.owner.color : 'inherit'};">${p.name}</b></td>
 					<td class="i">${p.size}</td>
 					<td>${p.envDisplayName}</td>
 					<td>${p.atm}</td>
@@ -52,7 +52,7 @@
 					<td class="i">${p.total_pop|round:1}</td>
 					<td class="t">${p.tax_rate|percent}</td>
 					<td class="t">${p.spending|percent}</td>
-					<td class="${p.treasury_contrib >= 0 ? 'good' : 'bad'}">${p.treasury_contrib >= 0 ? '+' : ''}${p.treasury_contrib|round}</td>
+					<td class="${p.acct_total.$ >= 0 ? 'good' : 'bad'}">${p.acct_total.$ >= 0 ? '+' : ''}${p.acct_total.$|round}</td>
 				</tr>
 			</template>
 		</table>

@@ -1599,15 +1599,7 @@ invisible when unexplored, dim when explored */
 		rgba(255,255,255,0) 100%
 		);*/
 	}
-#layout_ui_side > .planet .age { 
-	color: #EE1;
-	text-shadow: #000 2px 2px 1px;
-	margin: 0 auto; 
-	padding: 0; 
-	line-height: 0.9em;
-	text-align:center; 
-	font-size: 175%;
-	}
+
 #layout_ui_side > .planet > IMG {
 	float:right;
 	height: 30px;

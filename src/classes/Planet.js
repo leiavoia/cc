@@ -22,8 +22,6 @@ export default class Planet {
 	maxpop = 10;
 	popmax_contrib = 0; // used to calculate housing development from zones. resets every turn.
 	morale = 1.0;	// multiplier, default 1.0, range 0-2
-	age = 0;
-	age_level = 0;
 	troops = []; // list of GroundUnits defending planet.
 	prod_q = []; // list of { item, turns }
 	
@@ -73,54 +71,13 @@ export default class Planet {
 	max_spending = 1.0 
 	base_PCI = 10.0; // per capita income
 	bonus_PCI = 0.0;	
-	warehouse = 0;
-	min_warehouse = 100; // minimum amount to keep in store before exporting
-	mp_need = 0; // total material points needed to fuel all activity
-	mp_export = 0; // how much we import (-) or export (+) this turn
-	mp_need_met = 1.0; // 0..1, how much of what we requested for import was actually delivered. 
 	econ = {
 		tax_rev: 0,
-		expenses: {
-			total: 0,
-			sectors: 0
-			},
-		tradegoods: 0, // not sure what this does yet
 		GDP: 1.0, // gross domestic product
 		PCI: 1.0, // per-capita income
 		GF: 1.0, // growth factor
-		mine_export: 0, // can be pos or neg, depending on if planet has a need or excess
-		mine_import: 0, // the actual amount being imported, if needed. number may differ from need above
 		};
 			
-	// ACTIVITY SECTORS ----------------------------------
-	// 	vars:
-	//		pct: the percentage of the planetary spending allocated to this sector
-	//		relpct: the relative percent of spending, used to work with UI sliders.
-	//		pow: efficiency of sector at producing work.
-	//		work: raw work being produced (global spending * pct * pow)
-	//		inf: current level of developed infrastructure for this sector
-	//		output: product, after factoring in growth of infrastructure
-	//		growth: amount by which sector grew or shrank last turn.
-	//	
-	//	Production Formula: 
-	//		global spending = pop * amount per pop (i.e. tax)
-	//		sector spending = global spending * pct
-	//		work = sector spending * pow
-	//		output = min( inf, work )
-	//		growth = 0.2 * ( work - inf ) ^ 0.75
-	//		inf += growth
-	sect = {
-		mine:{ pct: 0.30, relpct: 0.30, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
-		prod:{ pct: 0.35, relpct: 0.35, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
-		sci:	{ pct: 0.35, relpct: 0.35, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
-// 		def:	{ pct: 0.00, relpct: 0.00, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
-// 		esp:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
-// 		gov:	{ pct: 0.15, relpct: 0.15, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
-// 		com:	{ pct: 0.00, relpct: 0.00, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 0 },
-// 		sup:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
-// 		civ:	{ pct: 0.0, relpct: 0.0, pow: 1.0, work: 0.0, output: 0.0, inf: 1.0, growth: 0.0, cost: 2.50 },
-		};
-
 	// POLICIES -------------------------------------------
 	// Ship Destination: Where to send ships when they are built.
 	// Valid options: NULL (here), '@' (nearest rondezvous point), Star (object)
@@ -284,9 +241,6 @@ export default class Planet {
 			];
 		}
 		
-	AgePlanet() { 
-		this.age_level = Math.min( Math.floor( ++this.age / 40 ), 5 );
-		}
   	// returns an integer value which may be negative
 	Adaptation( race ) { 
 		return -( 
@@ -328,174 +282,13 @@ export default class Planet {
 		}
 	set slider_spending(x) { 
 		this.spending = parseFloat(x).clamp(0,this.max_spending);
-		this.RecalcSectors();
-		}
-	set slider_mine(x) { 
-		this.sect.mine.relpct = parseFloat(x);
-		this.RecalcSpendingSliders();
-		}
-// 	set slider_gov(x) { 
-// 		this.sect.gov.relpct = parseFloat(x);
-// 		this.RecalcSpendingSliders();
-// 		}
-	set slider_prod(x) { 
-		this.sect.prod.relpct = parseFloat(x);
-		this.RecalcSpendingSliders();
-		}
-	set slider_sci(x) { 
-		this.sect.sci.relpct = parseFloat(x);
-		this.RecalcSpendingSliders();
-		}
-	set slider_com(x) { 
-		this.sect.com.relpct = parseFloat(x);
-		this.RecalcSpendingSliders();
-		}
-	set slider_civ(x) { 
-		this.sect.civ.relpct = parseFloat(x);
-		this.RecalcSpendingSliders();
-		}
-	set slider_def(x) { 
-		this.sect.def.relpct = parseFloat(x);
-		this.RecalcSpendingSliders();
-		}
-	set slider_sup(x) { 
-		this.sect.sup.relpct = parseFloat(x);
-		this.RecalcSpendingSliders();
-		}
-	set slider_esp(x) { 
-		this.sect.esp.relpct = parseFloat(x);
-		this.RecalcSpendingSliders();
 		}
 	set slider_taxrate(x) { 
 		this.tax_rate = parseFloat(x);
-		this.RecalcSpendingSliders();
 		}
-	@computedFrom('sect.mine.relpct')	
-	get slider_mine() { return this.sect.mine.relpct; }
-	
-// 	@computedFrom('sect.gov.relpct')	
-// 	get slider_gov() { return this.sect.gov.relpct; }
-	
-	@computedFrom('sect.prod.relpct')	
-	get slider_prod() { return this.sect.prod.relpct; }
-	
-	@computedFrom('sect.sci.relpct')	
-	get slider_sci() { return this.sect.sci.relpct; }
-	
-	@computedFrom('sect.com.relpct')	
-	get slider_com() { return this.sect.com.relpct; }
-	
-	@computedFrom('sect.civ.relpct')	
-	get slider_civ() { return this.sect.civ.relpct; }
-	
-	@computedFrom('sect.def.relpct')	
-	get slider_def() { return this.sect.def.relpct; }
-	
-	@computedFrom('sect.sup.relpct')	
-	get slider_sup() { return this.sect.sup.relpct; }
-	
-	@computedFrom('sect.esp.relpct')	
-	get slider_esp() { return this.sect.esp.relpct; }
-	
 	@computedFrom('tax_rate')	
 	get slider_taxrate() { return this.tax_rate; }
-		
-	RecalcSpendingSliders() { 
-		// get some stats
-		let t = 0; // sum of all sliders
-		let n = 0; // number of sectors
-		for ( let s in this.sect ) { 
-			t += this.sect[s].relpct; 
-			n++;
-			}
-		if ( t ) { 
-			for ( let s in this.sect ) { 
-				this.sect[s].pct = this.sect[s].relpct / t; 
-				}	
-			}
-		// if everything is zero, divide evenly
-		else {
-			for ( let s in this.sect ) { 
-				this.sect[s].pct = 1.0 / n; 
-				}
-			}
-		// taxes 
-		this.econ.tax_rev = this.econ.GDP * this.tax_rate;
-		// recalc expenses
-		this.RecalcSectors();
-		}
-	RecalcSectors() { 
-		let cost = 0;
-		this.econ.expenses.sectors = 0;
-		this.mp_need = 0; // material points (MP)
-		for ( let k in this.sect ) {
-			let s = this.sect[k];
-			// how much work we can do
-			s.work = this.total_pop * this.spending * s.pct * s.pow;
-			// how much of that work goes towards actual output (versus infrastructure upkeep)
-			s.output = Math.min(s.inf,s.work);
-			// what that work costs
-			cost += s.work * ( s.cost * (1-(this.age_level*0.05)) ) ; // we dont work for free. 
-			this.econ.expenses.sectors += s.work * s.cost;
-			// work in excess of current infrastructure level grows the infrastructure.
-			// work less than current infrastructure reduces infrastructure ("rot").
-			let diff = s.work - s.inf;
-			s.growth = diff ? (0.2 * Math.pow( Math.abs(diff), 0.75 ) ) : 0;
-			if ( diff < 0 ) {  s.growth = -s.growth; } // invert if needed
-			if ( s.growth > 0 ) { this.mp_need += s.growth; } // growing infrastructure takes material
-			else if ( s.growth < 0 && s.inf == 1.0 ) { s.growth = 0; } // 1.0 is minimum infrastructure.
-			}
-		// how much money we are making or losing
-		this.econ.expenses.total = this.econ.expenses.sectors;
-		// TODO: add in non-sector colony expenses, maintenance, etc.
-		this.treasury_contrib = this.econ.tax_rev - cost;	
-		// add production queue item MP requirements
-		// (count tradegoods income while we're here too)
-		if ( this.sect.prod.output ) { 
-			this.econ.tradegoods = 0; // reset
-			let labor_available = this.sect.prod.output;
-			outerloop:
-			for ( let item of this.prod_q ) {
-				// each queue item also has a quantity
-				let qty = (item.qty > 0) ? item.qty : 100000; // account for infinite qty "-1"
-				for ( let n = 0; n < qty; n++ ) { 
-					// how much can i build next turn?
-					let labor_per_mp = item.labor / item.mp;
-					let mp_remaining = item.mp - ( n==0 ? item.spent : 0 );
-					let labor_needed = mp_remaining * labor_per_mp;
-					// can i build the whole thing?
-					if ( labor_needed < labor_available ) { 
-						labor_available -= labor_needed;
-						this.mp_need += mp_remaining;
-						}
-					// can only build a portion.
-					// how many MP can i buy with this many hammers?
-					else {
-						this.mp_need += labor_available / labor_per_mp;
-						labor_available = 0; // pedantic
-						break outerloop;
-						}
-					}
-				}
-			}
-		// do we need to import or export stuff?
-		this.mp_export = 0;
-		// import
-		if ( this.mp_need > this.sect.mine.output + this.warehouse ) { 
-			this.mp_export = (this.sect.mine.output + this.warehouse) - this.mp_need; // negative means we need to import
-			}
-		// export
-		else if ( this.sect.mine.output + this.warehouse > this.min_warehouse ) { 
-			let total = (this.sect.mine.output + this.warehouse) - this.mp_need;
-			if ( total > this.min_warehouse ) { 
-				this.mp_export = total - this.min_warehouse;
-				}
-			}
-		}
-	DoMining() { 
-		this.warehouse += this.sect.mine.output;
-		// let the turn processor handle resource import/export
-		}
+	
 	DoProduction( ) { 
 		if ( !this.prod_q.length ) { return; } 
 		// produce as many items in the queue as we can 
@@ -629,16 +422,7 @@ export default class Planet {
 			fx: ( 1.5 / ( 1 + Math.pow( Math.E, (-6 + (9*( this.total_pop/this.maxpop )) ) ) ) ) + 0.5,
 			weight: 4.0
 			};
-    	// age level - TODO: might change this to just 'age' for more granularity
-		factors.age = { 
-			fx: ( 1 + ( this.age_level / 5 ) ),
-			weight: 5.0
-			};
-//     	// military defense - makes people feel safe
-// 		factors.age = { 
-// 			fx: ( 1 + ( utils.Clamp(this.sect.def.output,0,100) / 100 ) ),
-// 			weight: 5.0
-// 			};
+     	// TODO military defense - makes people feel safe
     	let total_weight = 0;
 		let total_value = 0;
 		for ( let f in factors ) { 
@@ -663,11 +447,9 @@ export default class Planet {
 			// connectivity / hyperlanes
 			
 		// we want PCI=10 for new vanilla colonies
-		let resource_mod = 20; 
+		let resource_mod = 20; // TODO might give value to local resources to promote economy
 		// establish a base economic rate based on planet resources
 		let target_PCI = ((/* TODO resource richness + */ this.energy) / 2) * resource_mod;
-		// adjust by the planet's age (doubles after 100 turns)
-		target_PCI *= 1 + (this.age/50);
 		// taxes modify the base rate
 		target_PCI *= Math.pow( utils.MapToRange( this.tax_rate, 0, 0.5, 2.0, 0.2 ), 1.5 );
     
@@ -719,7 +501,7 @@ export default class Planet {
 		['Inferno',		'Scorched',	'Parched',		'Torrid',	'Venutian'] //	HOT	
 		]; }
 	static GravNames() {
-		return ['Weak','Light','Medium','Heavy','Crushing' ]; 
+		return ['Weak','Light','Midweight','Heavy','Crushing' ]; 
 		}
 		
 	static AttributeSelector() { 
@@ -831,7 +613,6 @@ export default class Planet {
 		if ( star.color == 'black' ) { planet.energy = utils.RandomFloat( 0.2, 5.0 ); }
 		if ( star.color == 'green' ) { planet.energy = utils.RandomFloat( 0.2, 8.0 ); } 
 		planet.energy = parseFloat( planet.energy.toFixed(1) );
-		planet.sect.prod.pow = planet.energy;
 		
 		// size is not dependent on star or galaxy. just random.
 		planet.size = utils.BiasedRandInt(4, 25, 10, 0.5);
@@ -910,10 +691,6 @@ export default class Planet {
 			}
 		planet.physattr;// = planet.physattr.unique();		
 		
-		// calculate natural score
-		for ( let k of Object.keys(planet.sect) ) { 
-			planet.score += planet.sect[k].pow * 2;
-			}
 		planet.score += planet.size;
 		planet.score += planet.maxslots *0.25;
 		// TODO calculate goodies
@@ -944,10 +721,7 @@ export default class Planet {
 		if ( dist ) { score += ( 1 / dist ) * 7000; }
 		// population	
 		score += this.total_pop * 0.1;
-		// local economy
-		for ( let s of Object.keys(this.sect) ) { 
-			score += this.sect[s].output * 0.05;
-			}
+		// TODO local economy
 		return score;
 		}
 		
@@ -971,7 +745,6 @@ export default class Planet {
 				}
 			}
 		this.AddBuildQueueMakeworkProject('tradegoods');
-		this.RecalcSectors();	
 		this.UpdateOwnership();
 		}
 

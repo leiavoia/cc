@@ -33,7 +33,6 @@ export default class Civ {
 			adaptation: 1, // levels to shift the habitability scale
 			habitation: 1 // maximum bad planet we can settle
 			},
-		size: 1.0, // literal size of pop units
 		is_monster: false, // true for space monsters. changes some UI formating.
 		};
 	
@@ -113,8 +112,6 @@ export default class Civ {
 		let overlap = Math.max(0, Math.min(max1, max2) - Math.max(min1, min2));
 		let ratio1 = range1 ? ( overlap / range1 ) : 0;
 		let ratio2 = range2 ? ( overlap / range2 ) : 0;
-		// console.log(`mystyle=${this.diplo.style},myrange=${this.diplo.skill},theirstyle=${civ.diplo.style},theirrange=${civ.diplo.skill}`);
-		// console.log(`min1=${min1},max1=${max1},min2=${min2},max2=${max2},range1=${range1},range2=${range2},overlap=${overlap}`);
 		return Math.max(ratio1,ratio2); // return the greater of the ratios of overlap
 		}
 		
@@ -348,9 +345,6 @@ export default class Civ {
 	
 	econ = {
 		income: 0,
-		warehouse : 0,
-		mp_need: 0,
-		mp_need_met: 0, // 0..1
 		ship_maint: 0,
 		troop_maint: 0,
 		planet_maint: 0
@@ -583,10 +577,7 @@ export default class Civ {
 		for ( let p of this.planets ) { 
 			planet_score += p.score;
 			planet_score += p.total_pop * 0.1;
-			// local economy
-			for ( let s of Object.keys(p.sect) ) { 
-				planet_score += p.sect[s].output * 0.05;
-				}
+			// TODO local economy
 			}
 			
 		// ships
@@ -1182,7 +1173,8 @@ export default class Civ {
 			p.acct_total.$ = (p.acct_total.$||0) + p.econ.tax_rev;
 			p.RecordHistory();
 			this.econ.income += p.econ.tax_rev;
-			this.econ.planet_maint += p.econ.expenses.total;
+			// TODO not sure what to do with this yet
+			// this.econ.planet_maint += p.econ.expenses.total;
 			for ( let t of p.troops ) { 
 				this.econ.troop_maint += t.bp.cost.labor * 0.5; // HACK TODO tech and civ stats may change
 				}
