@@ -17,6 +17,11 @@
 				<span class="size">SIZE: ${planet.size}</span>, 
 				<span class="en">ENERGY: ${planet.energy}x</span>
 			</p>
+			<div class="resources">
+				<template repeat.for="k of p.resources|props" containerless>
+					<span repeat.for="i of p.resources[k]" class="${k}"></span>
+				</template>
+			</div>
 			<p>This beautiful planet holds great promise to your people who are eager to colonize the stars. With an abundance of natural resources and energy, it will surely provide wealth and prosperity to your civilization.</p>
 <!-- 			<p>The environment of ${planet.name} provides a sense of natural awe and wonder that should attract new citizens and tourists alike.</p> -->
 			<p><a href="#" class="button big" click.delegate="ClickDone()">Done</a></p>

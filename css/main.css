@@ -1665,7 +1665,7 @@ invisible when unexplored, dim when explored */
 	}
 #layout_ui_side .star .planet .phys {
 	padding: 0;
-	margin: 0.5em 0 1.5em 0;
+	margin: 0.5em 0 0.5em 0;
 	text-align:left;
 	}
 #layout_ui_side .star .planet .phys > DIV.size {
@@ -1877,39 +1877,39 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	cursor: inherit;
 	}
 .planet .zone.mining {
-	background:#fa9a30 url(../img/workshop/icons/SVG/cube01.svg) 50% 50% no-repeat; 
+	background:#fa9a30 url(../img/icons/svg/cube01.svg) 50% 50% no-repeat; 
 	border-color: #fa9a30;
 	}
 .planet .zone.stardock {
-	background:#D11 url(../img/workshop/icons/SVG/transport.svg) 50% 50% no-repeat; 
+	background:#D11 url(../img/icons/svg/transport.svg) 50% 50% no-repeat; 
 	border-color: #D11;
 	}
 .planet .zone.research {
-	background:#14A url(../img/workshop/icons/SVG/tool.svg) 50% 50% no-repeat; 
+	background:#14A url(../img/icons/svg/tool.svg) 50% 50% no-repeat; 
 	border-color: #14A;
 	}
 .planet .zone.government {
-	background:#666 url(../img/workshop/icons/SVG/building.svg) 50% 50% no-repeat; 
+	background:#666 url(../img/icons/svg/building.svg) 50% 50% no-repeat; 
 	border-color: #666;
 	}
 .planet .zone.housing {
-	background:#4cb0e9 url(../img/workshop/icons/SVG/home.svg) 50% 50% no-repeat; 
+	background:#4cb0e9 url(../img/icons/svg/home.svg) 50% 50% no-repeat; 
 	border-color: #4cb0e9;
 	}
 .planet .zone.economy {
-	background:#296 url(../img/workshop/icons/SVG/coins-1.svg) 50% 50% no-repeat; 
+	background:#296 url(../img/icons/svg/coins-1.svg) 50% 50% no-repeat; 
 	border-color: #296;
 	}
 .planet .zone.espionage {
-	background:#6c13b3 url(../img/workshop/icons/SVG/medical.svg) 50% 50% no-repeat; 
+	background:#6c13b3 url(../img/icons/svg/medical.svg) 50% 50% no-repeat; 
 	border-color: #6c13b3;
 	}
 .planet .zone.military {
-	background: #98543D url(../img/workshop/icons/SVG/game.svg) 50% 50% no-repeat; 
+	background: #98543D url(../img/icons/svg/game.svg) 50% 50% no-repeat; 
 	border-color: #98543D;
 	}
 .planet .zone.special {
-	background: #AA509F url(../img/workshop/icons/SVG/decoration.svg) 50% 50% no-repeat; 
+	background: #AA509F url(../img/icons/svg/decoration.svg) 50% 50% no-repeat; 
 	border-color: #AA509F;
 	}
 	
@@ -1918,12 +1918,39 @@ specialized zone images for higher techs
 if this gets too fiddly, we could also put the svg filename
 right in the zone data and use Aurelia css="background-image: ${zone.img}"
 */
-.planet .zone.CIVCAPITOL { background-image: url(../img/workshop/icons/SVG/building22.svg); }
-.planet .zone.HOUSING10 { background-image: url(../img/workshop/icons/SVG/city.svg); }
-.planet .zone.HOUSING20 { background-image: url(../img/workshop/icons/SVG/city08.svg); }
-.planet .zone.HOUSING30 { background-image: url(../img/workshop/icons/SVG/city02.svg); }
-.planet .zone.HOUSING40 { background-image: url(../img/workshop/icons/SVG/city03.svg); }
-
+.planet .zone.CIVCAPITOL { background-image: url(../img/icons/svg/building22.svg); }
+.planet .zone.PLANETCAPITOL { background-image: url(../img/icons/svg/capitol01.svg); }
+/* .planet .zone.HOUSING0A { background-image: url(../img/icons/svg/city.svg); } */
+/* .planet .zone.HOUSING0B { background-image: url(../img/icons/svg/city.svg); } */
+.planet .zone.HOUSING1A { background-image: url(../img/icons/svg/city.svg); }
+.planet .zone.HOUSING1B { background-image: url(../img/icons/svg/city.svg); }
+.planet .zone.HOUSING2A { background-image: url(../img/icons/svg/city08.svg); }
+.planet .zone.HOUSING2B { background-image: url(../img/icons/svg/city08.svg); }
+.planet .zone.HOUSING3A { background-image: url(../img/icons/svg/city02.svg); }
+.planet .zone.HOUSING3B { background-image: url(../img/icons/svg/city02.svg); }
+.planet .zone.HOUSING4A { background-image: url(../img/icons/svg/city03.svg); }
+.planet .zone.SHIP0 { background-image: url(../img/icons/svg/rocket.svg); }
+.planet .zone.SHIP1 { background-image: url(../img/icons/svg/transport.svg); }
+.planet .zone.SHIP2 { background-image: url(../img/icons/svg/stardock01.svg); }
+.planet .zone.SHIP3 { background-image: url(../img/icons/svg/stardock02.svg); }
+.planet .zone.SHIP4 { background-image: url(../img/icons/svg/moon.svg); }
+.planet .zone.MINE0A { background-image: url(../img/icons/svg/cube01.svg); }
+.planet .zone.MINE0B { background-image: url(../img/icons/svg/cube01.svg); }
+.planet .zone.MINE0C { background-image: url(../img/icons/svg/cube01.svg); }
+.planet .zone.MINE1A { background-image: url(../img/icons/svg/hexagons2.svg); }
+.planet .zone.MINE1B { background-image: url(../img/icons/svg/hexagons2.svg); }
+.planet .zone.MINE1C { background-image: url(../img/icons/svg/hexagons2.svg); }
+.planet .zone.MINE2A { background-image: url(../img/icons/svg/boxwire.svg); }
+.planet .zone.MINE2B { background-image: url(../img/icons/svg/boxwire.svg); }
+.planet .zone.MINE2C { background-image: url(../img/icons/svg/boxwire.svg); }
+.planet .zone.RES0 { background-image: url(../img/icons/svg/tool.svg); }
+.planet .zone.RES1 { background-image: url(../img/icons/svg/atom02.svg); }
+.planet .zone.RES2 { background-image: url(../img/icons/svg/molecule10.svg); }
+.planet .zone.RES3 { background-image: url(../img/icons/svg/prism02.svg); }
+				
+				
+				
+				
 .planet .zones .start, 
 .planet .zones .mid { 
 	border-right-width:0 !important; 
@@ -2055,9 +2082,50 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	content:none !important;
 	}
 
+.planet .zones.micro {
+	margin: 0.5em 0 0.5em 0;
+	}
+.planet .zones.micro .zone {
+	height: 10px;
+	max-width: 6px;
+	min-width:6px;
+	width: 6px;
+	border-radius: 0;
+	background-image: none;
+	}
+.planet .zones.micro .start, 
+.planet .zones.micro .mid { 
+	max-width: 9px;
+	min-width: 9px;
+	width: 9px;
+	}
+	
+.planet .zones.micro .zone.mid:nth-child(8), 
+.planet .zones.micro .zone.start:nth-child(8) {	
+	max-width: 6px;
+	min-width: 6px;
+	width: 6px;
+	}
+.planet .zones.micro DIV:after,
+.planet .zones.micro DIV:before {
+	content:none !important;
+	}
+	
+@keyframes insufzone {
+    0% { border-color: #ff0c0c; }
+    15% { border-color: #cc2424; }
+    35% { border-color: #a31818; }
+    50% { border-color: #690808; }
+    65% { border-color: #a31818; }
+    85% { border-color: #cc2424; }
+    100% { border-color: #ff0c0c; }
+}
 .planet .zones .insuf {
 	border: 3px solid #E33;
+	/* This effect is nice but eats up CPU - maybe save for high-specs setting */
+	/* animation: insufzone 2s infinite alternate; */
 	}
+
 .planet .zones .hilite {
 	border: 3px solid #2F8;
 	}
