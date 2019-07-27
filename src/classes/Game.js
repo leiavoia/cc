@@ -166,6 +166,8 @@ export default class Game {
 // 				civ.RecalcEmpireBox();
 				// reset some stuff
 				civ.research_income = 0;
+				for ( let k in civ.resource_income ) { civ.resource_income[k] = 0; }
+				for ( let k in civ.resource_spent ) { civ.resource_spent[k] = 0; }
 				}
 			
 			// Planetary Economics

@@ -375,16 +375,21 @@ body,html {
 	/* allows click-though to map space when child elements are hidden */
 	pointer-events: none;
 	}
-#layout_ai_headsup { 
+.layout_ai_headsup { 
 	display: block; 
 	text-align: right; 
 	position: absolute; 
 	top: 1em; 
-	right: 1em; 
 	color: #3F3; 
 	font-size: 8pt; 
 	font-family: monospace;
 	opacity: 0.5;
+	}
+#layout_ai_headsup { text-align: right; right: 1em; }
+#layout_ai_headsup2 { text-align: left; left: 1em; }
+.layout_ai_headsup .hilite { 
+	color: #000;
+	background-color: #17a717;
 	}
  
 #layout_ui_content {

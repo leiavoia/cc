@@ -306,19 +306,20 @@ export default class Civ {
 		y:10000, // yellowtron	
 		}
 	
-	// the sum of all resources being demanded from all sources
-	resource_estm = { $:0, o:0, s:0, m:0, r:0, g:0, b:0, c:0, v:0, y:0 };
-	
 	// supply/demand ratio per resource type. <1.0 indicates shortfall
 	resource_supply = { $:1, o:1, s:1, m:1, r:1, g:1, b:1, c:1, v:1, y:1 };
 	
 	// resources that were actually consumed last turn
-	resource_rec = { $:0, o:0, s:0, m:0, r:0, g:0, b:0, c:0, v:0, y:0 };
+	resource_spent = { $:0, o:0, s:0, m:0, r:0, g:0, b:0, c:0, v:0, y:0 };
+	
+	// resources that were actually consumed last turn
+	resource_income = { $:0, o:0, s:0, m:0, r:0, g:0, b:0, c:0, v:0, y:0 };
+	
+	// the sum of all resources being demanded from all sources
+	resource_estm = { $:0, o:0, s:0, m:0, r:0, g:0, b:0, c:0, v:0, y:0 };
 	
 	EstimateResources() {
-		// zero out
-		for ( let k of Object.keys(this.resource_estm) ) { this.resource_estm[k]=0; }
-		// sum up
+		for ( let k in this.resource_estm ) { this.resource_estm[k] = 0; }
 		for ( let p of this.planets ) { 
 			p.RecalcZoneHabMod();
 			for ( let z of p.zones ) { 
@@ -1165,16 +1166,13 @@ export default class Civ {
 	DoAccounting( app ) {
 		this.econ.income = 0;
 		this.econ.net_rev = 0;
-		this.econ.planet_maint = 0;
 		this.econ.ship_maint = 0;
 		this.econ.troop_maint = 0;
 		for ( let p of this.planets ) {
 			p.acct_ledger.unshift( { name:'Tax Income', type:'tax', $:p.econ.tax_rev } );
 			p.acct_total.$ = (p.acct_total.$||0) + p.econ.tax_rev;
+			p.owner.resource_income.$ += p.econ.tax_rev;
 			p.RecordHistory();
-			this.econ.income += p.econ.tax_rev;
-			// TODO not sure what to do with this yet
-			// this.econ.planet_maint += p.econ.expenses.total;
 			for ( let t of p.troops ) { 
 				this.econ.troop_maint += t.bp.cost.labor * 0.5; // HACK TODO tech and civ stats may change
 				}
@@ -1188,12 +1186,11 @@ export default class Civ {
 				}
 			}
 		// stat tracking
-		this.econ.net_rev = this.econ.income; // collect taxes
-		this.econ.net_rev -= this.econ.ship_maint;
-		this.econ.net_rev -= this.econ.troop_maint;
-		this.econ.net_rev -= this.econ.planet_maint;
+		this.resource_spent.$ += this.econ.ship_maint;
+		this.resource_spent.$ += this.econ.troop_maint;
+		this.resources.$ -= this.econ.ship_maint;
+		this.resources.$ -= this.econ.troop_maint;
 		// show me the money
-		this.resources.$ += this.econ.net_rev;
 		if ( this.resources.$ < 0 ) { this.resources.$ = 0; }
 		}
 		

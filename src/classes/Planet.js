@@ -212,11 +212,13 @@ export default class Planet {
 					turns_left: '-',
 					pct: 0,
 					ProduceMe: function ( planet ) {
-						planet.owner.resources.cash += 10;	
-						planet.econ.tradegoods += 10;
+						let amount = 10;
+						planet.owner.resources.cash += amount;	
+						planet.econ.tradegoods += amount;
 						let row = planet.acct_ledger.filter( r => r.name=='Trade Goods' )[0];
-						row.$ = (row.$||0) + 10;
-						planet.acct_total.$ = (planet.acct_total.$||0) + 10;
+						row.$ = (row.$||0) + amount;
+						planet.acct_total.$ = (planet.acct_total.$||0) + amount;
+						planet.owner.resource_income.$ += amount;
 						}
 					};
 				break;
@@ -354,7 +356,7 @@ export default class Planet {
 					else { 
 						let total = maxpct * item.cost[k];
 						this.owner.resources[k] -= total;
-						this.owner.resource_rec[k] += total;
+						this.owner.resource_spent[k] += total;
 						accounting[k] = (accounting[k]||0) - total;
 						this.acct_total[k] = (this.acct_total[k]||0) - total;
 						}
@@ -692,7 +694,6 @@ export default class Planet {
 		planet.physattr;// = planet.physattr.unique();		
 		
 		planet.score += planet.size;
-		planet.score += planet.maxslots *0.25;
 		// TODO calculate goodies
 		
 		return planet;
@@ -704,6 +705,7 @@ export default class Planet {
 	ValueTo( civ ) {
 		// even habitable?
 		if ( !this.Habitable( civ.race ) ) { 
+			
 			return 0;
 			}
 		// not in range? not worth anything 

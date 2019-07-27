@@ -185,20 +185,49 @@
 		
 		<div id="layout_ui_center">
 		
-			<!-- AI DEBUG -->
-			<div id="layout_ai_headsup" if.bind="app.options.debug && !app.main_panel_mode">
+			<!-- AI DEBUG LEFT -->
+			<div id="layout_ai_headsup2" class="layout_ai_headsup" if.bind="app.options.debug && !app.main_panel_mode">
 				<span css="padding: 0.1em 1em; color:#FFF;text-shadow:1px 1px 0 #000; background-color: ${app.game.myciv.color}">${app.game.myciv.name}</span><br/>
 				<br/>
+				
+				<table class="right" style="margin: 0 0 0 0;">
+					<tr>
+						<th></th>
+						<td>In</td>
+						<td>Out</td>
+						<td>+/-</td>
+						<td>%</td>
+						<td>Has</td>
+						<td>Dmd</td>
+						<td>Rat</td>
+					</tr>				
+					<tr repeat.for="k of app.game.myciv.resource_income|props">
+						<th>${k|uppercase}&nbsp;</th>
+						<td>${app.game.myciv.resource_income[k]|round}</td>
+						<td>${app.game.myciv.resource_spent[k]|round}</td>
+						<td class="${app.game.myciv.resource_income[k] - app.game.myciv.resource_spent[k] < -0.001 ? 'hilite' : ''}">${app.game.myciv.resource_income[k] - app.game.myciv.resource_spent[k]|round}</td>
+						<td>${(app.game.myciv.resource_income[k] && app.game.myciv.resource_spent[k] ? (app.game.myciv.resource_income[k] / app.game.myciv.resource_spent[k]) : 1)|round:2}</td>
+						<td class="${app.game.myciv.resources[k] < 1 ? 'hilite' : ''}">${app.game.myciv.resources[k]|round}</td>
+						<td>${app.game.myciv.resource_estm[k]|round}</td>
+						<td>${app.game.myciv.resource_supply[k]|round:2}</td>
+					</tr>
+				</table>
+				
+				<br/>
+				net_rev: ${app.game.myciv.econ.net_rev|round}<br/>
+				income: ${app.game.myciv.resource_income.$|round}<br/>
+				ship_maint: ${app.game.myciv.econ.ship_maint|round}<br/>
+				troop_maint: ${app.game.myciv.econ.troop_maint|round}<br/>
+				
+			</div>
+	
+		
+			<!-- AI DEBUG RIGHT -->
+			<div id="layout_ai_headsup" class="layout_ai_headsup" if.bind="app.options.debug && !app.main_panel_mode">
+
 				staging: <span repeat.for="pt of app.game.myciv.ai.staging_pts">${pt.name} </span><br/>
 				<br/>
-				<span repeat.for="k of app.game.myciv.resource_estm|props">
-					r_estm.${k}: ${app.game.myciv.resource_estm[k]|round:3}<br/>
-				</span>
-				<br/>
-				<span repeat.for="k of app.game.myciv.resource_supply|props">
-					r_supply.${k}: ${app.game.myciv.resource_supply[k]|round:3}<br/>
-				</span>
-				<br/>
+				
 				needs.colony_ships: ${app.game.myciv.ai.needs.colony_ships|round}<br/>
 				needs.combat_ships: ${app.game.myciv.ai.needs.combat_ships|round}<br/>
 				needs.troop_ships: ${app.game.myciv.ai.needs.troop_ships|round}<br/>
@@ -207,6 +236,7 @@
 				needs.troops: ${app.game.myciv.ai.needs.troops|round}<br/>
 				needs.cash: ${app.game.myciv.ai.needs.cash|round}<br/>
 				needs.tech: ${app.game.myciv.ai.needs.tech|round}<br/>
+				
 				<br/>
 				total_milval: ${app.game.myciv.ai.total_milval|round}<br/>
 				avail_milval: ${app.game.myciv.ai.avail_milval|round}<br/>
@@ -216,12 +246,7 @@
 				num_uncolonized: ${app.game.myciv.ai.num_uncolonized|round}<br/>
 				total_troops: ${app.game.myciv.ai.total_troops|round}<br/>
 				total_troopships: ${app.game.myciv.ai.total_troopships|round}<br/>
-				<br/>
-				net_rev: ${app.game.myciv.econ.net_rev|round}<br/>
-				income: ${app.game.myciv.econ.income|round}<br/>
-				planet_maint: ${app.game.myciv.econ.planet_maint|round}<br/>
-				ship_maint: ${app.game.myciv.econ.ship_maint|round}<br/>
-				troop_maint: ${app.game.myciv.econ.troop_maint|round}<br/>
+				
 				<br/>
 				strat.def: ${app.game.myciv.ai.strat.def}<br/>
 				strat.offense_ratio: ${app.game.myciv.ai.strat.offense_ratio|round:2}<br/>

@@ -42,11 +42,12 @@ export class Zone {
 			// NOTE: planet environmental effects are applied here to +/- resources costs, 
 			// but not to the work formula itself. Costs change but work stays the same.
 			let amount = this.inputs[k] * this.size * amount_receiving * planet.zone_hab_mod;
-			planet.owner.resources[k] -= amount;
 			this.resource_rec[k] = amount;
 			planet.resource_rec[k] += amount; // assume it gets zero'd out before this function is called
-			accounting[k] = -amount;
 			planet.acct_total[k] = (planet.acct_total[k] || 0 ) - amount;
+			accounting[k] = -amount;
+			planet.owner.resources[k] -= amount;
+			planet.owner.resource_spent[k] += amount;
 			}
 		// output
 		let work = amount_receiving;
@@ -65,7 +66,7 @@ export class Zone {
 		
 	Output( planet, work, accounting ) { 
 		if ( work ) { 
-			for ( let type of Object.keys(this.outputs) ) { 
+			for ( let type of Object.keys(this.outputs) ) {
 				if ( typeof(standard_outputs[type]) === 'function' ) {
 					let amount = this.outputs[type] * this.size * work;
 					// If this is a mining zone, the output is modified by local resource availabilty.
@@ -80,6 +81,7 @@ export class Zone {
 					standard_outputs[type]( planet, amount ); // do it
 					this.output_rec[type] = amount; 
 					planet.output_rec[type] += amount; // assume it gets zero'd out before this function is called
+					planet.owner.resource_income[type] += amount;
 					accounting[type] = (accounting[type]||0) + amount;
 					planet.acct_total[type] = ( planet.acct_total[type] || 0 ) + amount;
 					}
