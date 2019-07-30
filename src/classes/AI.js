@@ -95,7 +95,10 @@ export class CivAI extends AI {
 		def_threat_weight: 0.5, // 0..1 amount to consider external threats when defending
 		risk: 0.5, // 0..1 amount of risk AI is willing to take
 		posture: 0.5, // 0..1 balance between turtling (0) and mindless offense (1).
-		min_assault_score: 10000
+		min_assault_score: 10000,
+		zone_remodel_freq: 40,
+		zone_remodel: 'semirand', // strategy for remodeling [wipe,rand,semirand,smart]
+		zone_remodel_rand_chance: 0.35
 		};
 	needs = { 
 		colony_ships: 0,
@@ -852,9 +855,48 @@ export class AIPlanetsObjective extends AIObjective {
 	type = 'planets';
 	priority = 50;
 	EvaluateFunc( app, civ ) {
-		// zone any planets not already zoned
+		
+		// planet zoning
 		for ( let p of civ.planets ) {
+			// zone any planets not already zoned
 			if ( p.zoned < p.size ) { 
+				this.ZonePlanet(p);
+				}
+			// remodeling
+			else if ( (app.game.turn_num - p.established) % p.owner.ai.strat.zone_remodel_freq == 0 )  {
+				// wipe strategy: just reset the entire planet every few years
+				if ( p.owner.ai.strat.zone_remodel == 'wipe' ) {
+					let i = p.zones.length;
+					while ( i-- ) {
+						if ( p.zones[i].type != 'government' ) { 
+							p.zoned -= p.zones[i].size;
+							p.zones.splice( i, 1 );
+							}
+						}
+					}
+				// random strategy: randomly destroy zones
+				else if ( p.owner.ai.strat.zone_remodel == 'rand' ) { 
+					let i = p.zones.length;
+					while ( i-- ) {
+						if ( Math.random() <= p.owner.ai.strat.zone_remodel_rand_chance && p.zones[i].type != 'government' ) { 
+							p.zoned -= p.zones[i].size;
+							p.zones.splice( i, 1 );
+							}
+						}
+					}
+				// semirandom strategy: randomly destroy zones based on zone stats
+				else if ( p.owner.ai.strat.zone_remodel == 'semirand' ) { 
+					let i = p.zones.length;
+					while ( i-- ) {
+						let chance = p.owner.ai.strat.zone_remodel_rand_chance - ( 3/p.zones[i].gf );
+						if ( p.zones[i].val < 0.1 ) { chance += 0.35 };
+						if ( p.zones[i].insuf ) { chance += 0.65 };
+						if ( Math.random() <= chance && p.zones[i].type != 'government' ) { 
+							p.zoned -= p.zones[i].size;
+							p.zones.splice( i, 1 );
+							}
+						}
+					}
 				this.ZonePlanet(p);
 				}
 			}
@@ -920,7 +962,7 @@ export class AIPlanetsObjective extends AIObjective {
 				};
 				
 			
-			if ( p.prod_q.length < 7 ) { // dont overload the queue
+			if ( p.prod_q.length < 4 ) { // dont overload the queue
 				let thing_to_build = RollForBuildItem();
 				if ( thing_to_build ) { 
 					switch ( thing_to_build ) {
@@ -1110,7 +1152,7 @@ export class AIPlanetsObjective extends AIObjective {
 				// no zones that require special resources we don't have
 				candidates = candidates.filter( z => {
 					for ( let k in z.inputs ) {
-						if ( p.owner.resources[k] <= 0 ) { return false; }
+						if ( k != '$' && p.owner.resources[k] <= 0 ) { return false; }
 						}	
 					return true;
 					} );

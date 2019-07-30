@@ -566,6 +566,10 @@ export default class Civ {
 		let ideal_zone_total = 0;
 		for ( let k in civ.ai.strat.ideal_zoning ) { ideal_zone_total += civ.ai.strat.ideal_zoning[k]; }
 		for ( let k in civ.ai.strat.ideal_zoning ) { civ.ai.strat.ideal_zoning[k] /= ideal_zone_total; }
+		// zone remodeling
+		civ.ai.strat.zone_remodel_freq = utils.BiasedRandInt(10, 80, 40, 0.5);
+		civ.ai.strat.zone_remodel= ['wipe','rand','semirand'][ utils.RandomInt(0,2) ]; // strategy for remodeling [wipe,rand,semirand,smart]
+		civ.ai.strat.zone_remodel_rand_chance = utils.BiasedRand(0.1, 0.7, 0.35, 0.75);
 		return civ;
 		}
 		
@@ -1174,14 +1178,14 @@ export default class Civ {
 			p.owner.resource_income.$ += p.econ.tax_rev;
 			p.RecordHistory();
 			for ( let t of p.troops ) { 
-				this.econ.troop_maint += t.bp.cost.labor * 0.5; // HACK TODO tech and civ stats may change
+				this.econ.troop_maint += t.bp.cost.labor * 0.15; // HACK TODO tech and civ stats may change
 				}
 			}
 		for ( let f of this.fleets ) {
 			for ( let s of f.ships ) { 
-				this.econ.ship_maint += s.bp.cost.labor * 0.05; // HACK TODO tech and civ stats may change
+				this.econ.ship_maint += s.bp.cost.labor * 0.015; // HACK TODO tech and civ stats may change
 				for ( let t of s.troops ) { 
-					this.econ.troop_maint += t.bp.cost.labor * 0.5; // HACK TODO tech and civ stats may change
+					this.econ.troop_maint += t.bp.cost.labor * 0.15; // HACK TODO tech and civ stats may change
 					}
 				}
 			}

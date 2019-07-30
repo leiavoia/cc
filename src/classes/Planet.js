@@ -1,5 +1,6 @@
 import Star from './Star';
 import Fleet from './Fleet';
+import {App} from '../app';
 import RandomPicker from '../util/RandomPicker';
 import RandomName from '../util/RandomName';
 import * as utils from '../util/utils';
@@ -15,6 +16,7 @@ export default class Planet {
 	// UI and DATA ---------------------------------------
 	ui_color = 'inherit'; // this way you can set defaults in CSS and override inline
 	star = null;
+	established = 0; // turn planet was settled or conquered
 	explored = false;
 	owner = false; // false indicates unowned. zero can be an index
 	name = 'UNKNOWN';
@@ -748,6 +750,7 @@ export default class Planet {
 			}
 		this.AddBuildQueueMakeworkProject('tradegoods');
 		this.UpdateOwnership();
+		this.established = App.instance.game.turn_num;
 		}
 
 	RemoveDeadTroops() { 
