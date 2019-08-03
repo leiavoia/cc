@@ -11,7 +11,7 @@ import * as Signals from './util/signals';
 import * as CrazyBox from './classes/Crazy';
 
 export class App {
-	version = '0.0.4';
+	version = '0.0.5';
 	main_panel_obj = null;
 // 	main_panel_mode = 'shipdes';
 	main_panel_mode = false;
