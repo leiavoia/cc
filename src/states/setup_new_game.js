@@ -52,7 +52,7 @@ export class SetupNewGameState {
 		// take sqrt of the number of sectors
 		let min_edge = 4; // 4 sectors along side = 1600px
 		let edge1 = Math.ceil( Math.sqrt( galaxy_size ) * 2 );
-		let edge2 = Math.ceil( utils.BiasedRand(min_edge, (edge1-min_edge), (edge1*0.5), (1.0-this.app.options.setup.crazy)*1.5  ) );
+		let edge2 = Math.ceil( utils.BiasedRand(min_edge, (edge1-min_edge), (edge1*0.5), (1.0-this.app.options.setup.crazy)  ) );
 		edge1 -= edge2;
 		// calculate num stars based on density and number of sectors we have
 		if ( this.app.options.setup.density == 0 ) { this.app.options.setup.density = 0.05; }
@@ -61,7 +61,8 @@ export class SetupNewGameState {
 			(edge1 > edge2 ? edge1 : edge2), // longest edge is horizontal. better screen ergonomics
 			(edge1 > edge2 ? edge2 : edge1), 
 			stars,
-			this.app.options.setup.galaxy_age
+			this.app.options.setup.galaxy_age,
+			this.app.options.setup.crazy
 			);
 		// TODO: change AddExploreDemo to something more robust when code matures.
 		let mystar = this.app.game.galaxy.AddExploreDemo( this.app.options.setup.AIs + 1 );

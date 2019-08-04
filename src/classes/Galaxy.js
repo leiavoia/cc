@@ -21,7 +21,7 @@ export default class Galaxy {
 		
 	// size is in number of sectors, 
 	// where sector is 400px and max one star per sector
-	Make( map_size_x, map_size_y, stars_wanted, galaxy_age = 0.5 ) {
+	Make( map_size_x, map_size_y, stars_wanted, galaxy_age = 0.5, crazy = 0 ) {
 		
 		let cell_size = 400;
 		
@@ -46,16 +46,127 @@ export default class Galaxy {
 		// whichever is less.
 		let num_anoms = Math.min( Math.floor( remainder * 0.5 ), Math.floor( sectors * 0.3) );
 		remainder -= num_anoms;
-		let arr =  new Array( stars_wanted ).fill(1).concat( // stars
-			new Array( num_anoms ).fill(2).concat( // anomalies
-				new Array( remainder ).fill(0) // empty space
-				)
-			) ;
-	
-		// this is where the shape of the galaxy is determined. 
-		// Most of the time just shuffling works fine.
-		arr.shuffle();
+		let arr = [];
 		
+		// this is where the shape of the galaxy is determined. 
+		// Most of the time just shuffling works fine and works 
+		// fast on lower powered machines.
+		
+		let strategy = 'attraction'; // [attraction,shuffle]
+		
+		if ( strategy == 'attraction' ) { 
+				
+			arr = new Array(sectors);
+			let avail_indexes = new Array(sectors);
+			for ( let i=0; i < sectors; i++  ) { avail_indexes[i] = i; }
+			avail_indexes.shuffle();
+			
+			let num_attractors = 10 * crazy;	
+			let attractors = [];
+			for ( let a=0; a < num_attractors ; a++ ) { 
+				let attractor = { 
+					x: utils.RandomInt( 2, map_size_x-2 ), 
+					y: utils.RandomInt( 2, map_size_y-2 ), 
+					s: utils.BiasedRandInt( 
+						(( map_size_x + map_size_y ) * -1),
+						// 0,
+						(( map_size_x + map_size_y ) * 2 ),
+						// (( map_size_x + map_size_y ) ),
+						0,
+						0.5
+						)
+					}; 
+				console.log( `attractor: (${attractor.x}, ${attractor.y}) x${attractor.s}`);
+				attractors.push( attractor );			
+				}
+			
+			// returns next open spot in a spiral
+			let NextInSpiral = function ( px, py ) {
+				var x = 0;
+				var y = 0;
+				var delta = [0, -1];
+				for ( let i = Math.pow(Math.max(map_size_x, map_size_y), 2); i>0; i--) {
+					if ( px+x > 0 && px+x < map_size_x && py+y > 0 && py+y < map_size_y ) {
+						let index = (px+x)*map_size_y + (py+y);
+						if ( !arr[index] ) { return index; }
+						}
+					// change direction
+					if ( x === y || (x < 0 && x === -y) || (x > 0 && x === 1-y) ){
+						delta = [-delta[1], delta[0]];
+						}
+					x += delta[0];
+					y += delta[1];        
+					}	
+				return 0;		
+				}
+				
+			let PlaceGalacticObject = function ( objtype = 1 ) {
+				// random starting point
+				let px = utils.RandomInt(0,map_size_x);
+				let py = utils.RandomInt(0,map_size_y);
+				// attract point
+				let vectors = [];
+				for ( let attractor of attractors ) { 
+					let dx = Math.abs( px - attractor.x ); 
+					let dy = Math.abs( py - attractor.y );
+					let dist = Math.sqrt( dx*dx + dy*dy );
+					let force = attractor.s / Math.pow(dist,1.1);
+					let new_dist = Math.max( dist - force, 0 );
+					let dist_ratio = new_dist / dist;
+					vectors.push( [
+						( attractor.x - px ) * (1-dist_ratio),
+						( attractor.y - py ) * (1-dist_ratio)
+						] );
+					}
+				
+				// add vectors
+				let baricenter = [0,0];
+				for ( let v of vectors ) {
+					baricenter[0] += v[0];
+					baricenter[1] += v[1];
+					}	
+				let new_x = utils.Clamp( Math.floor( baricenter[0] + px ), 0, map_size_x-1 );
+				let new_y = utils.Clamp( Math.floor( baricenter[1] + py ), 0, map_size_y-1 );
+				
+				// if point is taken, find something nearby
+				let index = new_x*map_size_y + new_y;
+				if ( arr[index] ) {
+					index = NextInSpiral( new_x, new_y );
+					}
+				// gotcha
+				if ( !arr[index] ) {
+					arr[index] = objtype;
+					let i = avail_indexes.indexOf( index );
+					if ( i >= 0 ) { avail_indexes.splice(i,0); }
+					}
+				// backup plan: just pick a random spot
+				else {
+					arr[ avail_indexes.pop() ] = objtype;
+					}
+				}
+			
+			for ( let i=0; i < stars_wanted; i++ ) { PlaceGalacticObject(1); }
+			for ( let i=0; i < num_anoms; i++ ) { PlaceGalacticObject(2); }
+			
+			// random scattering
+			for ( let i = 0; i < sectors*0.1; i++ ) {
+				let one = utils.RandomInt( 0, sectors-1 );
+				let two = utils.RandomInt( 0, sectors-1 );
+				let temp = arr[two];
+				arr[two] = arr[one];
+				arr[one] = temp;
+				}
+			}
+
+		else /*if ( strategy == 'shuffle' )*/ { 
+			arr = new Array( stars_wanted ).fill(1).concat( // stars
+				new Array( num_anoms ).fill(2).concat( // anomalies
+					new Array( remainder ).fill(0) // empty space
+					)
+				) ;
+			arr.shuffle();
+			}
+				
  		// loop over the array and create map objects
 		let jitter = 135; // values 100..150 work well
 		for ( let x = 0; x < map_size_x; x++ ) { 
@@ -77,7 +188,7 @@ export default class Galaxy {
 				}
 			}
 		}
-			
+					
 	ThreatDemo( num_civs=2 ) {
 
 		this.MakeCivs( num_civs );
