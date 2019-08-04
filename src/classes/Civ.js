@@ -295,15 +295,15 @@ export default class Civ {
 	// our current stock of goodies, including cash
 	resources = {
 		$:100000,
-		o:1000, // organics
-		s:1000, // silicates
-		m:1000, // metals
-		r:10000, // redium
-		g:10000, // verdagen
-		b:10000, // bluetonium
-		c:10000, // cyanite
-		v:10000, // violetronium
-		y:10000, // yellowtron	
+		o:500, // organics
+		s:500, // silicates
+		m:500, // metals
+		r:500, // redium
+		g:500, // verdagen
+		b:500, // bluetonium
+		c:500, // cyanite
+		v:500, // violetronium
+		y:500, // yellowtron	
 		}
 	
 	// supply/demand ratio per resource type. <1.0 indicates shortfall
@@ -312,7 +312,7 @@ export default class Civ {
 	// resources that were actually consumed last turn
 	resource_spent = { $:0, o:0, s:0, m:0, r:0, g:0, b:0, c:0, v:0, y:0 };
 	
-	// resources that were actually consumed last turn
+	// resources that were actually produced last turn
 	resource_income = { $:0, o:0, s:0, m:0, r:0, g:0, b:0, c:0, v:0, y:0 };
 	
 	// the sum of all resources being demanded from all sources
@@ -567,8 +567,8 @@ export default class Civ {
 		for ( let k in civ.ai.strat.ideal_zoning ) { ideal_zone_total += civ.ai.strat.ideal_zoning[k]; }
 		for ( let k in civ.ai.strat.ideal_zoning ) { civ.ai.strat.ideal_zoning[k] /= ideal_zone_total; }
 		// zone remodeling
-		civ.ai.strat.zone_remodel_freq = utils.BiasedRandInt(10, 80, 40, 0.5);
-		civ.ai.strat.zone_remodel= ['wipe','rand','semirand'][ utils.RandomInt(0,2) ]; // strategy for remodeling [wipe,rand,semirand,smart]
+		civ.ai.strat.zone_remodel_freq = utils.BiasedRandInt(10, 20, 15, 0.5);
+		civ.ai.strat.zone_remodel= 'recycle'; // ['recycle','wipe','rand','semirand'][ utils.RandomInt(0,2) ]; // strategy for remodeling [wipe,rand,semirand,recycle,smart]
 		civ.ai.strat.zone_remodel_rand_chance = utils.BiasedRand(0.1, 0.7, 0.35, 0.75);
 		return civ;
 		}
@@ -1194,8 +1194,12 @@ export default class Civ {
 		this.resource_spent.$ += this.econ.troop_maint;
 		this.resources.$ -= this.econ.ship_maint;
 		this.resources.$ -= this.econ.troop_maint;
-		// show me the money
-		if ( this.resources.$ < 0 ) { this.resources.$ = 0; }
+		// resources below zero happen because of rounding errors, but not allowed.
+		for ( let k in this.resources ) { 
+			if ( this.resources[k] < 0 ) { 
+				this.resources[k] = 0; 
+				}
+			}
 		}
 		
 	AddAvailZoneType( z ) { 

@@ -492,6 +492,7 @@ export default class Planet {
 		else if ( diff < 0 ) { // pop decline - we outstripped allowable space somehow
 			this.total_pop *= 1.0 - ((( this.total_pop / this.maxpop ) - 1.0) * 0.2);
 			}
+		this.total_pop = Math.max( 0, this.total_pop );
 		}
 		
 	// temp => atm

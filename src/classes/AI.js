@@ -897,6 +897,26 @@ export class AIPlanetsObjective extends AIObjective {
 							}
 						}
 					}
+				// recycle strategy: completely rezones planet, recycling any that match.
+				else if ( p.owner.ai.strat.zone_remodel == 'recycle' ) { 
+					// make a copy of the existing zone list
+					let oldlist = p.zones.filter( z => !(z.perma || z.type=='government' || z.type=='special') );
+					// keep these ones from being deleted
+					let goodies = p.zones.filter( z => z.perma || z.type=='government' || z.type=='special' );
+					// clean slate and rezone
+					p.zones.splice( 0, p.zones.length, ...goodies );
+					p.zoned = 0;
+					this.ZonePlanet(p);
+					// loop through the lists and find matching pairs to transfer progress
+					for ( let old_z of oldlist ) {
+						for ( let z of p.zones ) {
+							if ( old_z.key == z.key && !z.val ) { 
+								z.val = old_z.val;
+								break;
+								}
+							}
+						}
+					}
 				this.ZonePlanet(p);
 				}
 			}
@@ -1044,8 +1064,6 @@ export class AIPlanetsObjective extends AIObjective {
 		
 	// returns a list of zone *types* in preferred order of building
 	ZoneSuggester( p ) { 
-		// TODO: in the future we may tear down old zones build new ones.
-		// For now, just refuse further zoning if planet is full.
 		if ( p.zoned == p.size ) { return null; }
 					
 		// 1) LOCAL:
@@ -1087,7 +1105,9 @@ export class AIPlanetsObjective extends AIObjective {
 			military: 5
 			};
 		// good resources available? (this factors in current supply and demand)
-		for ( let k in p.resources ) { local_zoning.mining += p.resources[k] * (1/((p.owner.resource_supply[k]+2)/4)); }
+		for ( let k in p.resources ) { 
+			local_zoning.mining += p.resources[k] * (5/p.owner.resource_supply[k]); 
+			}
 		
 		// housing situation?
 		local_zoning.housing += 2 * p.Adaptation( p.owner.race );
@@ -1130,32 +1150,38 @@ export class AIPlanetsObjective extends AIObjective {
 			if ( z.type == 'government' ) { continue; }
 			actual[z.type] = (actual[z.type]||0) + (z.size / (p.size-1)); // factor out civ capital
 			}
-		// pick the neediest of the bunch
+		// sort the neediest of the bunch
 		let need = [];
 		for ( let k in ideal ) { 
 			need.push( [ k, ideal[k] - (actual[k]||0) ] );
 			}
 		need.sort( (a,b) => b[1] - a[1] );
-		return need.map( x => x[0] );		
+		return need;		
 		}
 		
 	// Completely zones a planet. Can be used for AI or automation settings
 	ZonePlanet( p ) {
-		while (p.zoned < p.size ) { 
+		// no zones that require special resources we don't have or shortly wont have
+		let zones_avail = p.owner.avail_zones.filter( z => {
+			for ( let k in z.inputs ) {
+				let income = p.owner.resource_income[k] - p.owner.resource_spent[k];
+				if ( k != '$' && p.owner.resources[k] <= 0 
+					|| ( income < -1 && ( p.owner.resources[k] / -income < 10 ) ) ) { return false; }
+				}	
+			return true;
+			} );
+		
+		while ( p.zoned < p.size ) { 
+			let starting_size = p.zoned; // while-loop safety net
 			// the zone suggester will indicate what general type of zone we should build next
+			// and how many of those zones we ideally need.
 			let needs = this.ZoneSuggester(p);
 			// pick a specific zone to make.
-			for ( let ztype of needs ) { 
-				// find all zones that fit in the space left
-				let maxsize = p.size - p.zoned;
-				let candidates = p.owner.avail_zones.filter( z => z.type == ztype && z.size <= maxsize );
-				// no zones that require special resources we don't have
-				candidates = candidates.filter( z => {
-					for ( let k in z.inputs ) {
-						if ( k != '$' && p.owner.resources[k] <= 0 ) { return false; }
-						}	
-					return true;
-					} );
+			for ( let need of needs ) { 
+				let ztype = need[0];
+				// find all zones that fit in the space left, with some room for splurging
+				let maxsize = Math.min( Math.ceil(need[1] * p.size * 1.5 ), p.size - p.zoned );
+				let candidates = zones_avail.filter( z => z.type == ztype && z.size <= maxsize );
 				// if choosing a mining zone, make sure we have those resources available
 				if ( ztype == 'mining' ) { 
 					candidates = candidates.filter( z => {
@@ -1166,8 +1192,8 @@ export class AIPlanetsObjective extends AIObjective {
 						// let natural_values = { o:3, s:1, m:2, r:4, g:4, b:4, c:7, v:9, y:8, };
 						let zone = candidates.sort( (a,b) => {
 							let a_total = 0, b_total = 0;
-							for ( let k in a.outputs ) { a_total += p.resources[k] * (1/p.owner.resource_supply[k]); }
-							for ( let k in b.outputs ) { b_total += p.resources[k] * (1/p.owner.resource_supply[k]); }
+							for ( let k in a.outputs ) { a_total += p.resources[k] * (5/p.owner.resource_supply[k]); }
+							for ( let k in b.outputs ) { b_total += p.resources[k] * (5/p.owner.resource_supply[k]); }
 							return a_total - b_total;
 							}).pop();
 						p.AddZone(zone.key);
@@ -1176,11 +1202,12 @@ export class AIPlanetsObjective extends AIObjective {
 					}
 				// regular zones just choose the largest available
 				else if ( candidates.length ) { 
-					let zone = candidates.sort( (a,b) => b.size - a.size ).pop();
+					let zone = candidates.sort( (a,b) => a.size - b.size ).pop();
 					p.AddZone(zone.key);
 					break;
 					}
 				}
+			if ( starting_size == p.zoned ) { break; }
 			}
 		}
 		
