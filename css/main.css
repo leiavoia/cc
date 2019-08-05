@@ -2142,6 +2142,7 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	background-color: rgba(255,255,255,0.35);
 	position:absolute;
 	}	
+.planet .zone.pct0 { opacity: 0.5; }
 .planet .zone.pct0:after { top: 100%; }
 .planet .zone.pct10:after { top: 90%; }
 .planet .zone.pct20:after { top: 80%; }

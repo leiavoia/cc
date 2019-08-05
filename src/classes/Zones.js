@@ -26,7 +26,7 @@ export class Zone {
 		}
 		
 	Do( planet ) { 
-		let accounting = { name:this.name, type:'zone' }; // start acounting record for UI
+		let accounting = { name:this.name, type:'zone', subcat:this.type }; // start acounting record for UI
 		// evaluate our allotment of resources in case there is a global shortage
 		// ( you're only as good as your most limited resource )
 		let min_resource_ratio = 1.0;
@@ -136,7 +136,7 @@ export const ZoneList = {
 		name: 'Planetary Capitol',
 		type: 'government',
 		desc: 'Provides basic services to new colonies',
-		inputs: { $: 50 },
+		inputs: { $: 20 },
 		outputs: { hou: 5 },
 		size: 1,
 		gf: 0, // instant
@@ -372,7 +372,7 @@ export const ZoneList = {
 		type: 'stardock',
 		desc: 'Allows planet to build fighter-scale spacecraft.',
 		inputs: { $: 5, m: 5, o: 1 },
-		outputs: { ship: 10 },
+		outputs: { ship: 15 },
 		size: 1,
 		gf: 10
 	},
@@ -381,7 +381,7 @@ export const ZoneList = {
 		type: 'stardock',
 		desc: 'Allows planet to build cruiser-scale spacecraft.',
 		inputs: { $: 8, m: 5, o: 1 },
-		outputs: { ship: 20 },
+		outputs: { ship: 30 },
 		size: 2,
 		gf: 15
 	},
@@ -390,7 +390,7 @@ export const ZoneList = {
 		type: 'stardock',
 		desc: 'Allows planet to build destroyer-scale spacecraft.',
 		inputs: { $: 10, m: 3, b: 2 },
-		outputs: { ship: 30 },
+		outputs: { ship: 50 },
 		size: 4,
 		gf: 20
 	},
@@ -399,7 +399,7 @@ export const ZoneList = {
 		type: 'stardock',
 		desc: 'Allows planet to build battleship-scale spacecraft.',
 		inputs: { $: 15, m: 2, b: 2, c: 1 },
-		outputs: { ship: 50 },
+		outputs: { ship: 80 },
 		size: 8,
 		gf: 30
 	},
@@ -408,7 +408,7 @@ export const ZoneList = {
 		type: 'stardock',
 		desc: 'Allows planet to build dreadnought-scale spacecraft.',
 		inputs: { $: 20, m: 2, b: 5, c: 2 },
-		outputs: { ship: 80 },
+		outputs: { ship: 150 },
 		size: 12,
 		gf: 40
 	},

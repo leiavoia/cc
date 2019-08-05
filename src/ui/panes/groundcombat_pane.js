@@ -124,7 +124,7 @@ export class GroundCombatPane {
 	PlayCombat() {
 		// player-purchased odds
 		if ( this.oddscost ) { 
-			this.player_team.owner.resources.cash -= this.oddscost;
+			this.player_team.owner.resources.$ -= this.oddscost;
 			}
 		this.processing = true;
 		this.PlayNextAttack();

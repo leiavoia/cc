@@ -215,12 +215,12 @@ export default class Planet {
 					pct: 0,
 					ProduceMe: function ( planet ) {
 						let amount = 10;
-						planet.owner.resources.cash += amount;	
 						planet.econ.tradegoods += amount;
 						let row = planet.acct_ledger.filter( r => r.name=='Trade Goods' )[0];
 						row.$ = (row.$||0) + amount;
 						planet.acct_total.$ = (planet.acct_total.$||0) + amount;
 						planet.owner.resource_income.$ += amount;
+						planet.owner.resources.$ += amount;	
 						}
 					};
 				break;
@@ -333,7 +333,7 @@ export default class Planet {
 				
 				// accounting: each build item is a separate record,
 				// except makework projects which are combined into one record
-				let accounting = { name:item.name, type:'project' };
+				let accounting = { name:item.name, type:'project', subcat:item.type };
 				if ( item.type=='makework' ) { 
 					accounting = this.acct_ledger.filter( r => r.name==item.name ).shift() || accounting;
 					}
@@ -451,9 +451,14 @@ export default class Planet {
 			// connectivity / hyperlanes
 			
 		// we want PCI=10 for new vanilla colonies
-		let resource_mod = 20; // TODO might give value to local resources to promote economy
+		let richness = 1.0;
+		const rvals = { o:2, s:1, m:2, r:4, g:4, b:4, c:6, y:8, v:9 };
+		for ( let k in this.resources ) {
+			richness += rvals[k] * this.resources[k];
+			}
+		let resource_mod = 2; 
 		// establish a base economic rate based on planet resources
-		let target_PCI = ((/* TODO resource richness + */ this.energy) / 2) * resource_mod;
+		let target_PCI = richness * this.energy * resource_mod;
 		// taxes modify the base rate
 		target_PCI *= Math.pow( utils.MapToRange( this.tax_rate, 0, 0.5, 2.0, 0.2 ), 1.5 );
     
@@ -466,7 +471,7 @@ export default class Planet {
 		
 		// grow economy in stages
 		let diff = this.econ.target_PCI - this.econ.PCI;
-		let growth = diff ? (0.4 * Math.pow( Math.abs(diff), 0.75 ) ) : 0; // rubber band growth
+		let growth = diff ? (0.2 * Math.pow( Math.abs(diff), 0.75 ) ) : 0; // rubber band growth
 		this.econ.PCI += ( diff > 0 ) ? growth : -growth ;	
 		this.econ.GDP = this.total_pop * this.econ.PCI;
 		this.econ.tax_rev = this.econ.GDP * this.tax_rate;
@@ -492,7 +497,7 @@ export default class Planet {
 		else if ( diff < 0 ) { // pop decline - we outstripped allowable space somehow
 			this.total_pop *= 1.0 - ((( this.total_pop / this.maxpop ) - 1.0) * 0.2);
 			}
-		this.total_pop = Math.max( 0, this.total_pop );
+		this.total_pop = Math.max( 0.1, this.total_pop );
 		}
 		
 	// temp => atm

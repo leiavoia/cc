@@ -294,16 +294,16 @@ export default class Civ {
 	
 	// our current stock of goodies, including cash
 	resources = {
-		$:100000,
-		o:500, // organics
-		s:500, // silicates
-		m:500, // metals
-		r:500, // redium
-		g:500, // verdagen
-		b:500, // bluetonium
-		c:500, // cyanite
-		v:500, // violetronium
-		y:500, // yellowtron	
+		$:10000,
+		o:200, // organics
+		s:200, // silicates
+		m:200, // metals
+		r:0, // redium
+		g:0, // verdagen
+		b:0, // bluetonium
+		c:0, // cyanite
+		v:0, // violetronium
+		y:0, // yellowtron	
 		}
 	
 	// supply/demand ratio per resource type. <1.0 indicates shortfall
@@ -348,7 +348,9 @@ export default class Civ {
 		income: 0,
 		ship_maint: 0,
 		troop_maint: 0,
-		planet_maint: 0
+		planet_maint: 0,
+		cat_spending: {},
+		subcat_spending: {}
 		}; // how to structure???
 	policies = []; // how to structure???
 	
@@ -567,7 +569,7 @@ export default class Civ {
 		for ( let k in civ.ai.strat.ideal_zoning ) { ideal_zone_total += civ.ai.strat.ideal_zoning[k]; }
 		for ( let k in civ.ai.strat.ideal_zoning ) { civ.ai.strat.ideal_zoning[k] /= ideal_zone_total; }
 		// zone remodeling
-		civ.ai.strat.zone_remodel_freq = utils.BiasedRandInt(10, 20, 15, 0.5);
+		civ.ai.strat.zone_remodel_freq = utils.BiasedRandInt(10, 30, 20, 0.5);
 		civ.ai.strat.zone_remodel= 'recycle'; // ['recycle','wipe','rand','semirand'][ utils.RandomInt(0,2) ]; // strategy for remodeling [wipe,rand,semirand,recycle,smart]
 		civ.ai.strat.zone_remodel_rand_chance = utils.BiasedRand(0.1, 0.7, 0.35, 0.75);
 		return civ;
@@ -1168,14 +1170,21 @@ export default class Civ {
 		}
 
 	DoAccounting( app ) {
-		this.econ.income = 0;
-		this.econ.net_rev = 0;
 		this.econ.ship_maint = 0;
 		this.econ.troop_maint = 0;
+		for ( let k in this.econ.cat_spending ) { this.econ.cat_spending[k] = 0; }
+		for ( let k in this.econ.subcat_spending ) { this.econ.subcat_spending[k] = 0; }
 		for ( let p of this.planets ) {
+			for ( let row of p.acct_ledger ) {
+				if ( '$' in row && row.$ < 0 ) {
+					this.econ.cat_spending[ row.type ] += -row.$;
+					this.econ.subcat_spending[ row.type + '.' + (row.subcat || 'unknown') ] += -row.$;
+					}
+				}
 			p.acct_ledger.unshift( { name:'Tax Income', type:'tax', $:p.econ.tax_rev } );
 			p.acct_total.$ = (p.acct_total.$||0) + p.econ.tax_rev;
 			p.owner.resource_income.$ += p.econ.tax_rev;
+			p.owner.resources.$ += p.econ.tax_rev;
 			p.RecordHistory();
 			for ( let t of p.troops ) { 
 				this.econ.troop_maint += t.bp.cost.labor * 0.15; // HACK TODO tech and civ stats may change
@@ -1194,6 +1203,10 @@ export default class Civ {
 		this.resource_spent.$ += this.econ.troop_maint;
 		this.resources.$ -= this.econ.ship_maint;
 		this.resources.$ -= this.econ.troop_maint;
+		this.econ.cat_spending['ships'] = this.econ.ship_maint;
+		this.econ.subcat_spending['ships.maint'] = this.econ.ship_maint;
+		this.econ.cat_spending['troops'] = this.econ.troop_maint;
+		this.econ.subcat_spending['troops.maint'] = this.econ.troop_maint;
 		// resources below zero happen because of rounding errors, but not allowed.
 		for ( let k in this.resources ) { 
 			if ( this.resources[k] < 0 ) { 

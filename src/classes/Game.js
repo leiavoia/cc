@@ -174,28 +174,17 @@ export default class Game {
 // 			console.time('Planetary Econ');
 			for ( let s of this.galaxy.stars ) { 
 				for ( let p of s.planets ) {
-					if ( p.settled ) {  
-					
+					if ( p.settled ) {  					
 						// HACK zone production; TODO: MOVE THIS TO planet.js
 						for ( let k in p.acct_total ) { p.acct_total[k] = 0; }
 						for ( let k in p.output_rec ) { p.output_rec[k] = 0; }
 						for ( let k in p.resource_rec ) { p.resource_rec[k] = 0; }
 						p.acct_ledger.splice(0, p.acct_ledger.length); // clear accounting records
-						for ( let z of p.zones ) { z.Do(p); }
-							
-						// production
-						p.DoProduction(); // production
-								
-						// grow/shrink economy
+						for ( let z of p.zones ) { z.Do(p); }							
+						p.DoProduction();
 						p.GrowEconomy();
-            
-						// make me happy baby
             			p.UpdateMorale();
-						
-						// population growth ( returns true if max-pop reached )
-						if ( p.GrowPop() ) { 
-// 							this.ShowDialog( 'Maximum Polulation Reached', p.name );
-							}
+						p.GrowPop();
 						}
 					}
 				}

@@ -104,8 +104,8 @@ export default class TradeOffer {
 					break;
 					}
 				case 'cash': {
-					from.resources.cash -= i.amount;
-					to.resources.cash += i.amount;
+					from.resources.$ -= i.amount;
+					to.resources.$ += i.amount;
 					break;
 					}
 				case 'treaty': {

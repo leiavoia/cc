@@ -96,8 +96,8 @@ export class CivAI extends AI {
 		risk: 0.5, // 0..1 amount of risk AI is willing to take
 		posture: 0.5, // 0..1 balance between turtling (0) and mindless offense (1).
 		min_assault_score: 10000,
-		zone_remodel_freq: 40,
-		zone_remodel: 'semirand', // strategy for remodeling [wipe,rand,semirand,smart]
+		zone_remodel_freq: 30,
+		zone_remodel: 'recycle', // strategy for remodeling [wipe,rand,semirand,recycle,smart]
 		zone_remodel_rand_chance: 0.35
 		};
 	needs = { 
@@ -965,14 +965,28 @@ export class AIPlanetsObjective extends AIObjective {
 			// we create a custom weighting function based 
 			// on current supply and demand and then pick something
 			// to build, if anything at all.
+			
+			// [!]HACK economic training wheels keep civ from spending to death 
+			const ideal_ship_spending_ratio = 0.3;
+			const ship_spending_ratio = ( civ.econ.cat_spending['ships'] || 0 ) / ( civ.resource_income['$'] || 1 );
+			let ship_spending_mod = 1 - ( ship_spending_ratio / ideal_ship_spending_ratio );
+			if ( p.output_rec.ship <= 0 ) { ship_spending_mod = 0; }
+			
+			const ideal_troop_spending_ratio = 0.15;
+			const troop_spending_ratio = ( civ.econ.cat_spending['troops'] || 0 ) / ( civ.resource_income['$'] || 1 );
+			let troop_spending_mod = 1 - ( troop_spending_ratio / ideal_troop_spending_ratio );
+			if ( p.output_rec.def <= 0 ) { troop_spending_mod = 0; }
+			
+			// TODO: planets can build multiple items at once using defense and ship spending.
+			
 			let RollForBuildItem = () => { 
 				let weights = [
-					['colony_ships', 1.0 * civ.ai.needs.colony_ships ],
-					['combat_ships', civ.ai.needs.combat_ships / avg_milval ],
-					['troop_ships', 1.0 * civ.ai.needs.troop_ships ],
-					['research_ships', 1.0 * civ.ai.needs.research_ships ],
-					['scout_ships', 1.0 * civ.ai.needs.scout_ships ],
-					['troops', 1.0 * civ.ai.needs.troops ],
+					['colony_ships', ship_spending_mod * civ.ai.needs.colony_ships ],
+					['combat_ships', ship_spending_mod * (civ.ai.needs.combat_ships / avg_milval) ],
+					['troop_ships', troop_spending_mod * civ.ai.needs.troop_ships ], // note troop spending
+					['research_ships', ship_spending_mod * civ.ai.needs.research_ships ],
+					['scout_ships', ship_spending_mod * civ.ai.needs.scout_ships ],
+					['troops', troop_spending_mod * civ.ai.needs.troops ],
 // 					['tech', 1.0 * civ.ai.needs.tech ],
 // 					['cash', 1.0 * civ.ai.needs.cash ],
 					]
@@ -1128,9 +1142,10 @@ export class AIPlanetsObjective extends AIObjective {
 			military: 2
 			};
 		// if we need cash, we need taxes, so we need people
+		const net_rev = p.owner.resource_income.$ > p.owner.resource_spent.$;
 		if ( p.owner.resources.$ < 500 ) { global_zoning.housing += 5; }
-		if ( p.owner.econ.net_rev < 0 ) { global_zoning.housing += 10; }
-		if ( p.owner.econ.net_rev / (p.owner.resources.$ + 1 ) < 0.025 ) { global_zoning.housing += 5; }
+		if ( net_rev < 0 ) { global_zoning.housing += 10; }
+		if ( net_rev / (p.owner.resources.$ + 1 ) < 0.025 ) { global_zoning.housing += 5; }
 		// normalize
 		let global_zone_total = 0;
 		for ( let k in global_zoning ) { global_zone_total += global_zoning[k]; }

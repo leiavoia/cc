@@ -95,7 +95,7 @@ export const Treaties = {
 			const maxpct = 0.15; // 15% of our per-turn revenue when fully vested
 			let mod = utils.Clamp( ( turn_num - this.created_on ) / 50, 0, 1 );
 			const amount = Math.ceil( this.us.econ.income * mod * maxpct );
-			this.them.resources.cash += amount;
+			this.them.resources.$ += amount;
 			// TODO: add to accounting record
 			// NOTE: DO NOT add to `income`; it becomes self-referencing		
 			},

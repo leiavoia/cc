@@ -167,7 +167,10 @@
 		<div id="layout_ui_visor" class="fadeIn" if.bind="!app.main_panel_mode">
 			<span class="turn">TURN: ${app.game.turn_num}</span>
 			<span class="planets">◉ ${app.game.myciv.planets.length}</span>
-			<span class="treasury"><b>$</b>${app.game.myciv.resources.$|round:0} ${app.game.myciv.econ.net_rev >= 0 ?'+':''}${app.game.myciv.econ.net_rev|round:0}</span>
+			<span class="treasury">
+				<b>$</b>${app.game.myciv.resources.$|round:0} 
+				${app.game.myciv.resource_income.$ > app.game.myciv.resource_spent.$ ?'+':''}${app.game.myciv.resource_income.$ - app.game.myciv.resource_spent.$|round:0}
+			</span>
 			<span class="resources">
 				<span repeat.for="k of ['o','s','m','r','g','b','c','v','y']" class="${k}">${app.game.myciv.resources[k]|floor}<template containerless if.bind="app.game.myciv.resource_supply[k] &lt; 1.0">⚠️</template></span>
 <!-- 				<span repeat.for="k of app.game.myciv.resources|props" class="${k}">${app.game.myciv.resources[k]|floor}</span> -->
@@ -187,9 +190,10 @@
 		
 			<!-- AI DEBUG LEFT -->
 			<div id="layout_ai_headsup2" class="layout_ai_headsup" if.bind="app.options.debug && !app.main_panel_mode">
-				<span css="padding: 0.1em 1em; color:#FFF;text-shadow:1px 1px 0 #000; background-color: ${app.game.myciv.color}">${app.game.myciv.name}</span><br/>
-				<br/>
 				
+				
+				<!-- +/- resources -->
+				<b>RESOURCES</b><br/>
 				<table class="right" style="margin: 0 0 0 0;">
 					<tr>
 						<th></th>
@@ -198,7 +202,7 @@
 						<td>+/-</td>
 						<td>%</td>
 						<td>Has</td>
-						<td>Dmd</td>
+						<td>Est</td>
 						<td>Rat</td>
 					</tr>				
 					<tr repeat.for="k of app.game.myciv.resource_income|props">
@@ -207,17 +211,46 @@
 						<td>${app.game.myciv.resource_spent[k]|round}</td>
 						<td class="${app.game.myciv.resource_income[k] - app.game.myciv.resource_spent[k] < -0.001 ? 'hilite' : ''}">${app.game.myciv.resource_income[k] - app.game.myciv.resource_spent[k]|round}</td>
 						<td>${(app.game.myciv.resource_income[k] && app.game.myciv.resource_spent[k] ? (app.game.myciv.resource_income[k] / app.game.myciv.resource_spent[k]) : 1)|round:2}</td>
-						<td class="${app.game.myciv.resources[k] < 1 ? 'hilite' : ''}">${app.game.myciv.resources[k]|round}</td>
+						<td class="${app.game.myciv.resources[k] < 1 && app.game.myciv.resource_spent[k] > 0 ? 'hilite' : ''}">${app.game.myciv.resources[k]|round}</td>
 						<td>${app.game.myciv.resource_estm[k]|round}</td>
-						<td>${app.game.myciv.resource_supply[k]|round:2}</td>
+						<td class="${app.game.myciv.resource_supply[k] < 10 && app.game.myciv.resource_supply[k] !== 1 ? 'hilite' : ''}">${app.game.myciv.resource_supply[k]|round:2}</td>
 					</tr>
 				</table>
 				
 				<br/>
-				net_rev: ${app.game.myciv.econ.net_rev|round}<br/>
-				income: ${app.game.myciv.resource_income.$|round}<br/>
-				ship_maint: ${app.game.myciv.econ.ship_maint|round}<br/>
-				troop_maint: ${app.game.myciv.econ.troop_maint|round}<br/>
+				
+				<!-- category financial expenses -->
+				<b>CATEGORY EXPENSES</b><br/>
+				<table class="right" style="margin: 0 0 0 0;">	
+					<tr repeat.for="k of ['zone','ships','troops']">
+						<td>${app.game.myciv.econ.cat_spending[k]|round}</td>
+						<td>${app.game.myciv.econ.cat_spending[k] / app.game.myciv.resource_spent.$ |percent}%</td>
+						<td>${k}&nbsp;</td>
+					</tr>
+				</table>
+				
+				<br/>
+				
+				<!-- subcategory financial expenses -->
+				<b>SUBCATEGORY EXPENSES</b><br/>
+				<table class="right" style="margin: 0 0 0 0;">	
+					<tr repeat.for="k of ['ships.maint','troops.maint','zone.military','zone.mining','zone.research','zone.stardock','zone.government']">
+						<td>${app.game.myciv.econ.subcat_spending[k]|round}</td>
+						<td>${app.game.myciv.econ.subcat_spending[k] / app.game.myciv.resource_spent.$ |percent}%</td>
+						<td>${k}&nbsp;</td>
+					</tr>
+				</table>
+				
+				<br/>
+				
+				<!-- ideal zoning -->
+				<b>ZONING PRIORITY</b><br/>
+				<table class="right" style="margin: 0 0 0 0;">	
+					<tr repeat.for="k of app.game.myciv.ai.strat.ideal_zoning|props">
+						<td>${app.game.myciv.ai.strat.ideal_zoning[k]|percent}%</td>
+						<td>${k}&nbsp;</td>
+					</tr>
+				</table>
 				
 			</div>
 	
@@ -225,9 +258,14 @@
 			<!-- AI DEBUG RIGHT -->
 			<div id="layout_ai_headsup" class="layout_ai_headsup" if.bind="app.options.debug && !app.main_panel_mode">
 
-				staging: <span repeat.for="pt of app.game.myciv.ai.staging_pts">${pt.name} </span><br/>
+				<span css="padding: 0.1em 1em; color:#FFF;text-shadow:1px 1px 0 #000; background-color: ${app.game.myciv.color}">${app.game.myciv.name}</span><br/>
+				
 				<br/>
 				
+				<b>STAGING</b>: <span repeat.for="pt of app.game.myciv.ai.staging_pts">${pt.name} </span><br/>
+				<br/>
+				
+				<b>NEEDS</b><br/>
 				needs.colony_ships: ${app.game.myciv.ai.needs.colony_ships|round}<br/>
 				needs.combat_ships: ${app.game.myciv.ai.needs.combat_ships|round}<br/>
 				needs.troop_ships: ${app.game.myciv.ai.needs.troop_ships|round}<br/>
@@ -238,6 +276,8 @@
 				needs.tech: ${app.game.myciv.ai.needs.tech|round}<br/>
 				
 				<br/>
+				
+				<b>ANALYSIS</b><br/>
 				total_milval: ${app.game.myciv.ai.total_milval|round}<br/>
 				avail_milval: ${app.game.myciv.ai.avail_milval|round}<br/>
 				total_threat: ${app.game.myciv.ai.total_threat|round}<br/>
@@ -248,18 +288,22 @@
 				total_troopships: ${app.game.myciv.ai.total_troopships|round}<br/>
 				
 				<br/>
+				
+				<b>STRATEGY</b><br/>
 				strat.def: ${app.game.myciv.ai.strat.def}<br/>
 				strat.offense_ratio: ${app.game.myciv.ai.strat.offense_ratio|round:2}<br/>
 				strat.def_planetvalue_weight: ${app.game.myciv.ai.strat.def_planetvalue_weight|round:2}<br/>
 				strat.def_threat_weight: ${app.game.myciv.ai.strat.def_threat_weight|round:2}<br/>
 				strat.risk: ${app.game.myciv.ai.strat.risk|round:2}<br/>
 				strat.posture: ${app.game.myciv.ai.strat.posture|round:2}<br/>
+				strat.min_assault: ${app.game.myciv.ai.strat.min_assault_score|round}<br/>
 				strat.zone_remodel: ${app.game.myciv.ai.strat.zone_remodel}<br/>
 				strat.zone_remodel_freq: ${app.game.myciv.ai.strat.zone_remodel_freq|round}<br/>
 				strat.zone_remodel_rand_chance: ${app.game.myciv.ai.strat.zone_remodel_rand_chance|round:2}<br/>		
 		
 				<br/>
-				objectives: <br/>
+				
+				<b>OBJECTIVES</b><br/>
 				<span repeat.for="o of app.game.myciv.ai.objectives">
 					[${o.type}]
 					=&gt;  
