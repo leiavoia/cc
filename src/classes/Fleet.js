@@ -238,10 +238,21 @@ export default class Fleet {
 				f.ReevaluateStats();
 				this.ships = [];
 				this.merged_with = f; // hint for UI
-				// AI objectives: if either fleet has AI objective, dont lose it.
-				// TODO not sure how to handle both fleets having different objectives.
-				// for now, kill the objective for the this fleet and keep the receiving objective.
-				if ( f.ai && this.ai ) { this.ai.fleet = null; }
+				// AI objectives: decide what to do if we both have objectives
+				if ( f.ai && this.ai ) { 
+					// if we are arriving at our mission target, we take priority
+					if ( this.ai.target && 'star' in this.ai.target && this.ai.target.star == this.star ) {
+						f.ai.fleet = null;
+						f.ai = null;
+						}
+					// if the stationed fleet is on guard duty, cancel it.
+					else if ( f.ai.type == 'guard' ) { 
+						f.ai.fleet = null;
+						f.ai = null;
+						}
+					// default is to kill the objective for this fleet and keep the objective of the stationed fleet.
+					else { this.ai.fleet = null; }
+					}
 				f.ai = f.ai || this.ai;
 				if ( f.ai ) { f.ai.fleet = f; }
 				this.Kill();
