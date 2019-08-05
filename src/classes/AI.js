@@ -970,12 +970,12 @@ export class AIPlanetsObjective extends AIObjective {
 			const ideal_ship_spending_ratio = 0.3;
 			const ship_spending_ratio = ( civ.econ.cat_spending['ships'] || 0 ) / ( civ.resource_income['$'] || 1 );
 			let ship_spending_mod = 1 - ( ship_spending_ratio / ideal_ship_spending_ratio );
-			if ( p.output_rec.ship <= 0 ) { ship_spending_mod = 0; }
+			if ( p.output_rec.ship <= 0 || ship_spending_mod < 0 ) { ship_spending_mod = 0; }
 			
 			const ideal_troop_spending_ratio = 0.15;
 			const troop_spending_ratio = ( civ.econ.cat_spending['troops'] || 0 ) / ( civ.resource_income['$'] || 1 );
 			let troop_spending_mod = 1 - ( troop_spending_ratio / ideal_troop_spending_ratio );
-			if ( p.output_rec.def <= 0 ) { troop_spending_mod = 0; }
+			if ( p.output_rec.def <= 0 || troop_spending_mod < 0 ) { troop_spending_mod = 0; }
 			
 			// TODO: planets can build multiple items at once using defense and ship spending.
 			
