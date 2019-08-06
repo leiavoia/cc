@@ -124,7 +124,7 @@ export default class Game {
 		}
 		
 	AnomCompleted( data ) { // data contains at `anom`
-		if ( data.fleet.owner == this.myciv && app.options.notify.anom ) { 
+		if ( data.fleet.owner == this.myciv && this.app.options.notify.anom ) { 
 			this.app.AddNote(
 				'neutral',
 				data.anom.name,

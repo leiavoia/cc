@@ -471,12 +471,12 @@ export class AIDefenseObjective extends AIObjective {
 			let helpers = [];
 			for ( let f of civ.fleets ) { 
 				if ( !f.dest && f.fp && f.star && !f.killme && !f.mission && !f.ai ) { 
-					let acct = f.star.accts.get(civ);
 					// dont grab fleets in our underdefended list
 					if ( systems.indexOf(f.star) > -1 ) { continue; } 
 					// don't pull fleets from systems if they are pretty much where they need to be
-					if ( acct ) { 
-						if ( acct.ai.def_priority ) {
+					if ( f.star.objtype == 'star' ) {
+						let acct = f.star.accts.get(civ);
+						if ( acct && acct.ai.def_priority ) { 
 							let diffpct = ( acct.ai.def_priority - acct.ai.defense_norm ) / acct.ai.def_priority;
 							if ( diffpct > -threshold_diff ) { continue; }
 							}
@@ -486,8 +486,8 @@ export class AIDefenseObjective extends AIObjective {
 				}
 			// sort fleets based on system balanced defense priority
 			helpers.sort( (a,b) => {
-				let dpa = a.star.accts.has(civ) ? a.star.accts.get(civ).ai.def_priority : 0;
-				let dpb = b.star.accts.has(civ) ? b.star.accts.get(civ).ai.def_priority : 0;
+				let dpa = (a.star.accts && a.star.accts.has(civ)) ? a.star.accts.get(civ).ai.def_priority : 0;
+				let dpb = (b.star.accts && b.star.accts.has(civ)) ? b.star.accts.get(civ).ai.def_priority : 0;
 				if ( dpa > dpb ) { return -1; }
 				if ( dpa < dpb ) { return 1; }
 				return 0;
@@ -535,17 +535,19 @@ export class AIDefenseObjective extends AIObjective {
 			let helpers = [];
 			for ( let f of civ.fleets ) { 
 				if ( !f.dest && f.fp && f.star && !f.killme && !f.mission ) { 
-					let acct = f.star.accts.get(civ);
 					// don't peel off ships from high-value systems
 					// or systems already under significant threat
-					if ( acct && acct.ai.threat * 0.5 > acct.ai.defense ) { continue; } 
+					if ( f.star.objtype == 'star' ) {
+						let acct = f.star.accts.get(civ);
+						if ( acct && acct.ai.threat * 0.5 > acct.ai.defense ) { continue; } 
+						}
 					helpers.push(f);
 					}
 				}
 			// sort fleets based on system threat level first
 			helpers.sort( (a,b) => {
-				let threat_a = a.star.accts.has(civ) ? a.star.accts.get(civ).ai.threat_norm : 0;
-				let threat_b = b.star.accts.has(civ) ? b.star.accts.get(civ).ai.threat_norm : 0;
+				let threat_a = (a.star.accts && a.star.accts.has(civ)) ? a.star.accts.get(civ).ai.threat_norm : 0;
+				let threat_b = (b.star.accts && b.star.accts.has(civ)) ? b.star.accts.get(civ).ai.threat_norm : 0;
 				if ( threat_a > threat_b ) { return -1; }
 				if ( threat_a < threat_b ) { return 1; }
 				return 0;
