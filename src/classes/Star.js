@@ -92,7 +92,7 @@ export default class Star {
 			let p = 0;
 			// how many planets do they have left? 
 			for ( let i =0; i < this.planets.length; i++ ) {
-				if ( this.planets[i].owner !== false && this.planets[i].owner == civ ) {
+				if ( this.planets[i].owner && this.planets[i].owner == civ ) {
 					p++;
 					}
 				}
@@ -108,7 +108,7 @@ export default class Star {
 		let total_planets = 0;
 		this.settled_by = new Array(); // hint fo aurelia to refresh
 		for ( let p of this.planets ) { 
-			if ( p.owner !== false ) { 
+			if ( p.owner ) { 
 				if ( !colors.has( p.owner.color_rgb ) ) { colors.set(p.owner.color_rgb, 1); }
 				else { colors.set(p.owner.color_rgb, colors.get(p.owner.color_rgb)+1 ); }
 				total_planets++;

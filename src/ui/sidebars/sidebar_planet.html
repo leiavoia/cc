@@ -34,14 +34,14 @@
 			<p class="env_label">${planet.gravDisplayName} ${planet.envDisplayName}</p>
 			
 			<div class="size">
-				<span class="pop" if.bind="planet.owner !== false">${planet.total_pop|round} / ${planet.maxpop|round}<br/><span class="pop">POPULATION</span></span>
+				<span class="pop" if.bind="planet.owner">${planet.total_pop|round} / ${planet.maxpop|round}<br/><span class="pop">POPULATION</span></span>
 				<span class="size">${planet.size}<br/><span class="size">SIZE</span></span>
 				<span class="en">${planet.energy}<br/><span class="en">ENERGY</span></span>			
 				<span class="${habitable ? (habitat < 0 ? 'alert' : 'good') : 'bad'}">	
 					${(habitat >= 0 ? '+' : '')}${habitat}<br /> 
 					<span class="">${habitable ? "HABITABILITY" : "UNINHABITABLE"}</span>
 				</span>
-				<span if.bind="planet.owner !== false">
+				<span if.bind="planet.owner">
 					<img src.bind="planet.morale | moraleToMoodIcon"  style="width: 1.1em; height: 1.1em;" /><br/>
 				</span>
 			</div>

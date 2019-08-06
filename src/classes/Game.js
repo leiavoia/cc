@@ -35,9 +35,57 @@ export default class Game {
 		this.eventlib = new EventLibrary(this.app);
 		}
 		
-	CheckForVictory() { 
+	CheckForCivDeath() { 
+		let living_civs_before = this.galaxy.civs.filter( c => c.alive && !c.race.is_monster).length;
+		for ( let i = this.galaxy.civs.length-1; i >= 0; i-- ) { 
+			let civ = this.galaxy.civs[i];
+			if ( civ.alive && !civ.race.is_monster && (!civ.planets.length || civ.resources.$ <= 0) ) {
+				civ.Kill();
+				this.galaxy.civs.splice( i, 1 );
+				this.app.AddNote( 'neutral', `${civ.name} defeated`, null );
+				console.log(`*** ${civ.name} DEFEATED ***`);
+				}		
+			}
+		let living_civs_after = this.galaxy.civs.filter( c => c.alive && !c.race.is_monster).length;
+		if ( living_civs_after == 1 && living_civs_before > 1 ) {
+			this.CheckForVictory(true); // check for last man standing victory		
+			}
+		}
+		
+	CheckForVictory( check_last_man_standing = false ) { 
 		if ( this.victory_achieved ) { return false; }
-		for ( let civ of this.galaxy.civs ) { 
+		let civs_in_play = this.galaxy.civs.filter( c => c.alive && !c.race.is_monster);
+		// last man standing
+		if ( check_last_man_standing && civs_in_play.length == 1 ) { 
+			this.victory_achieved = true;
+			console.log( 'VICTORY ACHIEVED: ' + civs_in_play[0].name );
+			if ( civs_in_play[0].is_player ) { 
+				this.app.AddNote(
+					'good',
+					`YOU WINNEDED!`,
+					`"${civs_in_play[0].name}" is the last civ standing.`,
+					null
+					);
+				}
+			else {
+				this.app.AddNote(
+					'bad',
+					`YOU LOSEDED!`,
+					`"${civs_in_play[0].name}" is the last civ standing. You lost!`,
+					null
+					);	
+				}			
+			return true;
+			}
+		// player died
+		if ( !this.myciv.alive ) { 
+			this.victory_achieved = true;
+			console.log('*** PLAYER DIED - GAME OVER ***');
+			this.app.AddNote( 'bad', `GAME OVER`, `"U R Dead` );
+			return true;
+			}					
+		// victory recipes
+		for ( let civ of civs_in_play ) { 
 			for ( let r of this.victory_recipes ) { 
 				let gotcha = true;
 				if ( !civ.victory_ingredients.length ) {
@@ -158,8 +206,10 @@ export default class Game {
 		
 		for ( let t=0; t < num_turns; t++ ) { 
 // 			console.time('Turn Processor');
-			// calculate how many material points (mining) we can afford 
-			// to distribute to those planets in need.
+
+			this.CheckForCivDeath();
+			
+			// calculate resource being demanded by planetary zones
 			for ( let civ of this.galaxy.civs ) { 
 				civ.EstimateResources();
 				// recalculate box filter while we're here
@@ -300,6 +350,8 @@ export default class Game {
 				civ.ArchiveStats();
 				}
 			
+			this.CheckForCivDeath(); // second time 
+			
 			this.turn_num++;
 			
 // 			console.timeEnd('Turn Processor');
@@ -318,6 +370,13 @@ export default class Game {
 					this.ProcessEventCardQueue();
 					this.PresentNextPlayerShipCombat();
 					this.PresentNextPlayerGroundCombat();
+					}
+				}
+			// GAME OVER!
+			else {
+				if ( this.autoplay ) { 
+					clearInterval( this.autoplay );
+					this.autoplay = false;
 					}
 				}
 				
@@ -413,6 +472,7 @@ export default class Game {
 			combat.Run(); // fight to the death
 			console.log(`INVASION :: ${gc.attacker.owner.name} invading ${gc.planet.name}, winner: ${combat.winner}`);
 			this.groundcombats.splice( c, 1 ); // delete
+			this.CheckForCivDeath();
 			}
 		}
     
@@ -502,6 +562,7 @@ export default class Game {
 			let combat = new GroundCombat( c.attacker, c.planet );
 			combat.Run(); // fight to the death
 			console.log(`INVASION :: ${c.attacker.owner.name} invading ${c.planet.name}, winner: ${combat.winner}`);
+			this.CheckForCivDeath();
 			this.PresentNextPlayerGroundCombat();
 			}			
 		// if player is the defender, present mandatory battle
@@ -522,6 +583,7 @@ export default class Game {
 						cb: btn => { 
 							let combat = new GroundCombat( c.attacker, c.planet );
 							combat.Run(); // fight to the death
+							this.CheckForCivDeath();
 							this.PresentNextPlayerGroundCombat();
 							}
 						}

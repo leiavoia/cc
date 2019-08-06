@@ -23,7 +23,8 @@ export default class Civ {
 	name_plural = 'RACITES';
 	
 	is_player = false; // set to true to indicate who the human is
-  
+	alive = true; // dead indicates civ is out of play
+	
 	// we'll flesh this out later
 	race = {
 		env: { // natural habitat
@@ -573,6 +574,21 @@ export default class Civ {
 		civ.ai.strat.zone_remodel= 'recycle'; // ['recycle','wipe','rand','semirand'][ utils.RandomInt(0,2) ]; // strategy for remodeling [wipe,rand,semirand,recycle,smart]
 		civ.ai.strat.zone_remodel_rand_chance = utils.BiasedRand(0.1, 0.7, 0.35, 0.75);
 		return civ;
+		}
+		
+	// marks civ as "dead" and cleans up.
+	Kill() { 
+		this.alive = false;
+		for ( let f of this.fleets ) { f.Kill(); }
+		for ( let p of this.planets ) { p.Reset(); }
+		this.ai.objectives = [];
+		this.ai.completed = [];
+		for ( let [civ,acct] of this.diplo.contacts ) { 
+			this.SetInRangeOfCiv( civ, false );
+			// we might also just consider hard-nuking the mutual contacts
+			}
+		this.empire_box = {x1:0,x2:0,y1:0,y2:0};
+		this.power_score = 0;
 		}
 		
 	// returns score, but you can also access this.power_score

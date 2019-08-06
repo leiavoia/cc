@@ -24,7 +24,7 @@
 								${(calc_vals[p.id].adapt >= 0) ? '+' : ''}${calc_vals[p.id].adapt}<br/>
 								<span class="">ENV</span>
 							</span>
-							<span class="pop" if.bind="p.owner !== false">${p.total_pop|round}<br/><span class="pop">POP</span></span>
+							<span class="pop" if.bind="p.owner">${p.total_pop|round}<br/><span class="pop">POP</span></span>
 						</div>			
 						<div class="resources">
 							<template repeat.for="k of p.resources|props" containerless>

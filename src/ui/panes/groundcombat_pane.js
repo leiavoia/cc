@@ -100,6 +100,7 @@ export class GroundCombatPane {
 				else {
 					this.app.AddNote( 'bad', `Colony at ${this.combatdata.planet.name} has been lost.` );
 					}
+				this.app.game.CheckForCivDeath();
 				}
 			}
 		}

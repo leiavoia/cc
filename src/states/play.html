@@ -258,6 +258,8 @@
 			<!-- AI DEBUG RIGHT -->
 			<div id="layout_ai_headsup" class="layout_ai_headsup" if.bind="app.options.debug && !app.main_panel_mode">
 
+				<p if.bind="!app.game.myciv.alive" style="color:#D11;font-size:300px;line-height:1em;padding:0;">🕱</p>
+				
 				<span css="padding: 0.1em 1em; color:#FFF;text-shadow:1px 1px 0 #000; background-color: ${app.game.myciv.color}">${app.game.myciv.name}</span><br/>
 				
 				<br/>

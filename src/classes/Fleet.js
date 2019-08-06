@@ -13,7 +13,7 @@ export default class Fleet {
 	ypos = 0;
 	speed = 50.0;
 	colonize = false;
-	owner = false; // false indicates unowned. zero can be an index
+	owner = null; // null indicates unowned. zero can be an index
 	in_range = false; // UI hint for visibility - only matters for player perspective
 	ships = [];
 	research = false;

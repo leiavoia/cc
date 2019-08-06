@@ -7,7 +7,7 @@
 		
 		<p style="font-size: 150%;" class="big" if.bind="fleet.mission">On Mission. Back in [${fleet.mission.time}] turns.</p>
 		
-		<p style="" class="big topless" if.bind="!fleet.mission">
+		<p class="big topless" if.bind="!fleet.mission">
 			<span if.bind="fleet.star">@${fleet.star.name}</span>
 			<span if.bind="fleet.dest && (app.options.see_all || fleet.owner.is_player)">
 				<span>➠</span> ${fleet.dest.name}
@@ -130,7 +130,7 @@
 	<div class="star star_${fleet.star.color}" if.bind="mode == 'colonize'">
 		<h2>Colonize ${fleet.star.name}</h2>
 		<p style="font-weight:bold; color: #FAA;" >Choose a planet to colonize:</p>
-		<div repeat.for="p of fleet.star.planets" class="hilite_wrapper" if.bind="p.owner === false && p.Habitable(fleet.owner.race)" click.delegate="ChoosePlanetToColonize(p)">
+		<div repeat.for="p of fleet.star.planets" class="hilite_wrapper" if.bind="!p.owner && p.Habitable(fleet.owner.race)" click.delegate="ChoosePlanetToColonize(p)">
 			<div class="planet atm${p.atm} tmp${p.temp}" css.one-time="PlanetSizeCSS(p)">
 				<p class="env_label"><span class="env_label">${p.envDisplayName}</span></p>
 				<div class="env_box">

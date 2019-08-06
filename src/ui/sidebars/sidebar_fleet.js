@@ -198,7 +198,7 @@ export class FleetDetailPane {
 		// mark abilites with ===0 as a signal to look further
 		if ( this.fleet.star && 'planets' in this.fleet.star && this.fleet.star.planets.length ) {
 			for ( let p of this.fleet.star.planets ) { 
-				if ( p.owner === false && p.Habitable( this.fleet.owner.race ) ) { 
+				if ( !p.owner && p.Habitable( this.fleet.owner.race ) ) { 
 					this.can_colonize = 0; 
 					}
 				else if ( !p.owner.is_player ) { 

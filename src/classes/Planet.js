@@ -18,7 +18,7 @@ export default class Planet {
 	star = null;
 	established = 0; // turn planet was settled or conquered
 	explored = false;
-	owner = false; // false indicates unowned. zero can be an index
+	owner = null; // false indicates unowned.
 	name = 'UNKNOWN';
 	total_pop = 0;
 	maxpop = 10;
@@ -758,18 +758,50 @@ export default class Planet {
 		this.UpdateOwnership();
 		this.established = App.instance.game.turn_num;
 		}
+		
+	// Used to wipe the planet clean to make it ready for the next residents.
+	// Use in case empire is destroyed or some accident happens.
+	// Also removes planet from owner's list of planets
+	Reset() {
+		if ( this.owner ) { 
+			if ( --this.star.accts.get(this.owner).planets == 0 ) { 
+				this.owner.AI_RemoveStagingPoint(this.star);
+				}
+			let i = this.owner.planets.indexOf( this );
+			if ( i > -1 ) { this.owner.planets.splice( i, 1 ); } 		
+			this.owner.RecalcEmpireBox();
+			this.ui_color = 'rgb(255,255,255)';
+			this.mods.parent = null;
+			this.owner = null;
+			}
+		this.total_pop = 0;
+		this.settled = false;
+		this.econ.GDP = 0;
+		this.econ.PCI = 0;
+		this.econ.GF = 1.0;
+		this.maxpop = 0;
+		this.zoned = 0;
+		this.zones.splice(0,this.zones.length);
+		this.prod_q.splice(0,this.prod_q.length);
+		this.troops.splice(0,this.troops.length);
+		this.established = 0;
+		this.ship_dest = null;
+		this.morale = 1.0;
+		this.zone_hab_mod = 1.0; 
+		this.output_rec = { $:0, o:0, s:0, m:0, r:0, g:0, b:0, c:0, v:0, y:0, ship:0, def:0, hou:0, esp:0, res:0 };
+		this.resource_rec = { $:0, o:0, s:0, m:0, r:0, g:0, b:0, c:0, v:0, y:0, };
+		this.acct_ledger = [];
+		this.acct_total = {};
+		this.acct_hist = []; 
+		this.star.UpdateOwnershipTitleColorCSS();
+		}
 
 	RemoveDeadTroops() { 
 		this.troops = this.troops.filter( t => t.hp );
 		}
-		
+				
 	BeConqueredBy( invader ) {
-		if ( --this.star.accts.get(this.owner).planets == 0 ) { 
-			this.owner.AI_RemoveStagingPoint(this.star);
-			}
-		let i = this.owner.planets.indexOf( this );
-		if ( i > -1 ) { this.owner.planets.splice( i, 1 ); } 
-		this.prod_q.splice(0,this.prod_q.length);
+		this.Reset();
 		this.AddBuildQueueMakeworkProject('tradegoods'); 
 		this.owner = invader;
 		this.UpdateOwnership();
