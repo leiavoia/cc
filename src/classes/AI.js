@@ -1218,6 +1218,9 @@ export class AIPlanetsObjective extends AIObjective {
 						}
 					}
 				// regular zones just choose the largest available
+				// TODO: in the future we can be more discerning about output vs cost.
+				// Size is a fast general approx of technical improvement which is usually what we want.
+				// (a,b) => Object.values(a.outputs).sum() - Object.values(b.outputs).sum()
 				else if ( candidates.length ) { 
 					let zone = candidates.sort( (a,b) => a.size - b.size ).pop();
 					p.AddZone(zone.key);

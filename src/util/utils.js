@@ -37,6 +37,16 @@ Array.prototype.pickRandom = function() {
 Array.prototype.contains = function( obj ) {
 	return this.indexOf( obj ) > -1;
 	}
+	
+Array.prototype.sum = function() {
+	let total = 0;
+	for ( let i of this ) { total += i; }
+	return total;
+	}
+	
+Array.prototype.avg = function() {
+	return this.length ? ( this.sum() / this.length ) : 0;
+	}
 
 export function Clamp( n, min, max ) { 
 	return Math.min(Math.max(n, min), max);
