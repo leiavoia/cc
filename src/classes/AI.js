@@ -618,7 +618,10 @@ export class AIOffenseObjective extends AIObjective {
 		civ.ai.needs.troop_ships = civ.ai.total_troopships < min_troops ? (min_troops - civ.ai.total_troopships) : 0;
 		// how much ground power do i need to meet all current objectives?
 		civ.ai.needs.troops += att_missions.reduce( (total,m) => {
-			return total + ( ( m.target && m.target.owner != civ ) ? m.target.troops.length : 0 );
+			return total + ( 
+				( m.target && m.target.owner != civ ) 
+				? ( m.target.troops.length * (1.25 - civ.ai.strat.risk * 0.5) )
+				: 0 );
 			}, 0 );
 		// this should tell me how many troop ships i need
 		civ.ai.needs.troop_ships = civ.ai.needs.troops;
@@ -646,7 +649,7 @@ export class AIOffenseObjective extends AIObjective {
 		// ... and what we have in the air
 		for ( let f of civ.fleets ) {
 			if ( f.killme || f.mission ) { continue; } 
-			civ.ai.needs.troop_ships - f.troopcap;
+			civ.ai.needs.troop_ships - f.troopscap;
 			civ.ai.needs.troops - f.troops;
 			}
 		// strongly reduce need for carriers in first 10 turns
@@ -710,7 +713,7 @@ export class AIOffenseObjective extends AIObjective {
 						score -= 30 * difficulty * (1-civ.ai.strat.risk);
 						}
 					// ground forces to overcome?
-					if ( p.troops.length ) { score -= p.troops.length * 2 * (1-civ.ai.strat.risk); }
+					if ( p.troops.length ) { score -= p.troops.length * 3 * (1-civ.ai.strat.risk); }
 					// we already have a foothold there?
 					if ( p.star.accts.has(civ) ) { score *= 1.5; }
 					// likelyhood of getting our butts kicked
@@ -941,7 +944,6 @@ export class AIPlanetsObjective extends AIObjective {
 				}
 			}
 		// TODO: we may want to rezone planets if we are running very low on resources or money.
-		// TODO: consider rezoning any planet on an anniversary of its settlement just to keep it fresh.
 				
 		// what is our average combat ship milval?
 		let combat_bps = civ.ship_blueprints.filter( bp => bp.role == 'combat' );
@@ -1003,7 +1005,7 @@ export class AIPlanetsObjective extends AIObjective {
 				let weights = [
 					['colony_ships', ship_spending_mod * civ.ai.needs.colony_ships ],
 					['combat_ships', ship_spending_mod * (civ.ai.needs.combat_ships / avg_milval) ],
-					['troop_ships', troop_spending_mod * civ.ai.needs.troop_ships ], // note troop spending
+					['troop_ships', (troop_spending_mod + ship_spending_mod) * 0.5 * civ.ai.needs.troop_ships ],
 					['research_ships', ship_spending_mod * civ.ai.needs.research_ships ],
 					['scout_ships', ship_spending_mod * civ.ai.needs.scout_ships ],
 					['troops', troop_spending_mod * civ.ai.needs.troops ],
@@ -1322,7 +1324,7 @@ export class AIInvadeObjective extends AIObjective {
 			this.reserved_milval = this.AI_MilvalNeededToBeat( this.target.OwnerFleet() );
 			// find the best whole fleet that can do the job
 			for ( let f of civ.fleets ) { 
-				if ( f.star && !f.killme && !f.mission && !f.ai && f.troopcap && f.MilvalAvailable() > this.reserved_milval ) {
+				if ( f.star && !f.killme && !f.mission && !f.ai && f.troopcap && f.MilvalAvailable() >= this.reserved_milval ) {
 					if ( !this.fleet ) { this.fleet = f; }
 					else if ( this.fleet ) { 
 						// firepower no better than previous
@@ -1366,8 +1368,16 @@ export class AIInvadeObjective extends AIObjective {
 				// TODO create a new fleet from bits and pieces around
 				this.note = 'no fleet available; rallying';
 				const pt = this.ClosestStagingPointTo( this.target.star );
-				this.RallyTroopShips( pt, this.ttl-1 );
 				this.RallyCombatShips( pt, this.ttl-1 );
+				this.RallyTroopShips( pt, this.ttl-1 );
+				// if there is a local fleet here now, peg them down for a mission
+				if ( !this.fleet ) {
+					let localfleet = pt.FleetFor(civ);
+					if ( localfleet && !localfleet.ai && !localfleet.killme && !localfleet.dest && !localfleet.mission ) {
+						this.fleet = localfleet;
+						localfleet.ai = this;
+						}	
+					}
 				}
 			return;
 			}
@@ -1390,8 +1400,8 @@ export class AIInvadeObjective extends AIObjective {
 						}
 					});
 				// how about now?
-				if ( this.fleet && this.fleet.troops >= this.AI_TroopsNeededToInvade(this.target) ) {
-					this.RallyTroopShips( this.target.star, this.ttl-1 );
+				if ( this.fleet && this.fleet.troops < this.AI_TroopsNeededToInvade(this.target) ) {
+					this.RallyTroopShips( this.fleet.star, this.ttl-1 );
 					}
 				}
 			// can we really go now?
@@ -1439,13 +1449,14 @@ export class AIInvadeObjective extends AIObjective {
 		return ours.milval >= this.AI_MilvalNeededToBeat(theirs);
 		}
 		
-	AI_TroopsNeededToInvade( planet ) { 
+	AI_TroopsNeededToInvade( planet ) {
+		// TODO May want to factor in environment and odds
 		let v = planet.troops.length * (1.25 - this.civ.ai.strat.risk * 0.5);
 		return Math.ceil(v) || 1;
 		}
 		
 	RallyTroopShips( star, within_time ) { 
-		if ( !star ) {return; }
+		if ( !star ) { return; }
 		
 		let troops_needed = this.AI_TroopsNeededToInvade(this.target);
 		if ( !this.FleetDestroyed() ) { troops_needed -= this.fleet.troops; }
@@ -1455,13 +1466,18 @@ export class AIInvadeObjective extends AIObjective {
 		troops_needed -= troops_enroute;
 		
 		if ( troops_needed > 0 ) { 
-			this.civ.AI_AvailableFleets( star, this.ttl-1 )
-			.filter( f => f.troops && !f.ai )
-			.forEach( f => f.SplitBy( ship => ship.troops.length, star ) );
-			this.note = 'rallying troops to ' + star.name;
+			let troop_fleets = this.civ.AI_AvailableFleets( star, within_time )
+				.filter( f => f.troops && !f.ai );
+			troop_fleets.forEach( f => f.SplitBy( ship => ship.troops.length, star ) );
+			if ( troop_fleets.length ) { 
+				this.note = 'rallying ' + troop_fleets.length + ' troop fleets to ' + star.name;
+				}
+			else {
+				this.note = 'no available troops to rally to ' + star.name + '. NEED:' + troops_needed + ' WITHIN:' + within_time;
+				}
 			}
 		else {
-			this.note = 'rallied troops to ' + star.name;
+			this.note = 'rallied ' + troops_enroute + ' troops to ' + star.name;
 			}
 		}
 		
@@ -1502,7 +1518,7 @@ export class AIInvadeObjective extends AIObjective {
 					}
 				}
 			else {
-				this.note = 'rallying firepower to ' + star.name;
+				this.note = 'rallying firepower to ' + star.name + '. fleets: ' + fleets.length + ', resv: ' + this.reserved_milval + ', enroute: ' + milval_enroute + ', need: ' + milval_needed;
 				}
 			}
 		else {

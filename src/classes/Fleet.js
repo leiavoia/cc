@@ -413,13 +413,15 @@ export default class Fleet {
 	    
 	// invade a specific planet?
 	AIWantToInvadePlanet( planet ) {
+		// see: AI::AI_TroopsNeededToInvade
+		let invasion_pow = Math.ceil( planet.troops.length * (1.25 - this.owner.ai.strat.risk * 0.5) ) || 1;
 		return this.ai 
 			&& this.ai.target == planet
 			&& planet.owner 
 			&& this.owner != planet.owner 
 			&& this.troops 
-			&& this.troops >= planet.troops.length
-			; 
+			&& this.troops >= invasion_pow
+			;
     	}
 	    
 	// returns a mission report for any completed deepspace missions

@@ -103,16 +103,16 @@ export const ShipComponentList = {
 		name: 'Troop Carrier Module',
 		desc: 'Allows the transport of one ground combat unit.',
 		mods: [
-			new Mod( 'troopcap', 'H', 1, '', null ),
+			new Mod( 'troopcap', 'H', 2, '', null ),
 			new Mod( 'mass', '+', 80, '', null ),
 			],
-		cost: { labor:100, o:1, m:35 }
+		cost: { labor:100, o:1, m:25 }
 		},
 	CARRIER2: {
 		name: 'Heavy Troop Carrier Module',
 		desc: 'Allows the transport of two ground combat units.',
 		mods: [
-			new Mod( 'troopcap', 'H', 1, '', null ),
+			new Mod( 'troopcap', 'H', 4, '', null ),
 			new Mod( 'mass', '+', 150, '', null ),
 			],
 		cost: { labor:150, o:15, m:45 }
