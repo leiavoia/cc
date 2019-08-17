@@ -204,6 +204,11 @@ We also link to Google Fonts:
 	opacity:1;
 }
 
+#spa_wrapper .nofx * {
+	transition: none !important;
+	animation: none !important;
+	}
+
 /* LAYOUT */
 
 body,html {

@@ -6,9 +6,7 @@ import Planet from './classes/Planet';
 import Constellation from './classes/Constellation';
 import Fleet from './classes/Fleet';
 import Civ from './classes/Civ';
-import * as utils from './util/utils';
 import * as Signals from './util/signals';
-import * as CrazyBox from './classes/Crazy';
 
 export class App {
 	version = '0.0.5';
@@ -40,6 +38,8 @@ export class App {
 		ai: true, // process the AI each turn
 		soak: true, // run the game without player involvement
 		bg_bright: 1.0,
+		nofx: true,
+		headless: false, // for debugging on turbo speed
 		history_mode: 'power',
 		autoload_troops: true,
 		// notifications to bug player with.

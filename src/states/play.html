@@ -4,10 +4,15 @@
 <div id="layout_pagewrap" css="background-image: url(${bg_img});"></div>
 
 <!-- map layer -->
-<div id="layout_viewport" class="dragscroll nochilddrag ${app.options.show_xtreme_anoms ? '' : 'hide_xtreme_anoms'} ${app.options.dim_unexplored ? 'option_dim_unexplored' : ''}" css="background-color: rgba(0,0,0,${1.0 - app.options.bg_bright});">
+<div id="layout_viewport" 
+	class="dragscroll nochilddrag 
+		${app.options.show_xtreme_anoms ? '' : 'hide_xtreme_anoms'} 
+		${app.options.dim_unexplored ? 'option_dim_unexplored' : ''}
+		${app.options.nofx ? 'nofx' : ''}"
+	css="background-color: rgba(0,0,0,${1.0 - app.options.bg_bright});">
 		
 	<div id="layout_mapwrap" css="width: ${app.game.galaxy.width}px; height: ${app.game.galaxy.height}px;">
-		<div id="layout_map" class="${app.options.show_sectors ? 'sectors' : ''}" css="width: ${app.game.galaxy.width}px; height: ${app.game.galaxy.height}px">
+		<div id="layout_map"  if.bind="!app.options.headless" class="${app.options.show_sectors ? 'sectors' : ''}" css="width: ${app.game.galaxy.width}px; height: ${app.game.galaxy.height}px">
 			<!-- RANGE LAYER HEADSUP -->
 			<div id="range_layer" if.bind="app.options.show_range">
 				<template repeat.for="star of app.game.galaxy.stars" containerless>
@@ -393,8 +398,9 @@
 		<a href="#" id="nav_button_victory" click.delegate="app.ToggleOption('dim_unexplored')" ><svg class="icon icon-black"><use xlink:href="#icon-black"></use></svg></a>
 		<a href="#" id="nav_button_opt" click.delegate="app.SwitchMainPanel('options')" ><svg class="icon icon-gear"><use xlink:href="#icon-gear"></use></svg></a>
 		<a href="#" id="nav_button_help" click.delegate="app.FocusMap(app.game.galaxy.civs[0].planets[0])" ><svg class="icon icon-signs"><use xlink:href="#icon-signs"></use></svg></a>
-		<a href="#" id="nav_button_turn" click.delegate="app.game.ToggleAutoPlay()" css="color: ${app.game.autoplay ? '#AFA' : '#FFF' }"><svg class="icon icon-arrows-1"><use xlink:href="#icon-arrows-1"></use></svg></a>
-		<a href="#" id="nav_button_turn" click.delegate="app.game.ProcessTurn(10)" css="color: ${app.game.processing_turn ? '#AFA' : '#FFF' }"><svg class="icon icon-star"><use xlink:href="#icon-star"></use></svg></a>
+		<a href="#" id="nav_button_turn" click.delegate="app.game.ToggleAutoPlay(700)" css="color: ${app.game.autoplay ? '#AFA' : '#FFF' }"><svg class="icon icon-arrows-1"><use xlink:href="#icon-arrows-1"></use></svg></a>
+		<a href="#" id="nav_button_turn" click.delegate="app.game.ToggleAutoPlay(10)" css="color: ${app.game.autoplay ? '#AFA' : '#FFF' }"><svg class="icon icon-arrows-1"><use xlink:href="#icon-arrows-1"></use></svg></a>
+		<a href="#" id="nav_button_turn" click.delegate="app.game.ProcessTurn(100)" css="color: ${app.game.processing_turn ? '#AFA' : '#FFF' }"><svg class="icon icon-star"><use xlink:href="#icon-star"></use></svg></a>
 		<a href="#" id="nav_button_turn" click.delegate="app.game.ProcessTurn()" css="color: ${app.game.processing_turn ? '#AFA' : '#FFF' }" ><svg class="icon icon-arrows"><use xlink:href="#icon-arrows"></use></svg></a>
 	</div>
 

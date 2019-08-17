@@ -7,6 +7,7 @@ import EventLibrary from './EventLibrary';
 import ShipCombat from './ShipCombat';
 import GroundCombat from './GroundCombat';
 import {VictoryRecipes,VictoryIngredients} from './VictoryRecipes';
+import * as CrazyBox from './Crazy';
 
 export default class Game {
 	app = false;
@@ -73,10 +74,13 @@ export default class Game {
 			}
 		// player died
 		if ( !this.myciv.alive ) { 
-			this.victory_achieved = true;
-			console.log('*** PLAYER DIED - GAME OVER ***');
-			this.app.AddNote( 'bad', `GAME OVER`, `"U R Dead` );
-			return true;
+			if ( this.app.options.soak ) this.RotateMyCiv();
+			else {
+				this.victory_achieved = true;
+				console.log('*** PLAYER DIED - GAME OVER ***');
+				this.app.AddNote( 'bad', `GAME OVER`, `U R Dead` );
+				return true;
+				}
 			}					
 		// victory recipes
 		for ( let civ of civs_in_play ) { 
@@ -218,10 +222,10 @@ export default class Game {
 		this.RecalcCivContactRange();
 		this.DeployVictoryIngredients();
 
-		// fun stuff
-		// CrazyBox.AddGiantSpaceAmoeba(this);
-		// CrazyBox.AddRedSpaceAmoeba(this);
-		// CrazyBox.AddBlueSpaceAmoeba(this);
+		// TODO: random fun stuff
+		// CrazyBox.AddGiantSpaceAmoeba(this.app);
+		// CrazyBox.AddRedSpaceAmoeba(this.app);
+		// CrazyBox.AddBlueSpaceAmoeba(this.app);
 			
 		// at this point there is some fudge time until the PlayState
 		// widget actually gets created and placed into the layout.
@@ -233,15 +237,19 @@ export default class Game {
 		// an app-level event lifecycle.
 		}
 
-	ToggleAutoPlay() { 
+	ToggleAutoPlay( speed = 500 ) { 
 		if ( this.autoplay ) { 
 			clearInterval( this.autoplay );
 			this.autoplay = false;
+			this.app.options.nofx = false;
+			// this.app.options.headless = false;
 			}
 		else {
 			let game = this;
 			let cb = function(){ if ( !game.processing_turn ) { game.ProcessTurn(); } };
-			this.autoplay = setInterval(cb, 500);
+			this.autoplay = setInterval(cb, speed);
+			if ( speed < 500 ) this.app.options.nofx = true;
+			// if ( speed <= 10 ) this.app.options.headless = true;
 			}
 		}
 		
