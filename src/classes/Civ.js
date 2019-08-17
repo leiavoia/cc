@@ -658,11 +658,13 @@ export default class Civ {
 		}
 		
 	// returns list of star systems we have a colony in
-	MyStars() {
+	MyStars( filter_func = null ) {
 		let systems = [];
 		for ( let p of this.planets ) { 
 			if ( systems.indexOf(p.star) == -1 ) {
-				systems.push(p.star);
+				if ( !filter_func || filter_func(p.star) ) { 
+					systems.push(p.star);
+					}
 				}
 			}
 		return systems;

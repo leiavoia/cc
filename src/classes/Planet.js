@@ -49,8 +49,7 @@ export default class Planet {
 	// AI ------------------------------------------------
 	score = 0; // AI score of natural attributes
 	ai_value = 0;
-	ai_threat = 0;
-	ai_defense = 0;
+	ai_min_troops = 0; // minimum number of troops AI wants to keep to defend planet
 	
 	// ECONOMY -------------------------------------------
 	zones = [];
@@ -64,8 +63,6 @@ export default class Planet {
 	zone_hab_mod = 1.0; // precalculated HabitationBonus() to avoid calling millions of times each turn.
 	
 	tax_rate = 0.2;
-	treasury_contrib = 0; // contributions or allowances from the global treasury
-	use_global_tax_rate = false;
 	spending = 1.0;
 	// max spending may be modable with technology improvements. 
 	// zones support >100% spending values, but there is no 

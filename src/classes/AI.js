@@ -572,7 +572,7 @@ export class AIDefenseObjective extends AIObjective {
 			
 		// if there is leftover undefended threat, add that to our AI needs
 		// NOTE: because threat is a "perceived" stat and not indicative of the
-		// total threat posed by neighboring empires, it tends to facilate
+		// total threat posed by neighboring empires, it tends to vacilate
 		// endlessly. To prevent wild swings, keep track of previous turn's 
 		// threat and average over time.
 		const threat_decay_factor = 5;
@@ -745,6 +745,24 @@ export class AIOffenseObjective extends AIObjective {
 				if ( ++att_missions.length >= max_missions ) { break; }
 				}
 			}
+			
+		// Empty troop ships need to go pick up more troops.
+		// TODO: This is a very dumb routine we can improve later.
+		let troop_stars = civ.MyStars( s => { 
+			return s.planets.filter( p => p.troops.length ).length // has troops
+			&& ( !s.fleets.length || s.FleetFor(civ) ) // not a death trap
+			} );
+		if ( troop_stars.length ) {
+			let fleets = civ.fleets.filter( f => f.troops < f.troopcap && !f.killme && !f.mission && !f.dest && f.star );
+			for ( let f of fleets ) { 
+				let ships = f.ships.filter( s => s.bp.troopcap && !s.troops.length );
+				if ( ships.length ) { 
+					let dest = ClosestStarTo( f.star.xpos, f.star.ypos, troop_stars, true );
+					if ( dest != f.star ) { f.Split( ships, dest ); }
+					}
+				}
+			}
+		
 		// baseline military
 		civ.ai.needs.combat_ships += 2000 * (1.5-civ.ai.strat.posture);	
 		}			
@@ -1556,4 +1574,18 @@ export class AIAnomExploreObjective extends AIObjective {
 	type = 'anom';
 	EvaluateFunc( app, civ ) { 
 		}	
+	}
+
+function ClosestStarTo( x, y, stars, exclude_self=false ) { 
+	// find closest star to the center
+	let star = null;
+	let dist = 10000000;
+	for ( let s of stars ) { 
+		const d = utils.DistanceBetween(x,y,s.xpos,s.ypos,true);
+		if ( d < dist && ( d || !exclude_self ) ) { 
+			star = s;
+			dist = d;
+			}
+		}
+	return star;
 	}
