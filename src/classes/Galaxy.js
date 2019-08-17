@@ -21,14 +21,32 @@ export default class Galaxy {
 		
 	// size is in number of sectors, 
 	// where sector is 400px and max one star per sector
-	Make( map_size_x, map_size_y, stars_wanted, galaxy_age = 0.5, crazy = 0 ) {
+	Make( sectors, density, galaxy_age = 0.5, crazy = 0 ) {
 		
-		let cell_size = 400;
+		const sectors_requested = sectors;
+		const strategy = 'attraction'; // [attraction,shuffle]
+		const cell_size = 400;
+		const min_edge = 4;
 		
 		// reset data
 		this.stars = [];
 		this.anoms = [];
-	
+		
+		// sane limits
+		sectors = Math.min( 10000, Math.max( 16, sectors ) );
+		
+		// take sqrt of the number of sectors for the ideal square edge
+		let map_size_x = Math.ceil( Math.sqrt( sectors ) * 2 );
+		let map_size_y = Math.ceil( utils.BiasedRand(min_edge, (map_size_x-min_edge), (map_size_x*0.5), (1.0-crazy)  ) );
+		map_size_x -= map_size_y;
+		// actual square should always be bigger than requested number of sectors
+		while ( map_size_x * map_size_y < sectors_requested ) { ++map_size_y; }
+		sectors = Math.ceil( map_size_x * map_size_y ); // finalize
+		// make sure we always have horizontal galaxies
+		if ( map_size_x < map_size_y ) {
+			[map_size_x,map_size_y] = [map_size_y,map_size_x];
+			}			
+		
 		// for aesthetics and UI reasons, 
 		// we want an empty padded border.
 		this.width = ((map_size_x+2) * cell_size) + 1 + cell_size; // leave room for sidebar
@@ -36,10 +54,9 @@ export default class Galaxy {
 		this.age = galaxy_age;
 		
 		// represent the galaxy as an array of bools, 
-		// where the 1D array is the flattened version 
-		// of a 2D array of sectors.
+		// where the 1D array is the flattened version of a 2D array of sectors.
 		// We assign the first X slots to be a star ("true")
-		let sectors = map_size_x * map_size_y;
+		let stars_wanted = Math.ceil( sectors * Math.max( 0.05, density ) );
 		if ( sectors < stars_wanted ) { stars_wanted = sectors; }
 		let remainder = sectors - stars_wanted;
 		// anomalies cover 50% of un-starred space or 30% of total space, 
@@ -49,11 +66,6 @@ export default class Galaxy {
 		let arr = [];
 		
 		// this is where the shape of the galaxy is determined. 
-		// Most of the time just shuffling works fine and works 
-		// fast on lower powered machines.
-		
-		let strategy = 'attraction'; // [attraction,shuffle]
-		
 		if ( strategy == 'attraction' ) { 
 				
 			arr = new Array(sectors);
@@ -187,6 +199,16 @@ export default class Galaxy {
 					}
 				}
 			}
+			
+		console.log( 
+			`New Galaxy:\n\tedges: ${map_size_x} x ${map_size_y}`
+			+ `\n\tsectors: ${sectors})`
+			+ `\n\tdensity: ${density}`
+			+ `\n\tstars: ` + this.stars.length
+			+ `\n\tanoms: ` + this.anoms.length
+			+ `\n\tage: ${galaxy_age}`
+			+ `\n\tcraziness: ${crazy}`
+			);
 		}
 					
 	ThreatDemo( num_civs=2 ) {

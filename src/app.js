@@ -84,11 +84,7 @@ export class App {
 		Civ.img_id_roster = null;
 		Planet.next_uid = 1;
 		Star.next_id = 1;
-		this.game = null;		
 		this.notes = [];
-
-// 		this.state = 'title';
-// 		this.state_obj = null;
 		}
 		
 	constructor() {
@@ -103,24 +99,16 @@ export class App {
 		
 		window.document.title = `Constellation Control v.${this.version}`;
 		this.LoadOptions();
-		// --------\/-- [!]DEBUG SHORTCUT --\/---------------------
-		this.game = new Game(this);
-		// create initial state
-		this.game.InitGalaxy();
-// 		this.ChangeState('title');
-		this.game.galaxy.Make( 16,16,50,0.5, this.options.setup.crazy );
-		this.game.DeployVictoryIngredients();
-		let mystar = this.game.galaxy.ThreatDemo( 1 );
-// 		CrazyBox.AddGiantSpaceAmoeba(this);
-// 		CrazyBox.AddRedSpaceAmoeba(this);
-		// CrazyBox.AddBlueSpaceAmoeba(this);
-		this.game.SetMyCiv( 0 ); // could switch using debug stuff
-		this.ChangeState('play');
-		this.hilite_star = mystar; // hint for playstate startup
-		this.game.RecalcStarRanges();
-		this.game.RecalcFleetRanges();
-		this.game.RecalcCivContactRange();
-// 		let app = this; // needed for callback
+		// debug shortcut
+		if ( this.options.debug ) {
+			this.game = new Game(this);
+			this.game.InitGalaxy();
+			this.ChangeState('play');
+			}
+		// normall startup
+		else {
+			this.ChangeState('title');
+			}
 		}
 		
 	ToggleNotification( o ) { 

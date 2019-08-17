@@ -1,8 +1,4 @@
-// import Civ from './Civ';
 import Galaxy from './Galaxy';
-import Anom from './Anom';
-import Star from './Star';
-import Planet from './Planet';
 import Fleet from './Fleet';
 import * as utils from '../util/utils';
 import * as Signals from '../util/signals';
@@ -12,11 +8,9 @@ import ShipCombat from './ShipCombat';
 import GroundCombat from './GroundCombat';
 import {VictoryRecipes,VictoryIngredients} from './VictoryRecipes';
 
-
 export default class Game {
 	app = false;
 	galaxy = null;
-	planets = [];
 	turn_num = 0;
 	myciv = null; // object of player civ
 	processing_turn = false;
@@ -182,9 +176,61 @@ export default class Game {
 			}
 		}
 		
-	// probably can just get rid of this eventually
 	InitGalaxy() {
+		
+		// galaxy size randomness is considered "up to" and not a totally random number.
+		// This helps the galaxy size from exploding poor computers.
+		const galaxy_size = 
+			this.app.options.setup.galaxy_size_randomize
+			? utils.RandomInt(16,this.app.options.setup.galaxy_size)
+			: this.app.options.setup.galaxy_size;
+		const age = 
+			this.app.options.setup.galaxy_age_randomize
+			? (utils.RandomInt(0,10) / 10).toPrecision(1)
+			: this.app.options.setup.galaxy_age;
+		const density = 
+			this.app.options.setup.density_randomize
+			? (utils.RandomInt(0,10) / 10).toPrecision(1)
+			: this.app.options.setup.density;
+		const crazy = 
+			this.app.options.setup.crazy_randomize
+			? (utils.RandomInt(0,10) / 10).toPrecision(1)
+			: this.app.options.setup.crazy;
+		const AIs = 
+			this.app.options.setup.AIs_randomize
+			? utils.RandomInt(1,23)
+			: this.app.options.setup.AIs;
+			
+		// create initial state
+		this.app.ResetEverything();
 		this.galaxy = new Galaxy();
+		this.galaxy.Make( galaxy_size, density, age, crazy );
+		
+		// TODO: change AddExploreDemo to something more robust when code matures.
+		this.app.hilite_star = this.galaxy.AddExploreDemo( AIs + 1 );
+		
+		// TODO: difficulty level: when assigning homeworlds, give player more or less
+		// room, and better or worse position as defined by the natural score of all
+		// planets within a "starting circle", then sort star systems by their totals.
+		this.SetMyCiv(0);
+		this.RecalcStarRanges();
+		this.RecalcFleetRanges();
+		this.RecalcCivContactRange();
+		this.DeployVictoryIngredients();
+
+		// fun stuff
+		// CrazyBox.AddGiantSpaceAmoeba(this);
+		// CrazyBox.AddRedSpaceAmoeba(this);
+		// CrazyBox.AddBlueSpaceAmoeba(this);
+			
+		// at this point there is some fudge time until the PlayState
+		// widget actually gets created and placed into the layout.
+		// Trying to perform functions directly on the PlayState will
+		// fail because it doesn't exist yet. Let PlayState handle
+		// anything it needs by itself. Just give it the data it needs.
+		// [!]TODO - Consider adding an App::OnStateChange callback
+		// that States can call when they are done loading. Kinda like 
+		// an app-level event lifecycle.
 		}
 
 	ToggleAutoPlay() { 
@@ -854,6 +900,7 @@ export default class Game {
 		this.myciv = this.galaxy.civs[ newIndex ];
 		this.myciv.is_player = true;
 		}
+			
 	}
 
 	

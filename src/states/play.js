@@ -32,6 +32,7 @@ export class PlayState {
 
 	unattach() { 
 		this.app.ResetEverything();
+		this.app.game = null;
 		this.current_scale = 1.0;
 		document.body.className = document.body.className.replace('xtreme_zoom');
 		xtreme_zoom = false;
