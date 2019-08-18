@@ -444,7 +444,7 @@ export default class Fleet {
 					}
 				else {
 					let completed = this.mission.targets[0].AddResearch( this.owner, this.research * this.mission.bonus );
-					console.log(`Fleet#${this.id} researched ${this.mission.targets[0].name}`);
+					// console.log(`Fleet#${this.id} researched ${this.mission.targets[0].name}`);
 					if ( completed ) { 
 // 						console.log(`Fleet#${this.id} FINISHED researching ${this.mission.targets[0].name}`);
 						this.mission.completed++;
@@ -495,13 +495,14 @@ export default class Fleet {
 		return report;
 		}
 		
-	// dumps all troops from a planet into the fleet
+	// dumps all troops from a planet into the fleet.
+	// returns number transferred.
 	TransferTroopsFromPlanet( planet, max ) {
 		if ( planet.owner != this.owner 
 			|| this.troops == this.troopcap 
 			|| !this.troopcap 
 			|| !planet.troops.length 
-			) { return; }
+			) { return 0; }
 		let moved = 0;
 		if ( !max ) { max = this.troopcap; }
 		max = Math.min( max, this.troopcap );
@@ -517,6 +518,7 @@ export default class Fleet {
 				}
 			else { ships.shift(); }
 			}
+		return moved;
 		}
 		
 	// dumps all troops from a fleet onto a planet

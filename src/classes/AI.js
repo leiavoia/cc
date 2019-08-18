@@ -65,7 +65,7 @@ export class AI {
 					}
 				// notes
 				o.note += ' ' + ( result ? '⬤' : '⭕' );
-				console.log('AI: ' + this.civ.name + ' ' + o.toString() );
+				// console.log('AI: ' + this.civ.name + ' ' + o.toString() );
 				}
 			}
 		}
@@ -581,7 +581,8 @@ export class AIDefenseObjective extends AIObjective {
 			/ ( threat_decay_factor + 1 )
 			- civ.ai.avail_milval;
 		this.prev_actual_threat = civ.ai.actual_threat;
-		
+		// threat tends to be bigger than the actual combat value of the threatening fleets
+		civ.ai.needs.combat_ships *= 8/33;
 		// see how many combat ships we already have in production. civ may
 		// indicate we need to build more or possibly cull some already queued.
 		// [!]OPTIMIZE - we could track ships enqueued instead of counting every turn
@@ -603,7 +604,7 @@ export class AIOffenseObjective extends AIObjective {
 	EvaluateFunc( app, civ ) { 
 		this.note = '';
 		
-		let max_missions = Math.ceil( civ.planets.length * civ.ai.strat.risk * 0.15 );
+		let max_missions = Math.ceil( civ.planets.length * civ.ai.strat.risk * 0.11 );
 		let att_missions = civ.ai.objectives.filter( o => o.type=='invade' );
 		
 		// we need to maintain at least a minimal force to keep at the ready
@@ -649,12 +650,14 @@ export class AIOffenseObjective extends AIObjective {
 		// ... and what we have in the air
 		for ( let f of civ.fleets ) {
 			if ( f.killme || f.mission ) { continue; } 
-			civ.ai.needs.troop_ships - f.troopscap;
+			civ.ai.needs.troop_ships - (f.troopscap/4);
 			civ.ai.needs.troops - f.troops;
 			}
 		// strongly reduce need for carriers in first 10 turns
 		civ.ai.needs.troop_ships = Math.ceil( civ.ai.needs.troop_ships * utils.Clamp( app.game.turn_num / 10, 0, 1 ) );
 		civ.ai.needs.troops = Math.ceil( civ.ai.needs.troops * utils.Clamp( app.game.turn_num / 10, 0, 1 ) );
+		// game so far seems to chronically undervalue troop_ships
+		civ.ai.needs.troop_ships *= 3;
 		
 		this.note += `, ${att_missions.length}/${max_missions} missions`;
 		
@@ -697,7 +700,11 @@ export class AIOffenseObjective extends AIObjective {
 			// really juicy just because we're "friends"
 			for ( let p of c.planets ) { 
 				let score = p.ValueTo(civ);
-				if ( score ) { // must be at habitable at least
+				if ( score ) { // must be habitable at least
+					//
+					// FIXME: normalize all scores to 0..1
+					// Having negative scores can make some planets "invisible" for invasion evaluations.
+					//
 					// at war? basically free for the taking!
 					const contact = civ.diplo.contacts.get(c);
 					if ( contact && contact.treaties.has('WAR') ) { score *= 3; }
@@ -713,11 +720,16 @@ export class AIOffenseObjective extends AIObjective {
 						score -= 30 * difficulty * (1-civ.ai.strat.risk);
 						}
 					// ground forces to overcome?
-					if ( p.troops.length ) { score -= p.troops.length * 3 * (1-civ.ai.strat.risk); }
+					if ( p.troops.length ) { 
+						// same problem here as with calculating ship strength
+						let difficulty = p.troops.length / civ.ai.total_troops;
+						score -= 30 * difficulty * (1-civ.ai.strat.risk);
+						}
 					// we already have a foothold there?
 					if ( p.star.accts.has(civ) ) { score *= 1.5; }
 					// likelyhood of getting our butts kicked
-					score *= ( civ.ai.total_milval / p.owner.ai.total_milval ) * (1+civ.ai.strat.risk)
+					score *= ( civ.ai.total_milval / p.owner.ai.total_milval ) * (1+civ.ai.strat.risk);
+					score = Math.max( 0.1, score ); // hack to avoid negatives until we refactor scoring system
 					// meets minimum score? 
 					if ( score > civ.ai.strat.min_assault_score ) { 
 						planets.push({ planet: p, score, raw: p.ValueTo(civ) }); 
@@ -727,6 +739,10 @@ export class AIOffenseObjective extends AIObjective {
 			}
 		if ( planets.length ) { 
 			planets.sort( (a,b) => a.score > b.score ? -1 : 1 );
+			this.note += ` |`;
+			for ( let i=0; i < Math.min(5, planets.length); i++ ) { 
+				this.note += ` [${planets[i].planet.name}, ${Math.round(planets[i].score)}, ${Math.round(planets[i].raw)}]`;
+				} 
 			for ( let p of planets ) { 
 				p = p.planet;
 				// no duplicate missions
@@ -758,10 +774,18 @@ export class AIOffenseObjective extends AIObjective {
 		if ( troop_stars.length ) {
 			let fleets = civ.fleets.filter( f => f.troops < f.troopcap && !f.killme && !f.mission && !f.dest && f.star );
 			for ( let f of fleets ) { 
+				// dont bother if already on milk run 
+				if ( f.ai && f.ai.type == 'pickuptroops' ) { continue; }
 				let ships = f.ships.filter( s => s.bp.troopcap && !s.troops.length );
 				if ( ships.length ) { 
 					let dest = ClosestStarTo( f.star.xpos, f.star.ypos, troop_stars, true );
-					if ( dest != f.star ) { f.Split( ships, dest ); }
+					if ( dest != f.star ) { 
+						let newfleet = f.Split( ships, dest ); 
+						const ttl = utils.Clamp( Math.ceil( (civ.empire_box.x2 - civ.empire_box.x1 ) / civ.ship_speed )+2, 6, 25 );
+						const m = new AIPickupTroopsObjective( dest, newfleet, ttl, 0 );
+						civ.ai.objectives.push(m);
+						m.Evaluate(app,civ); // this activates it
+						}
 					}
 				}
 			}
@@ -1005,7 +1029,7 @@ export class AIPlanetsObjective extends AIObjective {
 				let weights = [
 					['colony_ships', ship_spending_mod * civ.ai.needs.colony_ships ],
 					['combat_ships', ship_spending_mod * (civ.ai.needs.combat_ships / avg_milval) ],
-					['troop_ships', (troop_spending_mod + ship_spending_mod) * 0.5 * civ.ai.needs.troop_ships ],
+					['troop_ships', (troop_spending_mod + ship_spending_mod) * 0.5 * civ.ai.needs.troop_ships * 3 ],
 					['research_ships', ship_spending_mod * civ.ai.needs.research_ships ],
 					['scout_ships', ship_spending_mod * civ.ai.needs.scout_ships ],
 					['troops', troop_spending_mod * civ.ai.needs.troops ],
@@ -1264,6 +1288,44 @@ export class AIDiplomacyObjective extends AIObjective {
 	}
 	
 	
+// PICKUPTROOPS - Fleet will navigate to target star and pick up troops
+export class AIPickupTroopsObjective extends AIObjective { 	
+	type = 'pickuptroops';
+	EvaluateFunc( app, civ ) { 
+		// still have a fleet?
+		if ( this.FleetDestroyed() ) { 
+			this.note = 'fleet destroyed';
+			return false; 
+			}
+		// en route?
+		if ( this.fleet.dest && !this.fleet.star ) { 
+			this.note = 'en route';
+			return; 
+			}
+		// not where we need to be?
+		if ( this.target != this.fleet.star ) {
+			this.note = 'redirected';
+			this.fleet.SetDest(this.target);
+			return;
+			}
+		// arrived!
+		if ( this.target == this.fleet.star ) {
+			let n = 0;
+			this.fleet.star.planets.forEach( p => { 
+				if ( p.owner == this.fleet.owner ) { 
+					n += this.fleet.TransferTroopsFromPlanet( p );
+					}
+				});		
+			// TODO: we could extend mission to get more troops elsewhere
+			// or try to connect with another fleet in need, 
+			// but this is good enough to get started.	
+			this.note = 'Picked up ' + n + ' troops.';
+			return n > 0;
+			}
+		}			
+	}
+	
+	
 // GUARD - Fleet will navigate to target star and sit there until TTL expires.
 export class AIGuardObjective extends AIObjective { 	
 	type = 'guard';
@@ -1303,6 +1365,7 @@ export class AIInvadeObjective extends AIObjective {
 // 	min_troops_needed = 1;
 	civ = null; // stash for later
 	EvaluateFunc( app, civ ) { 
+		this.note = '';
 		// first run 
 		if ( !this.civ ) { this.civ = civ; }
 		// planet acquired
@@ -1357,85 +1420,100 @@ export class AIInvadeObjective extends AIObjective {
 						this.fleet.TransferTroopsFromPlanet( p );
 						}
 					});
+				this.note += ' | assigned';
 				}
 			// can i go now?
 			if ( this.fleet && this.fleet.troops >= this.AI_TroopsNeededToInvade(this.target) ) {
 				this.fleet.SetDest( this.target.star );
-				this.note = 'fleet deployed';
+				this.note += ' | deployed';
 				}
 			// still not enough troops
 			else {
-				// TODO create a new fleet from bits and pieces around
-				this.note = 'no fleet available; rallying';
 				const pt = this.ClosestStagingPointTo( this.target.star );
-				this.RallyCombatShips( pt, this.ttl-1 );
-				this.RallyTroopShips( pt, this.ttl-1 );
-				// if there is a local fleet here now, peg them down for a mission
+				// if there is a local fleet here now, peg them down for a mission.
+				// Reinforcements are on the way.
 				if ( !this.fleet ) {
 					let localfleet = pt.FleetFor(civ);
 					if ( localfleet && !localfleet.ai && !localfleet.killme && !localfleet.dest && !localfleet.mission ) {
 						this.fleet = localfleet;
 						localfleet.ai = this;
+						this.note += ' | reserved fleet @ ' + pt.name;
 						}	
-					}
-				}
-			return;
-			}
-		// en route?
-		if ( this.fleet.dest && !this.fleet.star ) { 
-// 			// extend mission if needed - do not end mission in flight
-			// WARNING: this can lead to zombie missions, so monitor
-			let turns = Math.ceil( this.fleet.dest_line_length / this.fleet.speed );
-			this.ttl = Math.max( turns, this.ttl );
-			this.note = 'en route';
-			return; 
-			} 
-		// not where we need to be?
-		else if ( this.target.star != this.fleet.star ) {
-			if ( this.fleet && this.fleet.troops >= this.AI_TroopsNeededToInvade(this.target) ) {
-				// can pick some up?
-				this.fleet.star.planets.forEach( p => { 
-					if ( p.owner == this.fleet.owner ) { 
-						this.fleet.TransferTroopsFromPlanet( p );
+					else {
+						this.note += ' | still no fleet';
 						}
-					});
-				// how about now?
-				if ( this.fleet && this.fleet.troops < this.AI_TroopsNeededToInvade(this.target) ) {
-					this.RallyTroopShips( this.fleet.star, this.ttl-1 );
 					}
-				}
-			// can we really go now?
-			if ( this.fleet && this.fleet.troops >= this.AI_TroopsNeededToInvade(this.target) ) {
-				this.note = 'fleet deployed';
-				this.fleet.SetDest(this.target.star);
+				this.RallyCombatShips( pt, this.ttl-1 );
+				this.RallyTroopShips( pt, this.ttl-1 );
 				}
 			return;
 			}
-		// on location but unable to overcome defenses
-		else if ( this.target.star == this.fleet.star ) { 
-			// TECHNICAL: this is run before ship movement and combat, 
-			// so fleet may be parked here right now.
-			// TECHNICAL: fleet battles can be multi-turn affairs, 
-			// so check to see if we still have what it takes to get the job done
-			this.note = 'obtaining air superiority';
-			let defender = this.target.OwnerFleet();
-			if ( defender && defender.milval > this.fleet.milval /* * (1.5-civ.ai.strat.risk)*/ ) { 
-				// if we are cowardly, run away!
-				if ( civ.ai.strat.posture < 0.34 || ( civ.ai.strat.posture < 0.67 && Math.random() > 0.5 ) ) {
-					this.note = "underpowered; running away";
-					this.fleet.SetDest( this.ClosestStagingPointTo( this.target.star ) );
-					return false;
+		if ( this.fleet && !this.fleet.killme ) {
+			// en route?
+			if ( this.fleet.dest && !this.fleet.star ) { 
+	// 			// extend mission if needed - do not end mission in flight
+				// WARNING: this can lead to zombie missions, so monitor
+				let turns = Math.ceil( this.fleet.dest_line_length / this.fleet.speed );
+				this.ttl = Math.max( turns, this.ttl );
+				this.note += ' | en route';
+				return; 
+				} 
+			// parked off-target
+			else if ( this.target.star != this.fleet.star ) {
+				this.note += ' | offsite';
+				// have enough troops?
+				if ( this.fleet.troops < this.AI_TroopsNeededToInvade(this.target) ) {
+					// can pick some up?
+					this.fleet.star.planets.forEach( p => { 
+						if ( p.owner == this.fleet.owner ) { 
+							this.fleet.TransferTroopsFromPlanet( p );
+							}
+						});
+					// still need more? call for help
+					if ( this.fleet.troops < this.AI_TroopsNeededToInvade(this.target) ) {
+						this.RallyTroopShips( this.fleet.star, this.ttl-1 );
+						}
 					}
-				// call for backup
-				else {
-					this.note = 'waiting for backup';
-					this.RallyCombatShips( this.target.star, this.ttl-1 );
+				// have enough firepower?
+				let defender = this.target.OwnerFleet();
+				if ( defender && !this.AI_StrongEnoughToBeat( this.fleet, defender ) ) { 
+					this.RallyCombatShips( this.fleet.star, this.ttl-1 );
+					}
+				// can we really go now?
+				if ( this.fleet.troops >= this.AI_TroopsNeededToInvade(this.target) ) {
+					this.note += ' | deployed';
+					this.fleet.SetDest(this.target.star);
+					}
+				return;
+				}
+			// on location but unable to overcome defenses
+			else if ( this.target.star == this.fleet.star ) { 
+				// TECHNICAL: this is run before ship movement and combat, 
+				// so fleet may be parked here right now.
+				// TECHNICAL: fleet battles can be multi-turn affairs, 
+				// so check to see if we still have what it takes to get the job done
+				this.note += ' | on site';
+				let defender = this.target.OwnerFleet();
+				if ( defender && !this.AI_StrongEnoughToBeat( this.fleet, defender ) ) { 
+					// if we are cowardly, run away!
+					if ( civ.ai.strat.posture < 0.34 || ( civ.ai.strat.posture < 0.67 && Math.random() > 0.5 ) ) {
+						this.note += " | underpowered; running away";
+						this.fleet.SetDest( this.ClosestStagingPointTo( this.target.star ) );
+						return false;
+						}
+					// call for backup
+					else {
+						this.RallyCombatShips( this.target.star, this.ttl-1 );
+						}
+					}
+				// do we have enough troops to feel confident about winning? 
+				if ( this.fleet.troops < this.AI_TroopsNeededToInvade(this.target) ) { 
+					this.RallyTroopShips( this.target.star, this.ttl-1 );
 					}
 				}
-			// do we have enough troops to feel confident about winning? 
-			if ( this.fleet.troops < this.AI_TroopsNeededToInvade(this.target) ) { 
-				this.RallyTroopShips( this.target.star, this.ttl-1 );
-				}
+			}
+		else {
+			this.note += ' | no fleet';
 			}
 		}	
 		
@@ -1470,14 +1548,14 @@ export class AIInvadeObjective extends AIObjective {
 				.filter( f => f.troops && !f.ai );
 			troop_fleets.forEach( f => f.SplitBy( ship => ship.troops.length, star ) );
 			if ( troop_fleets.length ) { 
-				this.note = 'rallying ' + troop_fleets.length + ' troop fleets to ' + star.name;
+				this.note += ' | [' + troop_fleets.length + '] troop fleets => ' + star.name;
 				}
 			else {
-				this.note = 'no available troops to rally to ' + star.name + '. NEED:' + troops_needed + ' WITHIN:' + within_time;
+				this.note += ' | No troops avail for ' + star.name + '. NEED:' + troops_needed + ' WITHIN:' + within_time;
 				}
 			}
 		else {
-			this.note = 'rallied ' + troops_enroute + ' troops to ' + star.name;
+			this.note += ' | [' + troops_enroute + '] troops => ' + star.name;
 			}
 		}
 		
@@ -1514,15 +1592,15 @@ export class AIInvadeObjective extends AIObjective {
 					if ( milval_needed <= 0 ) { break; }
 					}
 				if ( milval_needed > 0 ) {
-					this.note = 'calling meager reinforcements to ' + star.name;
+					this.note += ' | meager reinforcements => ' + star.name;
 					}
 				}
 			else {
-				this.note = 'rallying firepower to ' + star.name + '. fleets: ' + fleets.length + ', resv: ' + this.reserved_milval + ', enroute: ' + milval_enroute + ', need: ' + milval_needed;
+				this.note += ' | rallying firepower to ' + star.name + '. fleets: ' + fleets.length + ', resv: ' + this.reserved_milval + ', enroute: ' + milval_enroute + ', need: ' + milval_needed;
 				}
 			}
 		else {
-			this.note = 'no help; looks grim';
+			this.note += ' | no help; looks grim';
 			}	
 		}
 		

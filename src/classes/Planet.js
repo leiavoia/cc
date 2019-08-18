@@ -710,7 +710,6 @@ export default class Planet {
 	ValueTo( civ ) {
 		// even habitable?
 		if ( !this.Habitable( civ.race ) ) { 
-			
 			return 0;
 			}
 		// not in range? not worth anything 
@@ -727,7 +726,7 @@ export default class Planet {
 		let dist = utils.DistanceBetween( this.star.xpos, this.star.ypos, bx, by );
 		if ( dist ) { score += ( 1 / dist ) * 7000; }
 		// population	
-		score += this.total_pop * 0.1;
+		score += (this.total_pop ? this.total_pop : 1 ) * 0.1;
 		// TODO local economy
 		return score;
 		}

@@ -48,7 +48,7 @@ export default class Game {
 		}
 		
 	CheckForVictory( check_last_man_standing = false ) { 
-		if ( this.victory_achieved ) { return false; }
+		if ( this.victory_achieved ) { return true; }
 		let civs_in_play = this.galaxy.civs.filter( c => c.alive && !c.race.is_monster);
 		// last man standing
 		if ( check_last_man_standing && civs_in_play.length == 1 ) { 
@@ -484,7 +484,7 @@ export default class Game {
 			let combat = new ShipCombat( sc.attacker, sc.defender, sc.planet );
 			combat.ProcessQueue( 1000 ); // 1000 = fight to the death if possible
 			combat.End();
-			console.log('Resolved ship combat: ' + sc.label + ', WINNER: ' + combat.winner);
+			// console.log('Resolved ship combat: ' + sc.label + ', WINNER: ' + combat.winner);
 			this.shipcombats.splice( c, 1 ); // delete
 			};
 		}
@@ -499,7 +499,7 @@ export default class Game {
 						for ( let planet of star.planets ) { 
 							if ( planet.owner != fleet.owner ) { 
 								if ( fleet.AIWantToInvadePlanet(planet) && !planet.OwnerFleet() ) {
-									console.log(`GC: ${fleet.owner.name} wants to invade ${planet.name}`);
+									// console.log(`GC: ${fleet.owner.name} wants to invade ${planet.name}`);
 									this.QueueGroundCombat( fleet, planet );
 									}
 								}
@@ -524,7 +524,7 @@ export default class Game {
 			// otherwise autoresolve in background
 			let combat = new GroundCombat( gc.attacker, gc.planet );
 			combat.Run(); // fight to the death
-			console.log(`INVASION :: ${gc.attacker.owner.name} invading ${gc.planet.name}, winner: ${combat.winner}`);
+			// console.log(`INVASION :: ${gc.attacker.owner.name} invading ${gc.planet.name}, winner: ${combat.winner}`);
 			this.groundcombats.splice( c, 1 ); // delete
 			this.CheckForCivDeath();
 			}
@@ -615,7 +615,7 @@ export default class Game {
 		else if ( this.app.options.soak ) { 
 			let combat = new GroundCombat( c.attacker, c.planet );
 			combat.Run(); // fight to the death
-			console.log(`INVASION :: ${c.attacker.owner.name} invading ${c.planet.name}, winner: ${combat.winner}`);
+			// console.log(`INVASION :: ${c.attacker.owner.name} invading ${c.planet.name}, winner: ${combat.winner}`);
 			this.CheckForCivDeath();
 			this.PresentNextPlayerGroundCombat();
 			}			

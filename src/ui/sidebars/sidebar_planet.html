@@ -32,7 +32,7 @@
 		<div class="phys">
 	
 			<p class="env_label">${planet.gravDisplayName} ${planet.envDisplayName}</p>
-			
+			<p if.bind="planet.owner && !planet.owner.alive" style="color:#D11;font-size:100px;line-height:1em;padding:0;text-align:center">🕱</p>
 			<div class="size">
 				<span class="pop" if.bind="planet.owner">${planet.total_pop|round} / ${planet.maxpop|round}<br/><span class="pop">POPULATION</span></span>
 				<span class="size">${planet.size}<br/><span class="size">SIZE</span></span>

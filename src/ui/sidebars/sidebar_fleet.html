@@ -17,6 +17,8 @@
 			</span>
 			<p if.bind="fleet.ai && app.options.debug">
 				AI: ${fleet.ai.type} =&gt; ${fleet.ai.target.name},	TTL.${fleet.ai.ttl == -1 ? '∞' : fleet.ai.ttl} DL.${fleet.ai.delay}
+				<br/>
+				:: ${fleet.ai.note}
 			</p>
 		</p>
 		

@@ -88,7 +88,6 @@ export default class Galaxy {
 						0.5
 						)
 					}; 
-				console.log( `attractor: (${attractor.x}, ${attractor.y}) x${attractor.s}`);
 				attractors.push( attractor );			
 				}
 			

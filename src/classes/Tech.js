@@ -235,6 +235,11 @@ export let Techs = {
 		desc: '<b>+1 Habitation</b>. Living on alient planets is easy with new pre-fabricated, self-assembling shelters. It\'s still a dismal life, but it\'s one less colony our neighbors will get.',
 		onComplete( civ ) { civ.race.env.habitation += 1; } /* TODO: hibitation tech should not affect the civ's race directly */
 		},
+	HABITATION4: {
+		name: "Ultimate Habitation",
+		desc: '<b>+5 Habitation</b>. Ultimate xeno-engineering technologies mean we can live virtually anywhere in the galaxy.',
+		onComplete( civ ) { civ.race.env.habitation += 5; } /* TODO: hibitation tech should not affect the civ's race directly */
+		},
 		
 	ADAPTATION1: {
 		name: "Basic Terraforming",
@@ -250,6 +255,11 @@ export let Techs = {
 		name: "Superior Terraforming",
 		desc: '<b>+1 Adaptation</b>.',
 		onComplete( civ ) { civ.race.env.adaptation += 1; } /* TODO: hibitation tech should not affect the civ's race directly */
+		},
+	ADAPTATION4: {
+		name: "Ultimate Terraforming",
+		desc: '<b>+2 Adaptation</b>.',
+		onComplete( civ ) { civ.race.env.adaptation += 2; } /* TODO: hibitation tech should not affect the civ's race directly */
 		},
 		
 	XENOCOMM1: {
@@ -435,6 +445,10 @@ export let TechNodes = {
 		rp: 220,
 		requires: ['HABITATION2'], 
 		},
+	HABITATION4: { 
+		rp: 1200,
+		requires: ['HABITATION3'], 
+		},
 		
 	ADAPTATION1: { 
 		rp: 140,
@@ -447,6 +461,10 @@ export let TechNodes = {
 	ADAPTATION3: { 
 		rp: 900,
 		requires: ['ADAPTATION2'], 
+		},
+	ADAPTATION4: { 
+		rp: 1800,
+		requires: ['ADAPTATION3'], 
 		},
 		
 	XENOCOMM1: { 
