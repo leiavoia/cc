@@ -628,11 +628,11 @@ export default class Civ {
 			}
 			
 		this.power_score = Math.round( 
-			  ( planet_score * 10.0 )
-			+ ( ship_score * 0.03 )
+			  ( planet_score * 20.0 )
+			+ ( ship_score * 0.02 )
 			+ ( ground_score * 2.0 )
 			+ ( tech_score * 0.1 )
-			+ ( this.resources.$ * 0.01 )
+			+ ( this.resources.$ * 0.001 )
 			);
 			
 		return this.power_score;

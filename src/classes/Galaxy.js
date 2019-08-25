@@ -10,6 +10,7 @@ export default class Galaxy {
 	fleets = []; // maps to Fleet.all_fleets
 	stars = [];
 	civs = [];
+	historical_civs = []; // for graphs
 	anoms = [];
 	width = 2000;
 	height = 2000;
@@ -296,6 +297,7 @@ export default class Galaxy {
 		for ( let i=0; i < num_civs; i++ ) { 
 			this.civs.push( Civ.Random( difficulty ) );
 			}
+		this.historical_civs = [...this.civs];
 		}
 		
 	AssignHomeWorlds() { 

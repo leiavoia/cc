@@ -260,10 +260,32 @@
 				<br/>
 				
 				<b>Civs: ${app.game.galaxy.civs.length}</b>
+				<br/>
+				<table class="right" style="margin: 0 0 0 0;">	
+					<tr repeat.for="row of app.game.top10civs">
+						<td css="color:#FFF; background-color:${row.civ.color};" click.delegate="app.game.SetMyCiv(row.civ)" class="clickable">${row.civ.name}</td>
+						<td><b>${row.rank}</b></td>
+						<td>${row.score}</td>
+						<td>◉${row.civ.planets.length}</td>
+						<td>⚡${row.civ.ai.total_milval}</td>
+						<td>r${row.civ.ai.strat.risk|round:2}</td>
+						<td>${row.civ.ai.strat.def}</td>
+						<td>${row.civ.ai.strat.zone_remodel}@${row.civ.ai.strat.zone_remodel_freq}</td>
+						<td>${row.pct|percent}%</td>
+						<td><div css="height:8px; width:${row.pct*200}px; background-color: green;"></div></td>
+					</tr>
+				</table>
 				
 			</div>
 	
 		
+			<!-- AI DEBUG CENTER -->
+			<div id="layout_ai_headsup3" class="layout_ai_headsup" if.bind="app.options.debug && !app.main_panel_mode">
+				
+				
+			</div>
+	
+				
 			<!-- AI DEBUG RIGHT -->
 			<div id="layout_ai_headsup" class="layout_ai_headsup" if.bind="app.options.debug && !app.main_panel_mode">
 

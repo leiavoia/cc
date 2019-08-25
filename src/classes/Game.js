@@ -23,7 +23,8 @@ export default class Game {
 	groundcombats = [];
 	victory_recipes = [];	
 	victory_achieved = false;
-		
+	top10civs = []; // for AI / UI fun
+	
 	constructor( app ) {
 		this.app = app;
 		Signals.Listen('anom_complete', data => this.AnomCompleted(data) );
@@ -187,23 +188,23 @@ export default class Game {
 		const galaxy_size = 
 			this.app.options.setup.galaxy_size_randomize
 			? utils.RandomInt(16,this.app.options.setup.galaxy_size)
-			: this.app.options.setup.galaxy_size;
+			: parseInt(this.app.options.setup.galaxy_size);
 		const age = 
 			this.app.options.setup.galaxy_age_randomize
 			? (utils.RandomInt(0,10) / 10).toPrecision(1)
-			: this.app.options.setup.galaxy_age;
+			: parseFloat(this.app.options.setup.galaxy_age);
 		const density = 
 			this.app.options.setup.density_randomize
 			? (utils.RandomInt(0,10) / 10).toPrecision(1)
-			: this.app.options.setup.density;
+			: parseFloat(this.app.options.setup.density);
 		const crazy = 
 			this.app.options.setup.crazy_randomize
 			? (utils.RandomInt(0,10) / 10).toPrecision(1)
-			: this.app.options.setup.crazy;
+			: parseFloat(this.app.options.setup.crazy);
 		const AIs = 
 			this.app.options.setup.AIs_randomize
 			? utils.RandomInt(1,23)
-			: this.app.options.setup.AIs;
+			: parseInt(this.app.options.setup.AIs);
 			
 		// create initial state
 		this.app.ResetEverything();
@@ -398,6 +399,16 @@ export default class Game {
 			for ( let civ of this.galaxy.civs ) { 
 				civ.CalcPowerScore();
 				}
+			this.top10civs = this.galaxy.civs.filter( c => c.alive && !c.race.is_monster && c.power_score > 0 );
+			this.top10civs.sort( (a,b) => b.power_score - a.power_score );
+			this.top10civs = this.top10civs.slice(0,10)
+				.map( (c,i) => { return {
+					civ:c, 
+					score:c.power_score, 
+					rank:(i+1), 
+					pct:(c.power_score / this.top10civs[0].power_score) 
+					};
+				 } );
 			
 			// compile stats
 			for ( let civ of this.galaxy.civs ) { 
@@ -854,11 +865,11 @@ export default class Game {
 	UpdateDiplomaticRelations() { 
 		for ( let c of this.galaxy.civs ) { 
 			if ( c.is_monster ) { continue; } // no monsters 
-			if ( c.dead || !c.planets.length ) { continue; } // no zombies 
+			if ( !c.alive || !c.planets.length ) { continue; } // no zombies 
 			// note that we evaluate treaties (actually two) from each viewpoint
 			for ( let [civ, acct] of c.diplo.contacts.entries() ) { 
 				// no dead civs - TODO ideally move this to a KILL() function
-				if ( civ.dead || !civ.planets.length ) {
+				if ( !c.alive || !civ.planets.length ) {
 					// c.diplo.contacts.delete(civ);
 					continue;
 					} 

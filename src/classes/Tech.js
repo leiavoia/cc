@@ -237,6 +237,11 @@ export let Techs = {
 		desc: '<b>2500 Ship Range</b>. This ultra-advanced Hyperdrive uses predictive hyperspace pathfinding to squeeze every bit of efficiency out of hyperspace travel. In a nutshell, it\'s wicked fast.',
 		onComplete( civ ) { civ.ship_range = 2500; civ.RecalcEmpireBox(); }
 		},
+	SHIPRANGE5: {
+		name: "Ultimate Drive",
+		desc: '<b>5000 Ship Range</b>. It just works.',
+		onComplete( civ ) { civ.ship_range = 5000; civ.RecalcEmpireBox(); }
+		},
 		
 	HABITATION1: {
 		name: "Improved Habitation",
@@ -452,6 +457,10 @@ export let TechNodes = {
 	SHIPRANGE4: { 
 		rp: 2300,
 		requires: ['SHIPRANGE3'], 
+		},
+	SHIPRANGE5: { 
+		rp: 6000,
+		requires: ['SHIPRANGE4'], 
 		},
 		
 	HABITATION1: { 

@@ -30,7 +30,7 @@ export class EconPane {
 	AddTurn( data ) { 
 	    this.chart.data.labels.push(this.chart.data.labels.length+1);
 		let counter = 0;
-		for ( let civ of this.app.game.galaxy.civs ) { 
+		for ( let civ of this.app.game.galaxy.historical_civs ) { 
 			if ( !civ.race.is_monster ) { 
 				if ( this.app.options.see_all || civ == this.app.game.myciv || civ.InRangeOf(this.app.game.myciv) ) { 
 					this.datasets[counter].data.push(
@@ -45,7 +45,7 @@ export class EconPane {
 		
 	BuildDataset() { 
 		this.datasets = [];
-		for ( let civ of this.app.game.galaxy.civs ) { 
+		for ( let civ of this.app.game.galaxy.historical_civs ) { 
 			if ( !civ.race.is_monster ) { 
 				if ( this.app.options.see_all || civ == this.app.game.myciv || civ.InRangeOf(this.app.game.myciv) ) { 
 					this.datasets.push({
