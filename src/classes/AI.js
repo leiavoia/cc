@@ -575,7 +575,7 @@ export class AIDefenseObjective extends AIObjective {
 		// total threat posed by neighboring empires, it tends to vacilate
 		// endlessly. To prevent wild swings, keep track of previous turn's 
 		// threat and average over time.
-		const threat_decay_factor = 5;
+		const threat_decay_factor = 5; // [!]MAGICNUMBER
 		civ.ai.needs.combat_ships = 
 			( ( threat_decay_factor * this.prev_actual_threat ) + civ.ai.actual_threat ) 
 			/ ( threat_decay_factor + 1 )
@@ -657,7 +657,7 @@ export class AIOffenseObjective extends AIObjective {
 		civ.ai.needs.troop_ships = Math.ceil( civ.ai.needs.troop_ships * utils.Clamp( app.game.turn_num / 10, 0, 1 ) );
 		civ.ai.needs.troops = Math.ceil( civ.ai.needs.troops * utils.Clamp( app.game.turn_num / 10, 0, 1 ) );
 		// game so far seems to chronically undervalue troop_ships
-		civ.ai.needs.troop_ships *= 3;
+		civ.ai.needs.troop_ships *= 3; // [!]MAGICNUMBER
 		
 		this.note += `, ${att_missions.length}/${max_missions} missions`;
 		
@@ -975,37 +975,37 @@ export class AIPlanetsObjective extends AIObjective {
 			
 		for ( let p of civ.planets ) { 
 			// Purge unneeded queue items
-			if ( p.prod_q.length > 1 ) { 
-				// skip the one in the first slot because it may be half-built already
-				for ( let i=p.prod_q.length-1; i > 0; i-- ) { 
-					if ( p.prod_q[i].type != 'ship' ) { continue; }
-					// colony ships
-					if ( civ.ai.needs.colony_ships < 0 && p.prod_q[i].obj.role=='colonizer' ) {
-						civ.ai.needs.colony_ships += ( p.prod_q[i].qty == -1 ) ? 1 : p.prod_q[i].qty;
-						p.prod_q.splice(i,1);
-						}
-					// research ships
-					else if ( civ.ai.needs.research_ships < 0 && p.prod_q[i].obj.role=='research' ) {
-						civ.ai.needs.research_ships += ( p.prod_q[i].qty == -1 ) ? 1 : p.prod_q[i].qty;
-						p.prod_q.splice(i,1);
-						}
-					// troop ships
-					else if ( civ.ai.needs.troop_ships < 0 && p.prod_q[i].obj.role=='carrier' ) {
-						civ.ai.needs.troop_ships += ( p.prod_q[i].qty == -1 ) ? 1 : p.prod_q[i].qty;
-						p.prod_q.splice(i,1);
-						}
-					// combat ships (check queue length because combat needs tend to vascillate wildly each turn)
-					else if ( p.prod_q.length > 5 && civ.ai.needs.combat_ships < 0 && p.prod_q[i].obj.role=='combat' ) {
-						civ.ai.needs.combat_ships += ( p.prod_q[i].qty == -1 ) ? 1 : p.prod_q[i].qty;
-						p.prod_q.splice(i,1);
-						}
-					// scout ships
-					else if ( civ.ai.needs.scout_ships < 0 && p.prod_q[i].obj.role=='scout' ) {
-						civ.ai.needs.scout_ships += ( p.prod_q[i].qty == -1 ) ? 1 : p.prod_q[i].qty;
-						p.prod_q.splice(i,1);
-						}
-					}
-				}
+			// if ( p.prod_q.length > 1 ) { 
+			// 	// skip the one in the first slot because it may be half-built already
+			// 	for ( let i=p.prod_q.length-1; i > 0; i-- ) { 
+			// 		if ( p.prod_q[i].type != 'ship' ) { continue; }
+			// 		// colony ships
+			// 		if ( civ.ai.needs.colony_ships < 0 && p.prod_q[i].obj.role=='colonizer' ) {
+			// 			civ.ai.needs.colony_ships += ( p.prod_q[i].qty == -1 ) ? 1 : p.prod_q[i].qty;
+			// 			p.prod_q.splice(i,1);
+			// 			}
+			// 		// research ships
+			// 		else if ( civ.ai.needs.research_ships < 0 && p.prod_q[i].obj.role=='research' ) {
+			// 			civ.ai.needs.research_ships += ( p.prod_q[i].qty == -1 ) ? 1 : p.prod_q[i].qty;
+			// 			p.prod_q.splice(i,1);
+			// 			}
+			// 		// troop ships
+			// 		else if ( civ.ai.needs.troop_ships < 0 && p.prod_q[i].obj.role=='carrier' ) {
+			// 			civ.ai.needs.troop_ships += ( p.prod_q[i].qty == -1 ) ? 1 : p.prod_q[i].qty;
+			// 			p.prod_q.splice(i,1);
+			// 			}
+			// 		// combat ships (check queue length because combat needs tend to vascillate wildly each turn)
+			// 		else if ( p.prod_q.length > 5 && civ.ai.needs.combat_ships < 0 && p.prod_q[i].obj.role=='combat' ) {
+			// 			civ.ai.needs.combat_ships += ( p.prod_q[i].qty == -1 ) ? 1 : p.prod_q[i].qty;
+			// 			p.prod_q.splice(i,1);
+			// 			}
+			// 		// scout ships
+			// 		else if ( civ.ai.needs.scout_ships < 0 && p.prod_q[i].obj.role=='scout' ) {
+			// 			civ.ai.needs.scout_ships += ( p.prod_q[i].qty == -1 ) ? 1 : p.prod_q[i].qty;
+			// 			p.prod_q.splice(i,1);
+			// 			}
+			// 		}
+			// 	}
 
 			// in order to decide what to build here,
 			// we create a custom weighting function based 
@@ -1013,12 +1013,12 @@ export class AIPlanetsObjective extends AIObjective {
 			// to build, if anything at all.
 			
 			// [!]HACK economic training wheels keep civ from spending to death 
-			const ideal_ship_spending_ratio = 0.3;
+			const ideal_ship_spending_ratio = 0.3; // [!]MAGICNUMBER
 			const ship_spending_ratio = ( civ.econ.cat_spending['ships'] || 0 ) / ( civ.resource_income['$'] || 1 );
 			let ship_spending_mod = 1 - ( ship_spending_ratio / ideal_ship_spending_ratio );
 			if ( p.output_rec.ship <= 0 || ship_spending_mod < 0 ) { ship_spending_mod = 0; }
 			
-			const ideal_troop_spending_ratio = 0.15;
+			const ideal_troop_spending_ratio = 0.15; // [!]MAGICNUMBER
 			const troop_spending_ratio = ( civ.econ.cat_spending['troops'] || 0 ) / ( civ.resource_income['$'] || 1 );
 			let troop_spending_mod = 1 - ( troop_spending_ratio / ideal_troop_spending_ratio );
 			if ( p.output_rec.def <= 0 || troop_spending_mod < 0 ) { troop_spending_mod = 0; }
@@ -1028,21 +1028,18 @@ export class AIPlanetsObjective extends AIObjective {
 			let RollForBuildItem = () => { 
 				let weights = [
 					['colony_ships', ship_spending_mod * civ.ai.needs.colony_ships ],
-					['combat_ships', ship_spending_mod * (civ.ai.needs.combat_ships / avg_milval) ],
+					['combat_ships', ship_spending_mod * Math.min(10,civ.ai.needs.combat_ships / avg_milval) ],
 					['troop_ships', (troop_spending_mod + ship_spending_mod) * 0.5 * civ.ai.needs.troop_ships * 3 ],
 					['research_ships', ship_spending_mod * civ.ai.needs.research_ships ],
 					['scout_ships', ship_spending_mod * civ.ai.needs.scout_ships ],
 					['troops', troop_spending_mod * civ.ai.needs.troops ],
-// 					['tech', 1.0 * civ.ai.needs.tech ],
-// 					['cash', 1.0 * civ.ai.needs.cash ],
 					]
 					.filter( i => i[1] > 0 );
 				let picker = new RandomPicker(weights);
 				return picker.Pick();
 				};
 				
-			
-			if ( p.prod_q.length < 4 ) { // dont overload the queue
+			if ( p.prod_q.length <= 2 ) { // dont overload the queue
 				let thing_to_build = RollForBuildItem();
 				if ( thing_to_build ) { 
 					switch ( thing_to_build ) {

@@ -22,7 +22,7 @@ export const ShipComponentList = {
 			new Mod( 'mass', '*', 2.0, '', null ),
 			],
 		scaled: true,
-		cost: { labor:0.2, m:0.1 }
+		cost: { labor:0.1, m:0.1 }
 		},
 	ENGINE2: {
 		name: 'Stellar Folder',
@@ -33,7 +33,7 @@ export const ShipComponentList = {
 			new Mod( 'mass', '*', 1.4, '', null ),
 			],
 		scaled: true,
-		cost: { labor:0.2, m:0.1, r:0.3 }
+		cost: { labor:0.1, m:0.1, r:0.3 }
 		},
 	ARMOR1: {
 		name: 'Composite Armor',
@@ -44,7 +44,7 @@ export const ShipComponentList = {
 			new Mod( 'mass', '*', 1.5, '', null ),
 			],
 		scaled: true,
-		cost: { labor:0.1, s:0.2 }
+		cost: { labor:0.05, s:0.2 }
 		},
 	ARMOR2: {
 		name: 'Ooblek Armor',
@@ -55,7 +55,7 @@ export const ShipComponentList = {
 			new Mod( 'mass', '*', 1.4, '', null ),
 			],
 		scaled: true,
-		cost: { labor:0.1, o:0.2, s:0.2 }
+		cost: { labor:0.05, o:0.2, s:0.2 }
 		},
 	SHIELD1: {
 		name: 'Force Shield',
@@ -66,7 +66,7 @@ export const ShipComponentList = {
 			new Mod( 'mass', '*', 1.1, '', null ),
 			],
 		scaled: true,
-		cost: { labor:0.1, r:0.1 }
+		cost: { labor:0.05, r:0.1 }
 		},
 	SHIELD2: {
 		name: 'Deflectors',
@@ -77,7 +77,7 @@ export const ShipComponentList = {
 			new Mod( 'mass', '*', 1.1, '', null ),
 			],
 		scaled: true,
-		cost: { labor:0.2, m:0.1, g:0.1 }
+		cost: { labor:0.1, m:0.1, g:0.1 }
 		},
 	BEAMAMP: {
 		name: 'Beam Amplifier',
@@ -88,7 +88,7 @@ export const ShipComponentList = {
 			new Mod( 'mass', '*', 1.1, '', null ),
 			],
 		scaled: true,
-		cost: { labor:0.1, o:0.2, m:0.1 }
+		cost: { labor:0.05, o:0.2, m:0.1 }
 		},
 	COLONY1: {
 		name: 'Colony Module',
@@ -97,7 +97,7 @@ export const ShipComponentList = {
 			new Mod( 'colonize', 'H', 1, '', null ),
 			new Mod( 'mass', '+', 200, '', null ),
 			],
-		cost: { labor:200, o:50, s:50, m:50 }
+		cost: { labor:100, o:50, s:50, m:50 }
 		},
 	CARRIER1: {
 		name: 'Troop Carrier Module',
@@ -106,7 +106,7 @@ export const ShipComponentList = {
 			new Mod( 'troopcap', 'H', 2, '', null ),
 			new Mod( 'mass', '+', 80, '', null ),
 			],
-		cost: { labor:100, o:1, m:25 }
+		cost: { labor:50, o:1, m:25 }
 		},
 	CARRIER2: {
 		name: 'Heavy Troop Carrier Module',
@@ -115,7 +115,7 @@ export const ShipComponentList = {
 			new Mod( 'troopcap', 'H', 4, '', null ),
 			new Mod( 'mass', '+', 150, '', null ),
 			],
-		cost: { labor:150, o:15, m:45 }
+		cost: { labor:75, o:15, m:45 }
 		},
 	RESEARCHLAB1: {
 		name: 'Space Lab',
@@ -124,7 +124,7 @@ export const ShipComponentList = {
 			new Mod( 'research', '+', 100, '', null ),
 			new Mod( 'mass', '+', 100, '', null ),
 			],
-		cost: { labor:50, o:20, s:20, m:5 }
+		cost: { labor:30, o:20, s:20, m:5 }
 		}
 	};
 	

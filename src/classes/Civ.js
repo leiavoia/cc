@@ -570,8 +570,9 @@ export default class Civ {
 		for ( let k in civ.ai.strat.ideal_zoning ) { ideal_zone_total += civ.ai.strat.ideal_zoning[k]; }
 		for ( let k in civ.ai.strat.ideal_zoning ) { civ.ai.strat.ideal_zoning[k] /= ideal_zone_total; }
 		// zone remodeling
-		civ.ai.strat.zone_remodel_freq = utils.BiasedRandInt(10, 30, 20, 0.5);
-		civ.ai.strat.zone_remodel= 'recycle'; // ['recycle','wipe','rand','semirand'][ utils.RandomInt(0,2) ]; // strategy for remodeling [wipe,rand,semirand,recycle,smart]
+		civ.ai.strat.zone_remodel_freq = utils.BiasedRandInt(15, 40, 30, 0.5);
+		civ.ai.strat.zone_remodel = 'recycle'; // strategy for remodeling [wipe,rand,semirand,recycle,smart]
+		civ.ai.strat.zone_remodel = ['recycle','wipe','rand','semirand'][ utils.RandomInt(0,3) ]; 
 		civ.ai.strat.zone_remodel_rand_chance = utils.BiasedRand(0.1, 0.7, 0.35, 0.75);
 		return civ;
 		}
