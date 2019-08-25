@@ -1226,12 +1226,12 @@ export class AIPlanetsObjective extends AIObjective {
 		let zones_avail = p.owner.avail_zones.filter( z => {
 			for ( let k in z.inputs ) {
 				let income = p.owner.resource_income[k] - p.owner.resource_spent[k];
-				if ( k != '$' && p.owner.resources[k] <= 0 
-					|| ( income < -1 && ( p.owner.resources[k] / -income < 10 ) ) ) { return false; }
+				if ( ( k != '$' && p.owner.resources[k] <= 0 ) 
+					|| p.owner.resource_supply[k] < 1.0 // already struggling to meet demand
+					) { return false; }
 				}	
 			return true;
 			} );
-		
 		while ( p.zoned < p.size ) { 
 			let starting_size = p.zoned; // while-loop safety net
 			// the zone suggester will indicate what general type of zone we should build next
