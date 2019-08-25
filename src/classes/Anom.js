@@ -1,7 +1,5 @@
-// import Civ from './Civ';
 import * as utils from '../util/utils';
-// import * as Signals from '../util/signals';
-
+import {Mod} from './Mods';
 
 export default class Anom {
 	
@@ -149,7 +147,8 @@ let anom_list = [
 		onComplete: function (fleet) {
 			this.name = 'Hyperspace Wrinkle';
 			let amount = Math.random() > 0.5 ? 50 : 100;
-			fleet.owner.ship_speed += amount;
+			fleet.owner.mods.Add( new Mod('speed', '+', amount, this.name) );
+			fleet.owner.fleets.forEach( f => f.ReevaluateStats() );
 			this.post_desc = this.post_desc.replace('{AMOUNT}',amount);
 			}
 		},

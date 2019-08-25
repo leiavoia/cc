@@ -46,7 +46,7 @@ export default class Civ {
 	victory_ingredients = []; // list of VictoryIngredient objects
 	
 	ship_range = 750; // px
-	ship_speed = 200; // HACK
+	max_ship_speed = 200; // for AI
 	ship_blueprints = [];
 	groundunit_blueprints = [];
 	max_hull_size = 800; // HACK HARDSET FOR DEVELOPMENT

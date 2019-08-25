@@ -2,6 +2,7 @@
 import {WeaponList} from './WeaponList';
 import {ZoneList} from './Zones';
 import {ShipComponentList} from './ShipComponentList';
+import {Mod} from './Mods';
 
 export let Techs = {
 	
@@ -183,20 +184,37 @@ export let Techs = {
 	
 	
 	
-	SHIPSPEED1: {
-		name: "Warp Booster",
-		desc: '<b>+200 Ship Speed</b>. Makes ships go faster.',
-		onComplete( civ ) { civ.ship_speed += 75; }
+	FLEETSPEED1: {
+		name: "Fleet Warp Bubble",
+		desc: '<b>+50 Ship Speed</b>. Makes all ships go faster.',
+		onComplete( civ ) { 
+			civ.mods.Add( new Mod('speed', '+', 50, this.name) );
+			civ.fleets.forEach( f => f.ReevaluateStats() );
+			}
 		},
-	SHIPSPEED2: {
-		name: "Warp Blaster",
-		desc: '<b>+300 Ship Speed</b>. Makes ships go way faster.',
-		onComplete( civ ) { civ.ship_speed += 100; }
+	FLEETSPEED2: {
+		name: "Fleet Warp Booster",
+		desc: '<b>+100 Ship Speed</b>. Makes all ships go even faster.',
+		onComplete( civ ) { 
+			civ.mods.Add( new Mod('speed', '+', 100, this.name) );
+			civ.fleets.forEach( f => f.ReevaluateStats() );
+			}
 		},
-	SHIPSPEED3: {
-		name: "HyperBlaster",
-		desc: '<b>+400 Ship Speed</b>. Makes ships go screaming fast.',
-		onComplete( civ ) { civ.ship_speed += 125; }
+	FLEETSPEED3: {
+		name: "Fleet HyperWarp",
+		desc: '<b>+200 Ship Speed</b>. Makes all ships go screaming fast.',
+		onComplete( civ ) { 
+			civ.mods.Add( new Mod('speed', '+', 200, this.name) );
+			civ.fleets.forEach( f => f.ReevaluateStats() );
+			}
+		},
+	FLEETSPEED4: {
+		name: "Fleet MegaWarp",
+		desc: '<b>+350 Ship Speed</b>. Makes all ships go like a flying mammal out of the underworld.',
+		onComplete( civ ) { 
+			civ.mods.Add( new Mod('speed', '+', 350, this.name) );
+			civ.fleets.forEach( f => f.ReevaluateStats() );
+			}
 		},
 		
 	SHIPRANGE1: {
@@ -402,38 +420,42 @@ export let TechNodes = {
 					
 	// SHIP ENGINES --------------\/-------------
 	
-	SHIPSPEED1: { 
-		rp: 5,
+	FLEETSPEED1: { 
+		rp: 50,
 		requires: [], 
 		},
-	SHIPSPEED2: { 
-		rp: 50,
-		requires: ['SHIPSPEED1'], 
+	FLEETSPEED2: { 
+		rp: 300,
+		requires: ['FLEETSPEED1'], 
 		},
-	SHIPSPEED3: { 
-		rp: 100,
-		requires: ['SHIPSPEED2','SHIPRANGE3'], 
+	FLEETSPEED3: { 
+		rp: 1000,
+		requires: ['FLEETSPEED2','SHIPRANGE3'], 
+		},
+	FLEETSPEED4: { 
+		rp: 2000,
+		requires: ['FLEETSPEED3','SHIPRANGE3'], 
 		},
 
 	SHIPRANGE1: { 
-		rp: 4,
+		rp: 40,
 		requires: [], 
 		},
 	SHIPRANGE2: { 
-		rp: 40,
+		rp: 400,
 		requires: ['SHIPRANGE1'], 
 		},
 	SHIPRANGE3: { 
-		rp: 150,
+		rp: 1050,
 		requires: ['SHIPRANGE2'], 
 		},
 	SHIPRANGE4: { 
-		rp: 300,
+		rp: 2300,
 		requires: ['SHIPRANGE3'], 
 		},
 		
 	HABITATION1: { 
-		rp: 20,
+		rp: 30,
 		requires: [], 
 		},
 	HABITATION2: { 

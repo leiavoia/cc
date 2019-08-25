@@ -278,7 +278,7 @@ export default class Game {
 // 			console.time('Planetary Econ');
 			for ( let s of this.galaxy.stars ) { 
 				for ( let p of s.planets ) {
-					if ( p.settled ) {  					
+					if ( p.owner ) {  					
 						// HACK zone production; TODO: MOVE THIS TO planet.js
 						for ( let k in p.acct_total ) { p.acct_total[k] = 0; }
 						for ( let k in p.output_rec ) { p.output_rec[k] = 0; }

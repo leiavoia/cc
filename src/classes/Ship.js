@@ -44,7 +44,7 @@ export class Ship {
 		if ( !weapon.shotsleft || !target || !target.hull ) { return null; }
 		let log = { ship:this, target:target, weapon:weapon, hull:0, armor:0, shield:0, missed:false, killed:false };
 		// chance to hit: 
-		let to_hit = weapon.accu - ( target.bp.drive / 10 );
+		let to_hit = weapon.accu - ( target.bp.combatspeed / 10 );
 		if ( to_hit < 0 ) { to_hit = 0; }
 		if ( Math.random() <= to_hit ) { 
 			// damage roll
@@ -116,9 +116,9 @@ export class ShipBlueprint {
 		this.hull = 1;
 		this.armor = 1;
 		this.shield = 0;
-		this.drive = 1;
+		this.combatspeed = 1;
 		this.img = 'img/ships/ship1_mock.png';
-		this.speed = 100; // [!]HACK see: owner.ship_speed
+		this.speed = 100;
 		this.mods = new Modlist; // value modifiers, often from components
 		this.cost = {}; // calculated from individual components
 		this.colonize = false;
@@ -238,7 +238,7 @@ export class ShipBlueprint {
 		
 		this.armor = Math.floor( this.mods.Apply( this.hull, 'armor', null ) ) - this.hull;
 		this.shield = Math.floor( this.mods.Apply( 0, 'shield', parent ) );
-		this.drive = Math.floor( this.mods.Apply( 1, 'drive', parent ) );
+		this.combatspeed = Math.floor( this.mods.Apply( 1, 'combatspeed', parent ) );
 		this.speed = Math.floor( this.mods.Apply( 100, 'speed', parent ) );
 		this.colonize = Math.floor( this.mods.Apply( 0, 'colonize', parent ) );
 		this.research = Math.floor( this.mods.Apply( 0, 'research', parent ) ); 

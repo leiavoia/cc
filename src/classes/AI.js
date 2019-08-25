@@ -250,6 +250,8 @@ export class AIAnalyzeObjective extends AIObjective {
 			acct.ai.threat_norm = 0;
 			acct.ai.def_priority = 0;
 			}
+		// recalc max ship speed to assist other AI heuristics
+		for ( let f of civ.fleets ) { if ( f.speed > civ.max_ship_speed ) civ.max_ship_speed = f.speed; }
 		// make a list of star systems while we're doing civ
 		let starsystems = [];
 		// evaluate values and threats
@@ -287,7 +289,7 @@ export class AIAnalyzeObjective extends AIObjective {
 						if ( f.killme || f.mission || (!f.fp && !f.troops) ) { continue; }
 						let is_a_threat = false;
 						let fastrange = 1; // use later
-						let scanrange = civ.ship_speed * civ.ship_speed * 3.5 * 3.5;
+						let scanrange = civ.max_ship_speed * civ.max_ship_speed * 3.5 * 3.5;
 						// fleets en route - use their destination
 						if ( f.dest ) { 
 							// WARNING: we are assuming no subspace communications can reroute fleets in transit
@@ -374,7 +376,7 @@ export class AIMaintainStagingPtsObjective extends AIObjective {
 		const area_per_point = 3 * 2 * 400 * 400;
 		const turn_radius = 3;
 		const stars = civ.MyStars();
-		const pt_range = ( civ.ship_speed * turn_radius ) * ( civ.ship_speed * turn_radius ); // note: presquared for speed
+		const pt_range = ( civ.max_ship_speed * turn_radius ) * ( civ.max_ship_speed * turn_radius ); // note: presquared for speed
 		// note: empire box factors in ship_range, so we need to subtract this area 
 		const empire_w = ( civ.empire_box.x2 - civ.empire_box.x1 ) - ( civ.ship_range * 2 );
 		const empire_h = ( civ.empire_box.y2 - civ.empire_box.y1 ) - ( civ.ship_range * 2 );
@@ -748,7 +750,7 @@ export class AIOffenseObjective extends AIObjective {
 				// no duplicate missions
 				let dups = civ.ai.QueryObjectives( 'invade', p );
 				if ( dups.length ) { continue; }
-				const ttl = utils.Clamp( Math.ceil( (civ.empire_box.x2 - civ.empire_box.x1 ) / civ.ship_speed )+2, 6, 25 );
+				const ttl = utils.Clamp( Math.ceil( (civ.empire_box.x2 - civ.empire_box.x1 ) / civ.max_ship_speed )+2, 6, 25 );
 				const m = new AIInvadeObjective( p, null, ttl, 0 );
 				// chain into Guard mission if planet acquired
 				m.onSuccess = () => {
@@ -781,7 +783,7 @@ export class AIOffenseObjective extends AIObjective {
 					let dest = ClosestStarTo( f.star.xpos, f.star.ypos, troop_stars, true );
 					if ( dest != f.star ) { 
 						let newfleet = f.Split( ships, dest ); 
-						const ttl = utils.Clamp( Math.ceil( (civ.empire_box.x2 - civ.empire_box.x1 ) / civ.ship_speed )+2, 6, 25 );
+						const ttl = utils.Clamp( Math.ceil( (civ.empire_box.x2 - civ.empire_box.x1 ) / civ.max_ship_speed )+2, 6, 25 );
 						const m = new AIPickupTroopsObjective( dest, newfleet, ttl, 0 );
 						civ.ai.objectives.push(m);
 						m.Evaluate(app,civ); // this activates it
