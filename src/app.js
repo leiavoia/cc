@@ -249,7 +249,7 @@ export class App {
 	// onclick: callback function. optional.
 	AddNote( type, title = null, content = null , onclick = null ) {
 		// notes can be totally disabled
-		if ( this.options.notify === false ) { return; }
+		if ( this.options.notify === false || this.options.soak ) { return; }
 		this.notes.push({ type:type, title:title, content:content, onclick:onclick });
 		}
 	// removes the note by default. executes onclick callback if set.

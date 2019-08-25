@@ -202,21 +202,21 @@
 				<table class="right" style="margin: 0 0 0 0;">
 					<tr>
 						<th></th>
+						<td>Has</td>
 						<td>In</td>
 						<td>Out</td>
 						<td>+/-</td>
 						<td>%</td>
-						<td>Has</td>
 						<td>Est</td>
 						<td>Rat</td>
 					</tr>				
 					<tr repeat.for="k of app.game.myciv.resource_income|props">
 						<th>${k|uppercase}&nbsp;</th>
+						<td class="${app.game.myciv.resources[k] < 1 && app.game.myciv.resource_spent[k] > 0 ? 'hilite' : ''}">${app.game.myciv.resources[k]|round}</td>
 						<td>${app.game.myciv.resource_income[k]|round}</td>
 						<td>${app.game.myciv.resource_spent[k]|round}</td>
 						<td class="${app.game.myciv.resource_income[k] - app.game.myciv.resource_spent[k] < -0.001 ? 'hilite' : ''}">${app.game.myciv.resource_income[k] - app.game.myciv.resource_spent[k]|round}</td>
 						<td>${(app.game.myciv.resource_income[k] && app.game.myciv.resource_spent[k] ? (app.game.myciv.resource_income[k] / app.game.myciv.resource_spent[k]) : 1)|round:2}</td>
-						<td class="${app.game.myciv.resources[k] < 1 && app.game.myciv.resource_spent[k] > 0 ? 'hilite' : ''}">${app.game.myciv.resources[k]|round}</td>
 						<td>${app.game.myciv.resource_estm[k]|round}</td>
 						<td class="${app.game.myciv.resource_supply[k] < 10 && app.game.myciv.resource_supply[k] !== 1 ? 'hilite' : ''}">${app.game.myciv.resource_supply[k]|round:2}</td>
 					</tr>
