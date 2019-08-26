@@ -227,6 +227,11 @@ export class AIMainObjective extends AIObjective {
 
 
 // ANALYZE - This measures all the things so we can do other work later
+//
+// TODO: Eventually we need to remove some of the basic stat-tracking code found here.
+// The player does not run this AI function. Other civs need data on the player
+// to make comparison s. (milval, total_troops, etc) 
+//
 export class AIAnalyzeObjective extends AIObjective { 	
 	type = 'analyze';
 	priority = 1;

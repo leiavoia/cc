@@ -312,7 +312,9 @@ export default class Game {
 			if ( this.app.options.ai ) { 
 // 				console.time('AI');
 				for ( let civ of this.galaxy.civs ) { 
-					civ.TurnAI( this.app );
+					if ( !civ.is_player || this.app.options.soak ) { 
+						civ.TurnAI( this.app );
+						}
 					}
 // 				console.timeEnd('AI');
 				}
