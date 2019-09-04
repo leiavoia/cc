@@ -389,26 +389,26 @@ export default class Fleet {
 		if ( contact && contact.treaties.has('ALLIANCE') ) { return false; }		
 		// at war
 		if ( contact && contact.treaties.has('WAR') ) {
-			return this.fp_remaining > fleet.fp_remaining;
+			return this.fp_remaining >= fleet.fp_remaining;
 			}
 		// if we are neither at war nor peace, decide if we need to act in self defense.
 		const our_turf = 'planets' in this.star && this.star.planets.filter( p => p == this.owner ).length > 0;
 		const their_turf = 'planets' in this.star && this.star.planets.filter( p => p == fleet.owner ).length > 0;
 		// self defense 
 		if ( our_turf && !their_turf && ( !contact || contact.lovenub < (this.owner.ai.strat.posture * 0.5) ) ) {
-			return this.fp_remaining > fleet.fp_remaining * ( 1.5 - this.owner.ai.strat.risk );
+			return this.fp_remaining >= fleet.fp_remaining * ( 1.5 - this.owner.ai.strat.risk );
 			}
 		// outland skirmish
 		else if ( !our_turf && !their_turf && ( !contact || contact.lovenub < (this.owner.ai.strat.posture * 0.3) ) ) {
-			return this.fp_remaining > fleet.fp_remaining + ( fleet.fp_remaining * this.owner.ai.strat.risk );
+			return this.fp_remaining >= fleet.fp_remaining + ( fleet.fp_remaining * this.owner.ai.strat.risk );
 			}
 		// people we don't like much anyway
 		else if ( !contact || contact.lovenub < (this.owner.ai.strat.posture * 0.2) ) {
-			return this.fp_remaining > fleet.fp_remaining + ( fleet.fp_remaining * this.owner.ai.strat.risk );
+			return this.fp_remaining >= fleet.fp_remaining + ( fleet.fp_remaining * this.owner.ai.strat.risk );
 			}
 		// *shrug* just felt like punching somebody
 		else if ( Math.random() > 0.5 ) {
-			return this.fp_remaining > fleet.fp_remaining + ( fleet.fp_remaining * this.owner.ai.strat.risk );
+			return this.fp_remaining >= fleet.fp_remaining + ( fleet.fp_remaining * this.owner.ai.strat.risk );
 			}
     	}
 	    
