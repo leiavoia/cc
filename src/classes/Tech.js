@@ -33,157 +33,7 @@ export let Techs = {
 				];			
 			}
 		},		
-		
-	// ZONES ---------\/-----------------------------
-	
-	ZONE_HOUSING0A: {
-		name: ZoneList.HOUSING0A.name,
-		desc: ZoneList.HOUSING0A.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.HOUSING0A); }
-		},
-	ZONE_HOUSING0B: {
-		name: ZoneList.HOUSING0B.name,
-		desc: ZoneList.HOUSING0B.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.HOUSING0B); }
-		},
-	ZONE_HOUSING1A: {
-		name: ZoneList.HOUSING1A.name,
-		desc: ZoneList.HOUSING1A.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.HOUSING1A); }
-		},
-	ZONE_HOUSING1B: {
-		name: ZoneList.HOUSING1B.name,
-		desc: ZoneList.HOUSING1B.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.HOUSING1B); }
-		},
-	ZONE_HOUSING2A: {
-		name: ZoneList.HOUSING2A.name,
-		desc: ZoneList.HOUSING2A.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.HOUSING2A); }
-		},
-	ZONE_HOUSING2B: {
-		name: ZoneList.HOUSING2B.name,
-		desc: ZoneList.HOUSING2B.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.HOUSING2B); }
-		},
-	ZONE_HOUSING3A: {
-		name: ZoneList.HOUSING3A.name,
-		desc: ZoneList.HOUSING3A.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.HOUSING3A); }
-		},
-	ZONE_HOUSING3B: {
-		name: ZoneList.HOUSING3B.name,
-		desc: ZoneList.HOUSING3B.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.HOUSING3B); }
-		},
-	ZONE_HOUSING4A: {
-		name: ZoneList.HOUSING4A.name,
-		desc: ZoneList.HOUSING4A.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.HOUSING4A); }
-		},
-		
-	ZONE_MINE0A: {
-		name: ZoneList.MINE0A.name,
-		desc: ZoneList.MINE0A.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.MINE0A); }
-		},
-	ZONE_MINE0B: {
-		name: ZoneList.MINE0B.name,
-		desc: ZoneList.MINE0B.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.MINE0B); }
-		},
-	ZONE_MINE0C: {
-		name: ZoneList.MINE0C.name,
-		desc: ZoneList.MINE0C.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.MINE0C); }
-		},
-	ZONE_MINE1A: {
-		name: ZoneList.MINE1A.name,
-		desc: ZoneList.MINE1A.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.MINE1A); }
-		},
-	ZONE_MINE1B: {
-		name: ZoneList.MINE1B.name,
-		desc: ZoneList.MINE1B.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.MINE1B); }
-		},
-	ZONE_MINE1C: {
-		name: ZoneList.MINE1C.name,
-		desc: ZoneList.MINE1C.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.MINE1C); }
-		},
-	ZONE_MINE2A: {
-		name: ZoneList.MINE2A.name,
-		desc: ZoneList.MINE2A.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.MINE2A); }
-		},
-	ZONE_MINE2B: {
-		name: ZoneList.MINE2B.name,
-		desc: ZoneList.MINE2B.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.MINE2B); }
-		},
-	ZONE_MINE2C: {
-		name: ZoneList.MINE2C.name,
-		desc: ZoneList.MINE2C.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.MINE2C); }
-		},
-		
-	ZONE_RES0: {
-		name: ZoneList.RES0.name,
-		desc: ZoneList.RES0.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.RES0); }
-		},
-	ZONE_RES1: {
-		name: ZoneList.RES1.name,
-		desc: ZoneList.RES1.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.RES1); }
-		},
-	ZONE_RES2: {
-		name: ZoneList.RES2.name,
-		desc: ZoneList.RES2.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.RES2); }
-		},
-	ZONE_RES3: {
-		name: ZoneList.RES3.name,
-		desc: ZoneList.RES3.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.RES3); }
-		},
-	
-	ZONE_ECON0: {
-		name: ZoneList.ECON0.name,
-		desc: ZoneList.ECON0.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.ECON0); }
-		},
-	
-	ZONE_SHIP0: {
-		name: ZoneList.SHIP0.name,
-		desc: ZoneList.SHIP0.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.SHIP0); }
-		},
-	ZONE_SHIP1: {
-		name: ZoneList.SHIP1.name,
-		desc: ZoneList.SHIP1.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.SHIP1); }
-		},
-	ZONE_SHIP2: {
-		name: ZoneList.SHIP2.name,
-		desc: ZoneList.SHIP2.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.SHIP2); }
-		},
-	ZONE_SHIP3: {
-		name: ZoneList.SHIP3.name,
-		desc: ZoneList.SHIP3.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.SHIP3); }
-		},
-	ZONE_SHIP4: {
-		name: ZoneList.SHIP4.name,
-		desc: ZoneList.SHIP4.desc,
-		onComplete( civ ) { civ.AddAvailZoneType(ZoneList.SHIP4); }
-		},		
 
-	
-	
-	
 	FLEETSPEED1: {
 		name: "Fleet Warp Bubble",
 		desc: '<b>+50 Ship Speed</b>. Makes all ships go faster.',
@@ -323,6 +173,24 @@ export let Techs = {
 		}
 
 	};
+	
+// bulk generate the weapon techs
+for ( let k of Object.keys(WeaponList) ) { 
+	Techs[k] = {
+		name: WeaponList[k].name,
+		desc: WeaponList[k].desc,
+		onComplete( civ ) { civ.avail_ship_weapons.push( WeaponList[k] ); }
+		};
+	}
+	
+// bulk generate zones
+for ( let k of Object.keys(ZoneList) ) { 
+	Techs['ZONE_' + k] = {
+		name: ZoneList[k].name,
+		desc: ZoneList[k].desc,
+		onComplete( civ ) { civ.AddAvailZoneType(ZoneList[k]); }
+		};
+	}
 	
 export let TechNodes = {
 	
