@@ -24,10 +24,8 @@ export class PlayState {
 	xtreme_zoom = false;
 	caret = { obj: null, x: 0, y: 0, class: null };
 
-	constructor( app /*anim*/ ) {
+	constructor( app ) {
 		this.app = app;
-// 		this.anim = anim;
-// 		this.app.state_obj = this;
 		}
 
 	unattach() { 
@@ -35,7 +33,7 @@ export class PlayState {
 		this.app.game = null;
 		this.current_scale = 1.0;
 		document.body.className = document.body.className.replace('xtreme_zoom');
-		xtreme_zoom = false;
+		this.xtreme_zoom = false;
 		}
 	
 	SetCaret( obj ) { 
@@ -268,20 +266,18 @@ export class PlayState {
 		
 	/* this executes when DOM is ready */
 	attached () {
-		//
-		// NOTE: the app only needs to do this once at startup.
-		// The events seem to persist even when we transition to 
-		// the startup screen. Happy accident.
-		//
-		if ( !PlayState.dragscroll_init ) {
+	
+		this.current_scale = 1.0;
+		this.xtreme_zoom = false;
+		document.body.className = document.body.className.replace('xtreme_zoom');
 		
-			// make annoying context menu go away
-			document.addEventListener('contextmenu', function(e) {
-    				e.preventDefault();
-    				return false;
-				},false);
-				
-			// right click makes sidebars go away
+		// make annoying context menu go away
+		document.addEventListener('contextmenu', function(e) {
+			e.preventDefault();
+			return false;
+			},false);
+			
+		// right click makes sidebars go away
 // 			document.addEventListener('click', e => {
 //     				if ( e.button == 2 ) { 
 // 					e.preventDefault();
@@ -289,105 +285,102 @@ export class PlayState {
 //     					}
 // 				});
 
-			/* setup dragable map -- code imported directly from dragscroll.js */
-	// 		!function(e,n){"function"==typeof define&&define.amd?define(["exports"],n):n("undefined"!=typeof exports?exports:e.dragscroll={})}(this,function(e){var n=window,t=document,o="mousemove",l="mouseup",i="mousedown",c="EventListener",r="add"+c,m="remove"+c,d=[],s=function(e,c){for(e=0;e<d.length;)c=d[e++],c=c.container||c,c[m](i,c.md,0),n[m](l,c.mu,0),n[m](o,c.mm,0);for(d=[].slice.call(t.getElementsByClassName("dragscroll")),e=0;e<d.length;)!function(e,c,m,d,s,a){(a=e.container||e)[r](i,a.md=function(n){e.hasAttribute("nochilddrag")&&t.elementFromPoint(n.pageX,n.pageY)!=a||(d=1,c=n.clientX,m=n.clientY,n.preventDefault())},0),n[r](l,a.mu=function(){d=0},0),n[r](o,a.mm=function(n){d&&((s=e.scroller||e).scrollLeft-=-c+(c=n.clientX),s.scrollTop-=-m+(m=n.clientY))},0)}(d[e++])};"complete"==t.readyState?s():n[r]("load",s,0),e.reset=s});
-			(function (root, factory) {
-				factory((root.dragscroll = {}))
-				}(this, function (exports) {
-				var _window = window;
-				var _document = document;
-				var mousemove = 'mousemove';
-				var mouseup = 'mouseup';
-				var mousedown = 'mousedown';
-				var EventListener = 'EventListener';
-				var addEventListener = 'add'+EventListener;
-				var removeEventListener = 'remove'+EventListener;
+		/* setup dragable map -- code imported directly from dragscroll.js */
+// 		!function(e,n){"function"==typeof define&&define.amd?define(["exports"],n):n("undefined"!=typeof exports?exports:e.dragscroll={})}(this,function(e){var n=window,t=document,o="mousemove",l="mouseup",i="mousedown",c="EventListener",r="add"+c,m="remove"+c,d=[],s=function(e,c){for(e=0;e<d.length;)c=d[e++],c=c.container||c,c[m](i,c.md,0),n[m](l,c.mu,0),n[m](o,c.mm,0);for(d=[].slice.call(t.getElementsByClassName("dragscroll")),e=0;e<d.length;)!function(e,c,m,d,s,a){(a=e.container||e)[r](i,a.md=function(n){e.hasAttribute("nochilddrag")&&t.elementFromPoint(n.pageX,n.pageY)!=a||(d=1,c=n.clientX,m=n.clientY,n.preventDefault())},0),n[r](l,a.mu=function(){d=0},0),n[r](o,a.mm=function(n){d&&((s=e.scroller||e).scrollLeft-=-c+(c=n.clientX),s.scrollTop-=-m+(m=n.clientY))},0)}(d[e++])};"complete"==t.readyState?s():n[r]("load",s,0),e.reset=s});
+		(function (root, factory) {
+			factory((root.dragscroll = {}))
+			}(this, function (exports) {
+			var _window = window;
+			var _document = document;
+			var mousemove = 'mousemove';
+			var mouseup = 'mouseup';
+			var mousedown = 'mousedown';
+			var EventListener = 'EventListener';
+			var addEventListener = 'add'+EventListener;
+			var removeEventListener = 'remove'+EventListener;
 
-				var dragged = [];
-				let i = 0;
-				let el = null;
-			
-				for (i = 0; i < dragged.length;) {
-					el = dragged[i++];
-					el = el.container || el;
-					el[removeEventListener](mousedown, el.md, 0);
-					_window[removeEventListener](mouseup, el.mu, 0);
-					_window[removeEventListener](mousemove, el.mm, 0);
-				}
-
-				// cloning into array since HTMLCollection is updated dynamically
-				dragged = [].slice.call(_document.getElementsByClassName('dragscroll'));
-				for (i = 0; i < dragged.length;) {
-					(function(el, lastClientX, lastClientY, pushed, scroller, cont){
-						(cont = el.container || el)[addEventListener](
-							mousedown,
-							cont.md = function(e) {
-								if (!el.hasAttribute('nochilddrag') ||
-									_document.elementFromPoint(
-										e.pageX, e.pageY
-									) == cont
-								) {
-									pushed = 1;
-									lastClientX = e.clientX;
-									lastClientY = e.clientY;
-
-									e.stopPropagation();
-									e.preventDefault();
-								}
-							}, 0
-						);
-
-						_window[addEventListener](
-							mouseup, cont.mu = function(e) { pushed = 0;}, 0
-						);
-
-						_window[addEventListener](
-							mousemove,
-							cont.mm = function(e) {
-							if (pushed) {
-								(scroller = el.scroller||el).scrollLeft -=
-									(- lastClientX + (lastClientX=e.clientX));
-								scroller.scrollTop -=
-									(- lastClientY + (lastClientY=e.clientY));
-							}
-							}, 0
-						);
-					})(dragged[i++]);
-				}
-			}));
+			var dragged = [];
+			let i = 0;
+			let el = null;
 		
-			// zoom and pan functions ---------\/----------------
-			
-			// parallax scrolling
-			document.getElementById('layout_viewport').addEventListener("scroll", function(){
-				var div = document.getElementById('layout_viewport');
-				// the 100% corresponds to the 100% of the background-size
-				var v_perc = 100 * div.scrollTop / ( div.scrollHeight - div.clientHeight ); 
-				var h_perc = 100 * div.scrollLeft / ( div.scrollWidth - div.clientWidth ); 
-				var str = h_perc + '% ' + v_perc + '%';
-				document.getElementById('layout_pagewrap').style.backgroundPosition = str;
-				return false;
-				});
-				
-			// zoom
-			let state = this;
-			document.getElementById('layout_viewport').addEventListener('wheel', function(event){
-				state.RecalcBGSize();
-				state.MapZoom( event.pageX, event.pageY, ( event.deltaY > 0 ? 1 : -1 ) );
-				// prevent scrolling
-				event.preventDefault();
-				event.returnValue = false;
-				return false;
-				});	
-			// window resize
-			window.addEventListener('resize', function(event){
-				state.RecalcBGSize();
-				return false;
-				});	
-					
-			PlayState.dragscroll_init = true;
+			for (i = 0; i < dragged.length;) {
+				el = dragged[i++];
+				el = el.container || el;
+				el[removeEventListener](mousedown, el.md, 0);
+				_window[removeEventListener](mouseup, el.mu, 0);
+				_window[removeEventListener](mousemove, el.mm, 0);
 			}
+
+			// cloning into array since HTMLCollection is updated dynamically
+			dragged = [].slice.call(_document.getElementsByClassName('dragscroll'));
+			for (i = 0; i < dragged.length;) {
+				(function(el, lastClientX, lastClientY, pushed, scroller, cont){
+					(cont = el.container || el)[addEventListener](
+						mousedown,
+						cont.md = function(e) {
+							if (!el.hasAttribute('nochilddrag') ||
+								_document.elementFromPoint(
+									e.pageX, e.pageY
+								) == cont
+							) {
+								pushed = 1;
+								lastClientX = e.clientX;
+								lastClientY = e.clientY;
+
+								e.stopPropagation();
+								e.preventDefault();
+							}
+						}, 0
+					);
+
+					_window[addEventListener](
+						mouseup, cont.mu = function(e) { pushed = 0;}, 0
+					);
+
+					_window[addEventListener](
+						mousemove,
+						cont.mm = function(e) {
+						if (pushed) {
+							(scroller = el.scroller||el).scrollLeft -=
+								(- lastClientX + (lastClientX=e.clientX));
+							scroller.scrollTop -=
+								(- lastClientY + (lastClientY=e.clientY));
+						}
+						}, 0
+					);
+				})(dragged[i++]);
+			}
+		}));
+	
+		// zoom and pan functions ---------\/----------------
 		
+		// parallax scrolling
+		document.getElementById('layout_viewport').addEventListener("scroll", function(){
+			var div = document.getElementById('layout_viewport');
+			// the 100% corresponds to the 100% of the background-size
+			var v_perc = 100 * div.scrollTop / ( div.scrollHeight - div.clientHeight ); 
+			var h_perc = 100 * div.scrollLeft / ( div.scrollWidth - div.clientWidth ); 
+			var str = h_perc + '% ' + v_perc + '%';
+			document.getElementById('layout_pagewrap').style.backgroundPosition = str;
+			return false;
+			});
+			
+		// zoom
+		let state = this;
+		document.getElementById('layout_viewport').addEventListener('wheel', function(event){
+			state.RecalcBGSize();
+			state.MapZoom( event.pageX, event.pageY, ( event.deltaY > 0 ? 1 : -1 ) );
+			// prevent scrolling
+			event.preventDefault();
+			event.returnValue = false;
+			return false;
+			});	
+		// window resize
+		window.addEventListener('resize', function(event){
+			state.RecalcBGSize();
+			return false;
+			});	
+				
 		// pick a random nebula background
 		this.bg_img = 'img/map/bg/spacebg_' + ("000" + utils.RandomInt(0,75)).slice(-3) + '.jpg';
 		this.GetBGDims();

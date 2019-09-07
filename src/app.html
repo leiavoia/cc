@@ -1,15 +1,8 @@
 <template>
-
-<require from="./states/play"></require>
-<require from="./states/title_screen"></require>
-<require from="./states/setup_new_game"></require>
-
-<play-state if.bind="state == 'play'" containerless view-model.ref="state_obj"></play-state>
-<title-state if.bind="state == 'title'" containerless view-model.ref="state_obj" ></title-state>
-<setup-new-game-state if.bind="state == 'setup_new'" containerless view-model.ref="state_obj" ></setup-new-game-state>
-
-<!-- switch to compose element if you're bored -->
-<!-- <compose if.bind="app.sidebar_mode && app.sidebar_obj" view-model="../ui/sidebars/sidebar_${app.sidebar_mode}" model.bind="{app: app, obj: app.sidebar_obj}" containerless></compose> -->
-
-		
+	<compose 
+		view-model="./states/${state}" 
+		model.bind="{app: app}" 
+		view-model.ref="state_obj" 
+		containerless>
+	</compose>
 </template>

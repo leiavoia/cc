@@ -1,0 +1,46 @@
+<template>
+	<div style="
+		display:flex; 
+		flex-flow: row wrap; 
+		width: 100%; 
+		box-sizing:border-box; 
+		text-shadow: 0 0 0.35em rgba(226, 212, 61, 0.75);
+		">
+		<div style="font-size:300%; color: #E2D43D; border: 1px solid #E2D43D; border-radius:2rem; padding: 1rem; flex: 1 1 40%; margin:2rem;">
+			<a href="#" id="nav_button_turn" click.delegate="Toggle()" css="color: ${app.game.autoplay ? '#AFA' : '#FFF' }"><svg class="icon icon-arrows-1"><use xlink:href="#icon-arrows-1"></use></svg></a>
+			<b>RUNTIME: ${current_run_time/1000 | round:1} / ${(total_run_time + current_run_time) / 1000 | round:1}</b>
+			<br/>
+			<b>GAME: ${game_num}</b>
+			<br/>
+			<b>TURN: ${app.game.turn_num}</b>
+			<br/>
+			<b>TPS: ${tps | round: 1}</b>
+			<br/>
+			<b>Civs: ${app.game.galaxy.civs.length} / ${starting_civs}</b>
+			<br/>
+			<b>Galaxy: 
+				${app.game.galaxy.stats.x}x${app.game.galaxy.stats.y}=${app.game.galaxy.stats.sectors},
+				S:${app.game.galaxy.stats.stars},
+				P:${app.game.galaxy.stats.planets},
+			</b>
+			<br/>
+			<a href="#" click.delegate="app.ChangeState('play')">RESCUE ME</a>
+		</div>
+		<div style="color: #E2D43D; border: 1px solid #E2D43D; border-radius:2rem; padding: 1rem; flex: 1 1 40%; margin:2rem;">		
+			<table class="right" style="margin: 0 0 0 0;">	
+				<tr repeat.for="row of app.game.top10civs">
+					<td css="color:#FFF; background-color:${row.civ.color};">${row.civ.name}</td>
+					<td><b>${row.rank}</b></td>
+					<td>${row.score}</td>
+					<td>◉${row.civ.planets.length}</td>
+					<td>⚡${row.civ.ai.total_milval}</td>
+					<td>r${row.civ.ai.strat.risk|round:2}</td>
+					<td>${row.civ.ai.strat.def}</td>
+					<td>${row.civ.ai.strat.zone_remodel}@${row.civ.ai.strat.zone_remodel_freq}</td>
+					<td>${row.pct|percent}%</td>
+					<td><div css="height:8px; width:${row.pct*200}px; background-color: #E2D43D;"></div></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</template>

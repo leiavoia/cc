@@ -42,7 +42,7 @@ export class SetupNewGameState {
 		// an app-level event lifecycle.
 		}
 	CancelSetup() {
-		this.app.ChangeState('title');
+		this.app.ChangeState('title_screen');
 		}
 	}
 

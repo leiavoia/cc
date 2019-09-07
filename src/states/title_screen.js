@@ -8,7 +8,11 @@ export class TitleState {
 		}
 
 	ClickNewGame() {
-		this.app.ChangeState('setup_new');
+		this.app.ChangeState('setup_new_game');
+		}
+
+	ClickHeadless() {
+		this.app.ChangeState('headless');
 		}
 		
 	}

@@ -39,7 +39,7 @@ export default class Game {
 				civ.Kill();
 				this.galaxy.civs.splice( i, 1 );
 				this.app.AddNote( 'neutral', `${civ.name} defeated`, null );
-				console.log(`*** ${civ.name} DEFEATED ***`);
+				// console.log(`*** ${civ.name} DEFEATED ***`);
 				}		
 			}
 		let living_civs_after = this.galaxy.civs.filter( c => c.alive && !c.race.is_monster).length;
@@ -54,7 +54,7 @@ export default class Game {
 		// last man standing
 		if ( check_last_man_standing && civs_in_play.length == 1 ) { 
 			this.victory_achieved = true;
-			console.log( 'VICTORY ACHIEVED: ' + civs_in_play[0].name );
+			// console.log( 'VICTORY ACHIEVED: ' + civs_in_play[0].name );
 			if ( civs_in_play[0].is_player ) { 
 				this.app.AddNote(
 					'good',
@@ -78,7 +78,7 @@ export default class Game {
 			if ( this.app.options.soak ) this.RotateMyCiv();
 			else {
 				this.victory_achieved = true;
-				console.log('*** PLAYER DIED - GAME OVER ***');
+				// console.log('*** PLAYER DIED - GAME OVER ***');
 				this.app.AddNote( 'bad', `GAME OVER`, `U R Dead` );
 				return true;
 				}
@@ -101,7 +101,7 @@ export default class Game {
 					}
 				if ( gotcha ) { 
 					this.victory_achieved = true;
-					console.log( 'VICTORY ACHIEVED: ' + r.name );
+					// console.log( 'VICTORY ACHIEVED: ' + r.name );
 					if ( civ == this.myciv ) { 
 						this.app.AddNote(
 							'good',
@@ -441,6 +441,7 @@ export default class Game {
 				}
 			// GAME OVER!
 			else {
+				Signals.Send('game_over', this.turn_num );
 				if ( this.autoplay ) { 
 					clearInterval( this.autoplay );
 					this.autoplay = false;
@@ -526,7 +527,7 @@ export default class Game {
 		for ( let c = this.groundcombats.length-1; c >= 0; c-- ) { 
 			let gc = this.groundcombats[c];
 			// fleet may have been destroyed in previous battle.
-			if ( gc.attacker.killme || !gc.attacker.ships.length ) { 
+			if ( gc.attacker.killme || !gc.attacker.ships.length || !gc.planet.owner ) { 
 				this.groundcombats.splice( c, 1 ); // delete
 				continue; 
 				}
@@ -620,7 +621,7 @@ export default class Game {
  		if ( !this.groundcombats.length ) { return false; }
 		let c = this.groundcombats.shift();
 		// fleet may have been destroyed in previous battle.
-		if ( c.attacker.killme || !c.attacker.troops ) { 
+		if ( c.attacker.killme || !c.attacker.troops || !c.planet.owner ) { 
 			this.PresentNextPlayerGroundCombat();
 			return;
 			}

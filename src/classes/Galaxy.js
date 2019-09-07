@@ -15,7 +15,18 @@ export default class Galaxy {
 	width = 2000;
 	height = 2000;
 	age = 0.5;
-	
+	stats = {
+		x: 0,
+		y: 0,
+		sectors: 0,
+		density: 0,
+		stars: 0,
+		planets: 0,
+		anoms: 0,
+		age: 0,
+		crazy: 0
+		};
+		
 	constructor() { 
 		this.fleets = Fleet.all_fleets;
 		}
@@ -200,15 +211,16 @@ export default class Galaxy {
 				}
 			}
 			
-		console.log( 
-			`New Galaxy:\n\tedges: ${map_size_x} x ${map_size_y}`
-			+ `\n\tsectors: ${sectors})`
-			+ `\n\tdensity: ${density}`
-			+ `\n\tstars: ` + this.stars.length
-			+ `\n\tanoms: ` + this.anoms.length
-			+ `\n\tage: ${galaxy_age}`
-			+ `\n\tcraziness: ${crazy}`
-			);
+		this.stats.x = map_size_x;
+		this.stats.y = map_size_y;
+		this.stats.sectors = sectors;
+		this.stats.density = density;
+		this.stats.stars = this.stars.length;
+		this.stats.anoms = this.anoms.length;
+		this.stats.age = galaxy_age;
+		this.stats.crazy = crazy;
+		this.stats.planets = 0;
+		for ( let s of this.stars ) { this.stats.planets += s.planets.length; }
 		}
 					
 	ThreatDemo( num_civs=2 ) {

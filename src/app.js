@@ -16,7 +16,7 @@ export class App {
 	exclusive_ui = false; // if true, hides all UI except main content panel
 	sidebar_obj = null;
 	sidebar_mode = false;
-	state = 'title';
+	state = 'title_screen';
 	state_obj = null;
 	hilite_star = null;
 	game = null;
@@ -105,9 +105,9 @@ export class App {
 			this.game.InitGalaxy();
 			this.ChangeState('play');
 			}
-		// normall startup
+		// normal startup
 		else {
-			this.ChangeState('title');
+			this.ChangeState('title_screen');
 			}
 		}
 		
