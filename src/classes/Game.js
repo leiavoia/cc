@@ -352,8 +352,8 @@ export default class Game {
 					}
 				};
 			// update caret (check for dead fleets removed from ship movement ) 
-			if ( this.app.state_obj.caret ) { 
-				this.app.state_obj.SetCaret( this.app.state_obj.caret.obj );
+			if ( this.app.CurrentState().caret ) { 
+				this.app.CurrentState().SetCaret( this.app.CurrentState().caret.obj );
 				}
 			if ( this.app.sidebar_obj instanceof Fleet && this.app.sidebar_obj.killme ) { 
 				this.app.sidebar_obj = null;

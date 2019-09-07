@@ -111,6 +111,10 @@ export class App {
 			}
 		}
 		
+	CurrentState() {
+		return ( this.state_obj && this.state_obj.currentViewModel ) ? this.state_obj.currentViewModel : null;
+		}
+	
 	ToggleNotification( o ) { 
 		this.options.notify[o] = this.options.notify[o] ? false : true;
 		this.SaveOptions();
@@ -147,17 +151,17 @@ export class App {
 	// can be a Star, Planet, Fleet, or an x/y pair: {x:100,y:100}
 	FocusMap( obj, snap = false ) { 
 		if ( this.state == 'play' ) { 
-			this.state_obj.FocusMap( obj, snap );
+			this.CurrentState().FocusMap( obj, snap );
 			}
 		}
 	MapZoomIn() { 
-		if ( this.state == 'play' ) { this.state_obj.MapZoomIn(); }
+		if ( this.state == 'play' ) { this.CurrentState().MapZoomIn(); }
 		}
 	MapZoomOut() { 
-		if ( this.state == 'play' ) { this.state_obj.MapZoomOut(); }
+		if ( this.state == 'play' ) { this.CurrentState().MapZoomOut(); }
 		}
 	MapScroll( xdiff, ydiff ) { 
-		if ( this.state == 'play' ) { this.state_obj.MapScroll( xdiff, ydiff ); }
+		if ( this.state == 'play' ) { this.CurrentState().MapScroll( xdiff, ydiff ); }
 		}
 		
 	// returns promise
@@ -185,10 +189,10 @@ export class App {
 		// special exception if a planet is not explored
 		if ( obj instanceof Planet && !obj.star.explored && !this.options.see_all ) { return; }		
 			
-		if ( obj instanceof Planet ) { this.sidebar_mode = 'planet'; this.state_obj.SetCaret(obj.star); }
-		else if ( obj instanceof Star ) { this.sidebar_mode = 'star';  this.state_obj.SetCaret(obj); }
-		else if ( obj instanceof Anom ) { this.sidebar_mode = 'anom';  this.state_obj.SetCaret(obj); }
-		else if ( obj instanceof Fleet && !obj.killme && !obj.merged_into ) { this.sidebar_mode = 'fleet'; this.state_obj.SetCaret(obj); }
+		if ( obj instanceof Planet ) { this.sidebar_mode = 'planet'; this.CurrentState().SetCaret(obj.star); }
+		else if ( obj instanceof Star ) { this.sidebar_mode = 'star';  this.CurrentState().SetCaret(obj); }
+		else if ( obj instanceof Anom ) { this.sidebar_mode = 'anom';  this.CurrentState().SetCaret(obj); }
+		else if ( obj instanceof Fleet && !obj.killme && !obj.merged_into ) { this.sidebar_mode = 'fleet'; this.CurrentState().SetCaret(obj); }
 // 		else if ( obj instanceof Constellation ) { this.sidebar_mode = 'constel'; }
 		else { this.sidebar_mode = false; }
 		this.sidebar_obj = obj;
@@ -221,12 +225,12 @@ export class App {
 	CloseSideBar() {
 		this.sidebar_mode = false;
 		this.sidebar_obj = null;
-		this.state_obj.SetCaret(null);
+		this.CurrentState().SetCaret(null);
 		}
 	ReturnToMap() {
 		this.CloseMainPanel();
 		this.CloseSideBar();
-		this.state_obj.SetCaret(null);
+		this.CurrentState().SetCaret(null);
 		}
 	ShowDialog( header, content, buttons = null ) { 
 		this.modal = { header, content, buttons };
