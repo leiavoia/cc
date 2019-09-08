@@ -210,7 +210,7 @@ export class ShipBlueprint {
 		
 	RecalcStats( parent = null ) { 
 		this.mass = 0;
-		for ( let k in this.costs ) { this.cost[k] = 0; } // not reassigning entire object preserves auralia binding.
+		for ( let k in this.cost ) { this.cost[k] = 0; } // not reassigning entire object preserves auralia binding.
 		this.weapons.forEach( w => { 
 			this.mass += w.mass * w.qty; 
 			for ( let k in w.cost ) { 
@@ -230,6 +230,11 @@ export class ShipBlueprint {
 		this.cost.labor = this.mods.Apply( this.cost.labor, 'labor', parent );
 		for ( let k in this.cost ) { 
 			this.cost[k] = Math.ceil( this.cost[k] );
+			}
+		for ( let k in this.cost ) { 
+			if ( !this.cost[k] ) {
+				delete this.cost[k]; 
+				} //delete zeros
 			}
 		
 		// TODO: evaluate to see if this feels right

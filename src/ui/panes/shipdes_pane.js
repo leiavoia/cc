@@ -10,6 +10,7 @@ export class ShipDesignPane {
 	 	this.max_hull_size = 0;
 	 	this.scrap_delete_all = false;
 	 	this.scrap_remove_from_queues = false;
+		this.force_update_shim = 0; // workaround for bug. increment to force aurelia to update some stuff.
 		// key click events
 		this.keypressCallback = (e) => { this.KeyPress(e); };
 	 	}
@@ -53,18 +54,22 @@ export class ShipDesignPane {
 	IncWeaponQty( bp, weapon ) { 
 		weapon.qty++;
 		bp.RecalcStats();
+		this.force_update_shim++;
 		}
 	DecWeaponQty( bp, weapon ) { 
 		weapon.qty--;
 		if ( weapon.qty < 1 ) { weapon.qty = 1; }
 		bp.RecalcStats();
+		this.force_update_shim++;
 		}
 		
 	ClickAddWeapon( weapon ) {
 		this.newbp.AddWeapon(weapon.tag);
+		this.force_update_shim++;
 		}
 	ClickAddComponent( comp ) {
 		this.newbp.AddComponent(comp.tag);
+		this.force_update_shim++;
 		}
 		
 	StartNewBlueprint() { 
@@ -83,9 +88,9 @@ export class ShipDesignPane {
 		}
 		
 	CancelNewBlueprint() { 
-		this.newbp = null;
 		this.mode = null;
 		this.subpanel = null;
+		this.newbp = null;
 		}
 		
 	CopyBlueprint() { 

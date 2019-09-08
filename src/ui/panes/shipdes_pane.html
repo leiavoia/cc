@@ -4,7 +4,7 @@
 		<header>
 			<div class="button_rack big" style="float:right;">
 				<button click.delegate="StartNewBlueprint()" if.bind="mode!='new'" class="alt">NEW DESIGN</button>	
-				<button click.delegate="CommitNewBlueprint()" if.bind="mode=='new'" class="alt">COMMIT DESIGN</button>
+				<button click.delegate="CommitNewBlueprint()" if.bind="mode=='new'" class="alt ${newbp.mass > 0 ? '' : 'ghost'}">COMMIT DESIGN</button>
 				<button click.delegate="CancelNewBlueprint()" if.bind="mode=='new'" class="bad">CANCEL DESIGN</button>
 				<button click.delegate="ClosePanel()">CLOSE</button>
 			</div>
@@ -46,7 +46,7 @@
 				<p>Costs: <span repeat.for="k of bp.cost|props" style="margin-right:1em; display:inline-block;">${k}:${bp.cost[k]}</span></p>
 				<p>Discount: ${bp.bulk_discount}% (${bp.num_built} Made)</p>
 				<p>Firepower: ${bp.fp}</p>
-				<p>AI Threat: ${bp.threat}</p>
+				<p>AI Threat: ${bp.milval}</p>
 				<p>Map Speed: ${bp.speed}</p>
 				<p>Combat Speed: ${bp.combatspeed}</p>
 				<p>Colony Ship: ${bp.colonize ? 'YES' : 'NO'}</p>
@@ -81,11 +81,15 @@
 			
 			
 			<!-- new blueprint pane -->
-			<div id="newbp" class="offset" if.bind="newbp">
+			<div id="newbp" class="offset" if.bind="newbp && mode=='new'">
 				<p>
 					<input type="text" name="shipname" value.bind="newbp.name" />
 				</p>
-				<div style="float:right; max-width: 20em; width: 20%; min-width: 100px; margin:0;" >
+				<p>
+					<progress max.one-time="max_hull_size" value.bind="newbp.mass || 0"></progress>
+					<b>${(((newbp.mass||1) / max_hull_size ) * 100) | round}%</b> Maximum Capacity
+				</p> 
+				<div style="float:right; max-width: 12em; width: 20%; min-width: 100px; margin:0; max-height:10em" >
 					<p class="button_rack button_rack_fill topless" style="text-align:center;">
 						<button click.delegate="ClickPrevImg()">&nbsp;&nbsp;&nbsp;◀&nbsp;&nbsp;&nbsp;</button>
 						<button click.delegate="ClickNextImg()">&nbsp;&nbsp;&nbsp;▶&nbsp;&nbsp;&nbsp;</button>
@@ -95,11 +99,6 @@
 				<h2>
 					<span style="color:#4BA5CC;">${newbp.sizeclass}-Class</span>
 				</h2>
-				<p>
-					<progress max.one-time="max_hull_size" value.bind="newbp.mass"></progress>
-					<b>${(((newbp.mass||1) / max_hull_size ) * 100) | round}%</b> Maximum Capacity
-					
-				</p> 
 				<p>Structure: <b>${newbp.mass}</b> Mass, <b>${newbp.hull}</b> Hull, <b>${newbp.armor}</b> Armor,  <b>${newbp.shield}</b> Shielding</p>
 				<p>Costs: 
 					<span repeat.for="k of ['labor','$','o','s','m','r','g','b','c','y','v']" style="margin-right:1em; display:inline-block;">
@@ -126,14 +125,14 @@
 							even if +/- buttons are used, however, the actual data
 							does change. Maybe there will be a fix one day.							
 						-->
-						<td>x${w.qty}</td>
+						<td>x${w.qty + force_update_shim*0}</td>
 						<td>${w.name}</td>
 						<td>${w.type}</td>
 						<td>${w.mindmg}-${w.maxdmg}</td>
 						<td>${w.shots}</td>
 						<td>^${w.reload}</td>
 						<td>~${w.accu}</td>
-						<td>Costs: <span repeat.for="k of w.cost|props" style="margin-right:1em; display:inline-block;">${k}:${bwp.cost[k]}</span></td>
+						<td>Costs: <span repeat.for="k of w.cost|props" style="margin-right:1em; display:inline-block;">${k}:${w.cost[k]}</span></td>
 					</tr>
 				</table>
 				<p class="button_rack">
