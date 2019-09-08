@@ -27,9 +27,7 @@ export let Techs = {
 				ShipComponentList.RESEARCHLAB1,
 				];
 			civ.avail_ship_weapons = [
-				WeaponList.LASER,
-				WeaponList.RAYGUN,
-				WeaponList.MISSILE
+				WeaponList.LASER
 				];			
 			}
 		},		
@@ -377,8 +375,46 @@ export let TechNodes = {
 	XENOCOMM3: { 
 		rp: 225,
 		requires: ['XENOCOMM2'], 
-		}
+		},
 
+	// WEAPONS - these are temporary techs until we come up with something more thematic
+	WEAPONS1: {
+		name: 'Space Weapons 1',
+		desc: 'Entry-level space weapons.' ,
+		rp: 50,
+		yields: ['LIGHTNINGSTRIKER','TURBOLASER','SPACECANNON','BUCKSHOT','MISSILE'],
+		requires: []
+		},
+	WEAPONS2: {
+		name: 'Space Weapons 2',
+		desc: 'Improved space weapons.' ,
+		rp: 200,
+		yields: ['NUCLEARMISSILE','RAILGUN','PULSECANNON'],
+		requires: ['WEAPONS1']
+		},
+	WEAPONS3: {
+		name: 'Space Weapons 3',
+		desc: 'Advanced space weapons.' ,
+		rp: 600,
+		yields: ['GRAVITONBEAM','NEUTRONIUMGUN','FUSIONMISSILE'],
+		requires: ['WEAPONS2']
+		},
+	WEAPONS4: {
+		name: 'Space Weapons 4',
+		desc: 'Superior space weapons.' ,
+		rp: 2000,
+		yields: ['DISINTEGRATER','ANTIMATTERCANNON','VORTEXTORPEDO'],
+		requires: ['WEAPONS3']
+		},
+	WEAPONS5: {
+		name: 'Space Weapons 5',
+		desc: 'Ultimate space weapons.' ,
+		rp: 6000,
+		yields: ['DESYNCHRONIZER','KUGELBLITZER','BLACKHOLETORPEDO'],
+		requires: ['WEAPONS4']
+		}
+	
+	
 	};
 	
 //  Sane defaults for missing values

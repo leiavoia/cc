@@ -78,7 +78,7 @@ export const WeaponList = {
 		maxdmg: 20,
 		shots: 8,
 		reload: 4,
-		accu: 0.9,
+		accu: 0.7,
 		cost: { labor:2, m:1 },
 		mass: 4,
 		fx: WeaponFX.DEFAULT
