@@ -334,19 +334,15 @@ export default class Galaxy {
 			new Ship( owner.ship_blueprints[0] ),
 			new Ship( owner.ship_blueprints[1] ),
 			new Ship( owner.ship_blueprints[1] ),
-			new Ship( owner.ship_blueprints[2] ),
-			new Ship( owner.ship_blueprints[3] ),
-			new Ship( owner.ship_blueprints[3] ),
-			new Ship( owner.ship_blueprints[4] ),
-			new Ship( owner.ship_blueprints[5] )
+			// new Ship( owner.ship_blueprints[2] )
 			];
-		for ( let i = 0; i < 2; i++ ) { 
-			let ship = owner.ship_blueprints[6].Make();
-			ship.troops.push( 
-				owner.groundunit_blueprints[0].Make()
-				);
-			f.ships.push( ship );
-			}
+		// for ( let i = 0; i < 2; i++ ) { 
+		// 	let ship = owner.ship_blueprints[2].Make();
+		// 	ship.troops.push( 
+		// 		owner.groundunit_blueprints[0].Make()
+		// 		);
+		// 	f.ships.push( ship );
+		// 	}
 		f.ReevaluateStats();
 		f.SortShips();
 		return f;
@@ -355,10 +351,10 @@ export default class Galaxy {
 	CreateRandomFleet( owner, star ) { 
 		let f = new Fleet( owner, star );
 		for ( let i = 0, max = utils.RandomInt(2,12); i < max; i++ ) { 
-			let which = utils.RandomInt(0,6);
+			let which = utils.RandomInt(0,owner.ship_blueprints.length-1);
 			let ship = owner.ship_blueprints[which].Make();
 			// add ground units
-			if ( which == 6 ) { 
+			if ( which == 2 ) { 
 				ship.troops.push( 
 					owner.groundunit_blueprints[0].Make()
 					);

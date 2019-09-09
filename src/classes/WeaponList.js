@@ -80,7 +80,7 @@ export const WeaponList = {
 		reload: 4,
 		accu: 0.7,
 		cost: { labor:2, m:1 },
-		mass: 4,
+		mass: 12,
 		fx: WeaponFX.DEFAULT
 		},
 	LIGHTNINGSTRIKER: {
@@ -106,7 +106,7 @@ export const WeaponList = {
 		reload: 2,
 		accu: 0.6,
 		cost: { labor:7, m:0.5 },
-		mass: 7,
+		mass: 11,
 		fx: WeaponFX.LASERSMALL
 		},
 	PULSECANNON: {
@@ -119,7 +119,7 @@ export const WeaponList = {
 		reload: 3,
 		accu: 0.8,
 		cost: { labor:16, r:1 },
-		mass: 12,
+		mass: 10,
 		fx: WeaponFX.LASERBIG
 		},
 	GRAVITONBEAM: {
@@ -132,7 +132,7 @@ export const WeaponList = {
 		reload: 7,
 		accu: 1.2,
 		cost: { labor:18, b:2 },
-		mass: 20,
+		mass: 12,
 		fx: WeaponFX.LASERBIG
 		},
 	DISINTEGRATER: {
@@ -158,7 +158,7 @@ export const WeaponList = {
 		reload: 10,
 		accu: 2.0,
 		cost: { labor:20, v:1, c:1, y:1 },
-		mass: 100,
+		mass: 60,
 		fx: WeaponFX.WIDEBEAM
 		},
 		
@@ -173,7 +173,7 @@ export const WeaponList = {
 		reload: 6,
 		accu: 0.6, 
 		cost: { labor:8, m:1, o:1 },
-		mass: 20,
+		mass: 8,
 		fx: WeaponFX.KINETIC
 		},
 	BUCKSHOT: {
@@ -186,7 +186,7 @@ export const WeaponList = {
 		reload: 9,
 		accu: 0.9,
 		cost: { labor:3, s:1 },
-		mass: 18,
+		mass: 8,
 		fx: WeaponFX.KINETIC
 		},
 	RAILGUN: {
@@ -199,7 +199,7 @@ export const WeaponList = {
 		reload: 7,
 		accu: 0.7,
 		cost: { labor:8, g:1 },
-		mass: 25,
+		mass: 10,
 		fx: WeaponFX.KINETIC2
 		},
 	NEUTRONIUMGUN: {
@@ -212,7 +212,7 @@ export const WeaponList = {
 		reload: 9,
 		accu: 0.8,
 		cost: { labor:14, b:1 },
-		mass: 35,
+		mass: 12,
 		fx: WeaponFX.KINETIC2
 		},
 	ANTIMATTERCANNON: {
@@ -225,7 +225,7 @@ export const WeaponList = {
 		reload: 9,
 		accu: 0.7,
 		cost: { labor:12, c:1 },
-		mass: 45,
+		mass: 16,
 		fx: WeaponFX.KINETIC2
 		},
 	KUGELBLITZER: {
@@ -238,7 +238,7 @@ export const WeaponList = {
 		reload: 9,
 		accu: 0.9,
 		cost: { labor:20, y:1, c:1 },
-		mass: 60,
+		mass: 40,
 		fx: WeaponFX.KINETIC2
 		},
 		
@@ -253,7 +253,7 @@ export const WeaponList = {
 		reload: 8,
 		accu: 0.7,
 		cost: { labor:8, o:1 },
-		mass: 8,
+		mass: 12,
 		fx: WeaponFX.MISSILE
 		},
 	NUCLEARMISSILE: {
@@ -266,7 +266,7 @@ export const WeaponList = {
 		reload: 12,
 		accu: 0.8,
 		cost: { labor:20, m:1 },
-		mass: 12,
+		mass: 14,
 		fx: WeaponFX.MISSILE
 		},
 	FUSIONMISSILE: {
@@ -292,7 +292,7 @@ export const WeaponList = {
 		reload: 16,
 		accu: 1.1,
 		cost: { labor:15, v:1, r:1 },
-		mass: 50,
+		mass: 30,
 		fx: WeaponFX.TORPEDO
 		},
 	BLACKHOLETORPEDO: {
@@ -305,7 +305,7 @@ export const WeaponList = {
 		reload: 14,
 		accu: 1.5,
 		cost: { labor:25, v:2 },
-		mass: 200,
+		mass: 100,
 		fx: WeaponFX.TORPEDO
 		},
 		

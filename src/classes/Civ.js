@@ -458,50 +458,9 @@ export default class Civ {
 		fighter.name = 'Fighter';
 		fighter.img = 'img/ships/ship002_mock.png';
 		fighter.AddComponent( 'ENGINE1' );
-		fighter.AddWeapon( 'LASER', 2 );
+		fighter.AddWeapon( 'LASER', 1 );
 		fighter.AddComponent( 'ARMOR1' );
 		this.ship_blueprints.push(fighter);
-	
-		let bomber = new ShipBlueprint();
-		bomber.name = 'Bomber'; 
-		bomber.img = 'img/ships/ship001_mock.png';
-		bomber.AddWeapon( 'MISSILE', 2 );
-		bomber.AddWeapon( 'RAYGUN', 1 );
-		bomber.AddComponent( 'ENGINE1' );
-		bomber.AddComponent( 'SHIELD1' );
-		bomber.AddComponent( 'ARMOR2' );
-		this.ship_blueprints.push(bomber);
-			
-		let hfighter = new ShipBlueprint();
-		hfighter.name = 'Heavy Fighter'; 
-		hfighter.img = 'img/ships/ship034_mock.png';
-		hfighter.AddComponent( 'ENGINE1' );
-		hfighter.AddWeapon( 'TURBOLASER', 4 );
-		hfighter.AddComponent( 'ARMOR1' );
-		this.ship_blueprints.push(hfighter);
-		
-		let battleship = new ShipBlueprint();
-		battleship.name = 'Battleship'; 
-		battleship.img = 'img/ships/ship025_mock.png';
-		battleship.AddWeapon( 'HEAVYLASER', 2 );
-		battleship.AddWeapon( 'TURBOLASER', 3 );
-		battleship.AddWeapon( 'MISSILE', 2 );
-		battleship.AddWeapon( 'BUCKSHOT', 2 );
-		battleship.AddComponent( 'ARMOR2' );
-		battleship.AddComponent( 'ENGINE1' );
-		battleship.AddComponent( 'SHIELD2' );
-		this.ship_blueprints.push(battleship);
-			
-	
-		let cruiser = new ShipBlueprint();
-		cruiser.name = 'Cruiser'; 
-		cruiser.img = 'img/ships/ship035_mock.png';
-		cruiser.AddWeapon( 'BUCKSHOT', 3 );
-		cruiser.AddWeapon( 'SPACECANNON', 2 );
-		cruiser.AddComponent( 'ENGINE1' );
-		cruiser.AddComponent( 'ARMOR1' );
-		cruiser.AddComponent( 'SHIELD2' );
-		this.ship_blueprints.push(cruiser);
 	
 		let carrier = new ShipBlueprint();
 		carrier.name = 'Troop Carrier'; 
@@ -574,6 +533,9 @@ export default class Civ {
 		civ.ai.strat.zone_remodel = 'recycle'; // strategy for remodeling [wipe,rand,semirand,recycle,smart]
 		civ.ai.strat.zone_remodel = ['recycle','wipe','rand','semirand'][ utils.RandomInt(0,3) ]; 
 		civ.ai.strat.zone_remodel_rand_chance = utils.BiasedRand(0.1, 0.7, 0.35, 0.75);
+		// ship designing
+		civ.ai.strat.ship_des_freq = utils.BiasedRand(0.1, 0.9, 0.5, 0.75);
+		civ.ai.strat.ship_size = utils.BiasedRand(0.1, 0.9, 0.5, 0.75);
 		return civ;
 		}
 		

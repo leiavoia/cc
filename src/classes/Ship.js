@@ -147,6 +147,9 @@ export class ShipBlueprint {
 		for ( let i = 0; i < this.weapons.length; i++ ) { 
 			if ( this.weapons[i].tag == tag ) { 
 				this.weapons[i].qty += qty;
+				if ( this.weapons[i].qty <= 0 ) {
+					this.RemoveWeapon( this.weapons[i] );
+					}
 				this.RecalcStats(); // TODO: parent?
 				return true;
 				}

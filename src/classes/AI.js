@@ -37,7 +37,9 @@
 
 import * as utils from '../util/utils';
 import RandomPicker from '../util/RandomPicker';
+import RandomName from '../util/RandomName';
 import Fleet from './Fleet';
+import {ShipBlueprint} from './Ship';
 
 export class AI {
 	civ = null;
@@ -95,10 +97,12 @@ export class CivAI extends AI {
 		def_threat_weight: 0.5, // 0..1 amount to consider external threats when defending
 		risk: 0.5, // 0..1 amount of risk AI is willing to take
 		posture: 0.5, // 0..1 balance between turtling (0) and mindless offense (1).
-		min_assault_score: 10000,
+		min_assault_score: 10000, // TODO: not a strategy, move this somewhere else
 		zone_remodel_freq: 30,
 		zone_remodel: 'recycle', // strategy for remodeling [wipe,rand,semirand,recycle,smart]
-		zone_remodel_rand_chance: 0.35
+		zone_remodel_rand_chance: 0.35,
+		ship_size: 0.5, // 1=biggest, 0=smallest
+		ship_des_freq: 0.5 // 0=often, 1=rarely
 		};
 	needs = { 
 		colony_ships: 0,
@@ -220,6 +224,7 @@ export class AIMainObjective extends AIObjective {
 			civ.ai.objectives.push( new AIColonizeObjective() );
 			civ.ai.objectives.push( new AIPlanetsObjective() );
 			civ.ai.objectives.push( new AIDiplomacyObjective() );
+			civ.ai.objectives.push( new AIShipDesignObjective() );
 			this.bootstrapped = true;
 			}
 		}			
@@ -1671,6 +1676,96 @@ export class AIScoutObjective extends AIObjective {
 export class AIAnomExploreObjective extends AIObjective { 	
 	type = 'anom';
 	EvaluateFunc( app, civ ) { 
+		}	
+	}
+
+// SHIP DESIGN - create new ship designs every so often
+export class AIShipDesignObjective extends AIObjective { 	
+	type = 'shipdesign';
+	EvaluateFunc( app, civ ) { 
+		
+		// only run this once in a while
+		let myturn = Math.floor( utils.MapToRange( civ.ai.strat.ship_des_freq, 0, 1, 8, 30 ) );
+		if ( app.game.turn_num <= 1 || app.game.turn_num % (myturn+5) ) { return; }
+			
+		const absolute_max_ship_size = 800; // [!]MAGICNUMBER - REPLACE WITH TECH LATER
+		// build small ships earlier in the game
+		const relative_max_ship_size = 
+			100 
+			+ ( Math.min(200,app.game.turn_num) / 200 ) // [!]MAGICNUMBER
+			* ( absolute_max_ship_size - 100 ); 
+		// AI preference for ship sizes
+		let max_size = civ.ai.strat.ship_size * relative_max_ship_size;
+		max_size = Math.max( 50, max_size );
+		
+		let bp = new ShipBlueprint();
+		
+		// best engine 
+		let engine = civ.avail_ship_comps
+			.filter( c => c.type=='engine' )
+			.sort( (a,b) => {
+				const a_val = a.mods.filter( m => m.abil=='speed' ).pop() || 0;
+				const b_val = b.mods.filter( m => m.abil=='speed' ).pop() || 0;
+				return a_val - b_val;
+				})
+			.pop();
+		if ( engine ) { bp.AddComponent(engine.tag); }
+		
+		// best armor 
+		let armor = civ.avail_ship_comps
+			.filter( c => c.type=='armor' )
+			.sort( (a,b) => {
+				const a_val = a.mods.filter( m => m.abil=='armor' ).pop() || 0;
+				const b_val = b.mods.filter( m => m.abil=='armor' ).pop() || 0;
+				return a_val - b_val;
+				})
+			.pop();
+		if ( armor ) { bp.AddComponent(armor.tag); }
+		
+		// best shield
+		let shield = civ.avail_ship_comps
+			.filter( c => c.type=='shield' )
+			.sort( (a,b) => {
+				const a_val = a.mods.filter( m => m.abil=='shield' ).pop() || 0;
+				const b_val = b.mods.filter( m => m.abil=='shield' ).pop() || 0;
+				return a_val - b_val;
+				})
+			.pop();
+		if ( shield ) { bp.AddComponent(shield.tag); }
+			
+		bp.RecalcStats();
+		
+		if ( bp.mass > max_size ) { return; }
+		
+		// weaponz!
+		let weapons = civ.avail_ship_weapons
+			.filter( w => w.mass <= max_size*0.3 ) // must fit on ship
+			.slice(-3); // get the latest and greatest the easy way
+		if ( !weapons.length ) { return; } // no firepower at this size
+		while ( bp.mass <= max_size ) { 
+			// pick random weapon
+			const w = weapons.pickRandom();
+			bp.AddWeapon(w.tag,1);
+			bp.RecalcStats();
+			// oops, too big
+			if ( bp.mass > max_size ) {
+				bp.AddWeapon(w.tag,-1);
+				bp.RecalcStats();
+				break;
+				}
+			}
+			
+		bp.name = RandomName();
+		bp.name = bp.name.charAt(0).toUpperCase() + bp.name.slice(1);
+		bp.img = 'img/ships/ship' + ("000" + utils.RandomInt(1,35)).slice(-3) + '_mock.png';
+		civ.ship_blueprints.push(bp);
+		
+		this.note = 'Created "' + bp.name + '", milval:' + bp.milval;
+		
+		// TODO: weigh cost and resources
+		// TODO: purpose of ship
+		// TODO: enemy we're up against?
+		// TODO: non-essential components
 		}	
 	}
 

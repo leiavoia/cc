@@ -21,8 +21,6 @@ export let Techs = {
 			// starting ship bits:
 			civ.avail_ship_comps = [
 				ShipComponentList.ENGINE1,
-				ShipComponentList.ARMOR1,
-				ShipComponentList.SHIELD1,
 				ShipComponentList.COLONY1,
 				ShipComponentList.RESEARCHLAB1,
 				];
@@ -178,6 +176,15 @@ for ( let k of Object.keys(WeaponList) ) {
 		name: WeaponList[k].name,
 		desc: WeaponList[k].desc,
 		onComplete( civ ) { civ.avail_ship_weapons.push( WeaponList[k] ); }
+		};
+	}
+	
+// bulk generate the weapon techs
+for ( let k of Object.keys(ShipComponentList) ) { 
+	Techs[k] = {
+		name: ShipComponentList[k].name,
+		desc: ShipComponentList[k].desc,
+		onComplete( civ ) { civ.avail_ship_comps.push( ShipComponentList[k] ); }
 		};
 	}
 	
@@ -375,6 +382,29 @@ export let TechNodes = {
 	XENOCOMM3: { 
 		rp: 225,
 		requires: ['XENOCOMM2'], 
+		},
+
+	// SHIP COMPONENTS - these are temporary techs until we come up with something more thematic
+	SHIPPARTS1: {
+		name: 'Ship Parts 1',
+		desc: 'Entry-level spaceship bits.' ,
+		rp: 80,
+		yields: ['ENGINE2','ARMOR1','SHIELD1'],
+		requires: []
+		},
+	SHIPPARTS2: {
+		name: 'Space Parts 2',
+		desc: 'Improved spaceship bits.' ,
+		rp: 300,
+		yields: ['ENGINE3','ARMOR2','SHIELD2'],
+		requires: ['SHIPPARTS1']
+		},
+	SHIPPARTS3: {
+		name: 'Space Parts 3',
+		desc: 'Advanced spaceship bits.' ,
+		rp: 900,
+		yields: ['ARMOR3','SHIELD3'],
+		requires: ['SHIPPARTS2']
 		},
 
 	// WEAPONS - these are temporary techs until we come up with something more thematic

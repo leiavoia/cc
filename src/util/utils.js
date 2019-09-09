@@ -31,7 +31,7 @@ Array.prototype.shuffle = function() {
 	
 Array.prototype.pickRandom = function() {
 	if ( this.length == 0 ) { return false; }
-	return this[ Math.floor( (Math.random() * (this.length+1) ) ) ];
+	return this[ Math.floor( (Math.random() * (this.length) ) ) ];
 	}
 	
 Array.prototype.contains = function( obj ) {

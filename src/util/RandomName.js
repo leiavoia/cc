@@ -1,4 +1,4 @@
-export default function RandomName() { 
+export default function RandomName( maxlength=7 ) { 
 	let ok = false;
 	let str = '';
 	while ( !ok ) { 
@@ -14,7 +14,7 @@ export default function RandomName() {
 		// see: http://setosa.io/ev/markov-chains/
 		let state = 0;
 		// pick a random maximum number of letter-parts for this name
-		let num_parts = Math.floor(Math.random()*6)+1;
+		let num_parts = Math.floor(Math.random()*(maxlength-1))+1;
 		// foreach part
 		for ( let i=0; i <= num_parts;  i++ ) {
 			// prefer to start words with a consenent more often than not
