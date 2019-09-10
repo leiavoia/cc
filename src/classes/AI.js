@@ -1688,12 +1688,12 @@ export class AIShipDesignObjective extends AIObjective {
 		let myturn = Math.floor( utils.MapToRange( civ.ai.strat.ship_des_freq, 0, 1, 8, 30 ) );
 		if ( app.game.turn_num <= 1 || app.game.turn_num % (myturn+5) ) { return; }
 			
-		const absolute_max_ship_size = 800; // [!]MAGICNUMBER - REPLACE WITH TECH LATER
+		const absolute_max_ship_size = civ.max_hull_size;
 		// build small ships earlier in the game
 		const relative_max_ship_size = 
-			100 
-			+ ( Math.min(200,app.game.turn_num) / 200 ) // [!]MAGICNUMBER
-			* ( absolute_max_ship_size - 100 ); 
+			50 
+			+ ( Math.min(250,app.game.turn_num) / 250 ) // [!]MAGICNUMBER
+			* ( absolute_max_ship_size - 50 ); 
 		// AI preference for ship sizes
 		let max_size = civ.ai.strat.ship_size * relative_max_ship_size;
 		max_size = Math.max( 50, max_size );

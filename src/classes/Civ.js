@@ -49,7 +49,7 @@ export default class Civ {
 	max_ship_speed = 200; // for AI
 	ship_blueprints = [];
 	groundunit_blueprints = [];
-	max_hull_size = 800; // HACK HARDSET FOR DEVELOPMENT
+	max_hull_size = 50; 
 	avail_ship_comps = []; // components we can equip on ships
 	avail_ship_weapons = []; // weapons we can equip on ships
 	avail_zones = [];
@@ -535,7 +535,7 @@ export default class Civ {
 		civ.ai.strat.zone_remodel_rand_chance = utils.BiasedRand(0.1, 0.7, 0.35, 0.75);
 		// ship designing
 		civ.ai.strat.ship_des_freq = utils.BiasedRand(0.1, 0.9, 0.5, 0.75);
-		civ.ai.strat.ship_size = utils.BiasedRand(0.1, 0.9, 0.5, 0.75);
+		civ.ai.strat.ship_size = utils.BiasedRand(0.0, 1.0, 0.2, 0.75);
 		return civ;
 		}
 		

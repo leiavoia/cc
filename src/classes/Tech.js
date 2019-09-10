@@ -63,6 +63,42 @@ export let Techs = {
 			}
 		},
 		
+	HULL1: {
+		name: "Starship Engineering 1",
+		desc: '<b>Allows B-Class starships</b>.',
+		onComplete( civ ) { civ.max_hull_size = 100; }
+		},
+	HULL2: {
+		name: "Starship Engineering 2",
+		desc: '<b>Allows C-Class starships</b>.',
+		onComplete( civ ) { civ.max_hull_size = 200; }
+		},
+	HULL3: {
+		name: "Starship Engineering 3",
+		desc: '<b>Allows D-Class starships</b>.',
+		onComplete( civ ) { civ.max_hull_size = 400; }
+		},
+	HULL4: {
+		name: "Starship Engineering 4",
+		desc: '<b>Allows E-Class starships</b>.',
+		onComplete( civ ) { civ.max_hull_size = 800; }
+		},
+	HULL5: {
+		name: "Starship Engineering 5",
+		desc: '<b>Allows F-Class starships</b>.',
+		onComplete( civ ) { civ.max_hull_size = 1200; }
+		},
+	HULL6: {
+		name: "Starship Engineering 6",
+		desc: '<b>Allows G-Class starships</b>.',
+		onComplete( civ ) { civ.max_hull_size = 2000; }
+		},
+	HULL7: {
+		name: "Starship Engineering 7",
+		desc: '<b>Allows H-Class starships</b>.',
+		onComplete( civ ) { civ.max_hull_size = 3000; }
+		},
+		
 	SHIPRANGE1: {
 		name: "Improved Warp Drive",
 		desc: '<b>1000 Ship Range</b>. Basic FTL, or "warp drive", got us into deep space. Now improvements on this basic system will allows us to explore further into space.',
@@ -334,6 +370,35 @@ export let TechNodes = {
 	SHIPRANGE5: { 
 		rp: 6000,
 		requires: ['SHIPRANGE4'], 
+		},
+		
+	HULL1: { 
+		rp: 15,
+		requires: [], 
+		},
+	HULL2: { 
+		rp: 60,
+		requires: ['HULL1'], 
+		},
+	HULL3: { 
+		rp: 150,
+		requires: ['HULL2'], 
+		},
+	HULL4: { 
+		rp: 400,
+		requires: ['HULL3'], 
+		},
+	HULL5: { 
+		rp: 1600,
+		requires: ['HULL4'], 
+		},
+	HULL6: { 
+		rp: 6000,
+		requires: ['HULL5'], 
+		},
+	HULL7: { 
+		rp: 20000,
+		requires: ['HULL6'], 
 		},
 		
 	HABITATION1: { 
