@@ -45,8 +45,8 @@ export default class Civ {
 	homeworld = null; // a Planet // TODO // necessary?
 	victory_ingredients = []; // list of VictoryIngredient objects
 	
-	ship_range = 750; // px
-	max_ship_speed = 200; // for AI
+	ship_range = 750; // px - upgrades with technology
+	max_ship_speed = 200; // for AI - upgrades with technology
 	ship_blueprints = [];
 	groundunit_blueprints = [];
 	max_hull_size = 50; 

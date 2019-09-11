@@ -147,7 +147,7 @@
 				<!-- only display fleets en route -->
 				<template containerless if.bind="f.dest && (app.options.show_xtreme_fleets || !xtreme_zoom) && (app.options.see_all || f.in_range || f.owner == app.game.myciv)">
 					<!-- show destination indicator line -->
-					<div if.bind="!xtreme_zoom && app.options.see_all || f.owner == app.game.myciv" class="dest_line" css="background-color: ${f.owner.color}; left:${f.xpos}px; top:${f.ypos}px; width: ${f.dest_line_length}px; transform:  rotate(${f.dest_line_angle}deg) translateY(-5px); "></div>
+					<div if.bind="!xtreme_zoom && app.options.see_all || f.owner == app.game.myciv || app.game.myciv.vis_level >= 1" class="dest_line" css="background-color: ${f.owner.color}; left:${f.xpos}px; top:${f.ypos}px; width: ${f.dest_line_length}px; transform:  rotate(${f.dest_line_angle}deg) translateY(-5px); "></div>
 					<!-- show fleet icon -->
 					<span class="fleet_en_route clickable" click.delegate="app.SwitchSideBar(f,$event)" css="left:${f.xpos}px; top:${f.ypos}px; color: ${f.owner.color}; border-color: ${f.owner.color};">
 						<svg class="icon icon-transport" if.bind="!f.owner.race.is_monster">

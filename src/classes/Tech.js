@@ -99,6 +99,17 @@ export let Techs = {
 		onComplete( civ ) { civ.max_hull_size = 3000; }
 		},
 		
+	VIS1: {
+		name: "Hyperspace Observation",
+		desc: '<b>Allows us to view hyperspace objects on the map and see predictive paths of enemy fleets.</b>.',
+		onComplete( civ ) { civ.vis_level = Math.max( 1, civ.vis_level ); }
+		},
+	VIS2: {
+		name: "Subspace Observation",
+		desc: '<b>Allows us to view subspace objects on the map and see predictive paths of enemy fleets.</b>.',
+		onComplete( civ ) { civ.vis_level = Math.max( 1, civ.vis_level ); }
+		},
+		
 	SHIPRANGE1: {
 		name: "Improved Warp Drive",
 		desc: '<b>1000 Ship Range</b>. Basic FTL, or "warp drive", got us into deep space. Now improvements on this basic system will allows us to explore further into space.',
@@ -121,8 +132,8 @@ export let Techs = {
 		},
 	SHIPRANGE5: {
 		name: "Ultimate Drive",
-		desc: '<b>5000 Ship Range</b>. It just works.',
-		onComplete( civ ) { civ.ship_range = 5000; civ.RecalcEmpireBox(); }
+		desc: '<b>3500 Ship Range</b>. It just works.',
+		onComplete( civ ) { civ.ship_range = 3500; civ.RecalcEmpireBox(); }
 		},
 		
 	HABITATION1: {
@@ -521,8 +532,16 @@ export let TechNodes = {
 		rp: 6000,
 		yields: ['DESYNCHRONIZER','KUGELBLITZER','BLACKHOLETORPEDO'],
 		requires: ['WEAPONS4']
+		},
+		
+	VIS1: {
+		rp: 400,
+		requires: []
+		},
+	VIS2: {
+		rp: 2500,
+		requires: ['VIS1']
 		}
-	
 	
 	};
 	
