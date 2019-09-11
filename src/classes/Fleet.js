@@ -417,6 +417,7 @@ export default class Fleet {
 		// see: AI::AI_TroopsNeededToInvade
 		let invasion_pow = Math.ceil( planet.troops.length * (1.25 - this.owner.ai.strat.risk * 0.5) ) || 1;
 		return this.ai 
+			&& this.ai.type == 'invade'
 			&& this.ai.target == planet
 			&& planet.owner 
 			&& this.owner != planet.owner 

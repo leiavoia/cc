@@ -512,7 +512,7 @@ export default class Game {
 					if ( (this.app.options.soak || !fleet.owner.is_player) && fleet.troops && !fleet.mission && !fleet.killme ) { 
 						for ( let planet of star.planets ) { 
 							if ( planet.owner != fleet.owner ) { 
-								if ( fleet.AIWantToInvadePlanet(planet) && !planet.OwnerFleet() ) {
+								if ( fleet.AIWantToInvadePlanet(planet) && (!planet.OwnerFleet() || !planet.OwnerFleet().milval) ) {
 									// console.log(`GC: ${fleet.owner.name} wants to invade ${planet.name}`);
 									this.QueueGroundCombat( fleet, planet );
 									}
