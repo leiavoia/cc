@@ -78,7 +78,7 @@ export const WeaponList = {
 		maxdmg: 20,
 		shots: 8,
 		reload: 4,
-		accu: 0.7,
+		accu: 4,
 		cost: { labor:2, m:1 },
 		mass: 12,
 		fx: WeaponFX.DEFAULT
@@ -91,7 +91,7 @@ export const WeaponList = {
 		maxdmg: 40,
 		shots: 7,
 		reload: 6,
-		accu: 0.4,
+		accu: 3,
 		cost: { labor:4, m:1, s:0.5 },
 		mass: 10,
 		fx: WeaponFX.DEFAULT
@@ -104,7 +104,7 @@ export const WeaponList = {
 		maxdmg: 21,
 		shots: 16,
 		reload: 2,
-		accu: 0.6,
+		accu: 2,
 		cost: { labor:7, m:0.5 },
 		mass: 11,
 		fx: WeaponFX.LASERSMALL
@@ -117,7 +117,7 @@ export const WeaponList = {
 		maxdmg: 30,
 		shots: 12,
 		reload: 3,
-		accu: 0.8,
+		accu: 5,
 		cost: { labor:16, r:1 },
 		mass: 10,
 		fx: WeaponFX.LASERBIG
@@ -130,7 +130,7 @@ export const WeaponList = {
 		maxdmg: 65,
 		shots: 5,
 		reload: 7,
-		accu: 1.2,
+		accu: 6,
 		cost: { labor:18, b:2 },
 		mass: 12,
 		fx: WeaponFX.LASERBIG
@@ -143,7 +143,7 @@ export const WeaponList = {
 		maxdmg: 150,
 		shots: 7,
 		reload: 4,
-		accu: 0.9,
+		accu: 8,
 		cost: { labor:15, y:2 },
 		mass: 40,
 		fx: WeaponFX.WIDEBEAM
@@ -156,7 +156,7 @@ export const WeaponList = {
 		maxdmg: 500,
 		shots: 3,
 		reload: 10,
-		accu: 2.0,
+		accu: 20,
 		cost: { labor:20, v:1, c:1, y:1 },
 		mass: 60,
 		fx: WeaponFX.WIDEBEAM
@@ -171,7 +171,7 @@ export const WeaponList = {
 		maxdmg: 35,
 		shots: 9,
 		reload: 6,
-		accu: 0.6, 
+		accu: 2, 
 		cost: { labor:8, m:1, o:1 },
 		mass: 8,
 		fx: WeaponFX.KINETIC
@@ -184,7 +184,7 @@ export const WeaponList = {
 		maxdmg: 45,
 		shots: 5,
 		reload: 9,
-		accu: 0.9,
+		accu: 2,
 		cost: { labor:3, s:1 },
 		mass: 8,
 		fx: WeaponFX.KINETIC
@@ -197,7 +197,7 @@ export const WeaponList = {
 		maxdmg: 50,
 		shots: 4,
 		reload: 7,
-		accu: 0.7,
+		accu: 3,
 		cost: { labor:8, g:1 },
 		mass: 10,
 		fx: WeaponFX.KINETIC2
@@ -210,7 +210,7 @@ export const WeaponList = {
 		maxdmg: 70,
 		shots: 3,
 		reload: 9,
-		accu: 0.8,
+		accu: 5,
 		cost: { labor:14, b:1 },
 		mass: 12,
 		fx: WeaponFX.KINETIC2
@@ -223,7 +223,7 @@ export const WeaponList = {
 		maxdmg: 160,
 		shots: 4,
 		reload: 9,
-		accu: 0.7,
+		accu: 4,
 		cost: { labor:12, c:1 },
 		mass: 16,
 		fx: WeaponFX.KINETIC2
@@ -236,7 +236,7 @@ export const WeaponList = {
 		maxdmg: 500,
 		shots: 3,
 		reload: 9,
-		accu: 0.9,
+		accu: 7,
 		cost: { labor:20, y:1, c:1 },
 		mass: 40,
 		fx: WeaponFX.KINETIC2
@@ -251,7 +251,7 @@ export const WeaponList = {
 		maxdmg: 35,
 		shots: 3,
 		reload: 8,
-		accu: 0.7,
+		accu: 8,
 		cost: { labor:8, o:1 },
 		mass: 12,
 		fx: WeaponFX.MISSILE
@@ -264,7 +264,7 @@ export const WeaponList = {
 		maxdmg: 75,
 		shots: 3,
 		reload: 12,
-		accu: 0.8,
+		accu: 6,
 		cost: { labor:20, m:1 },
 		mass: 14,
 		fx: WeaponFX.MISSILE
@@ -277,7 +277,7 @@ export const WeaponList = {
 		maxdmg: 100,
 		shots: 2,
 		reload: 12,
-		accu: 0.9,
+		accu: 6,
 		cost: { labor:20, r:1  },
 		mass: 15,
 		fx: WeaponFX.MISSILE
@@ -290,7 +290,7 @@ export const WeaponList = {
 		maxdmg: 400,
 		shots: 2,
 		reload: 16,
-		accu: 1.1,
+		accu: 20,
 		cost: { labor:15, v:1, r:1 },
 		mass: 30,
 		fx: WeaponFX.TORPEDO
@@ -303,7 +303,7 @@ export const WeaponList = {
 		maxdmg: 1000,
 		shots: 2,
 		reload: 14,
-		accu: 1.5,
+		accu: 30,
 		cost: { labor:25, v:2 },
 		mass: 100,
 		fx: WeaponFX.TORPEDO
@@ -318,7 +318,7 @@ export const WeaponList = {
 		maxdmg: 75,
 		shots: 3,
 		reload: 5,
-		accu: 0.8,
+		accu: 100,
 		cost: { labor:8, m:1, o:1 },
 		mass: 5,
 		fx: WeaponFX.WIDEBEAM
@@ -331,7 +331,7 @@ export const WeaponList = {
 		maxdmg: 75,
 		shots: 3,
 		reload: 5,
-		accu: 0.8,
+		accu: 100,
 		cost: { labor:8, m:1, o:1 },
 		mass: 5,
 		fx: WeaponFX.WIDEBEAM
@@ -344,7 +344,7 @@ export const WeaponList = {
 		maxdmg: 75,
 		shots: 3,
 		reload: 5,
-		accu: 0.8,
+		accu: 100,
 		cost: { labor:8, m:1, o:1 },
 		mass: 5,
 		fx: WeaponFX.WIDEBEAM
@@ -359,7 +359,7 @@ export const WeaponList = {
 		maxdmg: 30,
 		shots: 4,
 		reload: 8,
-		accu: 0.7,
+		accu: 7,
 		cost: {},
 		mass: 30,
 		fx: WeaponFX.SLIME
@@ -372,7 +372,7 @@ export const WeaponList = {
 		maxdmg: 70,
 		shots: 5,
 		reload: 8,
-		accu: 0.7,
+		accu: 7,
 		cost: {},
 		mass: 40,
 		fx: WeaponFX.SLIME
@@ -385,7 +385,7 @@ export const WeaponList = {
 		maxdmg: 200,
 		shots: 6,
 		reload: 8,
-		accu: 0.7,
+		accu: 7,
 		cost: {},
 		mass: 50,
 		fx: WeaponFX.SLIMEBIG
@@ -403,7 +403,7 @@ export const WeaponList = {
 		maxdmg: 80,
 		shots: 3,
 		reload: 4,
-		accu: 0.8,
+		accu: 8,
 		cost: { labor:10, m:1 },
 		mass: 6,
 		fx: WeaponFX.LASERBIG
@@ -416,7 +416,7 @@ export const WeaponList = {
 		maxdmg: 150,
 		shots: 1,
 		reload: 15,
-		accu: 0.6,
+		accu: 4,
 		cost: { labor:6, m:1 },
 		mass: 10,
 		fx: WeaponFX.WIDEBEAM

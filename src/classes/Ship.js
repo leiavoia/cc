@@ -2,8 +2,7 @@ import {WeaponList} from './WeaponList';
 import {Mod,Modlist} from './Mods';
 import {ShipComponentList} from './ShipComponentList';
 import {computedFrom} from 'aurelia-framework';
-
-
+import * as utils from '../util/utils';
 
 export class Ship {
 
@@ -43,10 +42,20 @@ export class Ship {
 	Attack( target, weapon  ) {
 		if ( !weapon.shotsleft || !target || !target.hull ) { return null; }
 		let log = { ship:this, target:target, weapon:weapon, hull:0, armor:0, shield:0, missed:false, killed:false };
-		// chance to hit: 
-		let to_hit = weapon.accu - ( target.bp.combatspeed / 10 );
-		if ( to_hit < 0 ) { to_hit = 0; }
-		if ( Math.random() <= to_hit ) { 
+		// chance to hit: This is an unevan bet between the attacker's weapon, size, and targetting
+		// against the defender's size, combatspeed, and jamming technology.
+		// Ship experience also makes a difference.
+		let hit = weapon.accu + this.xplevel;
+		let evade = target.bp.combatspeed + this.xplevel;
+		let sizediff = Math.max( target.bp.mass, this.bp.mass ) / Math.min( target.bp.mass, this.bp.mass );
+		if ( target.bp.mass < this.bp.mass ) { evade += sizediff; }
+		else { hit += sizediff; }
+		hit = this.bp.mods.Apply( hit, 'hit' );
+		hit = this.bp.mods.Apply( hit, `hit_${weapon.type}` ); 
+		evade = target.bp.mods.Apply( evade, 'evade' );
+		evade = target.bp.mods.Apply( evade, `evade_${weapon.type}` ); 
+		let to_hit = utils.RandomFloat( -evade, +hit );
+		if ( to_hit >= 0 ) { 
 			// damage roll
 			let dmg = Math.ceil( (Math.random() * ( weapon.maxdmg - weapon.mindmg )) + weapon.mindmg );
 			// damage reduced by shielding

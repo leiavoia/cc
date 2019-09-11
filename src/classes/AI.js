@@ -1733,6 +1733,14 @@ export class AIShipDesignObjective extends AIObjective {
 			.pop();
 		if ( shield ) { bp.AddComponent(shield.tag); }
 			
+		// random thrusters
+		let thrusters = civ.avail_ship_comps.filter( c => c.type=='thrusters' ).pickRandom();
+		if ( thrusters && Math.random() > 0.1 ) { bp.AddComponent(thrusters.tag); }
+			
+		// random targetting
+		let targetting = civ.avail_ship_comps.filter( c => c.type=='targetting' ).pickRandom();
+		if ( targetting && Math.random() > 0.1 ) { bp.AddComponent(targetting.tag); }
+			
 		bp.RecalcStats();
 		
 		if ( bp.mass > max_size ) { return; }

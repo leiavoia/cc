@@ -172,7 +172,141 @@ export const ShipComponentList = {
 			new Mod( 'mass', '+', 100, '', null ),
 			],
 		cost: { labor:30, o:20, s:20, m:5 }
-		}
+		},
+		
+	// THRUSTERS / COMBATSPEED
+	THRUSTERS1: {
+		name: 'Impulse Thrusters',
+		desc: '+1 combat speed, improves initiative and evasion.',
+		type: 'thrusters',
+		mx: 'thrusters',
+		mods: [
+			new Mod( 'combatspeed', '+', 1, '', null ),
+			new Mod( 'mass', '*', 1.2, '', null ),
+			],
+		scaled: true,
+		cost: { labor:0.1, o:0.1 }
+		},		
+	THRUSTERS2: {
+		name: 'Neutron Thrusters',
+		desc: '+3 combat speed, improves initiative and evasion.',
+		type: 'thrusters',
+		mx: 'thrusters',
+		mods: [
+			new Mod( 'combatspeed', '+', 3, '', null ),
+			new Mod( 'mass', '*', 1.2, '', null ),
+			],
+		scaled: true,
+		cost: { labor:0.1, s:0.1 }
+		},		
+	THRUSTERS3: {
+		name: 'Quantum Thrusters',
+		desc: '+5 combat speed, improves initiative and evasion.',
+		type: 'thrusters',
+		mx: 'thrusters',
+		mods: [
+			new Mod( 'combatspeed', '+', 5, '', null ),
+			new Mod( 'mass', '*', 1.2, '', null ),
+			],
+		scaled: true,
+		cost: { labor:0.2, b:0.1 }
+		},		
+	THRUSTERS4: {
+		name: 'Phasing Thrusters',
+		desc: '+7 combat speed, improves initiative and evasion.',
+		type: 'thrusters',
+		mx: 'thrusters',
+		mods: [
+			new Mod( 'combatspeed', '+', 7, '', null ),
+			new Mod( 'mass', '*', 1.2, '', null ),
+			],
+		scaled: true,
+		cost: { labor:0.1, g:0.1, b:0.1 }
+		},		
+	THRUSTERS5: {
+		name: 'Dimensional Thrusters',
+		desc: '+10 combat speed, improves initiative and evasion.',
+		type: 'thrusters',
+		mx: 'thrusters',
+		mods: [
+			new Mod( 'combatspeed', '+', 10, '', null ),
+			new Mod( 'mass', '*', 1.2, '', null ),
+			],
+		scaled: true,
+		cost: { labor:0.1, v:0.1, g:0.1 }
+		},		
+		
+	CLOAK1: {
+		name: 'Cloaking',
+		desc: '+5 evasion and initiative.',
+		type: 'cloak',
+		mx: 'cloak',
+		mods: [
+			new Mod( 'evade', '+', 5, '', null ),
+			new Mod( 'init', '+', 5, '', null ),
+			],
+		scaled: false,
+		cost: { labor:40, o:10 }
+		},		
+	CLOAK2: {
+		name: 'Phasing Cloak',
+		desc: '+10 evasion and initiative.',
+		type: 'cloak',
+		mx: 'cloak',
+		mods: [
+			new Mod( 'evade', '+', 10, '', null ),
+			new Mod( 'init', '+', 10, '', null ),
+			],
+		scaled: false,
+		cost: { labor:80, g:10, r:10 }
+		},		
+	CLOAK3: {
+		name: 'Dimensional Cloak',
+		desc: '+20 evasion and initiative.',
+		type: 'cloak',
+		mx: 'cloak',
+		mods: [
+			new Mod( 'evade', '+', 20, '', null ),
+			new Mod( 'init', '+', 20, '', null ),
+			],
+		scaled: false,
+		cost: { labor:150, v:5, c:10, y:15 }
+		},		
+		
+	TARGETTING1: {
+		name: 'Predictive Targetting',
+		desc: '+3 to hit.',
+		type: 'targetting',
+		mx: 'targetting',
+		mods: [
+			new Mod( 'hit', '+', 2, '', null ),
+			],
+		scaled: false,
+		cost: { labor:30 }
+		},		
+	TARGETTING2: {
+		name: 'AI Targetting',
+		desc: '+6 to hit.',
+		type: 'targetting',
+		mx: 'targetting',
+		mods: [
+			new Mod( 'hit', '+', 2, '', null ),
+			],
+		scaled: false,
+		cost: { labor:60 }
+		},		
+	TARGETTING3: {
+		name: 'Quantum Targetting',
+		desc: '+12 to hit.',
+		type: 'targetting',
+		mx: 'targetting',
+		mods: [
+			new Mod( 'hit', '+', 2, '', null ),
+			],
+		scaled: false,
+		cost: { labor:90 }
+		},		
+		
 	};
 	
 // add keys to objects themselves for later self-reference

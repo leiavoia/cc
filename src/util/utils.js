@@ -30,8 +30,9 @@ Array.prototype.shuffle = function() {
 	}
 	
 Array.prototype.pickRandom = function() {
-	if ( this.length == 0 ) { return false; }
-	return this[ Math.floor( (Math.random() * (this.length) ) ) ];
+	if ( this.length === 0 ) { return false; }
+	const i = Math.floor( Math.random() * this.length );
+	return this[i];
 	}
 	
 Array.prototype.contains = function( obj ) {

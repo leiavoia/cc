@@ -269,7 +269,10 @@ export default class ShipCombat {
 			t.fleet.ships.forEach( s => {
 				for ( const w of s.weapons ) {  
 					if ( w.online && w.shotsleft ) {
-						this.AddAttack( { ship:s, weapon:w, team:t }, s.bp.combatspeed + w.reload + Math.random() /* jitter */ );
+						this.AddAttack( 
+							{ ship:s, weapon:w, team:t },
+							s.bp.mods.Apply( s.bp.combatspeed + w.reload + Math.random(), 'init' )
+							);
 						}
 					}
 				})

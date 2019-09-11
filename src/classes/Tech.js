@@ -215,7 +215,7 @@ for ( let k of Object.keys(WeaponList) ) {
 		};
 	}
 	
-// bulk generate the weapon techs
+// bulk generate the ship components
 for ( let k of Object.keys(ShipComponentList) ) { 
 	Techs[k] = {
 		name: ShipComponentList[k].name,
@@ -451,25 +451,39 @@ export let TechNodes = {
 
 	// SHIP COMPONENTS - these are temporary techs until we come up with something more thematic
 	SHIPPARTS1: {
-		name: 'Ship Parts 1',
+		name: 'Spaceship Parts 1',
 		desc: 'Entry-level spaceship bits.' ,
 		rp: 80,
-		yields: ['ENGINE2','ARMOR1','SHIELD1'],
+		yields: ['ENGINE2','ARMOR1','SHIELD1','THRUSTERS1','TARGETTING1'],
 		requires: []
 		},
 	SHIPPARTS2: {
-		name: 'Space Parts 2',
+		name: 'Spaceship Parts 2',
 		desc: 'Improved spaceship bits.' ,
 		rp: 300,
-		yields: ['ENGINE3','ARMOR2','SHIELD2'],
+		yields: ['ENGINE3','ARMOR2','SHIELD2','THRUSTERS2','CLOAK1','TARGETTING2'],
 		requires: ['SHIPPARTS1']
 		},
 	SHIPPARTS3: {
-		name: 'Space Parts 3',
+		name: 'Spaceship Parts 3',
 		desc: 'Advanced spaceship bits.' ,
 		rp: 900,
-		yields: ['ARMOR3','SHIELD3'],
+		yields: ['ARMOR3','SHIELD3','THRUSTERS3'],
 		requires: ['SHIPPARTS2']
+		},
+	SHIPPARTS4: {
+		name: 'Spaceship Parts 4',
+		desc: 'Superior spaceship bits.' ,
+		rp: 2600,
+		yields: ['THRUSTERS4','CLOAK2','TARGETTING3'],
+		requires: ['SHIPPARTS3']
+		},
+	SHIPPARTS5: {
+		name: 'Spaceship Parts 5',
+		desc: 'Ultimate spaceship bits.' ,
+		rp: 4800,
+		yields: ['THRUSTERS5','CLOAK3'],
+		requires: ['SHIPPARTS4']
 		},
 
 	// WEAPONS - these are temporary techs until we come up with something more thematic
