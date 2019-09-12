@@ -473,10 +473,11 @@ export default class Civ {
 			
 		// ground unit hack
 		let troop1 = new GroundUnitBlueprint();
-		troop1.name = 'Basic Infantry';
+		troop1.name = 'Militia';
 		troop1.mindmg = 0;
-		troop1.maxdmg = 5;
-		troop1.mass = 5;
+		troop1.maxdmg = 2;
+		troop1.mass = 3
+		troop1.img = 'img/workshop/icons/SVG/game.svg';
 		troop1.cost.labor = 5;
 		troop1.hp = 1;
 		this.groundunit_blueprints.push( troop1 );

@@ -3,6 +3,7 @@ import {WeaponList} from './WeaponList';
 import {ZoneList} from './Zones';
 import {ShipComponentList} from './ShipComponentList';
 import {Mod} from './Mods';
+import {GroundUnit,GroundUnitBlueprint} from './GroundUnit';
 
 export let Techs = {
 	
@@ -60,6 +61,67 @@ export let Techs = {
 		onComplete( civ ) { 
 			civ.mods.Add( new Mod('speed', '+', 350, this.name) );
 			civ.fleets.forEach( f => f.ReevaluateStats() );
+			}
+		},
+		
+	TROOPS1: {
+		name: "Basic Infantry",
+		desc: 'Our first invasion-ready ground forces.',
+		onComplete( civ ) { 
+			let bp = new GroundUnitBlueprint();
+			bp.name = 'Basic Infantry';
+			bp.mindmg = 0;
+			bp.maxdmg = 5;
+			bp.mass = 5;
+			bp.cost.labor = 10;
+			bp.hp = 1;
+			bp.img = 'img/ground/tank.png';
+			civ.groundunit_blueprints.push( bp );
+			}
+		},
+	TROOPS2: {
+		name: "Advanced Infantry",
+		desc: 'Improved invasion forces handily take on the opposition.',
+		onComplete( civ ) { 
+			let bp = new GroundUnitBlueprint();
+			bp.name = 'Advanced Infantry';
+			bp.mindmg = 2;
+			bp.maxdmg = 8;
+			bp.mass = 8;
+			bp.cost.labor = 20;
+			bp.hp = 1;
+			bp.img = 'img/workshop/icons/SVG/decoration.svg';
+			civ.groundunit_blueprints.push( bp );
+			}
+		},
+	TROOPS3: {
+		name: "Battleoids",
+		desc: 'Massive hybrid war machines capable of handling entire battles by themselves.',
+		onComplete( civ ) { 
+			let bp = new GroundUnitBlueprint();
+			bp.name = 'Battleoids';
+			bp.mindmg = 4;
+			bp.maxdmg = 12;
+			bp.mass = 30;
+			bp.cost.labor = 50;
+			bp.hp = 2;
+			bp.img = 'img/workshop/icons/SVG/plane03.svg';
+			civ.groundunit_blueprints.push( bp );
+			}
+		},
+	TROOPS4: {
+		name: "Droid Army",
+		desc: 'An overwhelming flood of robotic militants to do your dirty work.',
+		onComplete( civ ) { 
+			let bp = new GroundUnitBlueprint();
+			bp.name = 'Droid Army';
+			bp.mindmg = 8;
+			bp.maxdmg = 20;
+			bp.mass = 80;
+			bp.cost.labor = 100;
+			bp.hp = 3;
+			bp.img = 'img/workshop/icons/SVG/shield.svg';
+			civ.groundunit_blueprints.push( bp );
 			}
 		},
 		
@@ -541,7 +603,25 @@ export let TechNodes = {
 	VIS2: {
 		rp: 2500,
 		requires: ['VIS1']
-		}
+		},
+
+	// WEAPONS - these are temporary techs until we come up with something more thematic
+	TROOPS1: {
+		rp: 300,
+		// requires: []
+		},
+	TROOPS2: {
+		rp: 600,
+		requires: ['TROOPS1']
+		},
+	TROOPS3: {
+		rp: 1800,
+		requires: ['TROOPS2']
+		},
+	TROOPS4: {
+		rp: 3500,
+		requires: ['TROOPS3']
+		},
 	
 	};
 	

@@ -82,7 +82,7 @@
 				<div class="shipgrid trooplist">
 					<!-- ${u == last_turnlog.unit || u == last_turnlog.target ? 'hilite' : ''} -->
 					<div id="groundunit-${u.id}" repeat.for="u of team.units_orig" class="ship" >
-						<img src="img/ground/tank_transp.png" 
+						<img src.bind="u.bp.img" title.bind="u.bp.name" 
 							style="
 								height: 32px; 
 								width: 32px; 

@@ -16,6 +16,7 @@ export class FleetDetailPane {
 	turn_subscription = null;
 	playerHasLocalFleet = false;
 	ship_grid_packing = 1; // controls density of ships on UI. [1,2,4,9,16,25,36]
+	show_defenses = false;
 	@bindable fleet = null;
 	app = null;
 

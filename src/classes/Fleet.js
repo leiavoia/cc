@@ -329,7 +329,7 @@ export default class Fleet {
 		return data;
 		}
 		
-	// returns a Map of [ GroundUnitBlueprint => count ]
+	// returns a flat array of ground units
 	ListGroundUnits() { 
 		let data = [];
 		for ( let s of this.ships ) { 

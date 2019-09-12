@@ -26,7 +26,7 @@
 			<b style="color: #1BD;">⮞${fleet.speed|round}&nbsp;</b>
 			<b style="color: #F33;">⚡${fleet.milval|round}&nbsp;</b>
 			<b style="color: #AEA;" show.bind="fleet.research">⚛${fleet.research}&nbsp;</b>
-			<b style="color: #FF9F00;" show.bind="fleet.troops">☠${fleet.troops}&nbsp;</b>
+			<b style="color: #FF9F00;" class="clickable" show.bind="fleet.troops" click.delegate="show_defenses = !show_defenses">☠${fleet.troops}&nbsp;</b>
 			<b style="color: #FF0;" show.bind="can_colonize">⚑&nbsp;</b>
 			<b style="color: #F33;" if.bind="fleet.fp" >
 				⚔<progress max="1.0" value.bind="fleet.fp_remaining / fleet.fp" style="width: 4em; height: 0.7em; color: #F33;"></progress>&nbsp;
@@ -36,6 +36,22 @@
 			</b>
 		</p>
 		
+		<div class="defenses wrapper" if.bind="app.game.turn_num && show_defenses && (app.options.see_all || fleet.owner.is_player)">
+			<div repeat.for="[bp,count] of fleet.ListUniqueGroundUnits()" style="display:inline-block;">
+				<img src.bind="bp.img" title.bind="bp.name"
+					style="
+						height: 32px; 
+						width: 32px; 
+						display: inline-block; 
+						border: 1px solid white; 
+						border-radius: 0.25em; 
+						overflow: hidden; 
+						padding: 0.25em; 
+						"
+				/>&nbsp;x${count}&nbsp;
+			</div>
+		</div>
+					
 		<!-- local anomoly research info -->
 		<p if.bind="fleet.star && !fleet.dest && fleet.star.objtype == 'anom' && (app.options.see_all || fleet.owner.is_player)">
 			Anomaly Research: ${(app.game.turn_num*0) + fleet.star.AmountResearched( fleet.owner ) / fleet.star.size | percent}% 
@@ -173,7 +189,7 @@
 			</progress>
 			<p if.bind="!trooplist.length" class="centered">No Troops In Fleet</p>
 			<div class="trooplist">
-				<img src="img/ground/tank_transp.png" 
+				<img src.bind="t.bp.img" title.bind="t.bp.name"
 					style="
 						height: 32px; 
 						width: 32px; 
@@ -196,13 +212,13 @@
 			
 			<div repeat.for="p of fleet.star.planets" 
 				class="hilite_wrapper ${p==selected_planet ? 'selected' : ''}" 
-				if.bind="p.owner.is_player"
+				if.bind="p.owner && p.owner.is_player"
 				click.delegate="ClickPlanetForTroops(p)"
 				>
 				<div class="planet atm${p.atm} tmp${p.temp}" css.one-time="PlanetSizeCSS(p)">
 					<p css="color: ${p.ui_color}; font-weight:bold;">${p.name}</p>
 					<div class="trooplist">
-						<img src="img/ground/tank_transp.png" 
+						<img src.bind="t.bp.img" title.bind="t.bp.name"
 							style="
 								height: 32px; 
 								width: 32px; 
@@ -233,7 +249,7 @@
 		<template containerless if.bind="fleet.star">
 			<p>Our Forces:</p>
 			<div repeat.for="[bp,count] of fleet.ListUniqueGroundUnits()" style="display:inline-block;">
-				<img src="img/ground/tank_transp.png" 
+				<img src.bind="bp.img" title.bind="bp.name"
 					style="
 						height: 32px; 
 						width: 32px; 
@@ -258,7 +274,7 @@
 						Odds: <b>${CalculateChanceOfGroundVictory(p) * 100 | round}%</b>
 					</p>
 					<div repeat.for="[bp,count] of p.ListUniqueGroundUnits()" style="display:inline-block;">
-						<img src="img/ground/tank_transp.png" 
+						<img src.bind="bp.img" title.bind="bp.name"
 							style="
 								height: 32px; 
 								width: 32px; 
