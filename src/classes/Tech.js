@@ -3,7 +3,8 @@ import {WeaponList} from './WeaponList';
 import {ZoneList} from './Zones';
 import {ShipComponentList} from './ShipComponentList';
 import {Mod} from './Mods';
-import {GroundUnit,GroundUnitBlueprint} from './GroundUnit';
+import {GroundUnitBlueprint} from './GroundUnit';
+import {ShipBlueprint} from './Ship';
 
 export let Techs = {
 	
@@ -28,6 +29,43 @@ export let Techs = {
 			civ.avail_ship_weapons = [
 				WeaponList.LASER
 				];			
+
+			// default ship set
+			let colonizer = new ShipBlueprint();
+			colonizer.name = 'Colony Ship';
+			colonizer.img = 'img/ships/ship003_mock.png';
+			colonizer.AddComponent( 'ENGINE1' );
+			colonizer.AddComponent( 'RESEARCHLAB1' );
+			colonizer.AddComponent( 'COLONY1' );
+			civ.ship_blueprints.push(colonizer);
+		
+			let fighter = new ShipBlueprint();
+			fighter.name = 'Fighter';
+			fighter.img = 'img/ships/ship002_mock.png';
+			fighter.AddComponent( 'ENGINE1' );
+			fighter.AddWeapon( 'LASER', 1 );
+			fighter.AddComponent( 'ARMOR1' );
+			civ.ship_blueprints.push(fighter);
+		
+			let carrier = new ShipBlueprint();
+			carrier.name = 'Troop Carrier'; 
+			carrier.img = 'img/ships/ship021_mock.png';
+			carrier.AddComponent( 'CARRIER1' );
+			carrier.AddComponent( 'ENGINE1' );
+			carrier.AddComponent( 'ARMOR1' );
+			carrier.AddComponent( 'SHIELD2' );
+			civ.ship_blueprints.push(carrier);
+				
+			// default militia unit
+			let troop1 = new GroundUnitBlueprint();
+			troop1.name = 'Militia';
+			troop1.mindmg = 0;
+			troop1.maxdmg = 2;
+			troop1.mass = 3
+			troop1.img = 'img/icons/svg/spacesuit.svg';
+			troop1.cost.labor = 5;
+			troop1.hp = 1;
+			civ.groundunit_blueprints.push( troop1 );				
 			}
 		},		
 
@@ -75,7 +113,7 @@ export let Techs = {
 			bp.mass = 5;
 			bp.cost.labor = 10;
 			bp.hp = 1;
-			bp.img = 'img/ground/tank.png';
+			bp.img = 'img/icons/svg/walker.svg';
 			civ.groundunit_blueprints.push( bp );
 			}
 		},
@@ -90,7 +128,7 @@ export let Techs = {
 			bp.mass = 8;
 			bp.cost.labor = 20;
 			bp.hp = 1;
-			bp.img = 'img/workshop/icons/SVG/decoration.svg';
+			bp.img = 'img/ground/tank_transp.png';
 			civ.groundunit_blueprints.push( bp );
 			}
 		},
@@ -105,7 +143,7 @@ export let Techs = {
 			bp.mass = 30;
 			bp.cost.labor = 50;
 			bp.hp = 2;
-			bp.img = 'img/workshop/icons/SVG/plane03.svg';
+			bp.img = 'img/icons/svg/robot.svg';
 			civ.groundunit_blueprints.push( bp );
 			}
 		},
@@ -120,7 +158,7 @@ export let Techs = {
 			bp.mass = 80;
 			bp.cost.labor = 100;
 			bp.hp = 3;
-			bp.img = 'img/workshop/icons/SVG/shield.svg';
+			bp.img = 'img/icons/svg/mech.svg';
 			civ.groundunit_blueprints.push( bp );
 			}
 		},

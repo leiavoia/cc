@@ -421,9 +421,6 @@ export default class Civ {
 			}
 		}
 
-
-
-
 	constructor( name ) { 
 		this.name = ( name || RandomName() ).uppercaseFirst();
 		this.name_plural = this.name + 's';
@@ -444,43 +441,6 @@ export default class Civ {
 		this.mods = new Modlist( this.race );
 		this.ai = new AI.CivAI(this);
 		this.InitResearch();
-
-		// default ship set
-		let colonizer = new ShipBlueprint();
-		colonizer.name = 'Colony Ship';
-		colonizer.img = 'img/ships/ship003_mock.png';
-		colonizer.AddComponent( 'ENGINE1' );
-		colonizer.AddComponent( 'RESEARCHLAB1' );
-		colonizer.AddComponent( 'COLONY1' );
-		this.ship_blueprints.push(colonizer);
-	
-		let fighter = new ShipBlueprint();
-		fighter.name = 'Fighter';
-		fighter.img = 'img/ships/ship002_mock.png';
-		fighter.AddComponent( 'ENGINE1' );
-		fighter.AddWeapon( 'LASER', 1 );
-		fighter.AddComponent( 'ARMOR1' );
-		this.ship_blueprints.push(fighter);
-	
-		let carrier = new ShipBlueprint();
-		carrier.name = 'Troop Carrier'; 
-		carrier.img = 'img/ships/ship021_mock.png';
-		carrier.AddComponent( 'CARRIER1' );
-		carrier.AddComponent( 'ENGINE1' );
-		carrier.AddComponent( 'ARMOR1' );
-		carrier.AddComponent( 'SHIELD2' );
-		this.ship_blueprints.push(carrier);
-			
-		// ground unit hack
-		let troop1 = new GroundUnitBlueprint();
-		troop1.name = 'Militia';
-		troop1.mindmg = 0;
-		troop1.maxdmg = 2;
-		troop1.mass = 3
-		troop1.img = 'img/workshop/icons/SVG/game.svg';
-		troop1.cost.labor = 5;
-		troop1.hp = 1;
-		this.groundunit_blueprints.push( troop1 );
 		}
 	
 	static Random( difficulty = 0.5 ) {
