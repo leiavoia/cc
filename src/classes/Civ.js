@@ -435,9 +435,9 @@ export default class Civ {
 			for ( let i=0; i<=454 ; i++ ) { Civ.img_id_roster.push(i); }
 			Civ.img_id_roster.shuffle();
 			}
-		this.flag_img = 'img/flags/flag_' + ("000" + Civ.flag_id_roster[this.id]).slice(-3) + '.png';
-		this.diplo_img = 'img/races/alien_' + ("000" + Civ.img_id_roster[this.id]).slice(-3) + '.jpg';
-		this.diplo_img_small = 'img/races/alien_' + ("000" + Civ.img_id_roster[this.id]).slice(-3) + '.jpg';
+		this.flag_img = 'img/flags/flag_' + ("000" + Civ.flag_id_roster[Civ.total_civs]).slice(-3) + '.png';
+		this.diplo_img = 'img/races/alien_' + ("000" + Civ.img_id_roster[Civ.total_civs]).slice(-3) + '.jpg';
+		this.diplo_img_small = 'img/races/alien_' + ("000" + Civ.img_id_roster[Civ.total_civs]).slice(-3) + '.jpg';
 		this.mods = new Modlist( this.race );
 		this.ai = new AI.CivAI(this);
 		this.InitResearch();

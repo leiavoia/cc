@@ -217,7 +217,7 @@ export default class Game {
 		// TODO: difficulty level: when assigning homeworlds, give player more or less
 		// room, and better or worse position as defined by the natural score of all
 		// planets within a "starting circle", then sort star systems by their totals.
-		this.SetMyCiv(0);
+		this.SetMyCiv( this.galaxy.civs[0] );
 		this.RecalcStarRanges();
 		this.RecalcFleetRanges();
 		this.RecalcCivContactRange();
@@ -902,6 +902,13 @@ export default class Game {
 			// set new one
 			this.myciv = c;
 			this.myciv.is_player = true;
+			// UI hinting
+			this.galaxy.stars.forEach( s => {
+				s.settled_by_player = s.accts.has(this.myciv);
+				s.explored = s.accts.has(this.myciv); // fuzzy but ok for debug
+				this.RecalcStarRanges();
+				this.RecalcFleetRanges();
+				});
 			}
 		}
 	RotateMyCiv() { 
@@ -912,6 +919,13 @@ export default class Game {
 		// set new one
 		this.myciv = this.galaxy.civs[ newIndex ];
 		this.myciv.is_player = true;
+		// UI hinting
+		this.galaxy.stars.forEach( s => {
+			s.settled_by_player = s.accts.has(this.myciv);
+			s.explored = s.accts.has(this.myciv); // fuzzy but ok for debug
+			this.RecalcStarRanges();
+			this.RecalcFleetRanges();
+			});
 		}
 			
 	}

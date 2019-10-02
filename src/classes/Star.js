@@ -21,8 +21,8 @@ export default class Star {
 	explored = false; // set to true to tell the UI to do special stuff
 	in_range = false; // set to true to tell the UI to do special stuff
 	
-	// UI hinting - If a civ has settled this star, it's Civ-ID will be in the list
-	settled_by = []; 
+	// For UI hinting
+	settled_by_player = false; 
 	
 	// accounts are used to keep track of activities per-civ,
 	// because multiple civs can inhabit the star system.
@@ -106,14 +106,14 @@ export default class Star {
 		// figure out how many people own how many planets
 		let colors = new Map(); // maps civ colors to planet count
 		let total_planets = 0;
-		this.settled_by.splice( 0, this.settled_by.length ); // hint fo aurelia to refresh
+		this.settled_by_player = false;
 		for ( let p of this.planets ) { 
 			if ( p.owner ) { 
 				if ( !colors.has( p.owner.color_rgb ) ) { colors.set(p.owner.color_rgb, 1); }
 				else { colors.set(p.owner.color_rgb, colors.get(p.owner.color_rgb)+1 ); }
 				total_planets++;
 				// update this while we're here
-				this.settled_by[p.owner.id] = true;
+				if ( p.owner.is_player ) this.settled_by_player = true;
 				}
 			}
 		if ( total_planets ) { 

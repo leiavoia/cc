@@ -16,7 +16,7 @@
 			<!-- RANGE LAYER HEADSUP -->
 			<div id="range_layer" if.bind="app.options.show_range">
 				<template repeat.for="star of app.game.galaxy.stars" containerless>
-					<div if.bind="star.settled_by[app.game.myciv.id]" 
+					<div if.bind="star.settled_by_player" 
 						css="
 							width: ${app.game.myciv.ship_range*2}px; 
 							height: ${app.game.myciv.ship_range*2}px; 
@@ -94,7 +94,7 @@
 					</span>	
 				</div>
 				<!-- AI DEBUG -->
-				<p if.bind="app.options.debug && star.settled_by[app.game.myciv.id]"
+				<p if.bind="app.options.debug && star.settled_by_player"
 					style="box-sizing: border-box; margin-left: -200%; margin-top: -92px; width: 500%; text-align:center;" 
 					>
 					<span style="color: #AFA;">
