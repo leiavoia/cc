@@ -445,7 +445,6 @@ export default class Planet {
 			// technology
 			// galactic economy
 			// recent events
-			// connectivity / hyperlanes
 			
 		// we want PCI=10 for new vanilla colonies
 		let richness = 1.0;
@@ -535,8 +534,6 @@ export default class Planet {
 			{name: 'Geo-Unstable', chance: 200, note: '--inf', fx: {} },
 			{name: 'Flat', chance: 200, note: '+inf, -mig', fx: {} },
 			{name: 'Accessible', chance: 100, note: '++prod, +mig', fx: {} },
-			{name: 'Hyper-Perfect', chance: 50, note: '++hyperlanes, +mig', fx: {} },
-			{name: 'Hyper-Ideal', chance: 80, note: '+hyperlanes, +mig', fx: {} },
 			{name: 'Bread Basket', chance: 200, note: '+mig, +morale, +pop', fx: {} },
 			{name: 'Pharmacopia', chance: 100, note: '++pop', fx: {} },
 			{name: 'Rings', chance: 120, note: '+prod', fx: {} },

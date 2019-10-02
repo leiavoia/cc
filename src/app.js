@@ -3,7 +3,6 @@ import Galaxy from './classes/Galaxy';
 import Star from './classes/Star';
 import Anom from './classes/Anom';
 import Planet from './classes/Planet';
-import Constellation from './classes/Constellation';
 import Fleet from './classes/Fleet';
 import Civ from './classes/Civ';
 import * as Signals from './util/signals';
@@ -191,7 +190,6 @@ export class App {
 		else if ( obj instanceof Star ) { this.sidebar_mode = 'star';  this.CurrentState().SetCaret(obj); }
 		else if ( obj instanceof Anom ) { this.sidebar_mode = 'anom';  this.CurrentState().SetCaret(obj); }
 		else if ( obj instanceof Fleet && !obj.killme && !obj.merged_into ) { this.sidebar_mode = 'fleet'; this.CurrentState().SetCaret(obj); }
-// 		else if ( obj instanceof Constellation ) { this.sidebar_mode = 'constel'; }
 		else { this.sidebar_mode = false; }
 		this.sidebar_obj = obj;
 		

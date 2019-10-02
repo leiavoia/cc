@@ -329,13 +329,6 @@
 				<p><a href="#" onclick="document.body.className = 'theme_lcars'; return false;">LCARS</a></p>
 				<p><a href="#" onclick="document.body.className = 'theme_ps'; return false;">PointSiege</a></p>
 				
-				
-				<!-- hyperlanes-->
-				<div class="hyperlane" style="left:605px; top:375px; width: 1960px; transform: rotate(49.6deg); "></div>
-				<div class="hyperlane" style="left:600px; top:375px; width: 300px; transform: rotate(-64deg);"></div>
-				<div class="hyperlane" style="left:365px; top:475px; width: 250px; transform: rotate(-24.5deg);"></div>
-				
-				
 				<div class="mapobj_container star_red unexplored" style="position:absolute;left:650px;top:50px;">
 					<h2>ARYRACYD</h2>
 					<div class="planet_list">	
@@ -1950,7 +1943,7 @@
 			
 			<nav>
 				<!-- add to constellation button when debugging is over: planet.owner.id == theapp.iam -->
-				<a href="#" class="button left" click.delegate="PressStarButton()"> STAR </a><a href="#" class="button center" click.delegate="PressConstelButton()" if.bind="planet.owner"> CONSTL </a><a href="#" class="button right" click.delegate="OpenDetailsPane()"> INFO </a>
+				<a href="#" class="button left" click.delegate="PressStarButton()"> STAR </a><a href="#" class="button right" click.delegate="OpenDetailsPane()"> INFO </a>
 				<a href="#" class="button left" click.delegate="PressPrevPlanetButton()"> PREV </a><a href="#" class="button right" click.delegate="PressNextPlanetButton()"> NEXT </a>
 			</nav>
 			

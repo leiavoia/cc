@@ -2,7 +2,6 @@
 import Star from '../classes/Star';
 import Anom from '../classes/Anom';
 import Planet from '../classes/Planet';
-import Constellation from '../classes/Constellation';
 import Fleet from '../classes/Fleet';
 import * as utils from '../util/utils';
 import {inject} from 'aurelia-framework';
