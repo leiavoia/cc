@@ -795,19 +795,10 @@ export default class Game {
 			}
 		}
 		
-	RecalcCivContactRange() { 
-		// we dont have a handy list of stars, but we do have planets.
-		// no need to check every planet to every other planet, just their host stars.
+	RecalcCivContactRange() {
 		let starlist = []; // multidimensial array of [civ][star]
 		for ( let c=0; c < this.galaxy.civs.length; c++ ) {
-			let civ = this.galaxy.civs[c];
-			starlist[civ.id] = [];
-			for ( let p=0; p < civ.planets.length; p++ ) {
-				if ( starlist[civ.id].indexOf( civ.planets[p].star ) == -1 ) {
-					starlist[civ.id].push( civ.planets[p].star );
-// 					console.log(`added ${civ.planets[p].star.name} to civ ${civ.name}`);
-					}
-				}
+			starlist[c] = this.galaxy.civs[c].MyStars();
 			}
 		// recalculate which civs are in communication range.
 		for ( let c1=0; c1 < this.galaxy.civs.length-1; c1++ ) { 
@@ -820,10 +811,10 @@ export default class Game {
 					// in-range is determined by the lesser of the civs' ship ranges
 					let max_range = Math.pow( Math.min( civ1.ship_range, civ2.ship_range ), 2 ); // avoid sqrt
 					// scan for range
-					for ( let c1s=0; c1s < starlist[civ1.id].length; c1s++ ) { // for each of civ1's stars
-						for ( let c2s=0; c2s < starlist[civ2.id].length; c2s++ ) { // for each of civ2's stars
-							let star1 = starlist[civ1.id][c1s];
-							let star2 = starlist[civ2.id][c2s];
+					for ( let c1s=0; c1s < starlist[c1].length; c1s++ ) { // for each of civ1's stars
+						for ( let c2s=0; c2s < starlist[c2].length; c2s++ ) { // for each of civ2's stars
+							let star1 = starlist[c1][c1s];
+							let star2 = starlist[c2][c2s];
 							let dist = 0;
 							if ( star1 != star2 ) { // no need to compare to self
 								dist = 
