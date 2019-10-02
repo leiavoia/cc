@@ -569,21 +569,10 @@ export default class Planet {
 		return Planet.GravNames()[this.grav];
 		}
 			
-	static NextUniqueID() {
-		if( !this.next_uid && this.next_uid!==0 ){
-			this.next_uid=1;
-			}
-		else{
-			this.next_uid++;
-			}
-		return this.next_uid;
-		}
-		
-		
 	constructor( star, name ) { 
 		this.star = star;	
 		this.name = ( name || RandomName() ).uppercaseFirst();
-		this.id = Planet.NextUniqueID();
+		this.id = utils.UUID();
 		this.mods = new Modlist;
 		}
 	

@@ -82,8 +82,6 @@ export class App {
 		Civ.total_civs = false; // next one will be zero
 		Civ.flag_id_roster = null;
 		Civ.img_id_roster = null;
-		Planet.next_uid = 1;
-		Star.next_id = 1;
 		this.notes = [];
 		}
 		

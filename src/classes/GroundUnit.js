@@ -1,6 +1,6 @@
 import {Mod,Modlist} from './Mods';
 import {computedFrom} from 'aurelia-framework';
-
+import * as utils from '../util/utils';
 
 
 export class GroundUnit {
@@ -9,7 +9,7 @@ export class GroundUnit {
 	// To "manufacture" units, use Make()
 	// which also handles internal recordkeeping.
 	constructor( blueprint ) { 
-		this.id = ++GroundUnit.next_id;
+		this.id = utils.UUID();
 		this.bp = blueprint;
 		this.hp = blueprint.hp;
 		this.xp = 0; // experience
@@ -60,12 +60,11 @@ export class GroundUnit {
 		}
 				
 	};
-GroundUnit.next_id = 0;
 
 
 export class GroundUnitBlueprint {
 	constructor() {
-		this.id = ++GroundUnitBlueprint.next_id;
+		this.id = utils.UUID();
 		this.name = 'Ground Unit';
 		this.mindmg = 0;
 		this.maxdmg = 1;		
@@ -89,4 +88,3 @@ export class GroundUnitBlueprint {
 		}
 		
 	};
-GroundUnitBlueprint.next_id = 0;

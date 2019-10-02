@@ -10,7 +10,7 @@ export class Ship {
 	// To "manufacture" ships, use ShipBlueprint::Make()
 	// which also handles internal recordkeeping.
 	constructor( blueprint ) { 
-		this.id = ++Ship.next_id;
+		this.id = utils.UUID();
 		this.bp = blueprint;
 		this.hull = blueprint.hull;
 		this.armor = blueprint.armor;
@@ -111,12 +111,11 @@ export class Ship {
 		}
 		
 	};
-Ship.next_id = 0;
 
 
 export class ShipBlueprint {
 	constructor() {
-		this.id = ++ShipBlueprint.next_id;
+		this.id = utils.UUID();
 		this.name = 'Ship Name';
 		this.role = 'scout'; // helps AI. ['scout','combat','colonizer','carrier','research']
 		this.weapons = [];
@@ -332,4 +331,3 @@ export class ShipBlueprint {
 		return newbp;
 		}
 	};
-ShipBlueprint.next_id = 0;

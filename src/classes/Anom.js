@@ -50,21 +50,11 @@ export default class Anom {
 			}
 		}
 		
-	static IncNextID() {
-		if( !this.next_id && this.next_id!==0 ){
-			this.next_id=1;
-			}
-		else{
-			this.next_id++;
-			}
-		return this.next_id;
-		}
-		
 	constructor( type, xpos, ypos ) { 
 		this.type = type;
 		this.xpos = xpos;
 		this.ypos = ypos;	
-		this.id = Anom.IncNextID();
+		this.id = utils.UUID();
 		this.name = 'Anomaly ' + this.id; //( name || /*utils.RandomName()*/'X' ).uppercaseFirst();
 // 		this.name = 'Abandoned Cargo';
 		this.collected = false; // collectable

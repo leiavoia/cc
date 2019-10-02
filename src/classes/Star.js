@@ -28,22 +28,12 @@ export default class Star {
 	// because multiple civs can inhabit the star system.
 	accts = null; // new Map();
 	
-	static IncNextID() {
-		if( !this.next_id && this.next_id!==0 ){
-			this.next_id=1;
-			}
-		else{
-			this.next_id++;
-			}
-		return this.next_id;
-		}
-		
 	constructor( name, color, xpos, ypos ) { 
 		this.name = ( name || RandomName() ).uppercaseFirst();
 		this.color = color;
 		this.xpos = xpos;
 		this.ypos = ypos;
-		this.id = Star.IncNextID();
+		this.id = utils.UUID();
 		this.accts = new Map();
 		}
 	

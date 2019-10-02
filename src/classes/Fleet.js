@@ -1,5 +1,6 @@
 import * as Signals from '../util/signals';
 import {Mod,Modlist} from './Mods';
+import * as utils from '../util/utils';
 
 export default class Fleet {
 	
@@ -44,22 +45,12 @@ export default class Fleet {
 				}
 			}		
 		}
-		
-	static NextUniqueID() {
-		if( !this.next_uid && this.next_uid!==0 ){
-			this.next_uid=1;
-			}
-		else{
-			this.next_uid++;
-			}
-		return this.next_uid;
-		}
-		
+				
 	constructor( owner, star ) { 
 		this.star = star;	
 		this.xpos = star ? star.xpos : 0;
 		this.ypos = star ? star.ypos : 0;
-		this.id = Fleet.NextUniqueID();
+		this.id = utils.UUID();
 		this.owner = owner;
 		this.owner.fleets.push(this);
 		Fleet.all_fleets.push( this );

@@ -146,3 +146,8 @@ export function hash(str) {
 	* signed int to an unsigned by doing an unsigned bitshift. */
 	return hash >>> 0;
 	}
+
+export function UUID() {
+	return ++UUID.n;
+}
+UUID.n = 0;

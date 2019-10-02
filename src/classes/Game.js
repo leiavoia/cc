@@ -10,6 +10,7 @@ import {VictoryRecipes,VictoryIngredients} from './VictoryRecipes';
 import * as CrazyBox from './Crazy';
 
 export default class Game {
+	id = null;
 	app = false;
 	galaxy = null;
 	turn_num = 0;
@@ -27,6 +28,7 @@ export default class Game {
 	
 	constructor( app ) {
 		this.app = app;
+		this.id = utils.UUID();
 		Signals.Listen('anom_complete', data => this.AnomCompleted(data) );
 		this.eventlib = new EventLibrary(this.app);
 		}

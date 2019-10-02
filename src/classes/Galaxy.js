@@ -7,6 +7,7 @@ import * as utils from '../util/utils';
 import {Ship,ShipBlueprint} from './Ship';
 
 export default class Galaxy {
+	id = null;
 	fleets = []; // maps to Fleet.all_fleets
 	stars = [];
 	civs = [];
@@ -28,6 +29,7 @@ export default class Galaxy {
 		};
 		
 	constructor() { 
+		this.id = utils.UUID();
 		this.fleets = Fleet.all_fleets;
 		}
 		

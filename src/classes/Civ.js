@@ -425,7 +425,7 @@ export default class Civ {
 		this.name = ( name || RandomName() ).uppercaseFirst();
 		this.name_plural = this.name + 's';
 		Civ.IncTotalNumCivs();
-		this.id = Civ.total_civs;
+		this.id = utils.UUID();
 		// internal flag roster picks unique flags for each race
 		if ( !Civ.flag_id_roster ) { 
 			Civ.flag_id_roster = [];
