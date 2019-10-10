@@ -51,15 +51,55 @@ export default class Anom {
 		}
 		
 	constructor( type, xpos, ypos ) { 
-		this.type = type;
-		this.xpos = xpos;
-		this.ypos = ypos;	
-		this.id = utils.UUID();
-		this.name = 'Anomaly ' + this.id; //( name || /*utils.RandomName()*/'X' ).uppercaseFirst();
-// 		this.name = 'Abandoned Cargo';
-		this.collected = false; // collectable
+		// 'fromJSON' style object as first param. Note that stored JSON objects
+		// do not contain all necessary properties. We need to fetch from the anom library.
+		if ( type && typeof(type)==='object' && 'xpos' in type ) { 
+			Object.assign( this, type ); 
+			Object.assign( this, anom_list[type.key] );
+			}
+		// regular constructor
+		else { 
+			this.type = type;
+			this.xpos = xpos;
+			this.ypos = ypos;	
+			this.id = utils.UUID();
+			this.name = 'Anomaly ' + this.id; //( name || /*utils.RandomName()*/'X' ).uppercaseFirst();
+	// 		this.name = 'Abandoned Cargo';
+			this.collected = false; // collectable
+			}
 		}
 		
+	toJSON() { 
+		let obj = {};
+		// we dont need the common info stored in the library, just instance data
+		for ( let k of ['collected','size','vis_level','onmap','order','in_range', 'explored','settled','ypos','xpos','type','name','id'] ) { 
+			obj[k] = this[k];
+			}
+		obj._classname = 'Anom';
+		obj.fleets = this.fleets.map( x => x.id );
+		obj.researched = {};
+		for ( let [k,v] of this.researched ) {
+			obj.researched[ k.id ] = v;
+			}
+		return obj;
+		}
+		
+	Pack( catalog ) { 
+		// console.log('packing Anom' + this.id + ' ' + this.name); 
+		if ( !( this.id in catalog ) ) { 
+			catalog[ this.id ] = this.toJSON(); 
+			}
+		}
+	
+	Unpack( catalog ) {
+		this.fleets = this.fleets.map( x => catalog[x] );
+		let map = new Map();
+		for ( let k in this.researched ) {
+			map.set( catalog[k], this.researched[k] );
+			} 
+		this.researched = map;
+		}
+				
 	static CreateFrom( anomdata, x, y ) { 
 		let a = new Anom( 'normal', x, y );
 		Object.assign( a, anomdata );
@@ -72,10 +112,11 @@ export default class Anom {
 		}
 		
 	static Random( x, y ) {
-		let list_i = utils.RandomInt( 0, anom_list.length-1 );
+		let keys = Object.keys(anom_list);
+		let list_i = utils.RandomInt( 0, keys.length-1 );
 		let a = new Anom( 'normal', x, y );
-		Object.assign( a, anom_list[list_i] );
-// 		a.onComplete = a.onComplete.bind(a);
+		Object.assign( a, anom_list[keys[list_i]] );
+		a.key = keys[list_i];
 		a.onmap = !( Math.random() > 0.5 ); // 50% chance of being a map object
 		a.collected = a.onmap ? null : false; // on-map anoms cant be collectable
 		a.vis_level = 0;//utils.RandomInt(0,2);
@@ -85,8 +126,8 @@ export default class Anom {
 		}
 	}
 
-let anom_list = [
-	{
+let anom_list = {
+	ABANDONED_CARGO: {
 		pre_desc: 'Small object or gravitational disturbance detected.',
 		post_desc: 'In the vacuum of space we found a stream of valuable cargo apparently jetisoned from a convoy. Who were the owners? Smugglers? Thieves? Regardless, we recovered the cargo and sold it off for {AMOUNT} credits.',		
 		onComplete: function (fleet) { 
@@ -96,7 +137,7 @@ let anom_list = [
 			this.post_desc = this.post_desc.replace('{AMOUNT}',amount);
 			}
 		},
-	{
+	ASTEROID: {
 		pre_desc: 'Small object or gravitational disturbance detected.',
 		post_desc: 'We found a small intersteller asteroid comprised mainly of precious metals. It was sold for {AMOUNT} credits.',		
 		onComplete: function (fleet) { 
@@ -106,7 +147,7 @@ let anom_list = [
 			this.post_desc = this.post_desc.replace('{AMOUNT}',amount);
 			}
 		},
-	{
+	WRECKAGE: {
 		pre_desc: 'Small object or gravitational disturbance detected.',
 		post_desc: 'Research teams happened upon what appears to be the wreckage of a failed "orgship". It seems to have suffered an accident and was found drifting eternally end over end. Studying the wreckage may give us some insights into its makers.',		
 		onComplete: function (fleet) { 
@@ -114,7 +155,7 @@ let anom_list = [
 			this.name = 'Mysterious Wreckage';
 			}
 		},
-	{
+	FUEL_DEPO: {
 		pre_desc: 'Abnormal energy signatures detected.',
 		post_desc: 'We discovered a small deep space proto-star. It hasn\'t started solar fusion, so it makes a great resource for fuel. Our range has increased by {AMOUNT}.',		
 		onComplete: function (fleet) {
@@ -124,14 +165,14 @@ let anom_list = [
 			this.post_desc = this.post_desc.replace('{AMOUNT}',amount);
 			}
 		},
-	{
+	PROBE: {
 		pre_desc: 'Abnormal energy signatures detected.',
 		post_desc: 'Drifting though space at sub-light speeds, research teams intercepted an uncrewed alien probe. More research is needed to uncover its origins.',		
 		onComplete: function (fleet) {
 			this.name = 'Probe';
 			}
 		},
-	{
+	WRINKLE: {
 		pre_desc: 'Abnormal energy signatures detected.',
 		post_desc: 'This region of space exhibits unusual hyperspace geometry. It should give us a kind of 4-dimensional "shortcut". Our ship speed has increased by {AMOUNT}.',		
 		onComplete: function (fleet) {
@@ -142,7 +183,7 @@ let anom_list = [
 			this.post_desc = this.post_desc.replace('{AMOUNT}',amount);
 			}
 		},
-	{
+	LOST_FIGHTER: {
 		pre_desc: 'Small object or gravitational disturbance detected.',
 		post_desc: 'Drifting in deep space, we discovered an abandoned spacecraft of unknown origin. The reseach team will tow it back for follow up examination and retrofitting for use in our fleet.',		
 		onComplete: function (fleet) {
@@ -159,4 +200,4 @@ let anom_list = [
 			fleet.AddShip( new Ship(bp) );
 			}
 		}
-	];
+	};

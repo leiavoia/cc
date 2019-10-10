@@ -46,8 +46,16 @@ export class AI {
 	objectives = [];
 	completed = []; // mostly for debug
 	constructor( civ ) {
-		this.civ = civ;
+		if ( civ ) this.civ = civ;
 		}
+	toJSON() { 
+		return {};
+		// let obj = { _classname:'AI', civ: this.civ };
+		// obj.objectives = [];
+		// // skip completed objectives, dont care
+		// return obj;
+		}
+	Unpack( catalog ) { /* do nothing */ };
 	Do( app ) {
 		// evaluate all objectives and throw away failed or expired.
 		this.objectives.sort( (a,b) => a.priority <= b.priority ? -1 : 1 );
@@ -80,7 +88,7 @@ export class AI {
 	}
 	
 export class CivAI extends AI {
-	threats = new Map; // fleets
+	threats = new Map; // fleet => threat value
 	staging_pts = []; // stars to send newly built ships, AKA "accumulators"
 	total_milval = 0;
 	avail_milval = 0;
@@ -115,11 +123,55 @@ export class CivAI extends AI {
 		tech: 1
 		};
 	constructor( civ ) {
+		// 'fromJSON' style data bundle as first arg
 		super();
-		this.civ = civ;
-		// bootstrap
-		this.objectives.push( new AIMainObjective(civ) );
+		if ( 'strat' in civ ) {
+			Object.assign( this, civ );
+			} 
+		else {
+			this.civ = civ;
+			// bootstrap
+			this.objectives.push( new AIMainObjective(civ) );
+			}
 		}
+	toJSON() { 
+		let obj = Object.assign( {_classname:'CivAI'}, this );
+		obj.civ = this.civ.id;
+		obj.staging_pts = this.staging_pts.map( x => x.id );
+		obj.objectives = this.objectives.map( x => { 
+			let o = {}; // Object.assign({},x);
+			o._classname = x.constructor.name; // "analyze" => "AIAnalyzeObjective"
+			o.target = x.target ? x.target.id : null;
+			o.fleet = x.fleet ? x.fleet.id : null;
+			// FIXME: chained callbacks do not flatten when saved/loaded.
+			// In the future we may need standardized functions and just store params.
+			// o.onComplete = null; // x.onComplete ? (''+x.onComplete) : null;
+			// o.onSuccess = null; // x.onSuccess ? (''+x.onSuccess) : null;
+			// o.onFail = null; // x.onFail ? (''+x.onFail) : null;
+			return o;
+			} );
+		// skip threats; reevaluated each turn
+		obj.threats = []; // Array.from(this.threats).map( x => [x[0].id,x[1]] );
+		// skip completed objectives, dont care
+		obj.completed = [];
+		// console.log( obj );
+		return obj;
+		}
+	Unpack( catalog ) { 
+		this.civ = catalog[this.civ];
+		this.staging_pts = this.staging_pts.map( x => catalog[x] );
+		this.objectives = this.objectives.map( x => {
+			let o = eval('new ' + x._classname + '()');
+			o = Object.assign( o, x );
+			o.target = x.target ? catalog[x.target] : null;
+			o.fleet = x.fleet ? catalog[x.fleet] : null;
+			if ( x.civ ) { o.civ = null; }; // [!]HACK
+			// o.onComplete = x.onComplete ? eval(x.onComplete) : null;
+			// o.onSuccess = x.onSuccess ? eval(x.onSuccess) : null;
+			// o.onFail = x.onFail ? eval(x.onFail) : null;
+			return o;
+			}); 
+		}		
 	}
 
 	

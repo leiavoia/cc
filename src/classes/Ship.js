@@ -10,16 +10,57 @@ export class Ship {
 	// To "manufacture" ships, use ShipBlueprint::Make()
 	// which also handles internal recordkeeping.
 	constructor( blueprint ) { 
-		this.id = utils.UUID();
-		this.bp = blueprint;
-		this.hull = blueprint.hull;
-		this.armor = blueprint.armor;
-		this.xp = 0; // crew experience
-		this.xplevel = 0; // crew experience level
-		this.weapons = [];
-		this.troops = []; // list of GroundUnits onboard
-		this.selected = true; // for UI
-		for ( const w of blueprint.weapons ) { 
+		// 'fromJSON' style data bundle as first arg
+		if ( 'bp' in blueprint ) { 
+			Object.assign( this, blueprint );
+			this.weapons = [];
+			}
+		// regular constructor
+		else {
+			this.id = utils.UUID();
+			this.bp = blueprint;
+			this.hull = blueprint.hull;
+			this.armor = blueprint.armor;
+			this.xp = 0; // crew experience
+			this.xplevel = 0; // crew experience level
+			this.weapons = [];
+			this.troops = []; // list of GroundUnits onboard
+			this.selected = true; // for UI
+			for ( const w of blueprint.weapons ) { 
+				// use weapon itself as prototype. saves memory.
+				let o = Object.create( w );
+				o.shotsleft = o.shots;
+				o.online = true;
+				this.weapons.push(o);
+				}
+			}
+		}
+
+	toJSON() { 
+		let obj = Object.assign( {}, this ); 
+		obj._classname = 'Ship';
+		obj.bp = this.bp.id;
+		obj.troops = this.troops.map( x => x.id );	
+		// dont save weapon status - 
+		// just rehydrate from blueprint with full health when unpacking
+		delete(obj.weapons);
+		return obj;
+		}
+		
+	Pack( catalog ) { 
+		// console.log('packing Ship ' + this.id);
+		if ( !( this.id in catalog ) ) { 
+			catalog[ this.id ] = this.toJSON(); 
+			for ( let x of this.troops ) { x.Pack(catalog); }
+			this.bp.Pack(catalog);
+			}
+		}	
+
+	Unpack( catalog ) {
+		this.bp = catalog[this.bp];
+		this.bp.Unpack(catalog); // ensures blueprint weapons are available
+		this.troops = this.troops.map( x => catalog[x] );
+		for ( const w of this.bp.weapons ) {
 			// use weapon itself as prototype. saves memory.
 			let o = Object.create( w );
 			o.shotsleft = o.shots;
@@ -27,7 +68,7 @@ export class Ship {
 			this.weapons.push(o);
 			}
 		}
-		
+				
 	AwardXP( xp ) {
 		this.xp += xp;
 		if 		( this.xp > 1000 ) { this.xplevel = 5; } 
@@ -114,35 +155,72 @@ export class Ship {
 
 
 export class ShipBlueprint {
-	constructor() {
-		this.id = utils.UUID();
-		this.name = 'Ship Name';
-		this.role = 'scout'; // helps AI. ['scout','combat','colonizer','carrier','research']
-		this.weapons = [];
-		this.comps = []; // non-weapon ship components. 
-		this.mass = 0;
-		this.hull = 1;
-		this.armor = 1;
-		this.shield = 0;
-		this.combatspeed = 1;
-		this.img = 'img/ships/ship1_mock.png';
-		this.speed = 100;
-		this.mods = new Modlist; // value modifiers, often from components
-		this.cost = {}; // calculated from individual components
-		this.colonize = false;
-		this.research = 0;    
-		this.troopcap = 0; // number of ground units we can carry    
-		this.fp = 0; // calculated firepower
-		this.milval = 0; // calculated military value for AI
-		// Calculated size class makes it easier to relate to humans.
-		// Uses letters 'A','B','C' ...
-		this.sizeclass = 'A'; 
-		// costs go down as we build more of them. 
-		// this gives an incentive to build smaller ships.
-		this.num_built = 0;
-		this.bulk_discount = 0; // percentage, for UI only
+	constructor( data ) {
+		// 'fromJSON' style single data bundle 
+		if ( data ) { 
+			Object.assign( this, data );
+			}
+		else {
+			this.id = utils.UUID();
+			this.name = 'Ship Name';
+			this.role = 'scout'; // helps AI. ['scout','combat','colonizer','carrier','research']
+			this.weapons = [];
+			this.comps = []; // non-weapon ship components. 
+			this.mass = 0;
+			this.hull = 1;
+			this.armor = 1;
+			this.shield = 0;
+			this.combatspeed = 1;
+			this.img = 'img/ships/ship1_mock.png';
+			this.speed = 100;
+			this.mods = new Modlist; // value modifiers, often from components
+			this.cost = {}; // calculated from individual components
+			this.colonize = false;
+			this.research = 0;    
+			this.troopcap = 0; // number of ground units we can carry    
+			this.fp = 0; // calculated firepower
+			this.milval = 0; // calculated military value for AI
+			// Calculated size class makes it easier to relate to humans.
+			// Uses letters 'A','B','C' ...
+			this.sizeclass = 'A'; 
+			// costs go down as we build more of them. 
+			// this gives an incentive to build smaller ships.
+			this.num_built = 0;
+			this.bulk_discount = 0; // percentage, for UI only
+			}
+		}
+
+	toJSON() { 
+		let obj = Object.assign( {}, this ); 
+		obj._classname = 'ShipBlueprint';
+		// // weapons have a tacked on 'qty' stat
+		obj.weapons = this.weapons.map( x => ({ tag:x.tag, qty:x.qty }) );	
+		obj.comps = this.comps.map( x => x.tag );
+		obj.mods = this.mods.toJSON();
+		return obj;
 		}
 		
+	Pack( catalog ) { 
+		// console.log('packing ShipBlueprint ' + this.id);
+		if ( !( this.id in catalog ) ) { 
+			catalog[ this.id ] = this.toJSON(); 
+			}
+		}	
+
+	Unpack( catalog ) {
+		// can be called multiple times from different sources, 
+		// so check to to make sure only unpacked once.
+		if ( this.mods instanceof Modlist ) { return; }
+		this.comps = this.comps.map( x => ShipComponentList[x.tag] );
+		this.weapons = this.weapons.map( x => {
+			let o = Object.create( WeaponList[x.tag] );
+			o.qty = x.qty; // default, user can change later
+			return o;
+			} );
+		this.mods = new Modlist(this.mods);
+		this.mods.Unpack(catalog);
+		}
+				
 	Make() { 
 		let s = new Ship( this );
 		this.IncNumBuilt();

@@ -1,4 +1,6 @@
 import Galaxy from './Galaxy';
+import Star from './Star';
+import Planet from './Planet';
 import Fleet from './Fleet';
 import * as utils from '../util/utils';
 import * as Signals from '../util/signals';
@@ -26,13 +28,57 @@ export default class Game {
 	victory_achieved = false;
 	top10civs = []; // for AI / UI fun
 	
-	constructor( app ) {
+	constructor( app, data ) {
 		this.app = app;
 		this.id = utils.UUID();
+		if ( data ) { Object.assign( this, data ); }
 		Signals.Listen('anom_complete', data => this.AnomCompleted(data) );
 		this.eventlib = new EventLibrary(this.app);
 		}
 		
+	toJSON() { 
+		let obj = { _classname: "Game" }; 
+		obj.turn_num = this.turn_num;
+		obj.myciv = this.myciv.id;
+		obj.galaxy = this.galaxy.id;
+		obj.victory_achieved = this.victory_achieved;
+		obj.eventcard_queue = []; // [!]TODO - not sure how to format yet
+		obj.shipcombats = this.shipcombats.map( x => {
+			x.attacker = x.attacker.id;
+			x.defender = x.defender.id;
+			if ( x.planet ) { x.planet = x.planet.id; }
+			return x;
+			} );
+		obj.groundcombats = this.groundcombats.map( x => {
+			x.attacker = x.attacker.id;
+			x.planet = x.planet.id;
+			return x;
+			} );
+		return obj;
+		}
+						
+	Pack( catalog ) {
+		catalog[ this.id ] = this.toJSON();
+		this.galaxy.Pack( catalog );
+		}
+				
+	Unpack( catalog ) {
+		this.galaxy = catalog[ this.galaxy ];
+		this.myciv = catalog[ this.myciv ];
+		// /!\WARNING - MAY DEPEND ON UNPACKING ORDER - THESE OBJECT MAY NOT BE READY YET
+		this.shipcombats = this.shipcombats.map( x => {
+			x.attacker = catalog[x.attacker];
+			x.defender = catalog[x.defender];
+			if ( x.planet ) { x.planet = catalog[x.planet]; }
+			return x;
+			} );
+		this.groundcombats = this.groundcombats.map( x => {
+			x.attacker = catalog[x.attacker];
+			x.planet = catalog[x.planet];
+			return x;
+			} );
+		}
+				
 	CheckForCivDeath() { 
 		let living_civs_before = this.galaxy.civs.filter( c => c.alive && !c.race.is_monster).length;
 		for ( let i = this.galaxy.civs.length-1; i >= 0; i-- ) { 
@@ -929,7 +975,7 @@ export default class Game {
 			this.RecalcFleetRanges();
 			});
 		}
-			
+		
 	}
 
 	

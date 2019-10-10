@@ -28,15 +28,55 @@ export default class Star {
 	// because multiple civs can inhabit the star system.
 	accts = null; // new Map();
 	
+	// also accepts 'fromJSON' style object as first param
 	constructor( name, color, xpos, ypos ) { 
-		this.name = ( name || RandomName() ).uppercaseFirst();
-		this.color = color;
-		this.xpos = xpos;
-		this.ypos = ypos;
-		this.id = utils.UUID();
-		this.accts = new Map();
+		if ( name && typeof(name)==='object' && 'xpos' in name ) { 
+			Object.assign( this, name ); 
+			}
+		else { 
+			this.name = ( name || RandomName() ).uppercaseFirst();
+			this.color = color;
+			this.xpos = xpos;
+			this.ypos = ypos;
+			this.id = utils.UUID();
+			this.accts = new Map();
+			}
 		}
 	
+	toJSON() { 
+		let obj = Object.assign( {}, this );
+		obj._classname = 'Star';
+		// for ( let k of ['id','name','xpos','ypos','color','settled','explored','in_range','settled_by_player'] ) { 
+			// obj[k] = this[k];
+			// };
+		obj.planets = this.planets.map( x => x.id );
+		obj.fleets = this.fleets.map( x => x.id );
+		obj.accts = {};
+		for ( let [k,v] of this.accts ) {
+			obj.accts[ k.id ] = v;
+			}
+		return obj;
+		}
+		
+	Pack( catalog ) { 
+		// console.log('packing Star ' + this.id + ' ' + this.name); 
+		if ( !( this.id in catalog ) ) { 
+			catalog[ this.id ] = this.toJSON(); 
+			for ( let x of this.planets ) { x.Pack(catalog); }
+			for ( let x of this.fleets ) { x.Pack(catalog); }
+			}
+		}
+	
+	Unpack( catalog ) {
+		this.planets = this.planets.map( x => catalog[x] );
+		this.fleets = this.fleets.map( x => catalog[x] );
+		let map = new Map();
+		for ( let k in this.accts ) {
+			map.set( catalog[k], this.accts[k] );
+			} 
+		this.accts = map;
+		}
+						
 	@computedFrom('fleets')
 	get PlayerHasLocalFleet() { 
 		for ( let f of this.fleets ) { 

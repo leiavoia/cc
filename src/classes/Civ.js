@@ -186,9 +186,9 @@ export default class Civ {
 	research_income = 0; // calculated per turn
 	
 	tech = {
-		techs: new Map(),
-		nodes_avail: new Map(), // key => { node: t, rp: 0 }
-		nodes_compl: new Map(),
+		techs: new Map(), // techkey => Tech
+		nodes_avail: new Map(), // nodekey => { node: TechNode, rp: 0 }
+		nodes_compl: new Map(), // nodekey => TechNode // [!]FIXME needs metadata to hold 'source'
 		current_project: null
 		};
 		
@@ -211,7 +211,7 @@ export default class Civ {
 		
 	AI_ChooseNextResearchProject() { 
 		if ( !this.tech.current_project && this.tech.nodes_avail.size ) { 
-			// TODO: AI personality will influance tech selection.
+			// TODO: AI personality will influence tech selection.
 			let SortFunc = (a,b) => a.node.rp - b.node.rp;
 			this.tech.current_project = 
 				Array.from( this.tech.nodes_avail.values() )
@@ -264,7 +264,7 @@ export default class Civ {
 		
 	CompleteTechNode( node, source_civ = null, notify_player = true ) {
 		// make note of source to handle tech-brokering agreements
-		node.source = source_civ; 
+		node.source = source_civ; // /!\BUG!!! - SHARED DATA WITH ALL CIVS
 		// dispurse any techs
 		if ( node.yields.length ) { 
 			for ( let t of node.yields ) { 
@@ -342,9 +342,6 @@ export default class Civ {
 			}
 		}
 		
-	ships = [];
-	ship_designs;
-	
 	econ = {
 		income: 0,
 		ship_maint: 0,
@@ -421,28 +418,142 @@ export default class Civ {
 			}
 		}
 
-	constructor( name ) { 
-		this.name = ( name || RandomName() ).uppercaseFirst();
-		this.name_plural = this.name + 's';
-		Civ.IncTotalNumCivs();
-		this.id = utils.UUID();
-		// internal flag roster picks unique flags for each race
-		if ( !Civ.flag_id_roster ) { 
-			Civ.flag_id_roster = [];
-			for ( let i=0; i<=30; i++ ) { Civ.flag_id_roster.push(i); }
-			Civ.flag_id_roster.shuffle();
-			Civ.img_id_roster = [];
-			for ( let i=0; i<=454 ; i++ ) { Civ.img_id_roster.push(i); }
-			Civ.img_id_roster.shuffle();
+	constructor( name ) {
+		// 'fromJSON' data bundle in first arg
+		if ( name && typeof(name)==='object' && 'name' in name ) { 
+			Object.assign( this, name );
 			}
-		this.flag_img = 'img/flags/flag_' + ("000" + Civ.flag_id_roster[Civ.total_civs]).slice(-3) + '.png';
-		this.diplo_img = 'img/races/alien_' + ("000" + Civ.img_id_roster[Civ.total_civs]).slice(-3) + '.jpg';
-		this.diplo_img_small = 'img/races/alien_' + ("000" + Civ.img_id_roster[Civ.total_civs]).slice(-3) + '.jpg';
-		this.mods = new Modlist( this.race );
-		this.ai = new AI.CivAI(this);
-		this.InitResearch();
+		// regular constructor
+		else {
+			this.name = ( name || RandomName() ).uppercaseFirst();
+			this.name_plural = this.name + 's';
+			Civ.IncTotalNumCivs();
+			this.id = utils.UUID();
+			// internal flag roster picks unique flags for each race
+			if ( !Civ.flag_id_roster ) { 
+				Civ.flag_id_roster = [];
+				for ( let i=0; i<=30; i++ ) { Civ.flag_id_roster.push(i); }
+				Civ.flag_id_roster.shuffle();
+				Civ.img_id_roster = [];
+				for ( let i=0; i<=454 ; i++ ) { Civ.img_id_roster.push(i); }
+				Civ.img_id_roster.shuffle();
+				}
+			this.flag_img = 'img/flags/flag_' + ("000" + Civ.flag_id_roster[Civ.total_civs]).slice(-3) + '.png';
+			this.diplo_img = 'img/races/alien_' + ("000" + Civ.img_id_roster[Civ.total_civs]).slice(-3) + '.jpg';
+			this.diplo_img_small = 'img/races/alien_' + ("000" + Civ.img_id_roster[Civ.total_civs]).slice(-3) + '.jpg';
+			this.mods = new Modlist( this.race );
+			this.ai = new AI.CivAI(this);
+			this.InitResearch();
+			}
 		}
 	
+	toJSON() { 
+		let obj = Object.assign( {}, this ); 
+		obj._classname = 'Civ';
+		obj.homeworld = this.homeworld ? this.homeworld.id : null;
+		obj.mods = this.mods.toJSON();
+		obj.planets = this.planets.map( x => x.id );
+		obj.fleets = this.fleets.map( x => x.id );
+		obj.ship_blueprints = this.ship_blueprints.map( x => x.id );
+		obj.groundunit_blueprints = this.groundunit_blueprints.map( x => x.id );
+		obj.avail_ship_comps = this.avail_ship_comps.map( x => x.tag );
+		obj.avail_ship_weapons = this.avail_ship_weapons.map( x => x.tag );
+		obj.avail_zones = this.avail_zones.map( x => x.key );
+		obj.victory_ingredients = this.victory_ingredients.map( x => x.tag );
+		// this.diplo.contacts.set( civ, { 
+		// 	lovenub: lovenub,
+		// 	attspan: ( this.is_player ? 1.0 : this.diplo.attspan_max ),
+		// 	in_range: true,
+		// 	comm: this.CommOverlapWith( civ ), // when technology changes, you need to update this!
+		// 	treaties: new Map()
+		// 	});
+		obj.diplo = Object.assign( {}, this.diplo ); // dont overwrite original object
+		obj.diplo.contacts = {}; 
+		for ( let [k,v] of this.diplo.contacts ) {
+			if ( !k.alive ) { continue; }
+			let contact = Object.assign( {}, v ); 
+			contact.treaties = [];
+			for ( let [tk,tv] of v.treaties ) { 
+				contact.treaties.push( { type: tk, ttl: tv.ttl, turn_num: tv.turn_num, created_on: tv.created_on } );
+				}
+			obj.diplo.contacts[ k.id ] = contact;
+			}
+		obj.tech = Object.assign( {}, this.tech ); // dont overwrite original object
+		obj.tech.techs = Array.from( this.tech.techs.keys() );	
+		obj.tech.nodes_avail = Array.from( this.tech.nodes_avail, ([k,v]) => [k,v.rp] );	
+		// completed technodes sometimes have a 'source' we need to keep track of,
+		// but this currently has a bug we need to fix later. Ideally, nodes_compl
+		// should not be a direct link to the TechNode, but instead should carry
+		// some metadata (including the source)
+		obj.tech.nodes_compl = Array.from( this.tech.nodes_compl.keys() ); // [!]FIXME	
+		obj.tech.current_project = this.tech.current_project ? this.tech.current_project.node.key : null;
+		obj.ai = this.ai.toJSON();
+		// [!]EXPERIMENTAL remove stat history to save space
+		delete(obj.stat_history);
+		return obj;
+		}
+		
+	Pack( catalog ) {
+		// console.log('packing Civ ' + this.id + ' ' + this.is_player); 
+		if ( !( this.id in catalog ) ) { 
+			catalog[ this.id ] = this.toJSON(); 
+			for ( let x of this.ship_blueprints ) { x.Pack(catalog); }
+			for ( let x of this.groundunit_blueprints ) { x.Pack(catalog); }
+			for ( let x of this.fleets ) { x.Pack(catalog); }
+			// dont need to pack planets - handled by Galaxy
+			}
+		}	
+
+	Unpack( catalog ) {
+		this.homeworld = this.homeworld ? catalog[this.homeworld] : null;
+		this.ship_blueprints = this.ship_blueprints.map( x => catalog[x] );
+		this.groundunit_blueprints = this.groundunit_blueprints.map( x => catalog[x] );
+		this.planets = this.planets.map( x => catalog[x] );
+		this.fleets = this.fleets.map( x => catalog[x] );
+		this.avail_ship_comps = this.avail_ship_comps.map( x => ShipComponentList[x] );
+		this.avail_ship_weapons = this.avail_ship_weapons.map( x => WeaponList[x] );
+		this.avail_zones = this.avail_zones.map( x => ZoneList[x] );
+		this.victory_ingredients = this.victory_ingredients.map( x => VictoryIngredients[x] );
+		this.mods = new Modlist(this.mods);
+		this.mods.Unpack( catalog );
+		this.ai = new AI.CivAI(this.ai);
+		this.ai.Unpack( catalog );
+		// diplomacy
+		let contacts = new Map();
+		for ( let k in this.diplo.contacts ) { 
+			if ( !(k in catalog) ) { continue; }
+			let treaties = this.diplo.contacts[k].treaties;
+			this.diplo.contacts[k].treaties = new Map();
+			for ( let t of treaties ) { 
+				const t1 = Treaty( t.type, this, catalog[k], t.turn_num, t.ttl );
+				t1.created_on = t.created_on;
+				this.diplo.contacts[k].treaties.set( t.type, t1 );
+				}
+			contacts.set( catalog[k], this.diplo.contacts[k] );
+			}		
+		this.diplo.contacts = contacts;
+		// techs
+		let techs = new Map();
+		for ( let t of this.tech.techs ) {
+			techs.set( t, Tech.Techs[t] );
+			}
+		this.tech.techs = techs;	
+		let nodes_avail = new Map();
+		for ( let i of this.tech.nodes_avail ) {
+			nodes_avail.set( i[0], { node: Tech.TechNodes[i[0]], rp: i[1] } );
+			// while we're here ...
+			if ( this.tech.current_project === i[0] ) { 
+				this.tech.current_project = nodes_avail.get(i[0]);
+				}
+			}
+		this.tech.nodes_avail = nodes_avail;		
+		let nodes_compl = new Map();
+		for ( let i of this.tech.nodes_compl ) {
+			nodes_compl.set( i, Tech.TechNodes[i] );
+			}
+		this.tech.nodes_compl = nodes_compl;
+		}
+						
 	static Random( difficulty = 0.5 ) {
 		let civ = new Civ;
 		civ.color_rgb = Civ.PickNextStandardColor();

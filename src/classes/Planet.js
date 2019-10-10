@@ -14,6 +14,7 @@ import {AIPlanetsObjective} from './AI';
 export default class Planet {
 	
 	// UI and DATA ---------------------------------------
+	id = null;
 	ui_color = 'inherit'; // this way you can set defaults in CSS and override inline
 	star = null;
 	established = 0; // turn planet was settled or conquered
@@ -25,7 +26,7 @@ export default class Planet {
 	popmax_contrib = 0; // used to calculate housing development from zones. resets every turn.
 	morale = 1.0;	// multiplier, default 1.0, range 0-2
 	troops = []; // list of GroundUnits defending planet.
-	prod_q = []; // list of { item, turns }
+	prod_q = [];
 	
 	// PHYSICAL ATTRIBUTES -------------------------------
 	energy = 1.0; // speeds up zone development
@@ -82,6 +83,194 @@ export default class Planet {
 	// Valid options: NULL (here), '@' (nearest rondezvous point), Star (object)
 	ship_dest = null; 
 	
+		
+	constructor( star, name ) { 
+		// regular constructor
+		if ( star && 'xpos' in star ) { 
+			this.star = star; 
+			this.name = ( name || RandomName() ).uppercaseFirst();
+			this.id = utils.UUID();
+			}
+		// also takes alternate "fromJSON" data blob as first arg	
+		else if ( star ) { 
+			Object.assign( this, star );
+			if ( this.zones.length ) {
+				this.zones = this.zones.map( x => new Zone(x) );
+				} 
+			}
+		this.mods = new Modlist;
+		}
+	
+	toJSON() { 
+		let obj = Object.assign( {}, this ); 
+		obj._classname = 'Planet';
+		obj.owner = this.owner ? this.owner.id : null;
+		obj.troops = this.troops.map( x => x.id );
+		if ( typeof(this.ship_dest) === 'object' && this.ship_dest ) {
+			obj.ship_dest = this.ship_dest.id;
+			} 
+		obj.prod_q = this.prod_q.map( x => { // { item, turns }
+			let o = Object.assign( {}, x ); // dont overwrite the original object
+			// object may be a string (makework project) or a link to a blueprint to be built
+			if ( typeof(o.obj)=='object' && 'id' in o.obj ) o.obj = o.obj.id;
+			return o;
+			} );
+		obj.star = this.star.id; // could omit
+		obj.mods = this.mods.toJSON();
+		obj.zones = this.zones.map( x => ({
+			key:x.key, 
+			val:x.val, 
+			insuf:x.insuf,
+			output_rec:x.output_rec, 
+			resource_rec:x.resource_rec,
+			resource_estm:x.resource_estm
+			}) );
+		obj.physattr = []; // FUTURE
+		// [!]EXPERIMENTAL - remove history to save space;
+		delete(obj.acct_hist);
+		return obj;
+		}
+		
+	Pack( catalog ) { 
+		// console.log('packing Planet ' + this.id);
+		if ( !( this.id in catalog ) ) { 
+			catalog[ this.id ] = this.toJSON(); 
+			for ( let x of this.troops ) { x.Pack(catalog); }
+			}
+		}	
+
+	Unpack( catalog ) {
+		this.star = catalog[this.star];
+		this.owner = catalog[this.owner];
+		if ( Number.isInteger(this.ship_dest) ) { 
+			this.ship_dest = catalog[this.ship_dest];
+			}
+		this.prod_q = this.prod_q.map( x => {
+			if ( Number.isInteger(x.obj) ) { x.obj = catalog[x.obj]; }
+			return x;
+			} );
+		this.troops = this.troops.map( x => catalog[x] );
+		this.mods = new Modlist(this.mods);
+		this.mods.Unpack(catalog);
+		}
+				
+	static Random( star ) {
+		// create the planet itself
+		let planet = new Planet(star);
+		
+		// calculate the "age" of the star based on color, mapped to 0.0 .. 1.0
+		let star_age = 0.5; // default for off-track stars
+		if ( star.color == 'cyan' ) { star_age = 1/5.0; }
+		else if ( star.color == 'white' ) { star_age = 2/5.0; }
+		else if ( star.color == 'yellow' ) { star_age = 3/5.0; }
+		else if ( star.color == 'orange' ) { star_age = 4/5.0; }
+		else if ( star.color == 'red' ) { star_age = 1.0; }
+		else if ( star.color == 'blue' ) { star_age = 0.0; }
+		// physical environment depends on star color
+		// purple, green, and black stars are totally random
+		if ( star.color == 'black' || star.color == 'purple' || star.color == 'green' ) { 
+			planet.atm = utils.RandomInt(0,4);
+			planet.temp = utils.RandomInt(0,4);
+			planet.grav = utils.RandomInt(0,4);
+			}
+		else {
+			let star_age_mod = star_age + 1.0;
+			planet.atm = utils.BiasedRandInt(0, 4, (1.0-star_age)*4.0, 0.3);
+			planet.temp = utils.BiasedRandInt(0, 4, (1.0-star_age)*4.0, 0.3);
+			}
+			
+		// younger stars have more energy potential, making them better for industry
+		let energy_salt = 0.8 + ((1.0-star_age) - 0.5);
+		planet.energy = Math.pow( utils.BiasedRand(0.3, 1.732, energy_salt, 0.8), 2 );
+		// rare planet types are just totally wacky
+		if ( star.color == 'purple' ) { planet.energy = utils.RandomFloat( 0.2, 3.0 ); }
+		if ( star.color == 'black' ) { planet.energy = utils.RandomFloat( 0.2, 5.0 ); }
+		if ( star.color == 'green' ) { planet.energy = utils.RandomFloat( 0.2, 8.0 ); } 
+		planet.energy = parseFloat( planet.energy.toFixed(1) );
+		
+		// size is not dependent on star or galaxy. just random.
+		planet.size = utils.BiasedRandInt(4, 25, 10, 0.5);
+		// ... unless you are a special color
+		if ( star.color == 'purple' ) { planet.size += utils.RandomInt(0, 5); }
+		else if ( star.color == 'black' ) { planet.size += utils.RandomInt(0, 10); }
+		else if ( star.color == 'green' ) { planet.size += utils.RandomInt(0, 15); }
+		// 1% chance of getting a flat-out whopper
+		if ( Math.random() > 0.99 ) { planet.size = utils.RandomInt(25, 40); }
+		
+		// gravity generally coralates with size, except for weird stars
+		if ( star.color == 'black' || star.color == 'purple' || star.color == 'green' ) { 
+			planet.grav = utils.RandomInt(0,4);
+			}
+		else {
+			planet.grav = utils.Clamp( utils.BiasedRandInt(0, 4, planet.size/5, 1.0), 0, 4);
+			}
+			
+			
+		let rarity = Math.abs( planet.atm - planet.temp ); // high number = more off the main line of probability.		
+		let rarity_bonus = 0;
+		if ( star.color == 'purple' ) { rarity_bonus = 0.2; }
+		if ( star.color == 'black' ) { rarity_bonus = 0.35; }
+		if ( star.color == 'green' ) { rarity_bonus = 0.5; } 
+		
+		// resources are integers 0..5
+		// organics determined by proximity to atm/temp sweet spot at 2,2
+		let sweetspot_offset = Math.min( 5, Math.abs(2-planet.atm) + Math.abs(2-planet.temp) );
+		if ( Math.random() > sweetspot_offset * 0.28 ) { planet.resources.o = utils.BiasedRandInt(1, 5, 5-sweetspot_offset, 0.0); }
+		// silicates totally random
+		if ( Math.random() < 0.5 ) { planet.resources.s = utils.BiasedRandInt(0, 5, 1, 0.35); }
+		// metals more common in old stars
+		if ( Math.random() < star_age ) { planet.resources.m = utils.BiasedRandInt(0, 5, 1+star_age*2, 0.0); }
+		// uncommon resources vary on star age
+		if ( Math.random() < 0.5-(1-star_age)*0.5 ) { planet.resources.r = utils.BiasedRandInt(0, 5, 1, 0.75); }
+		if ( Math.random() < 0.25 ) { planet.resources.g = utils.BiasedRandInt(0, 5, 1, 0.75); }
+		if ( Math.random() < 0.5-star_age*0.5 ) { planet.resources.b = utils.BiasedRandInt(0, 5, 1, 0.75); }
+		// rare resources get a boost for rare planet types (makes them worth colonizing)
+		if ( Math.random() < 0.02 + rarity*0.075 + rarity_bonus ) { planet.resources.c = utils.BiasedRandInt(0, 5, 0, 0.9); }
+		if ( Math.random() < 0.02 + rarity*0.075 + rarity_bonus + (planet.grav*0.05) ) { planet.resources.v = utils.BiasedRandInt(0, 5, 0, 0.9); }
+		if ( Math.random() < 0.02 + rarity*0.075 + rarity_bonus + ((4-planet.grav)*0.05) ) { planet.resources.y = utils.BiasedRandInt(0, 5, 0, 0.9); }
+		// throw a bone
+		let resource_total = 
+			planet.resources.o 
+			+ planet.resources.s
+			+ planet.resources.m
+			+ planet.resources.r
+			+ planet.resources.g
+			+ planet.resources.b
+			+ planet.resources.c
+			+ planet.resources.v
+			+ planet.resources.y;
+		if ( resource_total == 0 ) { 
+			planet.resources[ ['o','s','m','r','g','b'][Math.floor(Math.random()*6)] ]
+				= utils.BiasedRandInt(1, 2, 1, 0.5);
+			}
+		// planets with a lot of resource get extra gravity as punishment
+		if ( resource_total > 10 && planet.grav < 4 && Math.random() > 0.25 ) { planet.grav++; }
+		else if ( resource_total > 15 && planet.grav < 4 && Math.random() > 0.25 ) { planet.grav = Math.min( planet.grav + 2, 4 ); }
+		
+		// special attributes (AKA "goodies")
+		let selector = Planet.AttributeSelector();
+		let attr_randnum = Math.random();
+		// special and rare stars get more goodies
+		if ( star.color == 'purple' ) { attr_randnum *= 2.0; }
+		else if ( star.color == 'black' ) { attr_randnum *= 3.0; }
+		else if ( star.color == 'green' ) { attr_randnum *= 4.0; }
+		else if ( rarity == 3 ) { attr_randnum *= 2.0; }
+		else if ( rarity == 4 ) { attr_randnum *= 3.0; }
+		let num_attrs = 0;
+		if ( attr_randnum >= 0.97 ) { num_attrs = 3; } 
+		else if ( attr_randnum >= 0.90 ) { num_attrs = 2; } 
+		else if ( attr_randnum >= 0.60 ) { num_attrs = 1; } 
+		for ( let n=0; n < num_attrs; n++ ) { 
+			planet.physattr.push( selector.Pick() );
+			}
+		planet.physattr;// = planet.physattr.unique();		
+		
+		planet.score += planet.size;
+		// TODO calculate goodies
+		
+		return planet;
+		}
+								
 	// returns true on success, false on failure
 	AddZone( key ) {
 		let o = new Zone(key);
@@ -564,130 +753,6 @@ export default class Planet {
 		}
 	get gravDisplayName() {
 		return Planet.GravNames()[this.grav];
-		}
-			
-	constructor( star, name ) { 
-		this.star = star;	
-		this.name = ( name || RandomName() ).uppercaseFirst();
-		this.id = utils.UUID();
-		this.mods = new Modlist;
-		}
-	
-	static Random( star ) {
-		// create the planet itself
-		let planet = new Planet(star);
-		
-		// calculate the "age" of the star based on color, mapped to 0.0 .. 1.0
-		let star_age = 0.5; // default for off-track stars
-		if ( star.color == 'cyan' ) { star_age = 1/5.0; }
-		else if ( star.color == 'white' ) { star_age = 2/5.0; }
-		else if ( star.color == 'yellow' ) { star_age = 3/5.0; }
-		else if ( star.color == 'orange' ) { star_age = 4/5.0; }
-		else if ( star.color == 'red' ) { star_age = 1.0; }
-		else if ( star.color == 'blue' ) { star_age = 0.0; }
-		// physical environment depends on star color
-		// purple, green, and black stars are totally random
-		if ( star.color == 'black' || star.color == 'purple' || star.color == 'green' ) { 
-			planet.atm = utils.RandomInt(0,4);
-			planet.temp = utils.RandomInt(0,4);
-			planet.grav = utils.RandomInt(0,4);
-			}
-		else {
-			let star_age_mod = star_age + 1.0;
-			planet.atm = utils.BiasedRandInt(0, 4, (1.0-star_age)*4.0, 0.3);
-			planet.temp = utils.BiasedRandInt(0, 4, (1.0-star_age)*4.0, 0.3);
-			}
-			
-		// younger stars have more energy potential, making them better for industry
-		let energy_salt = 0.8 + ((1.0-star_age) - 0.5);
-		planet.energy = Math.pow( utils.BiasedRand(0.3, 1.732, energy_salt, 0.8), 2 );
-		// rare planet types are just totally wacky
-		if ( star.color == 'purple' ) { planet.energy = utils.RandomFloat( 0.2, 3.0 ); }
-		if ( star.color == 'black' ) { planet.energy = utils.RandomFloat( 0.2, 5.0 ); }
-		if ( star.color == 'green' ) { planet.energy = utils.RandomFloat( 0.2, 8.0 ); } 
-		planet.energy = parseFloat( planet.energy.toFixed(1) );
-		
-		// size is not dependent on star or galaxy. just random.
-		planet.size = utils.BiasedRandInt(4, 25, 10, 0.5);
-		// ... unless you are a special color
-		if ( star.color == 'purple' ) { planet.size += utils.RandomInt(0, 5); }
-		else if ( star.color == 'black' ) { planet.size += utils.RandomInt(0, 10); }
-		else if ( star.color == 'green' ) { planet.size += utils.RandomInt(0, 15); }
-		// 1% chance of getting a flat-out whopper
-		if ( Math.random() > 0.99 ) { planet.size = utils.RandomInt(25, 40); }
-		
-		// gravity generally coralates with size, except for weird stars
-		if ( star.color == 'black' || star.color == 'purple' || star.color == 'green' ) { 
-			planet.grav = utils.RandomInt(0,4);
-			}
-		else {
-			planet.grav = utils.Clamp( utils.BiasedRandInt(0, 4, planet.size/5, 1.0), 0, 4);
-			}
-			
-			
-		let rarity = Math.abs( planet.atm - planet.temp ); // high number = more off the main line of probability.		
-		let rarity_bonus = 0;
-		if ( star.color == 'purple' ) { rarity_bonus = 0.2; }
-		if ( star.color == 'black' ) { rarity_bonus = 0.35; }
-		if ( star.color == 'green' ) { rarity_bonus = 0.5; } 
-		
-		// resources are integers 0..5
-		// organics determined by proximity to atm/temp sweet spot at 2,2
-		let sweetspot_offset = Math.min( 5, Math.abs(2-planet.atm) + Math.abs(2-planet.temp) );
-		if ( Math.random() > sweetspot_offset * 0.28 ) { planet.resources.o = utils.BiasedRandInt(1, 5, 5-sweetspot_offset, 0.0); }
-		// silicates totally random
-		if ( Math.random() < 0.5 ) { planet.resources.s = utils.BiasedRandInt(0, 5, 1, 0.35); }
-		// metals more common in old stars
-		if ( Math.random() < star_age ) { planet.resources.m = utils.BiasedRandInt(0, 5, 1+star_age*2, 0.0); }
-		// uncommon resources vary on star age
-		if ( Math.random() < 0.5-(1-star_age)*0.5 ) { planet.resources.r = utils.BiasedRandInt(0, 5, 1, 0.75); }
-		if ( Math.random() < 0.25 ) { planet.resources.g = utils.BiasedRandInt(0, 5, 1, 0.75); }
-		if ( Math.random() < 0.5-star_age*0.5 ) { planet.resources.b = utils.BiasedRandInt(0, 5, 1, 0.75); }
-		// rare resources get a boost for rare planet types (makes them worth colonizing)
-		if ( Math.random() < 0.02 + rarity*0.075 + rarity_bonus ) { planet.resources.c = utils.BiasedRandInt(0, 5, 0, 0.9); }
-		if ( Math.random() < 0.02 + rarity*0.075 + rarity_bonus + (planet.grav*0.05) ) { planet.resources.v = utils.BiasedRandInt(0, 5, 0, 0.9); }
-		if ( Math.random() < 0.02 + rarity*0.075 + rarity_bonus + ((4-planet.grav)*0.05) ) { planet.resources.y = utils.BiasedRandInt(0, 5, 0, 0.9); }
-		// throw a bone
-		let resource_total = 
-			planet.resources.o 
-			+ planet.resources.s
-			+ planet.resources.m
-			+ planet.resources.r
-			+ planet.resources.g
-			+ planet.resources.b
-			+ planet.resources.c
-			+ planet.resources.v
-			+ planet.resources.y;
-		if ( resource_total == 0 ) { 
-			planet.resources[ ['o','s','m','r','g','b'][Math.floor(Math.random()*6)] ]
-				= utils.BiasedRandInt(1, 2, 1, 0.5);
-			}
-		// planets with a lot of resource get extra gravity as punishment
-		if ( resource_total > 10 && planet.grav < 4 && Math.random() > 0.25 ) { planet.grav++; }
-		else if ( resource_total > 15 && planet.grav < 4 && Math.random() > 0.25 ) { planet.grav = Math.min( planet.grav + 2, 4 ); }
-		
-		// special attributes (AKA "goodies")
-		let selector = Planet.AttributeSelector();
-		let attr_randnum = Math.random();
-		// special and rare stars get more goodies
-		if ( star.color == 'purple' ) { attr_randnum *= 2.0; }
-		else if ( star.color == 'black' ) { attr_randnum *= 3.0; }
-		else if ( star.color == 'green' ) { attr_randnum *= 4.0; }
-		else if ( rarity == 3 ) { attr_randnum *= 2.0; }
-		else if ( rarity == 4 ) { attr_randnum *= 3.0; }
-		let num_attrs = 0;
-		if ( attr_randnum >= 0.97 ) { num_attrs = 3; } 
-		else if ( attr_randnum >= 0.90 ) { num_attrs = 2; } 
-		else if ( attr_randnum >= 0.60 ) { num_attrs = 1; } 
-		for ( let n=0; n < num_attrs; n++ ) { 
-			planet.physattr.push( selector.Pick() );
-			}
-		planet.physattr;// = planet.physattr.unique();		
-		
-		planet.score += planet.size;
-		// TODO calculate goodies
-		
-		return planet;
 		}
 		
 	// gives a value score from the perspective of the civ.

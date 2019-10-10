@@ -46,19 +46,58 @@ export default class Fleet {
 			}		
 		}
 				
-	constructor( owner, star ) { 
-		this.star = star;	
-		this.xpos = star ? star.xpos : 0;
-		this.ypos = star ? star.ypos : 0;
-		this.id = utils.UUID();
-		this.owner = owner;
-		this.owner.fleets.push(this);
-		Fleet.all_fleets.push( this );
-		if ( star ) { star.fleets.push(this); }
-		this.mods = new Modlist( this.owner );
-		this.ReevaluateStats();
+	// also supports 'fromJSON' style data bundle as first arg
+	constructor( owner, star ) {
+		// data bundle 
+		if ( 'owner' in owner ) {
+			Object.assign( this, owner );
+			}
+		// regular constructor
+		else {
+			this.star = star;	
+			this.xpos = star ? star.xpos : 0;
+			this.ypos = star ? star.ypos : 0;
+			this.id = utils.UUID();
+			this.owner = owner;
+			this.owner.fleets.push(this);
+			Fleet.all_fleets.push( this ); // [!] not sure how this works in save/load scenario
+			if ( star ) { star.fleets.push(this); }
+			this.mods = new Modlist( this.owner );
+			this.ReevaluateStats();
+			}
 		}
 
+	toJSON() { 
+		let obj = Object.assign( {}, this ); 
+		obj._classname = 'Fleet';
+		obj.star = this.star ? this.star.id : null;
+		obj.dest = this.dest ? this.dest.id : null;
+		obj.owner = this.owner ? this.owner.id : null;
+		obj.merged_with = this.merged_with ? this.merged_with.id : null;
+		obj.ships = this.ships.map( x => x.id );	
+		obj.mods = this.mods.toJSON();
+		obj.ai = null; // TODO
+		return obj;
+		}
+		
+	Pack( catalog ) { 
+		// console.log('packing Fleet ' + this.id);
+		if ( !( this.id in catalog ) ) { 
+			catalog[ this.id ] = this.toJSON(); 
+			for ( let x of this.ships ) { x.Pack(catalog); }
+			}
+		}	
+
+	Unpack( catalog ) {
+		this.star = this.star ? catalog[this.star] : null;
+		this.dest = this.dest ? catalog[this.dest] : null;
+		this.owner = catalog[this.owner];
+		this.merged_with = catalog[this.merged_with];
+		this.ships = this.ships.map( x => catalog[x] );
+		this.mods = new Modlist(this.mods);
+		this.mods.Unpack(catalog);
+		}
+		
 	// use this if ships are added or removed.
 	ReevaluateStats() { 
 		this.colonize = false;

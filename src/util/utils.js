@@ -147,7 +147,8 @@ export function hash(str) {
 	return hash >>> 0;
 	}
 
-export function UUID() {
+export function UUID( reset_to ) {
+	if ( reset_to ) { UUID.n = reset_to; }
 	return ++UUID.n;
 }
 UUID.n = 0;

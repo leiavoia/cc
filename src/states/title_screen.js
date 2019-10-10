@@ -10,6 +10,10 @@ export class TitleState {
 	ClickNewGame() {
 		this.app.ChangeState('setup_new_game');
 		}
+		
+	ClickLoadGame() {
+		this.app.LoadGame();
+		}
 
 	ClickHeadless() {
 		this.app.ChangeState('headless');

@@ -28,11 +28,41 @@ export default class Galaxy {
 		crazy: 0
 		};
 		
-	constructor() { 
+	constructor( data ) { 
 		this.id = utils.UUID();
+		if ( data ) { Object.assign( this, data ); }
 		this.fleets = Fleet.all_fleets;
 		}
 		
+	toJSON() { 
+		return {
+			_classname: 'Galaxy',
+			stats: this.stats,
+			id: this.id,
+			height: this.height,
+			width: this.width,
+			age: this.age,
+			stars: this.stars.map( x => x.id ),
+			anoms: this.anoms.map( x => x.id ),
+			civs: this.civs.map( x => x.id ),
+			// dont need to save fleets list
+			};
+		}
+		
+	Pack( catalog ) { 
+		// console.log('packing Galaxy ' + this.id ); 
+		catalog[ this.id ] = this.toJSON();
+		for ( let x of this.stars ) { x.Pack(catalog); }
+		for ( let x of this.anoms ) { x.Pack(catalog); }
+		for ( let x of this.civs ) { x.Pack(catalog); }
+		} 	
+		
+	Unpack( catalog ) {
+		this.stars = this.stars.map( x => catalog[x] );
+		this.civs = this.civs.map( x => catalog[x] );
+		this.anoms = this.anoms.map( x => catalog[x] );
+		}
+						
 	// size is in number of sectors, 
 	// where sector is 400px and max one star per sector
 	Make( sectors, density, galaxy_age = 0.5, crazy = 0 ) {

@@ -1,25 +1,33 @@
 export class Zone {
 	
-	constructor( key ) { 
-		this.key = key;
-		// Category of zone - determines UI colors and symbols.
-		// One of: ['special','housing','research','military','espionage','government','stardock','mining']
-		this.type = 'housing';
-		// how many sectors the zone occupies
-		this.size = 1;
-		// Growth Factor - turns required to mature.
-		// Modified by a planet's energy level when calculating growth.
-		this.gf = 10;
-		// inputs and outputs are normalized per-sector and are
-		// multiplied by the zone's size when calculating activity
-		this.val = 0;
-		this.insuf = false;
-		this.inputs = {};
-		this.outputs = {};
-		this.output_rec = {}
-		this.resource_rec = {};
-		this.resource_estm = {}; // we may want this some day, but saves memory if we dont
-		Object.assign( this, ZoneList[key] );
+	constructor( key ) {
+		// 'fromJSON' style data bundle as first argument
+		if ( typeof(key)==='object' && 'key' in key ) {
+			Object.assign( this, ZoneList[key.key] );
+			Object.assign( this, key );
+			}
+		// regular constructor
+		else {  
+			this.key = key;
+			// Category of zone - determines UI colors and symbols.
+			// One of: ['special','housing','research','military','espionage','government','stardock','mining']
+			this.type = 'housing';
+			// how many sectors the zone occupies
+			this.size = 1;
+			// Growth Factor - turns required to mature.
+			// Modified by a planet's energy level when calculating growth.
+			this.gf = 10;
+			// inputs and outputs are normalized per-sector and are
+			// multiplied by the zone's size when calculating activity
+			this.val = 0;
+			this.insuf = false;
+			this.inputs = {};
+			this.outputs = {};
+			this.output_rec = {}
+			this.resource_rec = {};
+			this.resource_estm = {}; // we may want this some day, but saves memory if we dont
+			Object.assign( this, ZoneList[key] );
+			}
 		for ( let k in this.outputs ) { this.output_rec[k]=0; } ; // prepopulate keys
 		for ( let k in this.inputs ) { this.resource_rec[k]=0; } ; // prepopulate keys
 		for ( let k in this.inputs ) { this.resource_estm[k]=0; } ; // prepopulate keys

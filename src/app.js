@@ -4,8 +4,11 @@ import Star from './classes/Star';
 import Anom from './classes/Anom';
 import Planet from './classes/Planet';
 import Fleet from './classes/Fleet';
+import {Ship,ShipBlueprint} from './classes/Ship';
+import {GroundUnit,GroundUnitBlueprint} from './classes/GroundUnit';
 import Civ from './classes/Civ';
 import * as Signals from './util/signals';
+import * as utils from './util/utils';
 
 export class App {
 	version = '0.0.5';
@@ -141,7 +144,7 @@ export class App {
 				}
 			}
 		catch ( ex ) {
-			console.log('could not load options');	
+			console.warn('could not load options');	
 			}
 		}
 		
@@ -267,6 +270,104 @@ export class App {
 	ClearNotes() { 
 		this.notes.splice(0,this.notes.length);
 		}
+		
+						
+	// return true of success, false on error
+	SaveGame( name = 'Saved Game' ) {
+		if ( !this.game ) { return false; }
+		try { 
+			name = 'Game: ' + name; 
+			console.time('SAVE GAME');
+			let catalog = {};
+			this.game.Pack( catalog );
+			let content = JSON.stringify(catalog);
+			content = content.replace(/(\.\d{4})(\d+)/g,"$1"); // reduce number precision
+			content = content.replace(/\.0+,/g,","); // hack off unnecessary zeroes
+			console.log('Saving ' + content.length + ' bytes ...' );
+			// save to html5 localStorage
+			if ( content.length < 5000000 ) {
+				localStorage.setItem( name, content );
+				}
+			// download as file
+			else {
+				let element = document.createElement('a');
+				element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
+				element.setAttribute('download', 'ConstellationControl_t' + this.game.turn_num + '.game');
+				element.style.display = 'none';
+				document.body.appendChild(element);
+				element.click();
+				document.body.removeChild(element);
+				}
+			console.timeEnd('SAVE GAME');
+			return true;
+			}	
+		catch ( error ) {
+			console.error(error);
+			return false;
+			}
+		}
+		
+	LoadGame( name = 'Saved Game' ) {
+		name = 'Game: ' + name; 
+		console.time('LOAD GAME');
+		let catalog = localStorage.getItem( name );
+		if ( !catalog ) return false;
+		catalog = JSON.parse(catalog);
+		// console.log(catalog);
+		// as we go along and find the Game object, keep note of that guy
+		let newgame = null;
+		// rehydrate all objects
+		for ( let k in catalog ) { 
+			switch ( catalog[k]._classname ) { 
+				case 'Game' : { catalog[k] = new Game(this,catalog[k]); newgame = catalog[k]; break; }
+				case 'Galaxy' : { catalog[k] = new Galaxy(catalog[k]); break; }
+				case 'Star' : { catalog[k] = new Star(catalog[k]); break; }
+				case 'Planet' : { catalog[k] = new Planet(catalog[k]); break; }
+				case 'Civ' : { catalog[k] = new Civ(catalog[k]); break; }
+				case 'Fleet' : { catalog[k] = new Fleet(catalog[k]); break; }
+				case 'Anom' : { catalog[k] = new Anom(catalog[k]); break; }
+				case 'GroundUnitBlueprint' : { catalog[k] = new GroundUnitBlueprint(catalog[k]); break; }
+				case 'GroundUnit' : { catalog[k] = new GroundUnit(catalog[k]); break; }
+				case 'ShipBlueprint' : { catalog[k] = new ShipBlueprint(catalog[k]); break; }
+				case 'Ship' : { catalog[k] = new Ship(catalog[k]); break; }
+				default : { console.warn('Unhandled object type in LoadGame: ' + catalog[k]._classname ); }
+				}
+			}
+		if ( newgame ) { 
+			// update the UUID sequencial counter to avoid issues.
+			// (A true UUID wouldnt have this problem, but sequencial 
+			// numbers are easier to read and take up less space in JSON
+			let maxuuid = 0;
+			for ( let k of Object.keys(catalog) ) {
+				maxuuid = Math.max( maxuuid, parseInt(k) ); 
+				} 			
+			utils.UUID( maxuuid + 1 ); // reset counter
+			// dereference all objects
+			for ( let k in catalog ) { 
+				if ( 'Unpack' in catalog[k] ) {
+					catalog[k].Unpack(catalog);
+					}
+				}
+			this.ChangeState('title_screen');
+			let app = this;
+			setTimeout( function(){ 
+				app.ResetEverything();
+				// rebuild the master fleets array
+				Fleet.all_fleets.splice(0,Fleet.all_fleets.length);
+				for ( let c of newgame.galaxy.civs ) {
+					Fleet.all_fleets.push( ...c.fleets );
+					}
+				newgame.galaxy.fleets = Fleet.all_fleets;
+				// install new game 
+				app.game = newgame; 
+				newgame.SetMyCiv( newgame.galaxy.civs.find( x => x.is_player ) ); 
+				app.ChangeState('play') 
+				}, 
+				1000 );
+			}
+		console.timeEnd('LOAD GAME');
+		}
+						
 	}
 
 	

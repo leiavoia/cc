@@ -27,7 +27,7 @@ export class PlayState {
 		this.app = app;
 		}
 
-	unattach() { 
+	detached() { 
 		this.app.ResetEverything();
 		this.app.game = null;
 		this.current_scale = 1.0;

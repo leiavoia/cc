@@ -37,7 +37,27 @@ export class Modlist {
 			else if ( 'modlist' in parent && parent.modlist instanceof Modlist ) { 
 				this.parent = parent.modlist;
 				}
+			// vanilla object created from JSON
+			else if ( typeof(parent)==='object' && 'mods' in parent ) { 
+				Object.assign( this, parent );
+				}
 			}
+		}
+		
+	toJSON() {
+		return this.mods.map( x => {
+			if ( x.prov && typeof(x.prov)==='object' && 'id' in x.prov ) { x.prov = x.prov.id; }
+			else { x.prov = null; }
+			return x;
+			});
+		}
+		
+	Unpack( ) { 
+		this.mods = this.mods.map( x => {
+			if ( x.prov && Number.isInteger(x.prov) ) { x.prov = catalog[x.prov]; }
+			else { x.prov = null; }
+			return x;
+			});				
 		}
 		
 	Add( mod ) {
