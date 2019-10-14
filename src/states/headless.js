@@ -33,6 +33,10 @@ export class HeadlessState {
 		this.app.game = null;
 		}
 	
+	attached() {
+		Signals.Send('state_changed', this );
+		}
+	
 	Start() { 
 		if ( !this.app.game ) { this.NewGame(); }
 		else {

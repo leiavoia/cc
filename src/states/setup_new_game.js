@@ -1,8 +1,7 @@
 import {inject} from 'aurelia-framework';
-import * as utils from '../util/utils';
 import {App} from '../app';
 import Game from '../classes/Game';
-import Civ from '../classes/Civ';
+import * as Signals from '../util/signals';
 
 @inject(App)
 export class SetupNewGameState {
@@ -43,6 +42,10 @@ export class SetupNewGameState {
 		}
 	CancelSetup() {
 		this.app.ChangeState('title_screen');
+		}
+
+	attached() {
+		Signals.Send('state_changed', this );
 		}
 	}
 

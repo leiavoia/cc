@@ -19,6 +19,7 @@ export class App {
 	sidebar_obj = null;
 	sidebar_mode = false;
 	state = 'title_screen';
+	state_changed_callback = null; // callback to use with ChangeState()
 	state_obj = null;
 	hilite_star = null;
 	game = null;
@@ -87,7 +88,7 @@ export class App {
 		this.notes = [];
 		}
 		
-	constructor() {
+	constructor() {  
 	
 		// TECHNICAL: lots of deep-down game bits need access to settings
 		// and data that App maintains. In order to bypass dependency injection
@@ -96,6 +97,17 @@ export class App {
 		// reference by literally any other game component. USAGE:
 		// 	let app = App.instance;
 		App.instance = this;
+		
+		// child state elements can fire 'state_changed' element.
+		// App will listen for this event and fire the optional callback
+		// supplied with ChangedState() function.
+		Signals.Listen('state_changed', data => {
+			if ( typeof(this.state_changed_callback) === 'function' ) { 
+				let f = this.state_changed_callback;
+				this.state_changed_callback = null; // /!\ callback itself can overwrite this w/ another callback
+				setTimeout( () => f(data), 0 );
+				}
+			});
 		
 		window.document.title = `Constellation Control v.${this.version}`;
 		this.LoadOptions();
@@ -165,12 +177,15 @@ export class App {
 		}
 		
 	// returns promise
-	ChangeState( state ) { 
+	ChangeState( state, callback=null ) { 
+		if ( callback && typeof(callback)==='function' ) { 
+			this.state_changed_callback = callback;
+			}
 		this.state = state;
 		}
 		
 	ClickStar( star, event ) { 
-		// deepsace anomalies not clickable. on map for debug only
+		// deepspace anomalies not clickable. on map for debug only
 		if ( star.objtype == 'anom' && !star.onmap ) { return; }
 		// special action for right click
 		if ( event.which > 1 ) { 
@@ -287,6 +302,21 @@ export class App {
 			// save to html5 localStorage
 			if ( content.length < 5000000 ) {
 				localStorage.setItem( name, content );
+				// log to games list
+				let gameslist = localStorage.getItem('games');
+				gameslist = JSON.parse(gameslist);
+				if ( !gameslist ) gameslist = [];
+				gameslist.push({
+					key: name, 
+					time: Date.now(),
+					turn_num: this.game.turn_num,
+					civs: this.game.galaxy.civs.length,
+					civ: this.game.myciv.name,
+					planets: this.game.myciv.planets.length
+					});
+				gameslist.sort( (a,b) => b.time - a.time );
+				localStorage.setItem( 'games', JSON.stringify(gameslist) );
+				localStorage.setItem( 'last_save_game_name', name );
 				}
 			// download as file
 			else {
@@ -348,9 +378,8 @@ export class App {
 					catalog[k].Unpack(catalog);
 					}
 				}
-			this.ChangeState('title_screen');
 			let app = this;
-			setTimeout( function(){ 
+			this.ChangeState('title_screen', function() { 
 				app.ResetEverything();
 				// rebuild the master fleets array
 				Fleet.all_fleets.splice(0,Fleet.all_fleets.length);
@@ -361,9 +390,9 @@ export class App {
 				// install new game 
 				app.game = newgame; 
 				newgame.SetMyCiv( newgame.galaxy.civs.find( x => x.is_player ) ); 
-				app.ChangeState('play') 
-				}, 
-				1000 );
+				app.ChangeState('play', function() { app.FocusMap( newgame.myciv.homeworld, true ) } ) ;
+				});
+	
 			}
 		console.timeEnd('LOAD GAME');
 		}

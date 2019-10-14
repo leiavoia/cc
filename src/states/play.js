@@ -6,6 +6,7 @@ import Fleet from '../classes/Fleet';
 import * as utils from '../util/utils';
 import {inject} from 'aurelia-framework';
 import {App} from '../app';
+import * as Signals from '../util/signals';
 // import {VelocityAnimator} from "aurelia-animator-velocity";
 
 @inject(App/*,VelocityAnimator*/)
@@ -393,6 +394,8 @@ export class PlayState {
 			this.FocusMap( this.app.hilite_star );
 			this.app.hilite_star = null;
 			}
+			
+		Signals.Send('state_changed', this );
 		}
 		
 		
