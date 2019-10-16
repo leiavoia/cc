@@ -379,7 +379,7 @@ export class App {
 					}
 				}
 			let app = this;
-			this.ChangeState('title_screen', function() { 
+			this.ChangeState('loading_screen', function() { 
 				app.ResetEverything();
 				// rebuild the master fleets array
 				Fleet.all_fleets.splice(0,Fleet.all_fleets.length);
