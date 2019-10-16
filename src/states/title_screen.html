@@ -25,15 +25,35 @@
 					<span>o</span>
 					<span>l</span>
 				</h1>
+				<p >Now Playing: v.${app.version}</p>
+				<p class="marginless" style="color:#FAA;">/!\ This is alpha software. Stuff breaks! /!\</p>
 				<p class="button_rack big"> 
 					<a href="#" click.delegate="ClickNewGame()">New Game</a>
-					<a href="#" click.delegate="ClickHeadless()">Headless</a>
-					<a href="#" click.delegate="ClickLoadGame()">Load Game</a>
-					<a href="#" class="ghost">Options</a>
-					<a href="#" class="ghost">About</a>		
-					<a href="#" class="ghost">Help</a>		
+					<a href="#" click.delegate="show_loading_panel = !show_loading_panel">Load Game</a>
+					<a href="#" click.delegate="ClickHeadless()" if.bind="app.options.debug">Headless</a>
+					<!-- <a href="#" class="ghost">Options</a> -->
+					<!-- <a href="#" class="ghost">About</a>		 -->
+					<!-- <a href="#" class="ghost">Help</a>		 -->
 				</p>
-				<p>Now Playing: v.${app.version}</p>
+				<div id="games_list" show.bind="show_loading_panel">
+					<div class="offset transp" >
+						<form submit.delegate="LoadSavedGameFile()">
+							From file:
+							<input type="file" accept=".game" id="savefileloader" />
+							<button name="loadfromfile">Load Game</button>
+						</form>
+					</div>
+					<div class="clickable offset transp" repeat.for="g of saved_games" click.delegate="ClickSavedGame(g)">
+						<p class="bold marginless">${g.key}</p>
+						<p class="dim marginless">
+							${g.time}<br/> 
+							Turn ${g.turn_num},
+							${g.civ},
+							${g.planets} planets,
+							${g.civs} civs
+						</p>
+					</div>
+				</div>
 			</div>
 			<p class="disclaimer">Constellation Control is a 100% free 4X space strategy game for the web.<br/>Consider making a donation to support it.</p>
 		</div>

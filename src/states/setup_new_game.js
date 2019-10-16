@@ -30,15 +30,7 @@ export class SetupNewGameState {
 		if ( this.app.options.setup.density == 0.05 ) { this.app.options.setup.density = 0; }
 		this.app.SaveOptions();
 		
-		this.app.ChangeState('play');
-		// at this point there is some fudge time until the PlayState
-		// widget actually gets created and placed into the layout.
-		// Trying to perform functions directly on the PlayState will
-		// fail because it doesn't exist yet. Let PlayState handle
-		// anything it needs by itself. Just give it the data it needs.
-		// [!]TODO - Consider adding an App::OnStateChange callback
-		// that States can call when they are done loading. Kinda like 
-		// an app-level event lifecycle.
+		this.app.ChangeState('play', /* optional post-loading callback here */ );
 		}
 	CancelSetup() {
 		this.app.ChangeState('title_screen');

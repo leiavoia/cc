@@ -259,7 +259,7 @@ body,html {
 	}
 
 .xtreme_zoom #layout_viewport {
-	background-color: rgba(0,0,0,0.55) !important;
+	background-color: rgba(0,0,0,0.85) !important;
 /* 	background-color: #000; */
 	}
 	
@@ -926,7 +926,13 @@ DIV.offset {
 	background: rgba( 17, 67, 107, 0.95);
 /* 	background: rgba( 0,0,0, 0.65); */
 	}
-	
+DIV.offset.transp {	
+	background: rgba(0,0,0,0.6);
+	border: 1px #222 outset;
+	border-radius: 1em;
+	padding: 2em;
+	margin: 1em 0;
+	}	
 	
 	
 /*A#nav_button_map {color: #FFF; border-color: #FFF; }
@@ -1114,22 +1120,6 @@ SELECT:disabled:hover, SELECT[aria-disabled=true] {
 
 /* MAP */
 
-DIV.hyperlane {
-	position:absolute;
-	height:10px; 
-	transform-origin: 0% 0%; 
-	background: rgb(255,255,255); 
-	opacity: 0.6;
-	z-index:-1;
-/*	border: 2px solid #FFF;
-	border-left-width: 0;
-	border-right-width: 0;*/
-	}
-.xtreme_zoom DIV.hyperlane {
-	height:30px; 
-	opacity: 1;
-	}
-	
 #flash_caret {
 	width: 1200px;
 	height: 1200px;
@@ -3681,7 +3671,16 @@ DIV.annoyometer .nub {
 #layout_ui_main.title_screen .content * {
 	text-align:center;
 	}
-	
+#layout_ui_main.title_screen #games_list {
+	max-width: 40em; 
+	margin: 2em auto; 
+	}
+#layout_ui_main.title_screen #games_list DIV {
+	padding: 1em; 
+	}
+#layout_ui_main.title_screen #games_list DIV.clickable:hover {
+	background-color: #4BA5CC;
+	}
 #layout_ui_main.title_screen .disclaimer {
 	position: absolute;
 	bottom: 2em;

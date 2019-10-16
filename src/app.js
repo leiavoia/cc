@@ -306,6 +306,12 @@ export class App {
 				let gameslist = localStorage.getItem('games');
 				gameslist = JSON.parse(gameslist);
 				if ( !gameslist ) gameslist = [];
+				// remove existing same-named entry
+				let samename = gameslist.find( x => x.key==name );
+				if ( samename ) { 
+					let i = gameslist.indexOf(samename);
+					gameslist.splice( i, 1 );
+					}
 				gameslist.push({
 					key: name, 
 					time: Date.now(),
@@ -337,12 +343,27 @@ export class App {
 			}
 		}
 		
-	LoadGame( name = 'Saved Game' ) {
-		name = 'Game: ' + name; 
+	// - If the string param is less than 256 chars, assume its a
+	// name of a local storage saved game. 
+	// - If param is an integer, look up in saved games list
+	// - Otherwise, treat as raw JSON.
+	LoadGame( str ) {
+		if ( Number.isInteger( str ) ) {
+			let i = str;
+			let gameslist = localStorage.getItem('games');
+			gameslist = JSON.parse(gameslist);
+			if ( !gameslist || i >= gameslist.length ) return false;
+			str = localStorage.getItem( gameslist[i].key );
+			if ( !str ) return false;
+			}
+		else if ( str && str.length <= 256 ) {
+			let name = 'Game: ' + str; 
+			str = localStorage.getItem( name );
+			if ( !str ) return false;
+			}
 		console.time('LOAD GAME');
-		let catalog = localStorage.getItem( name );
+		let catalog = JSON.parse(str);
 		if ( !catalog ) return false;
-		catalog = JSON.parse(catalog);
 		// console.log(catalog);
 		// as we go along and find the Game object, keep note of that guy
 		let newgame = null;
