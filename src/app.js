@@ -298,7 +298,7 @@ export class App {
 		try { 
 			name = 'Game: ' + name; 
 			console.time('SAVE GAME');
-			let catalog = {};
+			let catalog = { 'version' : this.version };
 			this.game.Pack( catalog );
 			let content = JSON.stringify(catalog);
 			content = content.replace(/(\.\d{4})(\d+)/g,"$1"); // reduce number precision
@@ -373,6 +373,8 @@ export class App {
 		console.time('LOAD GAME');
 		let catalog = JSON.parse(str);
 		if ( !catalog ) return false;
+		// version mismatch
+		if ( !catalog.version || catalog.version != this.version ) { return false; }
 		// console.log(catalog);
 		// as we go along and find the Game object, keep note of that guy
 		let newgame = null;
@@ -404,7 +406,7 @@ export class App {
 			utils.UUID( maxuuid + 1 ); // reset counter
 			// dereference all objects
 			for ( let k in catalog ) { 
-				if ( 'Unpack' in catalog[k] ) {
+				if ( typeof(catalog[k])==='object' && 'Unpack' in catalog[k] ) {
 					catalog[k].Unpack(catalog);
 					}
 				}

@@ -23,7 +23,7 @@ export class GameMenuPane {
 		let key = 'Game: ' + name;
 		let result = this.app.SaveGame(key);
 		if ( result ) { 
-			this.last_saved_game_name = this.app.last_saved_game_key.replace('Game: ','');
+			this.last_saved_game_name = name;
 			this.app.ReturnToMap();
 			this.app.AddNote( 'good', 'Game Saved', name, null, 2000 );
 			}
