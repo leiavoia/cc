@@ -211,7 +211,7 @@ export class ShipBlueprint {
 		// can be called multiple times from different sources, 
 		// so check to to make sure only unpacked once.
 		if ( this.mods instanceof Modlist ) { return; }
-		this.comps = this.comps.map( x => ShipComponentList[x.tag] );
+		this.comps = this.comps.map( x => ShipComponentList[x] );
 		this.weapons = this.weapons.map( x => {
 			let o = Object.create( WeaponList[x.tag] );
 			o.qty = x.qty; // default, user can change later

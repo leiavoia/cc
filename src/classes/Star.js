@@ -46,9 +46,6 @@ export default class Star {
 	toJSON() { 
 		let obj = Object.assign( {}, this );
 		obj._classname = 'Star';
-		// for ( let k of ['id','name','xpos','ypos','color','settled','explored','in_range','settled_by_player'] ) { 
-			// obj[k] = this[k];
-			// };
 		obj.planets = this.planets.map( x => x.id );
 		obj.fleets = this.fleets.map( x => x.id );
 		obj.accts = {};
@@ -72,7 +69,9 @@ export default class Star {
 		this.fleets = this.fleets.map( x => catalog[x] );
 		let map = new Map();
 		for ( let k in this.accts ) {
-			map.set( catalog[k], this.accts[k] );
+			if ( k in catalog && catalog[k].alive ) { 
+				map.set( catalog[k], this.accts[k] );
+				}
 			} 
 		this.accts = map;
 		}
