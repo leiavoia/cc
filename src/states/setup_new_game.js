@@ -30,6 +30,7 @@ export class SetupNewGameState {
 		if ( this.app.options.setup.density == 0.05 ) { this.app.options.setup.density = 0; }
 		this.app.SaveOptions();
 		
+		this.app.last_saved_game_key = '';
 		this.app.ChangeState('play', /* optional post-loading callback here */ );
 		}
 	CancelSetup() {

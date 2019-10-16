@@ -13,7 +13,7 @@ import * as utils from './util/utils';
 export class App {
 	version = '0.0.5';
 	main_panel_obj = null;
-// 	main_panel_mode = 'shipdes';
+	last_saved_game_key = '';
 	main_panel_mode = false;
 	exclusive_ui = false; // if true, hides all UI except main content panel
 	sidebar_obj = null;
@@ -39,9 +39,9 @@ export class App {
 		xtreme_zoom_at: 0.25,
 		debug: false,
 		ai: true, // process the AI each turn
-		soak: true, // run the game without player involvement
+		soak: false, // run the game without player involvement
 		bg_bright: 1.0,
-		nofx: true,
+		nofx: false,
 		headless: false, // for debugging on turbo speed
 		history_mode: 'power',
 		autoload_troops: true,
@@ -208,6 +208,7 @@ export class App {
 		else if ( obj instanceof Star ) { this.sidebar_mode = 'star';  this.CurrentState().SetCaret(obj); }
 		else if ( obj instanceof Anom ) { this.sidebar_mode = 'anom';  this.CurrentState().SetCaret(obj); }
 		else if ( obj instanceof Fleet && !obj.killme && !obj.merged_into ) { this.sidebar_mode = 'fleet'; this.CurrentState().SetCaret(obj); }
+		else if ( obj instanceof Game ) { this.sidebar_mode = 'gamemenu'; } 
 		else { this.sidebar_mode = false; }
 		this.sidebar_obj = obj;
 		
@@ -265,10 +266,14 @@ export class App {
 	// title: optional
 	// content: optional, HTML allowed
 	// onclick: callback function. optional.
-	AddNote( type, title = null, content = null , onclick = null ) {
+	AddNote( type, title = null, content = null, onclick = null, ttl=0 ) {
 		// notes can be totally disabled
 		if ( this.options.notify === false || this.options.soak ) { return; }
-		this.notes.push({ type:type, title:title, content:content, onclick:onclick });
+		let note = { type:type, title:title, content:content, onclick:onclick };
+		this.notes.push(note);
+		if ( ttl > 0 ) { 
+			setTimeout( () => this.ClickNote(note,true,false), ttl );
+			}
 		}
 	// removes the note by default. executes onclick callback if set.
 	ClickNote( note, remove = true, do_action = true ) { 
@@ -287,7 +292,7 @@ export class App {
 		}
 		
 						
-	// return true of success, false on error
+	// return true on success, false on error
 	SaveGame( name = 'Saved Game' ) {
 		if ( !this.game ) { return false; }
 		try { 
@@ -322,7 +327,9 @@ export class App {
 					});
 				gameslist.sort( (a,b) => b.time - a.time );
 				localStorage.setItem( 'games', JSON.stringify(gameslist) );
-				localStorage.setItem( 'last_save_game_name', name );
+				if ( name != "Game: Quick Save" ) { 
+					this.last_saved_game_key = name;
+					}
 				}
 			// download as file
 			else {
@@ -355,11 +362,13 @@ export class App {
 			if ( !gameslist || i >= gameslist.length ) return false;
 			str = localStorage.getItem( gameslist[i].key );
 			if ( !str ) return false;
+			this.last_saved_game_key = gameslist[i].key;
 			}
 		else if ( str && str.length <= 256 ) {
 			let name = 'Game: ' + str; 
 			str = localStorage.getItem( name );
 			if ( !str ) return false;
+			this.last_saved_game_key = str;
 			}
 		console.time('LOAD GAME');
 		let catalog = JSON.parse(str);
