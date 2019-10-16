@@ -139,10 +139,11 @@ export class CivAI extends AI {
 		obj.civ = this.civ.id;
 		obj.staging_pts = this.staging_pts.map( x => x.id );
 		obj.objectives = this.objectives.map( x => { 
-			let o = {}; // Object.assign({},x);
+			let o = {}; // [!]TECHNICAL: using Object.assign causes "too much recursion" if `civ` is present
 			o._classname = x.constructor.name; // "analyze" => "AIAnalyzeObjective"
 			o.target = x.target ? x.target.id : null;
 			o.fleet = x.fleet ? x.fleet.id : null;
+			if ( 'bootstrapped' in x ) { o.bootstrapped = x.bootstrapped; } // [!]HACK
 			// FIXME: chained callbacks do not flatten when saved/loaded.
 			// In the future we may need standardized functions and just store params.
 			// o.onComplete = null; // x.onComplete ? (''+x.onComplete) : null;
