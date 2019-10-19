@@ -319,6 +319,22 @@ export default class Civ {
 	// the sum of all resources being demanded from all sources
 	resource_estm = { $:0, o:0, s:0, m:0, r:0, g:0, b:0, c:0, v:0, y:0 };
 	
+	ResourceLabel( resource ) { 
+		const resources = {
+			$:'Cash',
+			o:'Organics',
+			s:'Silicates',
+			m:'Metals',
+			r:'Redium',
+			g:'Verdagen',
+			b:'Bluetonium',
+			c:'Cyanite',
+			v:'Violetronium',
+			y:'Yellowtron'
+			};
+		return (resource in resources) ? resources[resource] : 'unknown';
+		}
+	
 	EstimateResources() {
 		for ( let k in this.resource_estm ) { this.resource_estm[k] = 0; }
 		for ( let p of this.planets ) { 
@@ -835,7 +851,14 @@ export default class Civ {
 	AI_ScoreTradeItem( i, civ ) { 
 		switch ( i.type ) {
 			case 'cash' : {
-				return i.amount * this.ai.needs.cash;
+				return parseFloat(i.amount) * this.ai.needs.cash;
+				}
+			case 'resource' : {
+				let intrinsic_val = 1.0;
+				if ( i.key=='r' || i.key=='g' || i.key=='b' ) { intrinsic_val = 2; }
+				else if ( i.key=='c' || i.key=='y' || i.key=='v' ) { intrinsic_val = 3; }
+				let supply_val = ( 1 / ( this.resource_supply[i.key] || 1.0 ) );
+				return parseFloat(i.amount) * supply_val * intrinsic_val;
 				}
 			case 'planet' : {
 				// base value
@@ -1013,6 +1036,13 @@ export default class Civ {
 		
 		// CASH
 		items.push({ type:'cash', label:'Cash', max:this.resources.$, amount:0, avail:true });
+		
+		// RESOURCES
+		for ( let k of ['o','s','m','r','g','b','c','y','v'] ) { 
+			if ( this.resources[k] >= 1 ) { 
+				items.push({ type:'resource', label:this.ResourceLabel(k), key:k, max:this.resources[k], amount:0, avail:(this.resources[k] > 10) });
+				}
+			}
 		
 		// TREATIES
 		for ( let k of Object.keys( Treaties ) ) { 
