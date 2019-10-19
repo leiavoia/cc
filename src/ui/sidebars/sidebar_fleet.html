@@ -212,7 +212,7 @@
 			
 			<div repeat.for="p of fleet.star.planets" 
 				class="hilite_wrapper ${p==selected_planet ? 'selected' : ''}" 
-				if.bind="p.owner && p.owner.is_player"
+				if.bind="p.owner && p.owner == fleet.owner"
 				click.delegate="ClickPlanetForTroops(p)"
 				>
 				<div class="planet atm${p.atm} tmp${p.temp}" css.one-time="PlanetSizeCSS(p)">
@@ -265,7 +265,7 @@
 			<h2>Invade Which?</h2>
 			<div repeat.for="p of fleet.star.planets" 
 				class="hilite_wrapper ${p==selected_planet ? 'selected' : ''}" 
-				if.bind="p.owner && !p.owner.is_player"
+				if.bind="p.owner && p.owner != fleet.owner"
 				click.delegate="ClickPlanetToInvade(p)"
 				>
 				<div class="planet atm${p.atm} tmp${p.temp}" css.one-time="PlanetSizeCSS(p)">
