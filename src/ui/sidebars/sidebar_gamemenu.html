@@ -8,6 +8,9 @@
 		</p>
 		<div if.bind="requesting_save_name">
 			<input type="text" style="width: calc(100% - 1em);" placeholder="Name this Game!" value.bind="saved_game_name" />
+			<p>
+				<input type="checkbox" checked.bind="force_download" /> Download .game file
+			</p>
 			<p class="button_rack button_rack_fill big" if.bind="requesting_save_name">
 				<button click.delegate="SaveGame()" class="alt">Save Game</button>
 			</p>

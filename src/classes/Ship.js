@@ -43,12 +43,12 @@ export class Ship {
 		obj.troops = this.troops.map( x => x.id );	
 		// dont save weapon status - 
 		// just rehydrate from blueprint with full health when unpacking
+		// this is a possible exploit we might care to patch in the future.
 		delete(obj.weapons);
 		return obj;
 		}
 		
 	Pack( catalog ) { 
-		// console.log('packing Ship ' + this.id);
 		if ( !( this.id in catalog ) ) { 
 			catalog[ this.id ] = this.toJSON(); 
 			for ( let x of this.troops ) { x.Pack(catalog); }
@@ -201,7 +201,6 @@ export class ShipBlueprint {
 		}
 		
 	Pack( catalog ) { 
-		// console.log('packing ShipBlueprint ' + this.id);
 		if ( !( this.id in catalog ) ) { 
 			catalog[ this.id ] = this.toJSON(); 
 			}
@@ -214,7 +213,7 @@ export class ShipBlueprint {
 		this.comps = this.comps.map( x => ShipComponentList[x] );
 		this.weapons = this.weapons.map( x => {
 			let o = Object.create( WeaponList[x.tag] );
-			o.qty = x.qty; // default, user can change later
+			o.qty = x.qty;
 			return o;
 			} );
 		this.mods = new Modlist(this.mods);

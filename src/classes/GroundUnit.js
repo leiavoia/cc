@@ -31,7 +31,6 @@ export class GroundUnit {
 		}
 		
 	Pack( catalog ) { 
-		// console.log('packing GroundUnit ' + this.id);
 		if ( !( this.id in catalog ) ) { 
 			catalog[ this.id ] = this.toJSON(); 
 			this.bp.Pack(catalog);
@@ -115,7 +114,6 @@ export class GroundUnitBlueprint {
 		}
 		
 	Pack( catalog ) { 
-		// console.log('packing GroundUnitBlueprint ' + this.id);
 		if ( !( this.id in catalog ) ) { 
 			catalog[ this.id ] = this.toJSON(); 
 			}

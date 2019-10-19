@@ -76,12 +76,16 @@ export default class Fleet {
 		obj.merged_with = this.merged_with ? this.merged_with.id : null;
 		obj.ships = this.ships.map( x => x.id );	
 		obj.mods = this.mods.toJSON();
-		obj.ai = null; // TODO
+		obj.ai = null;
+		obj.mission = null;
+		if ( this.mission ) { 
+			obj.mission = Object.assign( {}, this.mission );
+			obj.mission.targets = obj.mission.targets.map( x => x.id ); // list of Anoms
+			}
 		return obj;
 		}
 		
 	Pack( catalog ) { 
-		// console.log('packing Fleet ' + this.id);
 		if ( !( this.id in catalog ) ) { 
 			catalog[ this.id ] = this.toJSON(); 
 			for ( let x of this.ships ) { x.Pack(catalog); }
@@ -96,6 +100,10 @@ export default class Fleet {
 		this.ships = this.ships.map( x => catalog[x] );
 		this.mods = new Modlist(this.mods);
 		this.mods.Unpack(catalog);
+		if ( this.mission ) { 
+			this.mission.targets = this.mission.targets.map( x => catalog[x] ); // list of Anoms
+			}
+		// NOTE: AI is hooked back up by CivAI::Unpack()
 		}
 		
 	// use this if ships are added or removed.

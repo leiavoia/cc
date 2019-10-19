@@ -16,6 +16,7 @@ export default class Galaxy {
 	width = 2000;
 	height = 2000;
 	age = 0.5;
+	bg_img = 'img/map/bg/spacebg_031.jpg';
 	stats = {
 		x: 0,
 		y: 0,
@@ -42,6 +43,7 @@ export default class Galaxy {
 			height: this.height,
 			width: this.width,
 			age: this.age,
+			bg_img: this.bg_img,
 			stars: this.stars.map( x => x.id ),
 			anoms: this.anoms.map( x => x.id ),
 			civs: this.civs.map( x => x.id ),
@@ -50,7 +52,6 @@ export default class Galaxy {
 		}
 		
 	Pack( catalog ) { 
-		// console.log('packing Galaxy ' + this.id ); 
 		catalog[ this.id ] = this.toJSON();
 		for ( let x of this.stars ) { x.Pack(catalog); }
 		for ( let x of this.anoms ) { x.Pack(catalog); }
@@ -75,6 +76,9 @@ export default class Galaxy {
 		// reset data
 		this.stars = [];
 		this.anoms = [];
+		
+		// random background wallpaper
+		this.bg_img = 'img/map/bg/spacebg_' + ("000" + utils.RandomInt(0,75)).slice(-3) + '.jpg';
 		
 		// sane limits
 		sectors = Math.min( 10000, Math.max( 16, sectors ) );

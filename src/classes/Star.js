@@ -28,8 +28,8 @@ export default class Star {
 	// because multiple civs can inhabit the star system.
 	accts = null; // new Map();
 	
-	// also accepts 'fromJSON' style object as first param
 	constructor( name, color, xpos, ypos ) { 
+		// also accepts 'fromJSON' style object as first param
 		if ( name && typeof(name)==='object' && 'xpos' in name ) { 
 			Object.assign( this, name ); 
 			}
@@ -56,7 +56,6 @@ export default class Star {
 		}
 		
 	Pack( catalog ) { 
-		// console.log('packing Star ' + this.id + ' ' + this.name); 
 		if ( !( this.id in catalog ) ) { 
 			catalog[ this.id ] = this.toJSON(); 
 			for ( let x of this.planets ) { x.Pack(catalog); }

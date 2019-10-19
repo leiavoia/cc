@@ -9,9 +9,8 @@ export class TitleState {
 		this.app = app;
 		this.show_loading_panel = false;
 		// see if we have saved game:
-		this.saved_games = localStorage.getItem('games');
+		this.saved_games = this.app.SavedGameList();
 		if ( this.saved_games ) {
-			this.saved_games = JSON.parse(this.saved_games);
 			for ( let i of this.saved_games ) { 
 				i.key = i.key.replace('Game: ','');
 				var newDate = new Date();

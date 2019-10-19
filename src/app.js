@@ -291,11 +291,20 @@ export class App {
 		this.notes.splice(0,this.notes.length);
 		}
 		
-						
+	SavedGameList() { 
+		let gameslist = localStorage.getItem('games');
+		gameslist = JSON.parse(gameslist);
+		if ( !gameslist ) gameslist = [];
+		gameslist = gameslist.filter( x => x.version && x.version.substring(0,3) === this.version.substring(0,3) );
+		return gameslist;
+		}
+			
 	// return true on success, false on error
-	SaveGame( name = 'Saved Game' ) {
+	SaveGame( name = 'Saved Game', force_download = false ) {
 		if ( !this.game ) { return false; }
 		try { 
+			// start by cleaning up space
+			this.PurgeUnlistedSavedGames()
 			name = 'Game: ' + name; 
 			console.time('SAVE GAME');
 			let catalog = { 'version' : this.version };
@@ -305,12 +314,12 @@ export class App {
 			content = content.replace(/\.0+,/g,","); // hack off unnecessary zeroes
 			console.log('Saving ' + content.length + ' bytes ...' );
 			// save to html5 localStorage
-			if ( content.length < 5000000 ) {
+			if ( content.length < 5000000 && !force_download ) {
 				localStorage.setItem( name, content );
 				// log to games list
-				let gameslist = localStorage.getItem('games');
-				gameslist = JSON.parse(gameslist);
-				if ( !gameslist ) gameslist = [];
+				let gameslist = this.SavedGameList();
+				// remove incompatible games
+				gameslist = gameslist.filter( x => x.version && x.version.substring(0,3) === this.version.substring(0,3) );
 				// remove existing same-named entry
 				let samename = gameslist.find( x => x.key==name );
 				if ( samename ) { 
@@ -323,7 +332,8 @@ export class App {
 					turn_num: this.game.turn_num,
 					civs: this.game.galaxy.civs.length,
 					civ: this.game.myciv.name,
-					planets: this.game.myciv.planets.length
+					planets: this.game.myciv.planets.length,
+					version: this.version
 					});
 				gameslist.sort( (a,b) => b.time - a.time );
 				localStorage.setItem( 'games', JSON.stringify(gameslist) );
@@ -374,13 +384,13 @@ export class App {
 		let catalog = JSON.parse(str);
 		if ( !catalog ) return false;
 		// version mismatch
-		if ( !catalog.version || catalog.version != this.version ) { return false; }
+		if ( !catalog.version || catalog.version.substring(0,3) != this.version.substring(0,3) ) { return false; }
 		// console.log(catalog);
 		// as we go along and find the Game object, keep note of that guy
 		let newgame = null;
 		// rehydrate all objects
-		for ( let k in catalog ) { 
-			switch ( catalog[k]._classname ) { 
+		for ( let k in catalog ) {
+			switch ( catalog[k]._classname ) {
 				case 'Game' : { catalog[k] = new Game(this,catalog[k]); newgame = catalog[k]; break; }
 				case 'Galaxy' : { catalog[k] = new Galaxy(catalog[k]); break; }
 				case 'Star' : { catalog[k] = new Star(catalog[k]); break; }
@@ -427,6 +437,16 @@ export class App {
 	
 			}
 		console.timeEnd('LOAD GAME');
+		}
+			
+	PurgeUnlistedSavedGames() { 
+		let games = this.SavedGameList().map( x => x.key );
+		let keys = Object.keys(localStorage).filter( k => k.match(/^Game: /) );
+		for ( let k of keys ) { 
+			if ( games.indexOf(k) == -1 ) {
+				localStorage.removeItem(k);
+				}
+			}
 		}
 						
 	}

@@ -3,13 +3,12 @@ import Game from '../../classes/Game';
 export class GameMenuPane {
 	app = null;
 	requesting_save_name = false;
+	force_download = false;
 	saved_game_name = '';
-	last_saved_game_name = null;
-	
 	activate(data) {
 		this.app = data.app;
-		this.last_saved_game_name = this.app.last_saved_game_key.replace('Game: ','');
-		this.saved_game_name = this.last_saved_game_name || `${this.app.game.myciv.name} saved game`;
+		let last_saved_game_name = this.app.last_saved_game_key.replace('Game: ','');
+		this.saved_game_name = last_saved_game_name || `${this.app.game.myciv.name} saved game`;
 		}
 		
 	Quit() {
@@ -20,17 +19,21 @@ export class GameMenuPane {
 		
 	SaveGame() {
 		let name = this.saved_game_name || 'Saved Game';
-		let key = 'Game: ' + name;
-		let result = this.app.SaveGame(key);
+		let result = this.app.SaveGame(name,this.force_download);
 		if ( result ) { 
-			this.last_saved_game_name = name;
+			this.saved_game_name = name;
 			this.app.ReturnToMap();
 			this.app.AddNote( 'good', 'Game Saved', name, null, 2000 );
 			}
 		}
 		
 	SaveGameFast() {
-		this.app.SaveGame('Quick Save');
+		let result = this.app.SaveGame('Quick Save');
+		if ( result ) { 
+			this.saved_game_name = 'Quick Save';
+			this.app.ReturnToMap();
+			this.app.AddNote( 'good', 'Game Saved', name, null, 2000 );
+			}
 		}
 		
 	NewGame() { 

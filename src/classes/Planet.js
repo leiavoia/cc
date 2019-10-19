@@ -132,7 +132,6 @@ export default class Planet {
 		}
 		
 	Pack( catalog ) { 
-		// console.log('packing Planet ' + this.id);
 		if ( !( this.id in catalog ) ) { 
 			catalog[ this.id ] = this.toJSON(); 
 			for ( let x of this.troops ) { x.Pack(catalog); }

@@ -18,7 +18,6 @@ export class PlayState {
 	max_scale = 1.0;
 	min_scale = 0.025;
 	scaling_step = 0.125;
-	bg_img = 'img/map/bg/spacebg_031.jpg';
 	bg_img_w = 2500; // standardized bg img dims
 	bg_img_h = 1400; // but can accomodate any image 
 	xtreme_zoom = false;
@@ -261,7 +260,7 @@ export class PlayState {
 			playstate.bg_img_w = img.width; 
 			playstate.bg_img_h = img.height;
 			};
-		img.src = this.bg_img;
+		img.src = this.app.game.galaxy.bg_img;
 		}
 		
 	/* this executes when DOM is ready */
@@ -382,7 +381,6 @@ export class PlayState {
 			});	
 				
 		// pick a random nebula background
-		this.bg_img = 'img/map/bg/spacebg_' + ("000" + utils.RandomInt(0,75)).slice(-3) + '.jpg';
 		this.GetBGDims();
 		
 		// set the initial background size

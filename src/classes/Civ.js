@@ -460,13 +460,6 @@ export default class Civ {
 		obj.avail_ship_weapons = this.avail_ship_weapons.map( x => x.tag );
 		obj.avail_zones = this.avail_zones.map( x => x.key );
 		obj.victory_ingredients = this.victory_ingredients.map( x => x.tag );
-		// this.diplo.contacts.set( civ, { 
-		// 	lovenub: lovenub,
-		// 	attspan: ( this.is_player ? 1.0 : this.diplo.attspan_max ),
-		// 	in_range: true,
-		// 	comm: this.CommOverlapWith( civ ), // when technology changes, you need to update this!
-		// 	treaties: new Map()
-		// 	});
 		obj.diplo = Object.assign( {}, this.diplo ); // dont overwrite original object
 		obj.diplo.contacts = {}; 
 		for ( let [k,v] of this.diplo.contacts ) {
@@ -494,7 +487,6 @@ export default class Civ {
 		}
 		
 	Pack( catalog ) {
-		// console.log('packing Civ ' + this.id + ' ' + this.is_player); 
 		if ( !( this.id in catalog ) ) { 
 			catalog[ this.id ] = this.toJSON(); 
 			for ( let x of this.ship_blueprints ) { x.Pack(catalog); }

@@ -172,6 +172,10 @@ export class CivAI extends AI {
 			// o.onFail = x.onFail ? eval(x.onFail) : null;
 			return o;
 			}); 
+		// hook up fleet AIs
+		for ( let o of this.objectives ) { 
+			if ( o.fleet ) { o.fleet.ai = o; }
+			}
 		}		
 	}
 

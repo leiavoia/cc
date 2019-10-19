@@ -65,7 +65,6 @@ export default class Game {
 	Unpack( catalog ) {
 		this.galaxy = catalog[ this.galaxy ];
 		this.myciv = catalog[ this.myciv ];
-		// /!\WARNING - MAY DEPEND ON UNPACKING ORDER - THESE OBJECT MAY NOT BE READY YET
 		this.shipcombats = this.shipcombats.map( x => {
 			x.attacker = catalog[x.attacker];
 			x.defender = catalog[x.defender];
