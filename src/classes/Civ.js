@@ -1073,7 +1073,7 @@ export default class Civ {
 					}
 				}
 			// advanced tech requires better communication
-			const avail = utils.Clamp(node.rp / (avg_rp*2), 0, 1) < comm;
+			const avail = utils.Clamp(node.rp / (avg_rp*2), 0, 10) < comm * 2;
 			items.push({ type:'technode', obj:node, label:node.name, avail });
 			}
 		
