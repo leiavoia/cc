@@ -24,6 +24,7 @@ export default class Game {
 	eventlib = null;
 	shipcombats = [];
 	groundcombats = [];
+	audiences = [];
 	victory_recipes = [];	
 	victory_achieved = false;
 	top10civs = []; // for AI / UI fun
@@ -54,6 +55,7 @@ export default class Game {
 			x.planet = x.planet.id;
 			return x;
 			} );
+		obj.audiences = []; // you lost your chance
 		return obj;
 		}
 						
@@ -499,6 +501,12 @@ export default class Game {
 		
 		this.processing_turn = false;
 		} // end process turn
+		
+	// `data` is whatever the civ is wanting to discuss, which isnt programmed yet.
+	// currently only takes `data.offer` for trade offers and `data.message` for raw text.
+	QueueAudience( civ, data ) {
+		this.audiences.push({ civ, data, label: `${civ.name} requesting audience` });	
+		}
 		
 	QueueShipCombat( attacker, defender, planet ) {
 		this.shipcombats.push({ attacker, defender, planet,

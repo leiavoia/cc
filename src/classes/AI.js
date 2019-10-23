@@ -39,6 +39,7 @@ import * as utils from '../util/utils';
 import RandomPicker from '../util/RandomPicker';
 import RandomName from '../util/RandomName';
 import Fleet from './Fleet';
+import TradeOffer from './TradeOffer';
 import {ShipBlueprint} from './Ship';
 
 export class AI {
@@ -414,7 +415,7 @@ export class AIAnalyzeObjective extends AIObjective {
 			civ.ai.total_troops += f.troops;
 			civ.ai.total_troopships += f.troopcap;
 			civ.ai.total_milval += f.milval;
-			civ.ai.avail_milval += (f.milval - f.reserved_milval);
+			civ.ai.avail_milval += Math.max(0, f.milval - f.reserved_milval);
 			}			
 		// normalize levels
 		if ( civ.ai.total_threat ) { 
@@ -1350,6 +1351,102 @@ export class AIDiplomacyObjective extends AIObjective {
 	type = 'diplomacy';
 	priority = 60;
 	EvaluateFunc( app, civ ) { 
+		this.note = '';
+		for ( let [c,acct] of civ.diplo.contacts ) { 
+			// respect contact range, communication ability, and current attention span
+			if ( acct.attspan < 0.2 || !acct.comm || !acct.in_range ) continue;
+			// consider an audience
+			if ( Math.random() > 0.08 ) continue;
+			
+			// if we are at war, let's see if we need to back out.
+			if ( acct.treaties.has('WAR') ) { 
+				// TODO: need a method of evaluating how the war is going.
+				// for now, just look at the power graph.
+				let ratio = civ.power_score / (c.power_score || 1);
+				if ( Math.random() > ratio * 0.6 && Math.random() > 0.3 ) {
+					// calculate what they might want for a ceasefire
+					let ceasefire = { type:'treaty', label:'Cease-Fire', obj:'CEASEFIRE', civ:civ, avail:true };
+					let ceasefire_worth = c.AI_ScoreTradeItem(ceasefire,civ);
+					let ask = [ ceasefire ];
+					let give = [];
+					let items = civ.AI_ListItemsWantInTrade(c).shuffle();
+					let total_score = 0;
+					for ( let i of items ) {
+						give.push(i);
+						// let score = c.AI_ScoreTradeItem(i,civ);
+						total_score += i.score;
+						if ( total_score >= ceasefire_worth ) break;
+						}
+					let offer = new TradeOffer( civ, c, give, ask, ( ratio < 0.75 ? 'beg' : 'insist' ) );
+					// AI-AI trades happen instantly
+					if ( !c.is_player || app.options.soak ) { 
+						let result = offer.Evaluate();
+						// accept counter-offer depending on how desperate we are
+						if ( result === true ) {
+							this.note = `${c.name} accepted ceasefire; `;
+							// console.log(`:-) ${c.name} accepts ceasefire from ${civ.name}`); 
+							}
+						else if ( result === false ) { 
+							this.note = `${c.name} declined ceasefire; `;
+							// console.log(`${c.name} declines ceasefire from ${civ.name}`); 
+							}
+						else if ( typeof(result)==='object' ) {
+							if ( Math.random() > 0.5 * ratio ) {
+								result.Exchange();
+								this.note = `${c.name} accepted ceasefire; `;
+								// console.log(`:-) ${c.name} accepts ceasefire from ${civ.name} after counteroffer`);
+								}
+							else {
+								this.note = `${c.name} declined ceasefire; `;
+								// console.log(`${c.name} declines ceasefire from ${civ.name} after counteroffer`);
+								}
+							}
+						}
+					// trades with player must be queued up for UI interaction
+					else {
+						app.game.QueueAudience( c, {offer} );
+						}
+					}
+				}
+				
+			// not at war. lets trade some stuff
+			else {
+				// sometimes we want something specific.
+				// sometimes we just pitch something and see what we can get for it.
+				// sometimes we propose a fair trade on both sides.
+				let ask = civ.AI_ListItemsWantInTrade(c).shuffle().slice(0, utils.BiasedRandInt(0,10,2,0.5));
+				let give = c.AI_ListItemsWantInTrade(civ).shuffle().slice(0, utils.BiasedRandInt(0,10,2,0.5));
+				let offer = new TradeOffer( civ, c, give, ask );
+				// AI-AI trades happen instantly
+				if ( !c.is_player || app.options.soak ) { 
+					let result = offer.Evaluate();
+					// accept counter-offer depending on how desperate we are
+					if ( result === true ) { 
+						this.note = `${c.name} accepted trade; `;
+						// console.log(`:-) ${c.name} accepts trade from ${civ.name}`); 
+						}
+					else if ( result === false ) { 
+						this.note = `${c.name} declined trade; `;
+						// console.log(`${c.name} decline trade from ${civ.name}`); 
+						}
+					else if ( typeof(result)==='object' ) {
+						if ( Math.random() > 0.5 ) {
+							result.Exchange();
+							this.note = `${c.name} accepted trade; `;
+							// console.log(`:-) ${c.name} accepts trade from ${civ.name} after counteroffer`);
+							}
+						else {
+							this.note = `${c.name} declined trade; `;
+							// console.log(`${c.name} declines trade from ${civ.name} after counteroffer`);
+							}
+						}
+					}
+				// trades with player must be queued up for UI interaction
+				else {
+					app.game.QueueAudience( c, {offer} );
+					}				
+				}
+			}
 		}	
 	}
 	

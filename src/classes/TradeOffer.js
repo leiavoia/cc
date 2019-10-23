@@ -1,12 +1,3 @@
-import Star from './Star';
-import Civ from './Civ';
-import Fleet from './Fleet';
-import * as utils from '../util/utils';
-import {Ship,ShipBlueprint} from './Ship';
-import {Treaties,Treaty} from './Treaties';
-import * as Tech from './Tech';
-import {App} from '../app';
-
 export default class TradeOffer {
 	from = null;
 	to = null;

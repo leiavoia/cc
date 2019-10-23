@@ -153,7 +153,7 @@ export const Treaties = {
 					if ( civ2.tech.nodes_compl.has(key) ) { continue; }
 					// tech brokering agreement in effect?
 					if ( 'source' in node && node.source ) {
-						const acct = this.diplo.contacts.get( node.source );
+						const acct = civ1.diplo.contacts.get( node.source );
 						if ( acct && acct.treaties.has('TECH_BROKERING') ) {
 							continue;
 							}

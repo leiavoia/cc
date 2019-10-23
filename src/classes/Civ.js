@@ -251,11 +251,12 @@ export default class Civ {
 			// project completed?
 			if ( this.tech.current_project.rp >= this.tech.current_project.node.rp ) { 					
 				// wrap it up
-				this.CompleteTechNode( this.tech.current_project.node );
+				let cp = this.tech.current_project;
+				this.CompleteTechNode( cp.node );
 				// share this tech with our alliance members
 				for ( let [civ,acct] of this.diplo.contacts ) { 
 					if ( acct.treaties.has('TECH_ALLIANCE') ) { 
-						civ.CompleteTechNode( this.tech.current_project.node, this, true );
+						civ.CompleteTechNode( cp.node, this, true );
 						}
 					}
 				}
@@ -826,14 +827,14 @@ export default class Civ {
 		for ( let i of deal.offer ) {
 			i.score = this.AI_ScoreTradeItem(i,deal.from);
 			our_score += i.score;
-			console.log(`OFFERING: ${i.score} for ${i.label}`);
+			// console.log(`OFFERING: ${i.score} for ${i.label}`);
 			}
 		// what they are asking for
 		let their_score = 0;
 		for ( let i of deal.ask ) {
 			i.score = this.AI_ScoreTradeItem(i,deal.from);
 			their_score += i.score;
-			console.log(`ASKING: ${i.score} for ${i.label}`);
+			// console.log(`ASKING: ${i.score} for ${i.label}`);
 			}
 		// better deals for better relationships
 		their_score *= 0.75 + this.LoveNub(deal.from) * 0.5;
@@ -844,7 +845,7 @@ export default class Civ {
 		let our_score_norm = our_score / (our_score + their_score);
 		let their_score_norm = their_score / (our_score + their_score);
 		let score = our_score_norm - their_score_norm;
-		console.log(`TRADE SCORE: ${our_score_norm} - ${their_score_norm} = ${score} `);
+		// console.log(`TRADE SCORE: ${our_score_norm} - ${their_score_norm} = ${score} `);
 		return score;
 		}
 		
