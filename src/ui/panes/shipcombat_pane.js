@@ -75,7 +75,7 @@ export class ShipCombatPane {
 			}
 		// tell game this battle is over and continue with other battles
 		else {
-			this.app.game.PresentNextPlayerShipCombat();
+			this.app.game.ProcessUIQueue();
 			}
 		}
 

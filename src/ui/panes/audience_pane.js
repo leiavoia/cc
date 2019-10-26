@@ -12,7 +12,7 @@ export class AudiencePane {
 		this.app = null;
 		this.civ = null;
 		this.data = null; // extra data in case we need to set up a situation
-		this.on_exit = 'diplo'; // can be '' or 'diplo' or any other main panel 
+		this.on_exit = ''; // can be '' or 'diplo' or any other main panel 
 		// --------------------
 		this.mode = 'intro';
 		this.mood = ''; // for portrait visual FX
@@ -26,25 +26,22 @@ export class AudiencePane {
 	// data.message will present a custom greeting.
 	// data.offer is a pre-meditated trade offer the AI is presenting to the player.
 	activate(data) {
+		if ( !data || !data.app || !data.obj ) return false; 
 		this.app = data.app;
 		this.civ = data.obj;
 		this.data = data.data;
 		
 		const acct = this.civ.diplo.contacts.get(this.app.game.myciv);
 		this.comm = acct.comm;
-		/* i.e. first_contact */
-		if ( this.data && this.data.is_greeting  ) { 
-			this.on_exit = ''; // exit to map
-			}
-		// show anger if at war
-		if ( acct && acct.treaties.has('WAR') ) {
-			this.mood = 'mad';
-			}			
 		this.their_text = '';
 		this.our_text = '';
 		this.GetResponse();
 		this.SetStandardOptions();
 		
+		// show anger if at war
+		if ( acct && acct.treaties.has('WAR') ) {
+			this.mood = 'mad';
+			}			
 		// check for trade offers
 		if ( this.data && 'offer' in this.data ) {
 			this.their_text = `<p>Please consider this offer.</p>`;
@@ -283,8 +280,6 @@ export class AudiencePane {
 			acct.attspan -= 0.05;
 			if ( acct.attspan < 0 ) { acct.attspan = 0; }
 			}	
-		this.app.SwitchMainPanel( this.on_exit ); 
-		// if we're going back to the main screen, check for additional audiences
-		if ( !this.on_exit ) this.app.game.PresentNextAudience();
+		this.app.SwitchMainPanel( this.on_exit );
 		}
 	}

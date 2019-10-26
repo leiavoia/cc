@@ -227,12 +227,12 @@ export class PlanetDetailPane {
 				}			
 			else { 
 				this.app.game.QueueShipCombat( myfleet, enemy_fleet, this.planet );
-				this.app.game.PresentNextPlayerShipCombat();
+				this.app.game.ProcessUIQueue();
 				}
 			}
 		else {
 			this.app.game.QueueGroundCombat( myfleet, this.planet );
-			this.app.game.PresentNextPlayerGroundCombat();
+			this.app.game.ProcessUIQueue();
 			}
 		}		
 	}

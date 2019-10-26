@@ -226,9 +226,9 @@ export class App {
 				this.CloseSideBar();
 				}
 			this.exclusive_ui = !!exclusive;
+			this.main_panel_mode = mode;
 			this.main_panel_obj = obj;
 			this.main_panel_data = data;
-			this.main_panel_mode = mode;
 			}
 		}
 	CloseMainPanel() {
@@ -236,6 +236,9 @@ export class App {
 		this.main_panel_obj = null;
 		this.main_panel_data = null;
 		this.exclusive_ui = false;
+		// closing subscreens needs to pump the UI queue
+		// in order to prompt the player with combats, audiences, etc.
+		this.game.ProcessUIQueue();
 		}
 	CloseSideBar() {
 		this.sidebar_mode = false;

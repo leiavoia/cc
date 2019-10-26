@@ -484,9 +484,7 @@ export default class Game {
 				if ( !this.app.options.soak ) { 
 					// event queue needs the new turn number
 					this.ProcessEventCardQueue();
-					this.PresentNextPlayerShipCombat();
-					this.PresentNextPlayerGroundCombat();
-					this.PresentNextAudience();
+					this.ProcessUIQueue(); // present subscreens
 					}
 				}
 			// GAME OVER!
@@ -600,6 +598,12 @@ export default class Game {
 			}
 		}
     
+	ProcessUIQueue() {
+		if ( this.shipcombats.length ) this.PresentNextPlayerShipCombat();
+		else if ( this.groundcombats.length ) this.PresentNextPlayerGroundCombat();
+		else if ( this.audiences.length ) this.PresentNextAudience();
+		}
+		
     // this will look through the shipcombats queued for 
     // player-involved combat and present them to the player.
     // The queue drains by having the ship combat screen call
@@ -608,18 +612,18 @@ export default class Game {
     PresentNextPlayerShipCombat() { 
     	// if we're out of ship combats, switch to ground combats
  		if ( !this.shipcombats.length ) { 
- 			this.PresentNextPlayerGroundCombat();
+ 			this.ProcessUIQueue();
  			return false;
  			}
 		let sc = this.shipcombats.shift();
 		// fleet may have been destroyed in previous battle.
 		if ( sc.attacker.killme || sc.defender.killme || !sc.attacker.ships.length || !sc.defender.ships.length ) { 
-			this.PresentNextPlayerShipCombat();
+			this.ProcessUIQueue();
 			return;
 			}
 		// neither fleet has weapons
 		else if ( !sc.attacker.fp && !sc.defender.fp ) { 
-			this.PresentNextPlayerShipCombat();
+			this.ProcessUIQueue();
 			return;
 			}
 		// if we are soaking, automate it
@@ -627,7 +631,7 @@ export default class Game {
 			let combat = new ShipCombat( sc.attacker, sc.defender, sc.planet );
 			combat.ProcessQueue( 100000, false ); // 1000 = fight to the death if possible
 			combat.End();
-			this.PresentNextPlayerShipCombat();		
+			this.ProcessUIQueue();		
 			}
 		// if player is the defender, present mandatory battle
 		else if ( sc.defender.owner.is_player ) { 
@@ -648,7 +652,7 @@ export default class Game {
 							let combat = new ShipCombat( sc.attacker, sc.defender, sc.planet );
 							combat.ProcessQueue( 100000, false ); // 1000 = fight to the death if possible
 							combat.End();
-							this.PresentNextPlayerShipCombat();
+							this.ProcessUIQueue();
 							}
 						},
 					{ 
@@ -659,7 +663,7 @@ export default class Game {
 							combat.RetreatTeam( combat.teams[1] ); // team 1 is always the defender
 							combat.ProcessQueue( 100000, false ); // 1000 = fight to the death if possible
 							combat.End();
-							this.PresentNextPlayerShipCombat();
+							this.ProcessUIQueue();
 							}
 						}
 					]
@@ -678,7 +682,7 @@ export default class Game {
 		let c = this.groundcombats.shift();
 		// fleet may have been destroyed in previous battle.
 		if ( c.attacker.killme || !c.attacker.troops || !c.planet.owner ) { 
-			this.PresentNextPlayerGroundCombat();
+			this.ProcessUIQueue();
 			return;
 			}
 		// if we are soaking, automate it
@@ -687,7 +691,7 @@ export default class Game {
 			combat.Run(); // fight to the death
 			// console.log(`INVASION :: ${c.attacker.owner.name} invading ${c.planet.name}, winner: ${combat.winner}`);
 			this.CheckForCivDeath();
-			this.PresentNextPlayerGroundCombat();
+			this.ProcessUIQueue();
 			}			
 		// if player is the defender, present mandatory battle
 		else if ( c.planet.owner.is_player ) { 
@@ -708,7 +712,7 @@ export default class Game {
 							let combat = new GroundCombat( c.attacker, c.planet );
 							combat.Run(); // fight to the death
 							this.CheckForCivDeath();
-							this.PresentNextPlayerGroundCombat();
+							this.ProcessUIQueue();
 							}
 						}
 					]
@@ -724,19 +728,31 @@ export default class Game {
  		if ( !this.audiences.length ) { return false; }
 		let a = this.audiences.shift();
 		// if we are soaking, skip it - internal code knows to handle automatically already
-		if ( this.app.options.soak ) { this.PresentNextAudience(); }
+		if ( this.app.options.soak ) { this.ProcessUIQueue(); }
 		else { this.LaunchAudience(a); }
     	}
     	
 	LaunchAudience( audience ) {
+		if ( this.autoplay ) { 
+			clearInterval( this.autoplay );
+			this.autoplay = false;
+			}
 		this.app.SwitchMainPanel( 'audience', audience.civ, audience.data, true ); // true = exclusive UI
 		}
     	
 	LaunchPlayerGroundCombat( combat ) {
+		if ( this.autoplay ) { 
+			clearInterval( this.autoplay );
+			this.autoplay = false;
+			}
 		this.app.SwitchMainPanel( 'groundcombat', combat, null, true ); // true = exclusive UI
 		}
     	
 	LaunchPlayerShipCombat( combat ) {
+		if ( this.autoplay ) { 
+			clearInterval( this.autoplay );
+			this.autoplay = false;
+			}
 		this.app.SwitchMainPanel( 'shipcombat', combat, null, true ); // true = exclusive UI
 		}
 		

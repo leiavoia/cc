@@ -321,7 +321,7 @@ export class FleetDetailPane {
 				}
 			}
 		this.app.game.QueueShipCombat( this.fleet, target, planet );
-		this.app.game.PresentNextPlayerShipCombat();
+		this.app.game.ProcessUIQueue();
 		}
 	ClickCancelChooseAttackTarget() {
 		this.mode = 'awaiting_star_click';
@@ -355,7 +355,7 @@ export class FleetDetailPane {
 				}
 			}		
 		this.app.game.QueueShipCombat( myfleet, this.fleet, planet );
-		this.app.game.PresentNextPlayerShipCombat();
+		this.app.game.ProcessUIQueue();
 		}
 	ClickCancel() {
 		// revert to move-fleet mode
@@ -380,7 +380,7 @@ export class FleetDetailPane {
 		}
 	ClickPlanetToInvade(p) { 
 		this.app.game.QueueGroundCombat( this.fleet, p );
-		this.app.game.PresentNextPlayerGroundCombat();	
+		this.app.game.ProcessUIQueue();	
 		}
 	CalculateChanceOfGroundVictory( p ) { 
 		let trooplist = this.fleet.ListGroundUnits();
