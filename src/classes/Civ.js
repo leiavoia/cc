@@ -1092,8 +1092,8 @@ export default class Civ {
 		}
 		
 	// returns item list with addition 'score' attribute
-	AI_ListItemsWantInTrade( civ ) {
-		let items = civ.AI_ListItemsForTrade(this);
+	AI_ListItemsWantInTrade( civ, inc_not_avail = true  ) {
+		let items = civ.AI_ListItemsForTrade(this,inc_not_avail);
 		for ( let item of items ) {
 			// scoring doesn't work for items that have a quantity, 
 			// so just pick a random amount up to half-max.

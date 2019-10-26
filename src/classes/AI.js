@@ -1356,7 +1356,7 @@ export class AIDiplomacyObjective extends AIObjective {
 			// respect contact range, communication ability, and current attention span
 			if ( acct.attspan < 0.2 || !acct.comm || !acct.in_range ) continue;
 			// consider an audience
-			if ( Math.random() > 0.08 ) continue;
+			if ( Math.random() > 0.065 ) continue;
 			
 			// if we are at war, let's see if we need to back out.
 			if ( acct.treaties.has('WAR') ) { 
@@ -1369,7 +1369,7 @@ export class AIDiplomacyObjective extends AIObjective {
 					let ceasefire_worth = c.AI_ScoreTradeItem(ceasefire,civ);
 					let ask = [ ceasefire ];
 					let give = [];
-					let items = civ.AI_ListItemsWantInTrade(c).shuffle();
+					let items = civ.AI_ListItemsWantInTrade(c,false).shuffle();
 					let total_score = 0;
 					for ( let i of items ) {
 						give.push(i);
@@ -1404,7 +1404,7 @@ export class AIDiplomacyObjective extends AIObjective {
 						}
 					// trades with player must be queued up for UI interaction
 					else {
-						app.game.QueueAudience( civ, {offer,message:"Would you consider this?"} );
+						app.game.QueueAudience( civ, {offer,message:"Let us end this senseless war. Will you accept these terms?"} );
 						}
 					}
 				}
@@ -1414,8 +1414,15 @@ export class AIDiplomacyObjective extends AIObjective {
 				// sometimes we want something specific.
 				// sometimes we just pitch something and see what we can get for it.
 				// sometimes we propose a fair trade on both sides.
-				let ask = civ.AI_ListItemsWantInTrade(c).shuffle().slice(0, utils.BiasedRandInt(0,10,2,0.5));
-				let give = c.AI_ListItemsWantInTrade(civ).shuffle().slice(0, utils.BiasedRandInt(0,10,2,0.5));
+				let ask = civ.AI_ListItemsWantInTrade(c,false).shuffle().slice(0, utils.BiasedRandInt(0,3,1,0.5));
+				let give = c.AI_ListItemsWantInTrade(civ,false).shuffle().slice(0, utils.BiasedRandInt(0,3,1,0.5));
+				if ( !ask.length && !give.length ) { continue; }
+				// remove duplicates;
+				let on_table = ask.map( i => i.type + i.label );
+				give = give.filter( i => !on_table.contains(i.type + i.label) );	
+				// put all treaties on the "give" side for UI consistency
+				give = give.concat( ask.filter( i => i.type == 'treaty' ) );
+				ask = ask.filter( i => i.type != 'treaty' );
 				let offer = new TradeOffer( civ, c, give, ask );
 				// AI-AI trades happen instantly
 				if ( !c.is_player || app.options.soak ) { 
@@ -1443,7 +1450,24 @@ export class AIDiplomacyObjective extends AIObjective {
 					}
 				// trades with player must be queued up for UI interaction
 				else {
-					app.game.QueueAudience( civ, {offer} );
+					let message = 'Please consider this offer.';
+					// demand
+					if ( ask.length && !give.length && acct.lovenub < 0.4 ) {
+						message = 'Our leader has made the following demands. Refuse at your peril.';
+						} 
+					// beg
+					else if ( ask.length && !give.length && acct.lovenub < 0.65 ) {
+						message = 'We are in a time of need. Can you assist us?';
+						} 
+					// insist
+					else if ( ask.length && !give.length ) {
+						message = 'It would help us both if we can make this work.';
+						} 
+					// gift
+					else if ( !ask.length && give.length ) {
+						message = 'Please accept our gift. May your people live in peace with our people.';
+						} 
+					app.game.QueueAudience( civ, {offer,message} );
 					}				
 				}
 			}
