@@ -1617,21 +1617,23 @@ export class AIInvadeObjective extends AIObjective {
 			// still not enough troops
 			else {
 				const pt = this.ClosestStagingPointTo( this.target.star );
-				// if there is a local fleet here now, peg them down for a mission.
-				// Reinforcements are on the way.
-				if ( !this.fleet ) {
-					let localfleet = pt.FleetFor(civ);
-					if ( localfleet && !localfleet.ai && !localfleet.killme && !localfleet.dest && !localfleet.mission ) {
-						this.fleet = localfleet;
-						localfleet.ai = this;
-						this.note += ' | reserved fleet @ ' + pt.name;
-						}	
-					else {
-						this.note += ' | still no fleet';
+				if ( pt ) { 
+					// if there is a local fleet here now, peg them down for a mission.
+					// Reinforcements are on the way.
+					if ( !this.fleet ) {
+						let localfleet = pt.FleetFor(civ);
+						if ( localfleet && !localfleet.ai && !localfleet.killme && !localfleet.dest && !localfleet.mission ) {
+							this.fleet = localfleet;
+							localfleet.ai = this;
+							this.note += ' | reserved fleet @ ' + pt.name;
+							}	
+						else {
+							this.note += ' | still no fleet';
+							}
 						}
+					this.RallyCombatShips( pt, this.ttl-1 );
+					this.RallyTroopShips( pt, this.ttl-1 );
 					}
-				this.RallyCombatShips( pt, this.ttl-1 );
-				this.RallyTroopShips( pt, this.ttl-1 );
 				}
 			return;
 			}
