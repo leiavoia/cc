@@ -470,7 +470,7 @@ export default class Civ {
 		obj.homeworld = this.homeworld ? this.homeworld.id : null;
 		obj.mods = this.mods.toJSON();
 		obj.planets = this.planets.map( x => x.id );
-		obj.fleets = this.fleets.map( x => x.id );
+		obj.fleets = this.fleets.filter( x => !x.killme ).map( x => x.id );
 		obj.ship_blueprints = this.ship_blueprints.map( x => x.id );
 		obj.groundunit_blueprints = this.groundunit_blueprints.map( x => x.id );
 		obj.avail_ship_comps = this.avail_ship_comps.map( x => x.tag );
@@ -627,12 +627,12 @@ export default class Civ {
 		for ( let p of this.planets ) { p.Reset(); }
 		this.ai.objectives = [];
 		this.ai.completed = [];
-		for ( let [civ,acct] of this.diplo.contacts ) { 
-			this.SetInRangeOfCiv( civ, false );
-			// we might also just consider hard-nuking the mutual contacts
-			}
 		this.empire_box = {x1:0,x2:0,y1:0,y2:0};
 		this.power_score = 0;
+		for ( let [civ,acct] of this.diplo.contacts ) { 
+			civ.diplo.contacts.delete(this);
+			this.diplo.contacts.delete(civ);
+			}
 		}
 		
 	// returns score, but you can also access this.power_score
