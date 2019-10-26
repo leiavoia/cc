@@ -1404,7 +1404,7 @@ export class AIDiplomacyObjective extends AIObjective {
 						}
 					// trades with player must be queued up for UI interaction
 					else {
-						app.game.QueueAudience( c, {offer} );
+						app.game.QueueAudience( civ, {offer,message:"Would you consider this?"} );
 						}
 					}
 				}
@@ -1443,7 +1443,7 @@ export class AIDiplomacyObjective extends AIObjective {
 					}
 				// trades with player must be queued up for UI interaction
 				else {
-					app.game.QueueAudience( c, {offer} );
+					app.game.QueueAudience( civ, {offer} );
 					}				
 				}
 			}

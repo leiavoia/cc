@@ -69,11 +69,11 @@ export class GroundCombatPane {
 		// finish up the battles
 		this.FinishCombat();
 		// tell game this battle is over and continue with other battles
-		// NOTE: we actually trigger additional ship combats, which need
+		// NOTE: we actually trigger additional SHIP combats, which need
 		// to occur first, and the ship combat routines will automatically
 		// start cycling through ground combats if there are no ship
 		// combats left in the queue.
-		this.app.game.PresentNextPlayerShipCombat();
+		this.app.game.PresentNextPlayerShipCombat(); // not a typo!
 		}
 
 

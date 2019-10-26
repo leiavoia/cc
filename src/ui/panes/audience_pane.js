@@ -20,10 +20,41 @@ export class AudiencePane {
 		this.their_trade_items = [];
 		}
 
+	// "data" is an object with info about what the audiences is going to be about.
+	// It must include an "app" reference, a civ "obj".
+	// It MAY includes anything else you want to stuff into it.
+	// data.message will present a custom greeting.
+	// data.offer is a pre-meditated trade offer the AI is presenting to the player.
 	activate(data) {
 		this.app = data.app;
 		this.civ = data.obj;
 		this.data = data.data;
+		
+		const acct = this.civ.diplo.contacts.get(this.app.game.myciv);
+		this.comm = acct.comm;
+		/* i.e. first_contact */
+		if ( this.data && this.data.is_greeting  ) { 
+			this.on_exit = ''; // exit to map
+			}
+		// show anger if at war
+		if ( acct && acct.treaties.has('WAR') ) {
+			this.mood = 'mad';
+			}			
+		this.their_text = '';
+		this.our_text = '';
+		this.GetResponse();
+		this.SetStandardOptions();
+		
+		// check for trade offers
+		if ( this.data && 'offer' in this.data ) {
+			this.their_text = `<p>Please consider this offer.</p>`;
+			this.offer = this.data.offer;
+			this.mode = 'offer_countered';
+			}
+		// check for preset messages
+		if ( this.data && 'message' in this.data ) {
+			this.their_text = `<p>${this.data.message}</p>`;
+			}
 		}
 		
 	CreateTradeItemLists() { 
@@ -94,7 +125,7 @@ export class AudiencePane {
 				case 0: { this.their_text = `<p>Enough of your blather. Get to the point.</p>`; break; }
 				case 1: { this.their_text = `<p>It is only due to my great patience that this audience is granted. My time is costly and you are wasting it. Speak.</p>`; break; }
 				case 2: { this.their_text = `<p>You are wearing our patience thin. Be brief and then be gone.</p>`; break; }
-				case 3: { this.their_text = `<p>Please keep your inquiries to a minimum. I have many meeting today after this one.</p>`; break; }
+				case 3: { this.their_text = `<p>Please keep your inquiries to a minimum. I have many meetings today after this one.</p>`; break; }
 				case 4: { this.their_text = `<p>What is it you seek from us?</p>`; break; }
 				case 5: { this.their_text = `<p>What can we do for you?</p>`; break; }
 				case 6: { this.their_text = `<p>What brings the ${this.app.game.myciv.name} to visit us today?</p>`; break; }
@@ -157,20 +188,7 @@ export class AudiencePane {
 		
 			
 	bind( data ) {
-		const acct = this.civ.diplo.contacts.get(this.app.game.myciv);
-		this.comm = acct.comm;
-		/* i.e. first_contact */
-		if ( this.data && this.data.is_greeting  ) { 
-			this.on_exit = ''; // exit to map
-			}
-		// show anger if at war
-		if ( acct && acct.treaties.has('WAR') ) {
-			this.mood = 'mad';
-			}			
-		this.their_text = '';
-		this.our_text = '';
-		this.GetResponse();
-		this.SetStandardOptions();
+
 		}
 		
 	StartTradeOffer() {
@@ -213,7 +231,7 @@ export class AudiencePane {
 		this.mode = 'consider_offer';
 		this.mood = 'away';
 		let result = this.offer.Evaluate();
-		console.log( `${this.offer.status} @ ${this.offer.score}`);
+		// console.log( `${this.offer.status} @ ${this.offer.score}`);
 		setTimeout( () => {
 			this.mood = '';
 			if ( this.offer.status == 'countered' ) { 
@@ -266,5 +284,7 @@ export class AudiencePane {
 			if ( acct.attspan < 0 ) { acct.attspan = 0; }
 			}	
 		this.app.SwitchMainPanel( this.on_exit ); 
+		// if we're going back to the main screen, check for additional audiences
+		if ( !this.on_exit ) this.app.game.PresentNextAudience();
 		}
 	}

@@ -486,6 +486,7 @@ export default class Game {
 					this.ProcessEventCardQueue();
 					this.PresentNextPlayerShipCombat();
 					this.PresentNextPlayerGroundCombat();
+					this.PresentNextAudience();
 					}
 				}
 			// GAME OVER!
@@ -713,11 +714,23 @@ export default class Game {
 					]
 				);
 			}
-		// if player is the attacker, launch directly to attack creen
+		// if player is the attacker, launch directly to attack screen
 		else if ( c.attacker.owner.is_player ) { 
 			this.LaunchPlayerGroundCombat(c);
 			}
     	}
+    
+    PresentNextAudience() { 
+ 		if ( !this.audiences.length ) { return false; }
+		let a = this.audiences.shift();
+		// if we are soaking, skip it - internal code knows to handle automatically already
+		if ( this.app.options.soak ) { this.PresentNextAudience(); }
+		else { this.LaunchAudience(a); }
+    	}
+    	
+	LaunchAudience( audience ) {
+		this.app.SwitchMainPanel( 'audience', audience.civ, audience.data, true ); // true = exclusive UI
+		}
     	
 	LaunchPlayerGroundCombat( combat ) {
 		this.app.SwitchMainPanel( 'groundcombat', combat, null, true ); // true = exclusive UI
@@ -770,6 +783,7 @@ export default class Game {
 				}
 			}
 		}
+		
 	RecalcFleetRanges() {
 		
 		// NOTE: SURVEILLENCE agreements can increase what is visible to the player
