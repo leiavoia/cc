@@ -66,7 +66,7 @@ export class Zone {
 		planet.acct_ledger.push( accounting );
 		// grow or shrink depending on our funding
 		let diff = amount_receiving - this.val;
-		this.val += (diff >= 0) ? (diff * planet.spending) : (diff * (1/this.gf) * 2);
+		this.val += (diff >= 0) ? planet.mods.Apply(diff * planet.spending, 'zone_growth') : (diff * (1/this.gf) * 2);
 		this.val = this.val.clamp(0,1);
 		// if we shrank, warn player
 		this.insuf = diff < 0;
@@ -86,6 +86,8 @@ export class Zone {
 							amount *= planet.resources[type];
 							}
 						}
+					// check planetary and civ mods
+					amount = planet.mods.Apply( amount, `zone_output_${this.type}` );
 					standard_outputs[type]( planet, amount ); // do it
 					this.output_rec[type] = amount; 
 					planet.output_rec[type] += amount; // assume it gets zero'd out before this function is called

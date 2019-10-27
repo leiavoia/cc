@@ -141,7 +141,7 @@ export default class Planet {
 
 	Unpack( catalog ) {
 		this.star = catalog[this.star];
-		this.owner = catalog[this.owner];
+		this.owner = this.owner ? catalog[this.owner] : null;
 		if ( Number.isInteger(this.ship_dest) ) { 
 			this.ship_dest = catalog[this.ship_dest];
 			}
@@ -153,6 +153,7 @@ export default class Planet {
 		this.physattrs = this.physattrs.map( x => PlanetAttrs[x] );
 		this.mods = new Modlist(this.mods);
 		this.mods.Unpack(catalog);
+		if ( this.owner ) this.mods.parent = this.owner.mods;
 		}
 				
 	static Random( star ) {
@@ -678,12 +679,14 @@ export default class Planet {
 		this.popmax_contrib = 0;
 		// environment reduces popmax
 		this.maxpop *= 1 + this.HabitationBonus( this.owner.race );
+		this.maxpop = this.mods.Apply( this.maxpop, 'maxpop' );
 		// growth rate is square root of difference between max pop and current pop, divided by 60.
 		let diff = this.maxpop - this.total_pop; 
-		let divisor = 60.0; // TODO: [!]GROWTHRATE replace this with growth rate when implemented
+		let divisor = 60.0; // 
 		if ( diff > 0 ) { // pop growth
 			let max_diff = 50.0;
 			let rate  = ( Math.sqrt( diff > max_diff ? max_diff : diff ) / divisor ) + 1.0;
+			rate = this.mods.Apply(rate,'pop_growth');
 			this.total_pop = (this.total_pop * rate) + 0.05; // the 0.05 just helps it move along
 			}
 		else if ( diff < 0 ) { // pop decline - we outstripped allowable space somehow
@@ -899,83 +902,78 @@ export const PlanetAttrs = {
 		},
 	TOXIC_FLORA: { 
 		name: 'Toxic Flora',
-		desc: '',
+		desc: '-50% Pop Growth',
 		chance: 100,
 		mods: [ new Mod( 'pop_growth', '*', 0.5, '', this ) ],
 		},
 	RARE_MINERALS: { 
 		name: 'Rare Minerals',
-		desc: '',
-		chance: 100,
-		mods: [ new Mod( 'income', '+', 50, '', this ) ],
+		desc: '+50% economy zones',
+		chance: 200,
+		mods: [ new Mod( 'zone_output_economy', '*', 1.5, '', this ) ],
 		},
 	RARE_METALS: { 
 		name: 'Rare Metals',
-		desc: '',
+		desc: '+100% economy zones',
 		chance: 100,
-		mods: [ new Mod( 'income', '+', 100, '', this ) ],
+		mods: [ new Mod( 'zone_output_economy', '*', 2.0, '', this ) ],
 		},
 	RARE_ELEMENTS: { 
 		name: 'Rare Elements',
-		desc: '',
+		desc: '+150% economy zones',
 		chance: 50,
-		mods: [ new Mod( 'income', '+', 200, '', this ) ],
-		},
-	RARE_ELEMENTS: { 
-		name: 'Rare Elements',
-		desc: '',
-		chance: 50,
-		mods: [ new Mod( 'income', '+', 200, '', this ) ],
+		mods: [ new Mod( 'zone_output_economy', '*', 2.5, '', this ) ],
 		},
 	CAVERNOUS: { 
 		name: 'Cavernous',
-		desc: '',
+		desc: '+40 max pop. +2 ground combat. -50% zone growth.',
 		chance: 100,
 		mods: [ 
-			new Mod( 'pop_max', '+', 40, '', this ) ,
+			new Mod( 'maxpop', '+', 40, '', this ) ,
 			new Mod( 'ground_roll', '+', 2, '', this ),
 			new Mod( 'zone_growth', '*', 0.5, '', this )
 			],
 		},
 	ARTIFACTS: { 
 		name: 'Ancient Artifacts',
-		desc: '',
+		desc: '+50% research',
 		chance: 50,
 		mods: [ 
-			new Mod( 'research', '*', 1.25, '', this )
+			new Mod( 'zone_output_research', '*', 1.5, '', this )
 			],
 		},
 	FLAT: { 
 		name: 'Flat',
-		desc: '',
+		desc: '+100% housing, +50% mining, -1 ground combat',
 		chance: 50,
 		mods: [ 
-			new Mod( 'housing', '*', 2, '', this ) ,
-			new Mod( 'mining', '*', 1.5, '', this ),
+			new Mod( 'zone_output_housing', '*', 2, '', this ) ,
+			new Mod( 'zone_output_mining', '*', 1.5, '', this ),
 			new Mod( 'ground_roll', '-', 1, '', this ) 
 			],
 		},
 	UNSTABLE: { 
 		name: 'Unstable',
-		desc: '',
+		desc: '-25% military, housing, and ship production.',
 		chance: 100,
 		mods: [ 
-			new Mod( 'prod', '*', 0.75, '', this ) ,
-			new Mod( 'housing', '*', 0.75, '', this ),
+			new Mod( 'zone_output_stardock', '*', 0.75, '', this ) ,
+			new Mod( 'zone_output_military', '*', 0.75, '', this ) ,
+			new Mod( 'zone_output_housing', '*', 0.75, '', this ),
 			],
 		},
 	RINGS: { 
 		name: 'Rings',
-		desc: '',
+		desc: '+100% mining and military.',
 		chance: 100,
 		mods: [ 
-			new Mod( 'mining', '*', 2, '', this ) ,
-			new Mod( 'military', '*', 2, '', this )
+			new Mod( 'zone_output_mining', '*', 2, '', this ) ,
+			new Mod( 'zone_output_military', '*', 2, '', this )
 			],
 		},
 	CORROSIVE: { 
 		name: 'Corrosive Atmosphere',
-		desc: '',
+		desc: '-50% zone growth.',
 		chance: 100,
 		mods: [ 
 			new Mod( 'zone_growth', '*', 0.5, '', this )
@@ -983,15 +981,15 @@ export const PlanetAttrs = {
 		},
 	MOONS: { 
 		name: 'Moons',
-		desc: '',
+		desc: '+100% military and ship production.',
 		chance: 100,
 		mods: [ 
-			new Mod( 'stardock', '*', 2.0, '', this ),
-			new Mod( 'military', '*', 2.0, '', this )
+			new Mod( 'zone_output_stardock', '*', 2.0, '', this ),
+			new Mod( 'zone_output_military', '*', 2.0, '', this )
 			],
 		},
 	TESSERA1: { 
-		name: 'Tessera Alpha',
+		name: 'Tessera Planet',
 		desc: 'A planet formerly part of the ancient Tessera Constellation.',
 		chance: 0,
 		score: 100,
@@ -1009,7 +1007,7 @@ export const PlanetAttrs = {
 			},
 		},
 	TESSERA2: { 
-		name: 'Tessera Beta',
+		name: 'Tessera Planet',
 		desc: 'A planet formerly part of the ancient Tessera Constellation.',
 		chance: 0,
 		score: 100,
@@ -1027,7 +1025,7 @@ export const PlanetAttrs = {
 			},
 		},
 	TESSERA3: { 
-		name: 'Tessera Gamma',
+		name: 'Tessera Planet',
 		desc: 'A planet formerly part of the ancient Tessera Constellation.',
 		chance: 0,
 		score: 100,
@@ -1045,7 +1043,7 @@ export const PlanetAttrs = {
 			},
 		},
 	TESSERA4: { 
-		name: 'Tessera Delta',
+		name: 'Tessera Planet',
 		desc: 'A planet formerly part of the ancient Tessera Constellation.',
 		chance: 0,
 		score: 100,
@@ -1086,5 +1084,8 @@ for ( let k in PlanetAttrs ) {
 	PlanetAttrs[k].key = k;
 	if ( !( 'score' in PlanetAttrs[k] ) ) { 
 		PlanetAttrs[k].score = 10;
+		}
+	for ( let m of PlanetAttrs[k].mods ) {
+		m.label = PlanetAttrs[k].name;
 		}
 	}

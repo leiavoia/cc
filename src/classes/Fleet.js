@@ -100,6 +100,7 @@ export default class Fleet {
 		this.ships = this.ships.map( x => catalog[x] );
 		this.mods = new Modlist(this.mods);
 		this.mods.Unpack(catalog);
+		this.mods.parent = this.owner.mods;
 		if ( this.mission ) { 
 			this.mission.targets = this.mission.targets.map( x => catalog[x] ); // list of Anoms
 			}
