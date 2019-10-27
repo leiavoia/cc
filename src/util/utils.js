@@ -10,14 +10,13 @@ Number.prototype.clamp = function(min, max) {
 	};
 
 Array.prototype.unique = function() {
-	let n = {},r=[];
-	for(var i = 0; i < this.length; i++) {
-		if (!n[this[i]]) {
-			n[this[i]] = true; 
-			r.push(this[i]); 
+	let arr=[];
+	for ( var i = 0; i < this.length; i++ ) {
+		if ( arr.indexOf(this[i]) == -1 ) {
+			arr.push(this[i]); 
 			}
 		}
-	return r;
+	return arr;
 	}
 Array.prototype.shuffle = function() {
 	for (let i = this.length - 1; i > 0; i--) {

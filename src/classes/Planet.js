@@ -10,6 +10,7 @@ import {GroundUnit,GroundUnitBlueprint} from './GroundUnit';
 import {Mod,Modlist} from './Mods';
 import {Zone,ZoneList} from './Zones';
 import {AIPlanetsObjective} from './AI';
+import {VictoryIngredients} from './VictoryRecipes';
 
 export default class Planet {
 	
@@ -34,7 +35,7 @@ export default class Planet {
 	atm = 0;
 	temp = 0;
 	grav = 0;
-	physattr = [];
+	physattrs = [];
 	resources = {
 		o:0, // organics
 		s:0, // silicates
@@ -125,7 +126,7 @@ export default class Planet {
 			resource_rec:x.resource_rec,
 			resource_estm:x.resource_estm
 			}) );
-		obj.physattr = []; // FUTURE
+		obj.physattrs = this.physattrs.map( x => x.key );
 		// [!]EXPERIMENTAL - remove history to save space;
 		delete(obj.acct_hist);
 		return obj;
@@ -149,6 +150,7 @@ export default class Planet {
 			return x;
 			} );
 		this.troops = this.troops.map( x => catalog[x] );
+		this.physattrs = this.physattrs.map( x => PlanetAttrs[x] );
 		this.mods = new Modlist(this.mods);
 		this.mods.Unpack(catalog);
 		}
@@ -248,24 +250,30 @@ export default class Planet {
 		
 		// special attributes (AKA "goodies")
 		let selector = Planet.AttributeSelector();
-		let attr_randnum = Math.random();
+		let attr_randnum = 0.30;
 		// special and rare stars get more goodies
-		if ( star.color == 'purple' ) { attr_randnum *= 2.0; }
-		else if ( star.color == 'black' ) { attr_randnum *= 3.0; }
-		else if ( star.color == 'green' ) { attr_randnum *= 4.0; }
-		else if ( rarity == 3 ) { attr_randnum *= 2.0; }
-		else if ( rarity == 4 ) { attr_randnum *= 3.0; }
-		let num_attrs = 0;
-		if ( attr_randnum >= 0.97 ) { num_attrs = 3; } 
-		else if ( attr_randnum >= 0.90 ) { num_attrs = 2; } 
-		else if ( attr_randnum >= 0.60 ) { num_attrs = 1; } 
-		for ( let n=0; n < num_attrs; n++ ) { 
-			planet.physattr.push( selector.Pick() );
+		if ( star.color == 'purple' ) { attr_randnum += 0.20; }
+		else if ( star.color == 'black' ) { attr_randnum += 0.30; }
+		else if ( star.color == 'green' ) { attr_randnum += 0.40; }
+		else if ( rarity == 3 ) { attr_randnum += 0.20; }
+		else if ( rarity == 4 ) { attr_randnum += 0.30; }
+		while ( Math.random() < attr_randnum ) { 
+			planet.physattrs.push( selector.Pick() );
+			attr_randnum *= 0.5;
 			}
-		planet.physattr;// = planet.physattr.unique();		
-		
+		planet.physattrs = planet.physattrs.unique();
+		// unpack the intrinsic mods
+		for ( let a of planet.physattrs ) {
+			// unpack intrinsic mods
+			if ( 'mods' in a ) {
+				for ( let m of a.mods ) { planet.mods.Add(m); }
+				}
+			// add to planet score
+			let attrscore = ( 'score' in a ) ? a.score : 10;
+			planet.score += attrscore;
+			}
+			
 		planet.score += planet.size;
-		// TODO calculate goodies
 		
 		return planet;
 		}
@@ -699,54 +707,12 @@ export default class Planet {
 		}
 		
 	static AttributeSelector() { 
-		let attrs = Planet.AttributesList();
-		let data = [];
-		let n = attrs.length;
-		for ( let i=0; i < n; i++ ) { 
-			data.push( [ attrs[i], attrs[i].chance ] );	
-			}
+		let data = Object.keys(PlanetAttrs)
+			.filter( k => PlanetAttrs[k].chance > 0 )
+			.map( k => [PlanetAttrs[k],PlanetAttrs[k].chance] );
 		return new RandomPicker(data);
 		}
 	
-	static AttributesList() {
-		return [
-			// attributes
-			{name: 'Ecliptic', chance: 100, note: '+range, +vis, +res', fx: {} },
-			{name: 'Rare Minerals', chance: 100, note: '+prod, +econ', fx: {} },
-			{name: 'Rare Metals', chance: 100, note: '++prod', fx: {} },
-			{name: 'Rare Gems', chance: 100, note: '++econ', fx: {} },
-			{name: 'Cavernous', chance: 100, note: '+def, +mig, +inf', fx: {} },
-			{name: 'Beautiful', chance: 200, note: '+econ, +mig, +morale', fx: {} },
-			{name: 'Dangerous', chance: 200, note: '+def, --mig', fx: {} },
-			{name: 'Volcanic', chance: 100, note: '-inf', fx: {} },
-			{name: 'Geo-Unstable', chance: 200, note: '--inf', fx: {} },
-			{name: 'Flat', chance: 200, note: '+inf, -mig', fx: {} },
-			{name: 'Accessible', chance: 100, note: '++prod, +mig', fx: {} },
-			{name: 'Bread Basket', chance: 200, note: '+mig, +morale, +pop', fx: {} },
-			{name: 'Pharmacopia', chance: 100, note: '++pop', fx: {} },
-			{name: 'Rings', chance: 120, note: '+prod', fx: {} },
-			{name: 'Asteroid Belt', chance: 60, note: '++prod', fx: {} },
-			
-			{name: 'Ancient Cultures', chance: 60, note: '+res, +morale, +mig', fx: {} },
-			{name: 'Hostile Lifeforms', chance: 150, note: '-pop, -prod, -mig', fx: {} },
-			{name: 'Unusual Weather', chance: 90, note: '+res, -prod, -mig', fx: {} },
-			{name: 'Abundant Life', chance: 180, note: '+morale, +res', fx: {} },
-			{name: 'Rich Soil', chance: 200, note: '+pop', fx: {} },
-// 			{name: 'Poor Soil', chance: 200, note: '-pop', fx: {} },
-			{name: 'Toxic Flora', chance: 80, note: '-pop', fx: {} },
-			{name: 'Corrosive Atmosphere', chance: 200, note: '--inf, -pop', fx: {} },
-			{name: 'Perfect Alignment', chance: 60, note: '++prod, -mig', fx: {} },
-			{name: 'Short Days', chance: 70, note: '-prod', fx: {} },
-			{name: 'Legendary', chance: 20, note: '+++everything', fx: {} },
-			// special resources
-			{name: 'Neutronium', chance: 50, note: 'special resource', fx: {} },
-			{name: 'Anti-Matter', chance: 40, note: 'special resource', fx: {} },
-			{name: 'Temporal Elements', chance: 30, note: 'special resource', fx: {} },
-			{name: 'Quantoids', chance: 20, note: 'special resource', fx: {} },
-			{name: 'Q-Plasma', chance: 20, note: 'special resource', fx: {} },
-			]; 
-		}
-		
 	get envDisplayName() {
 		return Planet.EnvNames()[this.temp][this.atm];
 		}
@@ -809,7 +775,10 @@ export default class Planet {
 	// Use in case empire is destroyed or some accident happens.
 	// Also removes planet from owner's list of planets
 	Reset( keep_pop=true ) {
-		if ( this.owner ) { 
+		if ( this.owner ) {
+			for ( let a of this.physattrs ) { 
+				if ( 'onUnsettle' in a ) a.onUnsettle(this);
+				}
 			let i = this.owner.planets.indexOf( this );
 			if ( i > -1 ) { this.owner.planets.splice( i, 1 ); } 		
 			if ( --this.star.accts.get(this.owner).planets == 0 ) { 
@@ -875,6 +844,9 @@ export default class Planet {
 		if ( !this.owner.is_player && this.owner.planets.length==1 ) { 
 			this.owner.AI_AddStagingPoint( this.star );
 			}
+		for ( let a of this.physattrs ) { 
+			if ( 'onSettle' in a ) a.onSettle(this);
+			}
 		}
 		
 	ListUniqueGroundUnits() { 
@@ -916,4 +888,203 @@ export default class Planet {
 		// if ( p.acct_hist.length > 200 ) { p.shift(); } 
 		}
 				
+	}
+
+export const PlanetAttrs = {
+	PHARMACOPIA: { 
+		name: 'Pharmacopia',
+		desc: 'This world has an abundance of medicinal organisms.',
+		chance: 100,
+		mods: [ new Mod( 'pop_growth', '*', 1.5, '', this ) ],
+		},
+	TOXIC_FLORA: { 
+		name: 'Toxic Flora',
+		desc: '',
+		chance: 100,
+		mods: [ new Mod( 'pop_growth', '*', 0.5, '', this ) ],
+		},
+	RARE_MINERALS: { 
+		name: 'Rare Minerals',
+		desc: '',
+		chance: 100,
+		mods: [ new Mod( 'income', '+', 50, '', this ) ],
+		},
+	RARE_METALS: { 
+		name: 'Rare Metals',
+		desc: '',
+		chance: 100,
+		mods: [ new Mod( 'income', '+', 100, '', this ) ],
+		},
+	RARE_ELEMENTS: { 
+		name: 'Rare Elements',
+		desc: '',
+		chance: 50,
+		mods: [ new Mod( 'income', '+', 200, '', this ) ],
+		},
+	RARE_ELEMENTS: { 
+		name: 'Rare Elements',
+		desc: '',
+		chance: 50,
+		mods: [ new Mod( 'income', '+', 200, '', this ) ],
+		},
+	CAVERNOUS: { 
+		name: 'Cavernous',
+		desc: '',
+		chance: 100,
+		mods: [ 
+			new Mod( 'pop_max', '+', 40, '', this ) ,
+			new Mod( 'ground_roll', '+', 2, '', this ),
+			new Mod( 'zone_growth', '*', 0.5, '', this )
+			],
+		},
+	ARTIFACTS: { 
+		name: 'Ancient Artifacts',
+		desc: '',
+		chance: 50,
+		mods: [ 
+			new Mod( 'research', '*', 1.25, '', this )
+			],
+		},
+	FLAT: { 
+		name: 'Flat',
+		desc: '',
+		chance: 50,
+		mods: [ 
+			new Mod( 'housing', '*', 2, '', this ) ,
+			new Mod( 'mining', '*', 1.5, '', this ),
+			new Mod( 'ground_roll', '-', 1, '', this ) 
+			],
+		},
+	UNSTABLE: { 
+		name: 'Unstable',
+		desc: '',
+		chance: 100,
+		mods: [ 
+			new Mod( 'prod', '*', 0.75, '', this ) ,
+			new Mod( 'housing', '*', 0.75, '', this ),
+			],
+		},
+	RINGS: { 
+		name: 'Rings',
+		desc: '',
+		chance: 100,
+		mods: [ 
+			new Mod( 'mining', '*', 2, '', this ) ,
+			new Mod( 'military', '*', 2, '', this )
+			],
+		},
+	CORROSIVE: { 
+		name: 'Corrosive Atmosphere',
+		desc: '',
+		chance: 100,
+		mods: [ 
+			new Mod( 'zone_growth', '*', 0.5, '', this )
+			],
+		},
+	MOONS: { 
+		name: 'Moons',
+		desc: '',
+		chance: 100,
+		mods: [ 
+			new Mod( 'stardock', '*', 2.0, '', this ),
+			new Mod( 'military', '*', 2.0, '', this )
+			],
+		},
+	TESSERA1: { 
+		name: 'Tessera Alpha',
+		desc: 'A planet formerly part of the ancient Tessera Constellation.',
+		chance: 0,
+		score: 100,
+		mods: [],
+		onSettle(planet){
+			if ( planet.owner ) {
+				planet.owner.victory_ingredients.push( VictoryIngredients['TESSERA1'] );
+				}
+			},
+		onUnsettle(planet){
+			if ( planet.owner ) {
+				let i = planet.owner.victory_ingredients.indexOf( VictoryIngredients['TESSERA1'] );
+				if ( i > -1 ) { planet.owner.victory_ingredients.splice(i,1); }
+				}
+			},
+		},
+	TESSERA2: { 
+		name: 'Tessera Beta',
+		desc: 'A planet formerly part of the ancient Tessera Constellation.',
+		chance: 0,
+		score: 100,
+		mods: [],
+		onSettle(planet){
+			if ( planet.owner ) {
+				planet.owner.victory_ingredients.push( VictoryIngredients['TESSERA2'] );
+				}
+			},
+		onUnsettle(planet){
+			if ( planet.owner ) {
+				let i = planet.owner.victory_ingredients.indexOf( VictoryIngredients['TESSERA2'] );
+				if ( i > -1 ) { planet.owner.victory_ingredients.splice(i,1); }
+				}
+			},
+		},
+	TESSERA3: { 
+		name: 'Tessera Gamma',
+		desc: 'A planet formerly part of the ancient Tessera Constellation.',
+		chance: 0,
+		score: 100,
+		mods: [],
+		onSettle(planet){
+			if ( planet.owner ) {
+				planet.owner.victory_ingredients.push( VictoryIngredients['TESSERA3'] );
+				}
+			},
+		onUnsettle(planet){
+			if ( planet.owner ) {
+				let i = planet.owner.victory_ingredients.indexOf( VictoryIngredients['TESSERA3'] );
+				if ( i > -1 ) { planet.owner.victory_ingredients.splice(i,1); }
+				}
+			},
+		},
+	TESSERA4: { 
+		name: 'Tessera Delta',
+		desc: 'A planet formerly part of the ancient Tessera Constellation.',
+		chance: 0,
+		score: 100,
+		mods: [],
+		onSettle(planet){
+			if ( planet.owner ) {
+				planet.owner.victory_ingredients.push( VictoryIngredients['TESSERA4'] );
+				}
+			},
+		onUnsettle(planet){
+			if ( planet.owner ) {
+				let i = planet.owner.victory_ingredients.indexOf( VictoryIngredients['TESSERA4'] );
+				if ( i > -1 ) { planet.owner.victory_ingredients.splice(i,1); }
+				}
+			},
+		},
+		
+// 			{name: 'Ecliptic', chance: 100, note: '+range, +vis, +res', fx: {} },
+// 			{name: 'Beautiful', chance: 200, note: '+econ, +mig, +morale', fx: {} },
+// 			{name: 'Dangerous', chance: 200, note: '+def, --mig', fx: {} },
+// 			{name: 'Volcanic', chance: 100, note: '-inf', fx: {} },
+// 			{name: 'Accessible', chance: 100, note: '++prod, +mig', fx: {} },
+// 			{name: 'Bread Basket', chance: 200, note: '+mig, +morale, +pop', fx: {} },
+// 			{name: 'Asteroid Belt', chance: 60, note: '++prod', fx: {} },
+// 			{name: 'Hostile Lifeforms', chance: 150, note: '-pop, -prod, -mig', fx: {} },
+// 			{name: 'Unusual Weather', chance: 90, note: '+res, -prod, -mig', fx: {} },
+// 			{name: 'Abundant Life', chance: 180, note: '+morale, +res', fx: {} },
+// 			{name: 'Rich Soil', chance: 200, note: '+pop', fx: {} },
+//			{name: 'Poor Soil', chance: 200, note: '-pop', fx: {} },
+// 			{name: 'Perfect Alignment', chance: 60, note: '++prod, -mig', fx: {} },
+// 			{name: 'Short Days', chance: 70, note: '-prod', fx: {} },
+// 			{name: 'Legendary', chance: 20, note: '+++everything', fx: {} },
+
+	}
+
+// key the attributes list and add default values
+for ( let k in PlanetAttrs ) {
+	PlanetAttrs[k].key = k;
+	if ( !( 'score' in PlanetAttrs[k] ) ) { 
+		PlanetAttrs[k].score = 10;
+		}
 	}

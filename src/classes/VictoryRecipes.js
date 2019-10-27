@@ -1,7 +1,5 @@
+import {PlanetAttrs} from './Planet';
 
-
-	
-// for internal use
 export const VictoryRecipes = {
 	TESSERA: {
 		name: 'Tessera Constellation',
@@ -9,46 +7,28 @@ export const VictoryRecipes = {
 			to escape the violence of a decaying galaxy. Today these systems are 
 			unknown, perhaps invisible, or perhaps lost forever...`,
 		requires: ['TESSERA1','TESSERA2','TESSERA3','TESSERA4'],
-		provides: ['GALAXYPEARL']
-		},
-	TEST1: {
-		name: 'Test Victory Recipe',
-		desc: `Find the galaxy pearl and that's it; you win. YOU WIN!`,
-		requires: ['GALAXYPEARL'],
-		provides: [],
-		},
-	TEST2: {
-		name: 'Test Victory Recipe',
-		desc: `Find the two ancient test victory ingredients left by a crazy programmer to win the game.`,
-		requires: ['TEST1','TEST2'],
-		provides: ['GALAXYPEARL']
+		provides: [/*'GALAXYPEARL'*/]
 		},
 	};
 	
-	
 export const VictoryIngredients = {
-	TEST1: {
-		name: 'Test Victory Ingredient #1',
-		desc: 'This victory ingredient is here to test the Victory Recipes subsystem. It feels like wet glass.',
-		img: '',
-		AddToGame: function ( game ) { 
-			// TODO
-			}
-		},
-	TEST2: {
-		name: 'Test Victory Ingredient #2',
-		desc: 'This victory ingredient is here to test the Victory Recipes subsystem. It tastes like cyan pepper.',
-		img: '',
-		AddToGame: function ( game ) { 
-			// TODO
-			}
-		},
 	TESSERA1: {
 		name: 'Tessera Alpha',
 		desc: 'The first of the star systems created by an ancient civilization.',
 		img: '',
 		AddToGame: function ( game ) { 
-			// TODO
+			let stars = game.galaxy.stars.shuffle();
+			outer: 
+			for ( let s of stars ) { 
+				for ( let p of s.planets ) { 
+					if ( !p.owner && !p.name.match(/tessera/i) ) { 
+						p.physattrs.push( PlanetAttrs['TESSERA1'] );
+						p.score += 500;
+						p.name = 'Tessera Alpha';
+						break outer;
+						}
+					}
+				} 
 			}
 		},
 	TESSERA2: {
@@ -56,15 +36,37 @@ export const VictoryIngredients = {
 		desc: 'The second of the star systems created by an ancient civilization.',
 		img: '',
 		AddToGame: function ( game ) { 
-			// TODO
+			let stars = game.galaxy.stars.shuffle();
+			outer: 
+			for ( let s of stars ) { 
+				for ( let p of s.planets ) { 
+					if ( !p.owner && !p.name.match(/tessera/i) ) { 
+						p.physattrs.push( PlanetAttrs['TESSERA2'] );
+						p.score += 500;
+						p.name = 'Tessera Beta';
+						break outer;
+						}
+					}
+				} 
 			}
 		},
 	TESSERA3: {
-		name: 'Tessera Theta',
+		name: 'Tessera Gamma',
 		desc: 'The third star system created by an ancient civilization.',
 		img: '',
 		AddToGame: function ( game ) { 
-			// TODO
+			let stars = game.galaxy.stars.shuffle();
+			outer: 
+			for ( let s of stars ) { 
+				for ( let p of s.planets ) { 
+					if ( !p.owner && !p.name.match(/tessera/i) ) { 
+						p.physattrs.push( PlanetAttrs['TESSERA3'] );
+						p.score += 500;
+						p.name = 'Tessera Gamma';
+						break outer;
+						}
+					}
+				} 
 			}
 		},
 	TESSERA4: {
@@ -72,7 +74,18 @@ export const VictoryIngredients = {
 		desc: 'The last of the star systems created by an ancient civilization.',
 		img: '',
 		AddToGame: function ( game ) { 
-			// TODO
+			let stars = game.galaxy.stars.shuffle();
+			outer: 
+			for ( let s of stars ) { 
+				for ( let p of s.planets ) { 
+					if ( !p.owner && !p.name.match(/tessera/i) ) { 
+						p.physattrs.push( PlanetAttrs['TESSERA4'] );
+						p.score += 500;
+						p.name = 'Tessera Delta';
+						break outer;
+						}
+					}
+				} 
 			}
 		},
 	GALAXYPEARL: {
@@ -86,7 +99,6 @@ export const VictoryIngredients = {
 			// trade out one of the galaxy's anomalies for the galaxy pearl
 			let a = game.galaxy.anoms[0];
 			if ( a ) { 
-				console.log('Adding special anom "' +  this.name + '"');
 				a.name = this.name;
 				a.order = 75; // for exploration
 				a.onmap = true;
@@ -96,7 +108,6 @@ export const VictoryIngredients = {
 				a.post_desc = this.desc;
 				a.onComplete = fleet => { 
 					fleet.owner.victory_ingredients.push( this );
-					console.log(`ACQUIRED: ${this.name}`);
 					};
 				}
 			}
@@ -105,8 +116,8 @@ export const VictoryIngredients = {
 	
 // add keys to objects themselves for later self-reference
 for ( let k in VictoryRecipes ) {
-	VictoryRecipes[k].tag = k;
+	VictoryRecipes[k].key = k;
 	}
 for ( let k in VictoryIngredients ) {
-	VictoryIngredients[k].tag = k;
+	VictoryIngredients[k].key = k;
 	}

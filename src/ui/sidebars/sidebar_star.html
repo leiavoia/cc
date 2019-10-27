@@ -16,6 +16,9 @@
 					<!--<div class="env_box"> <div class="target"></div> </div>-->	
 					<h3 css="color: ${p.ui_color};">${p.name}</h3>
 					<p class="env_label" style="font-size: 80%; text-align:left; float:none; width: 100%">${p.gravDisplayName}  ${p.envDisplayName}</p>
+					<div class="physattrs marginless" style="font-size: 80%; color: #999;">
+						<span repeat.for="a of p.physattrs" title.bind="a.desc">★${a.name} </span>
+					</div>			
 					<div class="phys">
 						<div class="size" style="margin: 0; padding: 0;">
 							<span class="size">${p.size}<br/><span class="size">SIZE</span></span>							
@@ -25,7 +28,7 @@
 								<span class="">ENV</span>
 							</span>
 							<span class="pop" if.bind="p.owner">${p.total_pop|round}<br/><span class="pop">POP</span></span>
-						</div>			
+						</div>
 						<div class="resources">
 							<template repeat.for="k of p.resources|props" containerless>
 								<span repeat.for="i of p.resources[k]" class="${k}"></span>

@@ -9,6 +9,7 @@ import {Ship,ShipBlueprint} from './Ship';
 import {GroundUnit,GroundUnitBlueprint} from './GroundUnit';
 import {WeaponList} from './WeaponList';
 import {ZoneList} from './Zones';
+import {VictoryIngredients} from './VictoryRecipes';
 import {ShipComponentList} from './ShipComponentList';
 import {Mod,Modlist} from './Mods';
 import {Treaties,Treaty} from './Treaties';
@@ -476,7 +477,7 @@ export default class Civ {
 		obj.avail_ship_comps = this.avail_ship_comps.map( x => x.tag );
 		obj.avail_ship_weapons = this.avail_ship_weapons.map( x => x.tag );
 		obj.avail_zones = this.avail_zones.map( x => x.key );
-		obj.victory_ingredients = this.victory_ingredients.map( x => x.tag );
+		obj.victory_ingredients = this.victory_ingredients.map( x => x.key );
 		obj.diplo = Object.assign( {}, this.diplo ); // dont overwrite original object
 		obj.diplo.contacts = {}; 
 		for ( let [k,v] of this.diplo.contacts ) {

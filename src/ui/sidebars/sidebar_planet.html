@@ -50,7 +50,9 @@
 					<span repeat.for="i of planet.resources[k]" class="${k}"></span>
 				</template>
 			</div>
-			
+			<div class="physattrs center" style="font-size: 80%; color: #999;">
+				<span repeat.for="a of planet.physattrs" title.bind="a.desc">★${a.name} </span>
+			</div>
 		</div> 
 		
 		<template containerless if.bind="app.options.see_all || planet.owner == app.game.myciv">

@@ -103,7 +103,7 @@ export default class Game {
 		// last man standing
 		if ( check_last_man_standing && civs_in_play.length == 1 ) { 
 			this.victory_achieved = true;
-			// console.log( 'VICTORY ACHIEVED: ' + civs_in_play[0].name );
+			// console.log( 'LAST MAN STANDING: ' + civs_in_play[0].name );
 			if ( civs_in_play[0].is_player ) { 
 				this.app.AddNote(
 					'good',
@@ -136,16 +136,11 @@ export default class Game {
 		for ( let civ of civs_in_play ) { 
 			for ( let r of this.victory_recipes ) { 
 				let gotcha = true;
-				if ( !civ.victory_ingredients.length ) {
-					gotcha = false;
-					}
-				else {
-					for ( let i of civ.victory_ingredients )  { 
-						// not found - recipe is incomplete
-						if ( r.requires.indexOf(i.tag) == -1 ) {
-							gotcha = false;
-							break; 
-							}
+				for ( let i of r.requires )  { 
+					// not found - recipe is incomplete
+					if ( civ.victory_ingredients.indexOf(VictoryIngredients[i]) == -1 ) {
+						gotcha = false;
+						break; 
 						}
 					}
 				if ( gotcha ) { 
@@ -177,10 +172,7 @@ export default class Game {
 	DeployVictoryIngredients( ) { 
 		// TODO: we might opt to filter which victory conditions are added to the game
 		// either by direct selection or level of crazyness.
-		// HACK HARDCODE: 
-		this.victory_recipes = [
-			VictoryRecipes.TEST1
-			];
+		this.victory_recipes = Object.values(VictoryRecipes);
 		let ingr = [];
 		this.victory_recipes.forEach( r => ingr = ingr.concat( r.requires, r.provides ) );
 		ingr.unique().forEach( i => VictoryIngredients[i].AddToGame(this) );
