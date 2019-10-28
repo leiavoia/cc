@@ -265,18 +265,9 @@ export default class Game {
 		this.DeployVictoryIngredients();
 
 		// TODO: random fun stuff
-		// CrazyBox.AddGiantSpaceAmoeba(this.app);
-		// CrazyBox.AddRedSpaceAmoeba(this.app);
-		// CrazyBox.AddBlueSpaceAmoeba(this.app);
-			
-		// at this point there is some fudge time until the PlayState
-		// widget actually gets created and placed into the layout.
-		// Trying to perform functions directly on the PlayState will
-		// fail because it doesn't exist yet. Let PlayState handle
-		// anything it needs by itself. Just give it the data it needs.
-		// [!]TODO - Consider adding an App::OnStateChange callback
-		// that States can call when they are done loading. Kinda like 
-		// an app-level event lifecycle.
+		CrazyBox.AddGiantSpaceAmoeba(this.app);
+		CrazyBox.AddRedSpaceAmoeba(this.app);
+		CrazyBox.AddBlueSpaceAmoeba(this.app);
 		}
 
 	ToggleAutoPlay( speed = 500 ) { 

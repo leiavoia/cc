@@ -47,16 +47,39 @@ export class AI {
 	objectives = [];
 	completed = []; // mostly for debug
 	constructor( civ ) {
-		if ( civ ) this.civ = civ;
+		if ( civ ) {
+			// 'fromJSON' style data bundle as first arg
+			if ( 'civ' in civ ) { Object.assign( this, civ ); } 
+			else { this.civ = civ; }
+			}
 		}
 	toJSON() { 
-		return {};
-		// let obj = { _classname:'AI', civ: this.civ };
-		// obj.objectives = [];
-		// // skip completed objectives, dont care
-		// return obj;
+		let obj = Object.assign( {_classname:'AI'}, this );
+		obj.civ = this.civ.id;
+		obj.objectives = this.objectives.map( x => { 
+			let o = {}; // [!]TECHNICAL: using Object.assign causes "too much recursion" if `civ` is present
+			o._classname = x.constructor.name; // "analyze" => "AIAnalyzeObjective"
+			o.target = x.target ? x.target.id : null;
+			o.fleet = x.fleet ? x.fleet.id : null;
+			return o;
+			} );
+		obj.completed = [];
+		return obj;
 		}
-	Unpack( catalog ) { /* do nothing */ };
+	Unpack( catalog ) { 
+		this.civ = catalog[this.civ];
+		this.objectives = this.objectives.map( x => {
+			let o = eval('new ' + x._classname + '()');
+			o = Object.assign( o, x );
+			o.target = x.target ? catalog[x.target] : null;
+			o.fleet = x.fleet ? catalog[x.fleet] : null;
+			return o;
+			}); 
+		// hook up fleet AIs
+		for ( let o of this.objectives ) { 
+			if ( o.fleet ) { o.fleet.ai = o; }
+			}
+		}	
 	Do( app ) {
 		// evaluate all objectives and throw away failed or expired.
 		this.objectives.sort( (a,b) => a.priority <= b.priority ? -1 : 1 );
@@ -1856,6 +1879,220 @@ export class AIScoutObjective extends AIObjective {
 export class AIAnomExploreObjective extends AIObjective { 	
 	type = 'anom';
 	EvaluateFunc( app, civ ) { 
+		}	
+	}
+
+// BLUE SPACE AMOEBA BRAIN
+export class AIBlueAmoebaObjective extends AIObjective { 	
+	type = 'blue_amoeba';
+	EvaluateFunc( app, civ ) { 
+		// on every 8th turn, subdivide all amoeba fleets
+		// and send them out to nearby systems based on dice roll
+		if ( app.game.turn_num % 8 == 0 ) {
+			
+			// we need a sanity check to make sure the CPU doesnt explode.
+			const max_amoebas = 1000;
+			let total_ships = 0;
+			for ( let f of civ.fleets ) { 
+				total_ships += f.ships.length;
+				}
+			this.note = `${total_ships}/${max_amoebas}`;
+							
+			let bp = civ.ship_blueprints[0];
+			if ( total_ships < max_amoebas ) { 
+				for ( let f of civ.fleets ) { 
+					if ( f.star && !f.dest ) { // only parked fleets subdivide
+						// stay
+						if ( Math.random() < (1 / f.ships.length) + 0.25 ) { 
+							f.AddShip( bp.Make() );	
+							}
+						// go 
+						else {
+							// find the first star within 1000px 
+							app.game.galaxy.stars.shuffle(); // very inefficient
+							let gotcha = false;
+							for ( let s of app.game.galaxy.stars ) { 
+								let dist = 
+									Math.pow( Math.abs(f.star.xpos - s.xpos), 2 ) 
+									+ Math.pow( Math.abs(f.star.ypos - s.ypos), 2 ) 
+									;
+								if ( dist < 1000000 ) { 
+									let fleet = new Fleet( civ, f.star );
+									fleet.AddShip( bp.Make() );	
+									fleet.SetDest( s );
+									gotcha = true;
+									break;
+									}	
+								}
+							if ( !gotcha ) { 
+								// if nothing available, just join the herd
+								f.AddShip( bp.Make() );	
+								}
+							}
+						}
+					}
+				}
+			}
+		}	
+	}
+
+// GIANT SPACE AMOEBA BRAIN
+export class AIGiantAmoebaObjective extends AIObjective { 	
+	type = 'giant_amoeba';
+	EvaluateFunc( app, civ ) { 
+		let bp = civ.ship_blueprints[0];
+		for ( let f of civ.fleets ) { 
+			if ( f.star && !f.dest ) { // only parked fleets subdivide
+				// possibly reproduce 
+				if ( Math.random() <= 0.05 ) { 
+					f.AddShip( bp.Make() );
+					}
+				if ( Math.random() <= 0.2 ) { 
+					// find the first star within 1500px 
+					app.game.galaxy.stars.shuffle(); // very inefficient
+					for ( let s of app.game.galaxy.stars ) { 
+						if ( s == f.star ) { continue; } 
+						let dist = 
+							Math.pow( Math.abs(f.star.xpos - s.xpos), 2 ) 
+							+ Math.pow( Math.abs(f.star.ypos - s.ypos), 2 ) 
+							;
+						if ( dist < 1500000 ) { 	
+							f.SetDest( s );
+							break;
+							}	
+						}
+					}
+				}
+			}
+		}	
+	}
+
+// RED SPACE AMOEBA BRAIN
+export class AIRedAmoebaObjective extends AIObjective { 	
+	type = 'red_amoeba';
+	EvaluateFunc( app, civ ) { 
+		let bpam = civ.ship_blueprints[0]; // adult male
+		let bpaf = civ.ship_blueprints[1]; // adult female
+		let bpbm = civ.ship_blueprints[2]; // baby male
+		let bpbf = civ.ship_blueprints[3]; // baby female
+		
+		// we need a sanity check to make sure the CPU doesnt explode.
+		const max_amoebas = 1000;
+		let total_ships = 0;
+		for ( let f of civ.fleets ) { 
+			total_ships += f.ships.length;
+			}
+		this.note = `${total_ships}/${max_amoebas}`;
+			
+		for ( let f of civ.fleets ) { 
+			if ( f.star && !f.dest ) { // only parked fleets move
+				// are adults present? will they mate?
+				let mate = 0; // 1 = male, 2 = female, 3 = lets do it
+				for ( let ship of f.ships ) { 
+					if ( ship.bp.adult ) { 
+						mate = mate | (ship.bp.sex == 'M' ? 1 : 2);
+						}
+					// every turn, there is a 1/1000 chance a baby will be promoted to an adult
+					else if ( Math.random() <= 1/1000 ) {
+						ship.bp = ( ship.bp.sex=='M' ? bpam : bpaf );
+						ship.hull = ship.bp.hull;
+						}
+					}
+				// get it on
+				if ( total_ships < max_amoebas && mate >= 3 && mate % 3 == 0 ) { 
+					// make babies
+					let fleets = [];
+					let n = utils.RandomInt(6,16);
+					while ( n-- ) { 
+						let i = utils.RandomInt(3,12);
+						let newfleet = new Fleet(civ,f.star);
+						while ( i-- ) { 
+							newfleet.AddShip( (Math.random() > 0.5) ? bpbm.Make() : bpbf.Make() );	
+							}
+						fleets.push(newfleet);
+						}
+					// send the babies to random places around the galaxy
+					app.game.galaxy.stars.shuffle();
+					for ( let i=0; i < fleets.length; i++ ) { 
+						let n = i % ( app.game.galaxy.stars.length-1 ); // defend against not enough stars
+						// merge into where i am
+						if ( f.star == app.game.galaxy.stars[n] ) { 
+							fleets[i].ParkOnStar();
+							}
+						// send away
+						else {
+							fleets[i].SetDest( app.game.galaxy.stars[n] );	
+							}
+						}
+					// warn the player of impending doom
+					app.AddNote(
+						'bad',
+						`Red Space Amoeba Spawn`,
+						`There are recent deep space sightings of baby red space amoebas. 
+							When red space amoebas mate, they produce dozens or even hundreds
+							of offspring which fan out across space. Be on guard.`,
+						null
+						);		
+					}
+				// move adults
+				if ( mate ) { // i.e. "adults present" 
+					let kill_list = [];
+					for ( let ship of f.ships ) { 
+						if ( ship.bp.adult ) { 
+							// recently mated males die
+							if ( mate >= 3 && ship.bp.sex=='M' ) { 
+								kill_list.push(ship);
+								continue;
+								}
+							// Males move a lot. Females tend to stay in place waiting for the male.
+							// Recently mated amoebas will go literally anywhere.
+							if ( ship.bp.sex=='M' || mate >= 3 || Math.random() > 0.8 ) {
+								// move to a randomish nearby star within 1500px
+								app.game.galaxy.stars.shuffle(); // very inefficient
+								for ( let s of app.game.galaxy.stars ) { 
+									if ( s == f.star ) { continue; }
+									// red amoebas have a preference for older stars.
+									let chance = 1;
+									switch (s.color) {
+										case 'red' : chance = 0.70; break;
+										case 'orange' : chance = 0.65; break;
+										case 'yellow' : chance = 0.55; break;
+										case 'white' : chance = 0.35; break;
+										case 'cyan' : chance = 0.25; break;
+										case 'blue' : chance = 0.15; break;
+										default : chance = 0.10;
+										}
+									if ( mate>=3 || Math.random() <= chance ) { 
+										if ( s == f.star ) { continue; } 
+										let dist = 
+											Math.pow( Math.abs(f.star.xpos - s.xpos), 2 ) 
+											+ Math.pow( Math.abs(f.star.ypos - s.ypos), 2 ) 
+											;
+										if ( dist < 1000000 || mate >= 3 ) { 
+											if ( f.ships.length > 1 ) { 
+												let fl = new Fleet( civ, f.star );
+												kill_list.push(ship);
+												fl.AddShip(ship);	
+												fl.SetDest( s );
+												}
+											else { 
+												f.SetDest( s );
+												}
+											break;
+											}	
+										}
+									}										
+								}
+							}
+						}
+					// remove any ships that needed to be removed during the loop	
+					for ( let killship of kill_list ) { 
+						f.RemoveShip(killship);
+						}
+					if ( !f.ships.length ) { f.Kill(); }
+					}
+				}
+			}
 		}	
 	}
 

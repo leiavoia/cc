@@ -461,7 +461,6 @@ export default class Civ {
 			this.diplo_img_small = 'img/races/alien_' + ("000" + Civ.img_id_roster[Civ.total_civs]).slice(-3) + '.jpg';
 			this.mods = new Modlist( this.race );
 			this.ai = new AI.CivAI(this);
-			this.InitResearch();
 			}
 		}
 	
@@ -525,8 +524,10 @@ export default class Civ {
 		this.avail_zones = this.avail_zones.map( x => ZoneList[x] );
 		this.victory_ingredients = this.victory_ingredients.map( x => VictoryIngredients[x] );
 		this.mods = new Modlist(this.mods);
-		this.mods.Unpack( catalog );
-		this.ai = new AI.CivAI(this.ai);
+		this.mods.Unpack( catalog ); 
+		this.ai = this.ai._classname=='CivAI' 
+			? ( new AI.CivAI(this.ai) ) // playable civs use CivAI
+			: ( new AI.AI(this.ai) ); // space monsters and shill civs use regular AI 
 		this.ai.Unpack( catalog );
 		// diplomacy
 		let contacts = new Map();
@@ -618,6 +619,8 @@ export default class Civ {
 		// ship designing
 		civ.ai.strat.ship_des_freq = utils.BiasedRand(0.1, 0.9, 0.5, 0.75);
 		civ.ai.strat.ship_size = utils.BiasedRand(0.0, 1.0, 0.2, 0.75);
+		// start researching
+		civ.InitResearch();
 		return civ;
 		}
 		
@@ -682,7 +685,8 @@ export default class Civ {
 		return this.power_score;
 		}
 		
-	ArchiveStats() { 
+	ArchiveStats() {
+		if ( this.race.is_monster ) { return; }
 		let ships = 0;
 		let milval = 0;
 		this.fleets.forEach( f => {
