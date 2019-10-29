@@ -4,6 +4,46 @@ import * as utils from '../util/utils';
 import {Ship,ShipBlueprint} from './Ship';
 import * as AI from './AI';
 
+export function AddGreenMites( app ) { 
+	let civ = new Civ();
+	civ.race.is_monster = true;
+	civ.diplo.contactable = false;
+	civ.name = 'Planevore Mite';
+	civ.diplo_img = 'img/ships/monsters/mite_green_crop.png';
+	civ.diplo_img_small = 'img/ships/monsters/mite_green_crop.png';
+	civ.color_rgb = [116, 175, 77];
+	civ.color = '#' + utils.DecToHex(civ.color_rgb[0]) + utils.DecToHex(civ.color_rgb[1]) + utils.DecToHex(civ.color_rgb[2]);
+			
+	app.game.galaxy.civs.push( civ ) ;
+	let star = app.game.galaxy.stars.pickRandom();
+	
+	let bp = new ShipBlueprint();
+	bp.name = 'Green Mite';
+	bp.img = 'img/ships/monsters/mite_green.png';
+	bp.AddWeapon('AMOEBASLIME1',2);
+	bp.hull = 150;
+	bp.armor = 80;
+	bp.speed = 80;
+	civ.ship_blueprints.push(bp);
+	
+	let bp2 = new ShipBlueprint();
+	bp2.name = 'Mega Mite';
+	bp2.img = 'img/ships/monsters/mite_green_large.png';
+	bp2.AddWeapon('AMOEBASLIME1',4);
+	bp2.AddWeapon('AMOEBASLIME2',4);	
+	bp2.hull = 500;
+	bp2.armor = 500;
+	bp2.speed = 40;
+	civ.ship_blueprints.push(bp2);
+	
+	let fleet = new Fleet( civ, star );
+	fleet.AddShip( new Ship(bp) );
+	civ.fleets.push(fleet);
+	
+	civ.ai = new AI.AI(civ);
+	civ.ai.objectives.push( new AI.AIGreenMiteObjective() );	
+	}
+	
 export function AddBlueSpaceAmoeba( app ) { 
 	let civ = new Civ();
 	civ.race.is_monster = true;
@@ -18,15 +58,15 @@ export function AddBlueSpaceAmoeba( app ) {
 	// amoebas don't have a home system per se, 
 	// but they do have a starting fleet that is 
 	// not parked on another civ's HW
-	let star = app.game.galaxy.stars[ 0 ];
+	let star = app.game.galaxy.stars.pickRandom();
 	
 	let bp = new ShipBlueprint();
 	bp.name = 'Space Amoeba';
+	bp.img = 'img/ships/monsters/space_amoeba_blue.png';
+	bp.AddWeapon('AMOEBASLIME1',8);
 	bp.hull = 400;
 	bp.armor = 100;
 	bp.speed = 200;
-	bp.img = 'img/ships/monsters/space_amoeba_blue.png';
-	bp.AddWeapon('AMOEBASLIME1',8);
 	civ.ship_blueprints.push(bp);
 	
 	let fleet = new Fleet( civ, star );
@@ -36,9 +76,7 @@ export function AddBlueSpaceAmoeba( app ) {
 	civ.ai = new AI.AI(civ);
 	civ.ai.objectives.push( new AI.AIBlueAmoebaObjective() );	
 	}
-	
-	
-	
+
 export function AddGiantSpaceAmoeba( app ) { 
 	let civ = new Civ();
 	civ.race.is_monster = true;
@@ -52,11 +90,11 @@ export function AddGiantSpaceAmoeba( app ) {
 	
 	let bp = new ShipBlueprint();
 	bp.name = 'Giant Space Amoeba';
+	bp.img = 'img/ships/monsters/space_amoeba_yellow.png';
+	bp.AddWeapon('AMOEBASLIME3',12);
 	bp.hull = 800;
 	bp.armor = 0;
 	bp.speed = 80;
-	bp.img = 'img/ships/monsters/space_amoeba_yellow.png';
-	bp.AddWeapon('AMOEBASLIME3',12);
 	civ.ship_blueprints.push(bp);
 	
 	// giant amoebas start in space and fly in
@@ -71,8 +109,7 @@ export function AddGiantSpaceAmoeba( app ) {
 	civ.ai = new AI.AI(civ);
 	civ.ai.objectives.push( new AI.AIGiantAmoebaObjective() );
 	}
-	
-	
+
 export function AddRedSpaceAmoeba( app ) { 
 	let civ = new Civ();
 	civ.race.is_monster = true;
@@ -93,12 +130,12 @@ export function AddRedSpaceAmoeba( app ) {
 	// adult male
 	let bpam = new ShipBlueprint();
 	bpam.name = 'Adult Red Space Amoeba (M)';
-	bpam.hull = 600;
-	bpam.speed = 400;
 	bpam.sex = 'M';
 	bpam.adult = true;
 	bpam.img = 'img/ships/monsters/space_amoeba_red.png';
 	bpam.AddWeapon('AMOEBASLIME2',12);  
+	bpam.hull = 600;
+	bpam.speed = 400;
 	civ.ship_blueprints.push(bpam);
 
 	// one adult male for every 25 stars
@@ -112,13 +149,13 @@ export function AddRedSpaceAmoeba( app ) {
 	// adult female
 	let bpaf = new ShipBlueprint();
 	bpaf.name = 'Adult Red Space Amoeba (F)';
-	bpaf.hull = 900;
-	bpaf.speed = 300;
 	bpaf.sex = 'F';
 	bpaf.adult = true;
 	bpaf.img = 'img/ships/monsters/space_amoeba_red.png';
 	bpaf.AddWeapon('AMOEBASLIME2',12);   
 	bpaf.AddWeapon('AMOEBASLIME3',4);   
+	bpaf.hull = 900;
+	bpaf.speed = 300;
 	civ.ship_blueprints.push(bpaf);
 	
 	let star = app.game.galaxy.stars.pickRandom();
@@ -129,23 +166,23 @@ export function AddRedSpaceAmoeba( app ) {
 	// baby male
 	let bpbm = new ShipBlueprint();
 	bpbm.name = 'Baby Red Space Amoeba (M)';
-	bpbm.hull = 35;
-	bpbm.speed = 100;
 	bpbm.sex = 'M';
 	bpbm.adult = false;
 	bpbm.img = 'img/ships/monsters/space_amoeba_red.png';
 	bpbm.AddWeapon('AMOEBASLIME1',2);   
+	bpbm.hull = 35;
+	bpbm.speed = 100;
 	civ.ship_blueprints.push(bpbm);
 	
 	// baby female
 	let bpbf = new ShipBlueprint();
 	bpbf.name = 'Baby Red Space Amoeba (F)';
-	bpbf.hull = 45;
-	bpbf.speed = 100;
 	bpbf.sex = 'F';
 	bpbf.adult = false;
 	bpbf.img = 'img/ships/monsters/space_amoeba_red.png';
 	bpbf.AddWeapon('AMOEBASLIME1',4);   
+	bpbf.hull = 45;
+	bpbf.speed = 100;
 	civ.ship_blueprints.push(bpbf);
 
 	civ.ai = new AI.AI(civ);

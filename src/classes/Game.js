@@ -267,6 +267,7 @@ export default class Game {
 		// TODO: random fun stuff
 		CrazyBox.AddGiantSpaceAmoeba(this.app);
 		CrazyBox.AddRedSpaceAmoeba(this.app);
+		CrazyBox.AddGreenMites(this.app);
 		CrazyBox.AddBlueSpaceAmoeba(this.app);
 		}
 

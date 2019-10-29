@@ -1882,6 +1882,103 @@ export class AIAnomExploreObjective extends AIObjective {
 		}	
 	}
 
+// GREEN MITE BRAIN
+export class AIGreenMiteObjective extends AIObjective { 	
+	type = 'green_mite';
+	EvaluateFunc( app, civ ) { 
+		// on every 5th turn, subdivide all mite fleets
+		// and send them out to nearby systems based on dice roll
+		if ( app.game.turn_num % 5 == 0 ) {
+			
+			let eat_planet_threshold = 20;
+			
+			// we need a sanity check to make sure the CPU doesnt explode.
+			const max_amoebas = 3000;
+			let total_ships = 0;
+			for ( let f of civ.fleets ) { 
+				total_ships += f.ships.length;
+				}
+			this.note = `${total_ships}/${max_amoebas}`;
+							
+			let bp = civ.ship_blueprints[0];
+			let megamite = civ.ship_blueprints[1];
+			if ( total_ships < max_amoebas ) { 
+				for ( let f of civ.fleets ) { 
+					if ( f.star && !f.dest ) { // only parked fleets subdivide
+						// stay if there is "food"
+						if ( f.star.planets.length ) { 
+							// maximum 50 mites per fleet
+							if ( f.ships.length < 50 ) {
+								// probably stay 
+								if ( Math.random() < 0.9 ) { 
+									f.AddShip( bp.Make() );	
+									}
+								// go 
+								else {
+									// find the first star within 1500px 
+									app.game.galaxy.stars.shuffle(); // very inefficient
+									let gotcha = false;
+									for ( let s of app.game.galaxy.stars ) { 
+										let dist = 
+											Math.pow( Math.abs(f.star.xpos - s.xpos), 2 ) 
+											+ Math.pow( Math.abs(f.star.ypos - s.ypos), 2 ) 
+											;
+										if ( dist < 1500*1500 ) { 
+											let fleet = new Fleet( civ, f.star );
+											fleet.AddShip( bp.Make() );	
+											fleet.SetDest( s );
+											gotcha = true;
+											break;
+											}	
+										}
+									if ( !gotcha ) { 
+										// if nothing available, just join the herd
+										f.AddShip( bp.Make() );	
+										}
+									}
+								}
+							// consider eating a planet
+							if ( f.ships.length >= eat_planet_threshold ) {
+								if ( Math.random() < f.ships.length/200 ) { 
+									let p = f.star.planets.pickRandom();
+									if ( p ) { 
+										p.Reset();
+										p.star.planets.splice( p.star.planets.indexOf(p), 1 );
+										// remove planet from any lists it might be contained by. this is kinda dangerous.
+										for ( let c of app.game.galaxy.civs ) {
+											for ( let o of c.ai.objectives ) { 
+												if ( o.target == p ) { 
+													o.target = null;
+													o.ttl=0; // kill
+													}
+												}
+											}
+										// eating a planet upgrades one of the regular mites to a mega mite
+										f.ships.shift();
+										f.AddShip( megamite.Make() );	
+										// let player know
+										app.AddNote(
+											'bad',
+											`Planet Eaten!`,
+											`Green Planevore Mites have devoured ${p.name}!`,
+											null
+											);	
+										}
+									}
+								}
+							}
+						// otherwise go somewhere with planets!
+						else {
+							let s = ClosestStarTo( f.star.xpos, f.star.ypos, app.game.galaxy.stars.filter(s => s.planets.length), true );
+							if ( s ) { f.SetDest(s); }
+							}
+						}
+					}
+				}
+			}
+		}	
+	}
+
 // BLUE SPACE AMOEBA BRAIN
 export class AIBlueAmoebaObjective extends AIObjective { 	
 	type = 'blue_amoeba';
