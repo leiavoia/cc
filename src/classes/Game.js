@@ -482,6 +482,11 @@ export default class Game {
 				
 			} // foreach turn (in case of multiple).
 		
+		// autosave
+		if ( this.app.options.autosave && !this.app.options.soak ) {
+			this.app.SaveGame('Auto-Save');
+			}
+			 
 		this.processing_turn = false;
 		} // end process turn
 		

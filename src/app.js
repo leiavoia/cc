@@ -46,6 +46,7 @@ export class App {
 		headless: false, // for debugging on turbo speed
 		history_mode: 'power',
 		autoload_troops: true,
+		autosave: true,
 		// notifications to bug player with.
 		// you can also just set notify to boolean to en/disable all
 		notify: { 
@@ -310,13 +311,13 @@ export class App {
 			// start by cleaning up space
 			this.PurgeUnlistedSavedGames()
 			name = 'Game: ' + name; 
-			console.time('SAVE GAME');
+			// console.time('SAVE GAME');
 			let catalog = { 'version' : this.version };
 			this.game.Pack( catalog );
 			let content = JSON.stringify(catalog);
 			content = content.replace(/(\.\d{4})(\d+)/g,"$1"); // reduce number precision
 			content = content.replace(/\.0+,/g,","); // hack off unnecessary zeroes
-			console.log('Saving ' + content.length + ' bytes ...' );
+			// console.log('Saving ' + content.length + ' bytes ...' );
 			// save to html5 localStorage
 			if ( content.length < 5000000 && !force_download ) {
 				localStorage.setItem( name, content );
@@ -355,7 +356,7 @@ export class App {
 				element.click();
 				document.body.removeChild(element);
 				}
-			console.timeEnd('SAVE GAME');
+			// console.timeEnd('SAVE GAME');
 			return true;
 			}	
 		catch ( error ) {
@@ -384,7 +385,7 @@ export class App {
 			if ( !str ) return false;
 			this.last_saved_game_key = str;
 			}
-		console.time('LOAD GAME');
+		// console.time('LOAD GAME');
 		let catalog = JSON.parse(str);
 		if ( !catalog ) return false;
 		// version mismatch
@@ -440,7 +441,7 @@ export class App {
 				});
 	
 			}
-		console.timeEnd('LOAD GAME');
+		// console.timeEnd('LOAD GAME');
 		}
 			
 	PurgeUnlistedSavedGames() { 
