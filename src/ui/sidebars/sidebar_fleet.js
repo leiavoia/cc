@@ -48,7 +48,7 @@ export class FleetDetailPane {
 		this.turn_subscription.dispose();
 		// stop listening for hotkeys
 		window.removeEventListener('keypress', this.keypressCallback);
-		this.IndicateRange(); // turn off indicator
+		this.app.options.show_range = false; // turn off indicator
 		}
 				
 	constructor() { 
@@ -111,6 +111,7 @@ export class FleetDetailPane {
 		else if ( this.fleet.killme === true ) { 
 			this.fleet.SetOnUpdate(null);
 			this.app.CloseSideBar();
+			this.app.options.show_range = false;
 			}
 		else {
 			this.Recalc();
@@ -183,6 +184,7 @@ export class FleetDetailPane {
 			else {
 				this.fleet.FireOnUpdate();
 				}
+			this.app.options.show_range = false;
 			this.mode = 'fleet';
 			this.app.CloseSideBar();
 			this.app.SwitchMainPanel('colonize',p);
@@ -317,6 +319,7 @@ export class FleetDetailPane {
 		this.mode = 'fleet'; 
 		this.StopCaptureStarClicks();
 		this.app.CloseSideBar();
+		this.app.options.show_range = false;
 		}
 	ClickClose() {
 		this.StopCaptureStarClicks();
@@ -555,18 +558,22 @@ export class FleetDetailPane {
 		switch ( event.keyCode || event.which ) { 
 			case 27: { // escape
 				this.app.CloseSideBar();
+				this.app.options.show_range = false;
 				event.preventDefault(); return false;
 				}
 			case 105: { // I
 				this.SelectInvert();
+				this.IndicateRange();
 				event.preventDefault(); return false;
 				}
 			case 97: { // A
 				this.SelectAll();
+				this.IndicateRange();
 				event.preventDefault(); return false;
 				}
 			case 110: { // N
 				this.SelectNone();
+				this.IndicateRange();
 				event.preventDefault(); return false;
 				}
 // 			default: { console.log(`${event.which} was pressed`); }
