@@ -489,9 +489,9 @@ export default class Fleet {
 					if ( completed ) { 
 // 						console.log(`Fleet#${this.id} FINISHED researching ${this.mission.targets[0].name}`);
 						this.mission.completed++;
-						this.mission.targets.shift();
-						this.mission.targets[0].onComplete(this);
-						Signals.Send('anom_complete', {anom:this.mission.targets[0], fleet:this});
+						let t = this.mission.targets.shift();
+						t.onComplete(this);
+						Signals.Send('anom_complete', {anom:t, fleet:this});
 						}
 					}
 				}

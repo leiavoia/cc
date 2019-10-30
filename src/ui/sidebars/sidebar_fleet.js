@@ -31,11 +31,13 @@ export class FleetDetailPane {
 		// listen for hotkeys
 		window.addEventListener('keypress', this.keypressCallback, false);
 		// listen for star clicks from the map
-		this.starclick_subsc = Signals.Listen('starclick', 
-			data => { if ( data.event.which > 1 ) { this.StarClickCallback(data.star) } }
-			);
+		if ( !this.starclick_subsc ) { 
+			this.starclick_subsc = Signals.Listen('starclick', 
+				info => { if ( info.event.which > 1 ) { this.StarClickCallback(info.star) } }
+				);
+			}
 		if ( !this.turn_subscription ) { 
-			this.turn_subscription = Signals.Listen( 'turn', data => this.UpdateStats() );
+			this.turn_subscription = Signals.Listen( 'turn', info => this.UpdateStats() );
 			}
 		}
 		
@@ -46,6 +48,7 @@ export class FleetDetailPane {
 		this.turn_subscription.dispose();
 		// stop listening for hotkeys
 		window.removeEventListener('keypress', this.keypressCallback);
+		this.IndicateRange(); // turn off indicator
 		}
 				
 	constructor() { 
@@ -54,10 +57,21 @@ export class FleetDetailPane {
 		
 	CaptureStarClicks() { 
 		this.mode = 'awaiting_star_click';
+		this.IndicateRange();
 		}
 	StopCaptureStarClicks() { 
+		this.IndicateRange();
 		}
 		
+	IndicateRange() {
+		let on = false;
+		if ( this.mode == 'awaiting_star_click' && this.can_send==2 
+			&& !( !this.fleet.star && this.fleet.dest ) ) {
+			on = true;
+			}
+		this.app.options.show_range = on;
+		}
+		 
 	// aurelia automatic function called when fleet object gets changed
 	fleetChanged( new_fleet, old_fleet ) {
 		if ( new_fleet instanceof Fleet ) { 
@@ -80,6 +94,7 @@ export class FleetDetailPane {
 		else {
 			this.CaptureStarClicks();
 			}
+		this.IndicateRange();
 		}
 	PlanetSizeCSS( planet ) {
 		let size = Math.min( 75, Math.round( Math.pow(planet.size-3,0.45)*16 ) );
@@ -105,6 +120,7 @@ export class FleetDetailPane {
 		if ( this.fleet.owner.is_player ) { 
 			ship.selected = !ship.selected;
 			this.Recalc();
+			this.IndicateRange();
 			}
 		}
 	GetHealthClass(ship) {
@@ -118,18 +134,21 @@ export class FleetDetailPane {
 			ship.selected = true;
 			}
 		this.Recalc();
+		this.IndicateRange();
 		}
 	SelectNone() { 
 		for ( let ship of this.fleet.ships ) { 
 			ship.selected = false;
 			}
 		this.Recalc();
+		this.IndicateRange();
 		}
 	SelectInvert() { 
 		for ( let ship of this.fleet.ships ) { 
 			ship.selected = ship.selected ? false : true;
 			}
 		this.Recalc();
+		this.IndicateRange();
 		}
 	GetFirstColonyShip() {
 		// we want either the first colony ship that is selected
@@ -241,6 +260,7 @@ export class FleetDetailPane {
 			this.can_pickup_troops === 0 
 			&& (this.fleet.troops < this.fleet.troopcap) 
 			? true : false;
+		this.IndicateRange();
 		}
 	AnomalyResearch() { 
 		if ( this.fleet.star && !this.fleet.dest && this.fleet.star.objtype == 'anom' ) { 
@@ -301,10 +321,12 @@ export class FleetDetailPane {
 	ClickClose() {
 		this.StopCaptureStarClicks();
 		this.app.CloseSideBar();
+		this.app.options.show_range = false;
 		}
 	ClickAttack() {
 		if ( this.fleet.fp && this.fleet.star && this.fleet.star.fleets.length > 1 ) {
 			this.mode = "attack";
+			this.IndicateRange();
 			}
 		}
 	// for clicking attack target from player fleet
@@ -325,6 +347,7 @@ export class FleetDetailPane {
 		}
 	ClickCancelChooseAttackTarget() {
 		this.mode = 'awaiting_star_click';
+		this.IndicateRange();
 		}
 	// for clicking attack fleet from star with a local player fleet
 	AttackTargetWithLocalFleet() { 
@@ -376,6 +399,7 @@ export class FleetDetailPane {
 		if ( this.can_invade ) { 
 			this.trooplist = this.fleet.ListGroundUnits();
 			this.mode = 'invade';
+			this.IndicateRange();
 			}
 		}
 	ClickPlanetToInvade(p) { 
@@ -394,6 +418,7 @@ export class FleetDetailPane {
 	// closes the troop transfer subscreen
 	ClickAcceptTroopTransfer() { 
 		this.mode = 'awaiting_star_click';
+		this.IndicateRange();
 		}
 	// switches into troop transfer mode
 	ClickTransferTroops() {
@@ -407,6 +432,7 @@ export class FleetDetailPane {
 					}
 				}
 			this.mode = 'troopswap';
+			this.IndicateRange();
 			}
 		}
 	// selects a planet
@@ -481,14 +507,14 @@ export class FleetDetailPane {
 		this.trooplist.splice(0,this.trooplist.length);
 		this.fleet.ReevaluateStats();
 		}
+		
+	// returns false if no action taken (out of range, self-click, not routable, etc)
 	StarClickCallback( star ) { 
-		if ( this.mode == 'awaiting_star_click' && this.can_send==2 ) { 
+		if ( this.mode == 'awaiting_star_click' && this.can_send==2 ) {
 			// dont let fleet route to the planet its parked at
 			if ( !( star == this.fleet.star && !this.fleet.dest ) ) { 
-			
-				//
-				// TODO: check for range
-				//
+				// check if in range. TODO: possibly indicate to player out of range
+				if ( !this.fleet.owner.InRangeOf( star.xpos, star.ypos ) ) { return false; }
 				
 				// if we are sending all ships, just move the entire fleet.
 				// otherwise we have to split the fleet.
@@ -519,9 +545,10 @@ export class FleetDetailPane {
 					this.Recalc();
 					}
 				this.fleet.FireOnUpdate();
+				return true;
 				}
 			}
-// 		this.mode = 'fleet';
+		return false;
 		}
 		
 	KeyPress( event ) { 

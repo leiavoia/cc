@@ -25,6 +25,7 @@ export class PlayState {
 
 	constructor( app ) {
 		this.app = app;
+		this.app.options.show_range = false;
 		}
 
 	detached() { 

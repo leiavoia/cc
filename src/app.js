@@ -29,6 +29,7 @@ export class App {
 		show_sectors: false,
 		see_all: true,
 		show_range: false,
+		always_show_range: false,
 		show_xtreme_anoms: true,
 		show_xtreme_fleets: true,
 		show_staging_pts: true,

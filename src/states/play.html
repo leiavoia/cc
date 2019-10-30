@@ -14,7 +14,7 @@
 	<div id="layout_mapwrap" css="width: ${app.game.galaxy.width}px; height: ${app.game.galaxy.height}px;">
 		<div id="layout_map"  if.bind="!app.options.headless" class="${app.options.show_sectors ? 'sectors' : ''}" css="width: ${app.game.galaxy.width}px; height: ${app.game.galaxy.height}px">
 			<!-- RANGE LAYER HEADSUP -->
-			<div id="range_layer" if.bind="app.options.show_range">
+			<div id="range_layer" if.bind="app.options.show_range || app.options.always_show_range">
 				<template repeat.for="star of app.game.galaxy.stars" containerless>
 					<div if.bind="star.settled_by_player" 
 						css="
@@ -269,6 +269,7 @@
 						<td><b>${row.rank}</b></td>
 						<td>${row.score}</td>
 						<td>◉${row.civ.planets.length}</td>
+						<td>🟊${row.civ.victory_ingredients.length}</td>
 						<td>⚡${row.civ.ai.total_milval}</td>
 						<td>r${row.civ.ai.strat.risk|round:2}</td>
 						<td>${row.civ.ai.strat.def}</td>
@@ -385,7 +386,7 @@
 			<a href="#" click.delegate="app.MapScroll(0,400)" class="button cool">▼</a>
 			<a href="#" click.delegate="app.MapScroll(-400,0)" class="button cool">◀</a>
 			<a href="#" click.delegate="app.MapScroll(400,0)" class="button cool">▶</a>
-			<a href="#" click.delegate="app.ToggleOption('show_range')" class="button ${app.options.show_range ? 'alt' : 'cool'}">◯</a>
+			<a href="#" click.delegate="app.ToggleOption('always_show_range')" class="button ${app.options.always_show_range ? 'alt' : 'cool'}">◯</a>
 			<a href="#" click.delegate="app.ToggleOption('show_sectors')" class="button ${app.options.show_sectors ? 'alt' : 'cool'}">⛶</a>
 			<a href="#" click.delegate="app.ToggleOption('show_staging_pts')" class="button ${app.options.show_staging_pts ? 'alt' : 'cool'}">✜</a>
 			<a href="#" click.delegate="app.ToggleOption('see_all')" class="button ${app.options.see_all ? 'alt' : 'cool'}">★</a>
