@@ -570,7 +570,7 @@ export default class Game {
 		for ( let c = this.groundcombats.length-1; c >= 0; c-- ) { 
 			let gc = this.groundcombats[c];
 			// fleet may have been destroyed in previous battle.
-			if ( gc.attacker.killme || !gc.attacker.ships.length || !gc.planet.owner ) { 
+			if ( gc.attacker.killme || !gc.attacker.ships || !gc.attacker.ships.length || !gc.planet.owner ) { 
 				this.groundcombats.splice( c, 1 ); // delete
 				continue; 
 				}
@@ -738,6 +738,10 @@ export default class Game {
 		}
     	
 	LaunchPlayerShipCombat( combat ) {
+		// double check all players are still active
+		if ( combat.defender.killme || combat.attacker.killme 
+		|| combat.defender.merged_with || combat.attacker.merged_with 
+		|| !combat.defender.owner.alive || !combat.attacker.owner.alive ) { return false; }
 		if ( this.autoplay ) { 
 			clearInterval( this.autoplay );
 			this.autoplay = false;

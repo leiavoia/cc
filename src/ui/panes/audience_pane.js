@@ -26,7 +26,7 @@ export class AudiencePane {
 	// data.message will present a custom greeting.
 	// data.offer is a pre-meditated trade offer the AI is presenting to the player.
 	activate(data) {
-		if ( !data || !data.app || !data.obj ) return false; 
+		if ( !data || !data.app || !data.obj || !data.obj.diplo || !data.obj.alive ) return false; 
 		this.app = data.app;
 		this.civ = data.obj;
 		this.data = data.data;

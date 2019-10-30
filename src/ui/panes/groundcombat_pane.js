@@ -34,14 +34,11 @@ export class GroundCombatPane {
 			
 			}
 		}
+		
 	activate(data) {
 		this.app = data.app;
 		this.combatdata = data.obj;
 		this.onChangeCombatdata();
-		}
-		
-	bind() { 
-		//this.onChangeCombatdata();
 		}
 		
 	onChangeCombatdata() { 

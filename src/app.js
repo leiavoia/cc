@@ -227,6 +227,11 @@ export class App {
 			if ( mode != 'planets' && mode != 'planetinfo' ) { 
 				this.CloseSideBar();
 				}
+			// null out data to prevent cross-screen data contamination during transition
+			this.main_panel_mode = null;
+			this.main_panel_obj = null;
+			this.main_panel_data = null;
+			// now set screen proper
 			this.exclusive_ui = !!exclusive;
 			this.main_panel_mode = mode;
 			this.main_panel_obj = obj;
@@ -252,7 +257,11 @@ export class App {
 		this.CloseSideBar();
 		this.CurrentState().SetCaret(null);
 		}
-	ShowDialog( header, content, buttons = null ) { 
+	ShowDialog( header, content, buttons = null ) {
+		// stop autoturn from piling up multiple dialogs
+		if ( this.state=='play' && this.CurrentState().autoplay ) { 
+			this.CurrentState().ToggleAutoPlay();
+			}
 		this.modal = { header, content, buttons };
 		if ( !buttons ) { // default OK button to close dialog
 		   this.modal.buttons = [{ text: 'OK', cb: (()=>this.CloseDialog()) }];
