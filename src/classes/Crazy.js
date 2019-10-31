@@ -15,7 +15,7 @@ export function AddGreenMites( app ) {
 	civ.color = '#' + utils.DecToHex(civ.color_rgb[0]) + utils.DecToHex(civ.color_rgb[1]) + utils.DecToHex(civ.color_rgb[2]);
 			
 	app.game.galaxy.civs.push( civ ) ;
-	let star = app.game.galaxy.stars.pickRandom();
+	let star = app.game.galaxy.stars.filter(s=>!s.planets.filter(p=>p.owner).length).filter(s=>!s.fleets.length).pickRandom();
 	
 	let bp = new ShipBlueprint();
 	bp.name = 'Green Mite';
@@ -58,7 +58,7 @@ export function AddBlueSpaceAmoeba( app ) {
 	// amoebas don't have a home system per se, 
 	// but they do have a starting fleet that is 
 	// not parked on another civ's HW
-	let star = app.game.galaxy.stars.pickRandom();
+	let star = app.game.galaxy.stars.filter(s=>!s.planets.filter(p=>p.owner).length).filter(s=>!s.fleets.length).pickRandom();
 	
 	let bp = new ShipBlueprint();
 	bp.name = 'Space Amoeba';
@@ -98,7 +98,7 @@ export function AddGiantSpaceAmoeba( app ) {
 	civ.ship_blueprints.push(bp);
 	
 	// giant amoebas start in space and fly in
-	let star = app.game.galaxy.stars.pickRandom();
+	let star = app.game.galaxy.stars.filter(s=>!s.planets.filter(p=>p.owner).length).filter(s=>!s.fleets.length).pickRandom();
 	let fleet = new Fleet( civ, null );
 	fleet.xpos = star.xpos + 500;
 	fleet.ypos = star.ypos + 500;
@@ -138,9 +138,11 @@ export function AddRedSpaceAmoeba( app ) {
 	bpam.speed = 400;
 	civ.ship_blueprints.push(bpam);
 
+	let stars = app.game.galaxy.stars.filter(s=>!s.planets.filter(p=>p.owner).length).filter(s=>!s.fleets.length);
+	
 	// one adult male for every 25 stars
 	for ( let n=0; n < Math.ceil( app.game.galaxy.stars.length / 25 ); n++ ) { 
-		let star = app.game.galaxy.stars.pickRandom();
+		let star = stars.pickRandom();
 		let fleet = new Fleet( civ, star );
 		fleet.AddShip( bpam.Make() );	
 		civ.fleets.push(fleet);
@@ -158,7 +160,7 @@ export function AddRedSpaceAmoeba( app ) {
 	bpaf.speed = 300;
 	civ.ship_blueprints.push(bpaf);
 	
-	let star = app.game.galaxy.stars.pickRandom();
+	let star = stars.pickRandom();
 	let fleet = new Fleet( civ, star );
 	fleet.AddShip( bpaf.Make() );	
 	civ.fleets.push(fleet);
