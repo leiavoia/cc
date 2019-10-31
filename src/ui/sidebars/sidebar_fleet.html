@@ -150,21 +150,26 @@
 		<h2>Colonize ${fleet.star.name}</h2>
 		<p style="font-weight:bold; color: #FAA;" >Choose a planet to colonize:</p>
 		<div repeat.for="p of fleet.star.planets" class="hilite_wrapper" if.bind="!p.owner && p.Habitable(fleet.owner.race)" click.delegate="ChoosePlanetToColonize(p)">
-			<div class="planet atm${p.atm} tmp${p.temp}" css.one-time="PlanetSizeCSS(p)">
-				<p class="env_label"><span class="env_label">${p.envDisplayName}</span></p>
-				<div class="env_box">
-					<div class="target"></div>
-				</div>	
+			<div class="planet atm${p.atm} tmp${p.temp} grav${p.grav}" css.one-time="PlanetSizeCSS(p)">
 				<h3 css="color: ${p.ui_color};">${p.name}</h3>
+				<p class="env_label" style="font-size: 80%; text-align:left; float:none; width: 100%">${p.gravDisplayName}  ${p.envDisplayName}</p>
+				<div class="physattrs marginless" style="font-size: 80%; color: #999;">
+					<span repeat.for="a of p.physattrs" title.bind="a.desc">★${a.name} </span>
+				</div>			
 				<div class="phys">
-					<div class="size">
+					<div class="size" style="margin: 0; padding: 0;">
 						<span class="size">${p.size}<br/><span class="size">SIZE</span></span>							
 						<span class="en">${p.energy}x<br/><span class="en">ENERGY</span></span>
 						<span class="${p.Habitable(app.game.myciv.race) ? (p.Adaptation( app.game.myciv.race ) < 0 ? 'alert' : 'good') : 'bad'}">
 							${(p.Adaptation( app.game.myciv.race ) >= 0 ? '+' : '')}${p.Adaptation( app.game.myciv.race )}<br/>
 							<span class="">ENV</span>
-						</span>					
-					</div>			
+						</span>	
+					</div>
+					<div class="resources">
+						<template repeat.for="k of p.resources|props" containerless>
+							<span repeat.for="i of p.resources[k]" class="${k}"></span>
+						</template>
+					</div>					
 				</div>
 			</div>
 		</div>
