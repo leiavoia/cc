@@ -171,12 +171,6 @@ export class FleetDetailPane {
 		let ship = this.GetFirstColonyShip();
 		if ( ship ) { 
 			p.Settle( this.app.game.myciv );
-			// [!]OPTIMIZE: we only need to do this:
-			// - if we dont already have a planet in this system
-			// - only for our own civ, not all of them
-// 			this.app.RecalcCivContactRange();
-// 			this.app.RecalcStarRanges();
-			
 			this.fleet.RemoveShip( ship );
 			if ( !this.fleet.ships.length ) { 
 				this.fleet.Kill();
@@ -189,9 +183,6 @@ export class FleetDetailPane {
 			this.app.CloseSideBar();
 			this.app.SwitchMainPanel('colonize',p);
 			}
-		//
-		// TODO: destroy all refs to the ship
-		//
 		}
 	Recalc() { 
 		this.playerHasLocalFleet = this.fleet.star && this.fleet.star.PlayerHasLocalFleet;

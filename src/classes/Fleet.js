@@ -505,6 +505,7 @@ export default class Fleet {
 					completed: this.mission.completed, 
 					remaining: this.mission.targets.length, 
 					status: this.mission.status,
+					star: this.star,
 					note: '' // possibly add a captain's note here for flavor
 					};
 				// if there was more to research, put a tasty tidbit in

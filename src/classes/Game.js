@@ -841,14 +841,14 @@ export default class Game {
 				// status portion
 				if ( report.status == 0 ) { 
 					if ( report.remaining ) {
-						note = note + ` Expedition leaders came back empty handed, but would like to continue the mission if possible. ${report.note}`;
+						note = note + ` Expedition leaders at <b>${f.star.name}</b> came back empty handed, but would like to continue the mission if possible. ${report.note}`;
 						}
 					else {
 						note = 'Nothing of interest to report in this sector of space.';
 						}				
 					}
 				else if ( report.status == -1 ) { 
-					note = `Fleet #${f.id} has not returned from its deep space mission. The crew is feared lost.`;
+					note = `Fleet #${f.id} has not returned from its deep space mission near <b>${report.star.name}</b>. The crew is feared lost.`;
 					if ( report.remaining ) {
 						note = note + ' Our last communication with the team indicates they were on to something. Perhaps we can continue the tour with additional precautions in the future.';
 						}
@@ -857,10 +857,10 @@ export default class Game {
 					note = 'Success!';
 					// followup comment 
 					if ( report.remaining ) {
-						note = note + ' Expedition leaders indicate the presence of yet more interesting things to investigate and would like to continue the mission if possible.';
+						note = note + ` Expedition leaders at <b>${f.star.name}</b> indicate the presence of yet more interesting things to investigate and would like to continue the mission if possible.`;
 						}
 					else {
-						note = note + ' The team has done an exhaustive search of the area and found nothing more to investigate.';
+						note = note + ` The team at <b>${f.star.name}</b> has done an exhaustive search of the area and found nothing more to investigate.`;
 						}
 					}
 				this.app.AddNote(
@@ -983,7 +983,8 @@ export default class Game {
 			// UI hinting
 			this.galaxy.stars.forEach( s => {
 				s.settled_by_player = s.accts.has(this.myciv);
-				s.explored = s.accts.has(this.myciv); // fuzzy but ok for debug
+				// note: dont completely overwrite `explored` - this overwrites saved-game data when game
+				s.explored = s.explored || s.accts.has(this.myciv); // fuzzy but ok for debug
 				this.RecalcStarRanges();
 				this.RecalcFleetRanges();
 				});

@@ -176,19 +176,18 @@
 				<b>$</b>${app.game.myciv.resources.$|round:0} 
 				${app.game.myciv.resource_income.$ > app.game.myciv.resource_spent.$ ?'+':''}${app.game.myciv.resource_income.$ - app.game.myciv.resource_spent.$|round:0}
 			</span>
-			<span class="resources">
-				<span repeat.for="k of ['o','s','m','r','g','b','c','v','y']" class="${k}">${app.game.myciv.resources[k]|floor}<template containerless if.bind="app.game.myciv.resource_supply[k] &lt; 1.0">⚠️</template></span>
-<!-- 				<span repeat.for="k of app.game.myciv.resources|props" class="${k}">${app.game.myciv.resources[k]|floor}</span> -->
-			</span>
+			<div class="resources" style="display:inline-block;">
+				<span repeat.for="k of ['o','s','m','r','g','b','c','v','y']" class="${k}" show.bind="app.game.myciv.resources[k]">${app.game.myciv.resources[k]|floor}<span show.bind="app.game.myciv.resource_income[k] != 0">${app.game.myciv.resource_income[k] > 0 ? '+' : '-'}${app.game.myciv.resource_income[k]|floor}</span>${app.game.myciv.resource_supply[k] < 1.0 ? '⚠️' : ''}</span>
+			</div>
 			<span class="sci">💡 +${app.game.myciv.research_income|round:0}</span>
 			<span class="sci" if.bind="app.game.myciv.tech.current_project" click.delegate="app.SwitchMainPanel('tech')">
 				${( app.game.myciv.tech.current_project.rp / app.game.myciv.tech.current_project.node.rp) | percent}% of 	
 				${app.game.myciv.tech.current_project.node.name}  
 			</span>
-			<span>HAB: ${app.game.myciv.race.env.habitation}</span>
-			<span>ADAPT: ${app.game.myciv.race.env.adaptation}</span>
-			<span>MAXSPD: ${app.game.myciv.max_ship_speed}</span>
-			<span>MAXRANGE: ${app.game.myciv.ship_range}</span>
+			<span if.bind="app.options.debug">HAB: ${app.game.myciv.race.env.habitation}</span>
+			<span if.bind="app.options.debug">ADAPT: ${app.game.myciv.race.env.adaptation}</span>
+			<span if.bind="app.options.debug">MAXSPD: ${app.game.myciv.max_ship_speed}</span>
+			<span if.bind="app.options.debug">MAXRANGE: ${app.game.myciv.ship_range}</span>
 		</div>
 		
 		<div id="layout_ui_center">
@@ -360,9 +359,9 @@
 	
 			<!-- NEWS --> 
 			<div id="layout_ui_news" class="fadeIn" if.bind="!app.main_panel_mode">
-				<p><a href="#" class="button micro cool" click.delegate="app.ClearNotes()" if.bind="app.notes.length > 1">Clear Messages</a></p>
+				<p class="button_rack fill"><button class="micro cool" click.delegate="app.ClearNotes()" if.bind="app.notes.length > 1">Clear Messages</button></p>
 				<div repeat.for="note of app.notes" class="${note.type} trekIn" click.trigger="app.ClickNote(note)">
-					<a href="#" class="x" click.trigger="app.ClickNote(note,true,false)">🗙</a>
+					<button class="x" click.trigger="app.ClickNote(note,true,false)">🗙</button>
 					<h3 if.one-time="note.title">${note.title}</h3>
 					<div if.one-time="note.content" innerhtml.bind="note.content"></div>
 				</div>

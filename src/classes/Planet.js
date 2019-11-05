@@ -772,6 +772,9 @@ export default class Planet {
 		this.AddBuildQueueMakeworkProject('tradegoods');
 		this.UpdateOwnership();
 		this.established = App.instance.game.turn_num;
+		if ( !App.instance.options.soak && this.owner.is_player ) { 
+			App.instance.game.RecalcStarRanges();
+			}
 		}
 		
 	// Used to wipe the planet clean to make it ready for the next residents.
@@ -821,10 +824,14 @@ export default class Planet {
 		}
 				
 	BeConqueredBy( invader ) {
+		let previous_owner = this.owner;
 		this.Reset(true); // keep population
 		this.AddBuildQueueMakeworkProject('tradegoods'); 
 		this.owner = invader;
 		this.UpdateOwnership();
+		if ( !App.instance.options.soak && ( previous_owner.isplayer && this.star.accts.get(previous_owner).planets == 0 ) ) { 
+			App.instance.game.RecalcStarRanges();
+			}
 		// TODO: morale penalty?
 		}
 		
@@ -850,6 +857,9 @@ export default class Planet {
 		for ( let a of this.physattrs ) { 
 			if ( 'onSettle' in a ) a.onSettle(this);
 			}
+		if ( !App.instance.options.soak && ( this.owner.is_player && this.star.accts.get(this.owner).planets == 1 ) ) { 
+			App.instance.game.RecalcStarRanges();
+			}	
 		}
 		
 	ListUniqueGroundUnits() { 

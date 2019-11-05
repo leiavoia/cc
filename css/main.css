@@ -414,6 +414,7 @@ body,html {
 	}
 	
 #layout_ui_visor SPAN { margin-right: 1em; }
+#layout_ui_visor SPAN SPAN { margin-right: 0em; }
 #layout_ui_visor .turn { color: #FFF; }
 #layout_ui_visor .pop { color: #FF2; }
 #layout_ui_visor .income { color: #AEA; }
@@ -671,10 +672,10 @@ where each item has an icon and some text data.
 	cursor:pointer;
 	}
 	
-#layout_ui_news A.x {
+#layout_ui_news .x {
 	display: block;
 	float:right;
-/* 	height: 1em; */
+	line-height: 1em;
 	width: auto;
 	background-color: rgba(255,25,25,0.50);
 	color: #FFF;
@@ -682,7 +683,11 @@ where each item has an icon and some text data.
 	text-align:center;
 	padding: 0.1em;
 	text-decoration: none;
-	font-size:70%;
+	font-size:85%;
+	margin: 0 0 1em 1em;
+	padding: 0.35em 0.9em 0.45em 0.9em;
+	color: #FAA;
+	font-weight: bold;
 	}
 	
 #layout_ui_news P {
@@ -1401,6 +1406,11 @@ settled
 .mapobj_container.settled H2 {
 	text-shadow: 2px 2px 1px #000;
 	color: #FFF;
+	}
+.mapobj_container.settled.unexplored H3,
+.mapobj_container.settled.unexplored H2 {
+	text-shadow: none;
+	color: rgba(0,0,0,0.18);
 	}
 .mapobj_container.hidden {
 	display:none;
