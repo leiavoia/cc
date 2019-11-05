@@ -902,11 +902,13 @@ button.small, .button_rack.small A, .button_rack A.small, A.button.small, .butto
 	font-size: 80%; 
 	}
 	
-.button_rack.button_rack_fill {
+.button_rack.button_rack_fill,
+.button_rack.fill {
 	display:flex;
 	flex-flow: row wrap;
 	}
-.button_rack.button_rack_fill > * {
+.button_rack.button_rack_fill > *,
+.button_rack.fill > * {
 	flex: 1;
 	}
 	

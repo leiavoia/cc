@@ -76,6 +76,9 @@
 				</template>
 				<div repeat.for="z of (planet.size - planet.zoned)" class="zone empty" click.delegate="ClickEmptyZone()"></div>
 			</div>
+			<div class="button_rack fill" if.bind="planet.zones.length==1">
+				<button click.delegate="planet.ZonePlanet()">Auto-Zone Planet</button>
+			</div>
 			
 			<!-- zone detail -->
 			<div class="zone_detail wrapper ${sel_zone.type} ${sel_zone.key}" if.bind="planet.owner && sel_zone && !show_add_zone_panel">
