@@ -13,6 +13,7 @@
     "bluebird": "^3.5.5",
     "chart.js": "^2.8.0",
     "fastpriorityqueue": "^0.6.3",
+    "panzoom": "^8.4.1",
     "requirejs": "^2.3.6",
     "text": "github:requirejs/text#latest"
   },

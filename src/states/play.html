@@ -11,81 +11,126 @@
 		${app.options.nofx ? 'nofx' : ''}"
 	css="background-color: rgba(0,0,0,${1.0 - app.options.bg_bright});">
 		
-	<div id="layout_mapwrap" css="width: ${app.game.galaxy.width}px; height: ${app.game.galaxy.height}px;">
-		<div id="layout_map"  if.bind="!app.options.headless" class="${app.options.show_sectors ? 'sectors' : ''}" css="width: ${app.game.galaxy.width}px; height: ${app.game.galaxy.height}px">
-			<!-- RANGE LAYER HEADSUP -->
-			<div id="range_layer" if.bind="app.options.show_range || app.options.always_show_range">
-				<template repeat.for="star of app.game.galaxy.stars" containerless>
-					<div if.bind="star.settled_by_player" 
-						css="
-							width: ${app.game.myciv.ship_range*2}px; 
-							height: ${app.game.myciv.ship_range*2}px; 
-							left:${star.xpos - (app.game.myciv.ship_range)}px; 
-							top:${star.ypos - (app.game.myciv.ship_range)}px;
-							">		
-					</div>
-				</template>
-			</div>   
-			
-			<!-- STAGING POINT MAP INDICATOR -->
-			<template if.bind="app.options.show_staging_pts">
-				<div class="ai_caret staging_pt" repeat.for="star of app.game.myciv.ai.staging_pts" css="left:${star.xpos}px; top:${star.ypos}px;" ></div>
-			</template>
-			
-			<!-- DEBUG / AI SYMBOLS OVERLAY -->
-			<template if.bind="app.options.debug">
-				<!-- objectives -->
-				<template containerless if.bind="app.options.show_objectives">
-					<template repeat.for="o of app.game.myciv.ai.objectives" containerless>
-						<template containerless if.bind="o.type == 'guard'">
-							<div class="ai_caret neutral" css=" left:${o.target.xpos}px; top:${o.target.ypos}px; "></div>
-							<div if.bind="o.fleet && !o.fleet.killme && !o.fleet.star" class="ai_caret neutral small shared" css="left:${o.fleet.xpos}px; top:${o.fleet.ypos}px; "></div>
-						</template>
-						<template containerless if.bind="o.type == 'invade'">
-							<div class="ai_caret bad" css=" left:${o.target.star.xpos}px; top:${o.target.star.ypos}px; "></div>
-							<div if.bind="o.fleet && !o.fleet.killme && o.fleet.star" class="ai_caret bad shared" css="left:${o.fleet.star.xpos}px; top:${o.fleet.star.ypos}px; "></div>
-							<div if.bind="o.fleet && !o.fleet.killme && !o.fleet.star" class="ai_caret bad small" css="left:${o.fleet.xpos}px; top:${o.fleet.ypos}px; "></div>
-						</template>
-					</template>
-				</template>
-				<!-- threats -->
-				<template containerless if.bind="app.options.show_threats && app.game.myciv.ai.threats.size">
-					<template containerless repeat.for="[f,v] of app.game.myciv.ai.threats">
-						<div if.bind="!f.killme && f.star" class="ai_caret threat system" css="left:${f.star.xpos}px; top:${f.star.ypos}px; width:${v*5|sqrt}px; height:${v*5|sqrt}px; "></div>
-						<div if.bind="!f.killme && !f.star" class="ai_caret threat" css="left:${f.xpos}px; top:${f.ypos}px; width:${v*5|sqrt}px; height:${v*5|sqrt}px;"></div>
-					</template>
-				</template>
-				<!-- empire fast-check range bounding boxes -->
-				<template containerless if.bind="app.options.show_empire_box">
-					<template containerless repeat.for="civ of app.game.galaxy.civs">
-						<div if.bind="civ.planets.length" class="empire_box" css="
-							left:${civ.empire_box.x1}px; 
-							top:${civ.empire_box.y1}px;
-							width: ${civ.empire_box.x2 - civ.empire_box.x1}px;
-							height: ${civ.empire_box.y2 - civ.empire_box.y1}px;
-							border-color:${civ.color};
-							"></div>
-					</template>
-				</template>
-			</template>
-			
-			<div id="the_caret" class="caret ${caret.class}" if.bind="caret.obj && caret.x && caret.y" css="left:${caret.x}px; top:${caret.y}px;"></div>
-			
-			<!-- STARS -->
-			<div click.delegate="app.ClickStar(star,$event)" 
-				contextmenu.delegate="app.ClickStar(star,$event)" 
-				repeat.for="star of app.game.galaxy.stars" 
-				class="mapobj_container star_${star.color & oneTime} 
-				${star.settled ? 'settled' : ''} 
-				${star.in_range ? 'in_range' : 'out_range'} 
-				${star.explored || app.options.see_all ? 'explored' : 'unexplored'}" 
-				css="left:${star.xpos & oneTime}px; top:${star.ypos & oneTime}px;">
-				<h2 css="${star.ownership_title_css}" >${star.name}</h2>
-				<div if.bind="star.planets.length" class="planet_list"><!--  && (star.explored || app.options.see_all) -->
-					<a href="#" click.trigger="app.SwitchSideBar(p,$event)" repeat.for="p of star.planets" class="${p.settled ? 'settled' : ''}" css="color: ${p.ui_color};"><svg class="icon icon-nature"><use xlink:href="#icon-nature"></use></svg></a>
+	<div id="layout_map"  if.bind="!app.options.headless" class="${app.options.show_sectors ? 'sectors' : ''}" css="width: ${app.game.galaxy.width}px; height: ${app.game.galaxy.height}px">
+		<!-- RANGE LAYER HEADSUP -->
+		<div id="range_layer" if.bind="app.options.show_range || app.options.always_show_range">
+			<template repeat.for="star of app.game.galaxy.stars" containerless>
+				<div if.bind="star.settled_by_player" 
+					css="
+						width: ${app.game.myciv.ship_range*2}px; 
+						height: ${app.game.myciv.ship_range*2}px; 
+						left:${star.xpos - (app.game.myciv.ship_range)}px; 
+						top:${star.ypos - (app.game.myciv.ship_range)}px;
+						">		
 				</div>
-				<div if.bind="star.fleets.length" class="fleet_list">
-					<span class="clickable" repeat.for="f of star.fleets" click.trigger="app.SwitchSideBar(f,$event)" css="left:${f.xpos}px; top:${f.ypos}px; color: ${f.owner.color}; border-color: ${f.owner.color};">
+			</template>
+		</div>   
+		
+		<!-- STAGING POINT MAP INDICATOR -->
+		<template if.bind="app.options.show_staging_pts">
+			<div class="ai_caret staging_pt" repeat.for="star of app.game.myciv.ai.staging_pts" css="left:${star.xpos}px; top:${star.ypos}px;" ></div>
+		</template>
+		
+		<!-- DEBUG / AI SYMBOLS OVERLAY -->
+		<template if.bind="app.options.debug">
+			<!-- objectives -->
+			<template containerless if.bind="app.options.show_objectives">
+				<template repeat.for="o of app.game.myciv.ai.objectives" containerless>
+					<template containerless if.bind="o.type == 'guard'">
+						<div class="ai_caret neutral" css=" left:${o.target.xpos}px; top:${o.target.ypos}px; "></div>
+						<div if.bind="o.fleet && !o.fleet.killme && !o.fleet.star" class="ai_caret neutral small shared" css="left:${o.fleet.xpos}px; top:${o.fleet.ypos}px; "></div>
+					</template>
+					<template containerless if.bind="o.type == 'invade'">
+						<div class="ai_caret bad" css=" left:${o.target.star.xpos}px; top:${o.target.star.ypos}px; "></div>
+						<div if.bind="o.fleet && !o.fleet.killme && o.fleet.star" class="ai_caret bad shared" css="left:${o.fleet.star.xpos}px; top:${o.fleet.star.ypos}px; "></div>
+						<div if.bind="o.fleet && !o.fleet.killme && !o.fleet.star" class="ai_caret bad small" css="left:${o.fleet.xpos}px; top:${o.fleet.ypos}px; "></div>
+					</template>
+				</template>
+			</template>
+			<!-- threats -->
+			<template containerless if.bind="app.options.show_threats && app.game.myciv.ai.threats.size">
+				<template containerless repeat.for="[f,v] of app.game.myciv.ai.threats">
+					<div if.bind="!f.killme && f.star" class="ai_caret threat system" css="left:${f.star.xpos}px; top:${f.star.ypos}px; width:${v*5|sqrt}px; height:${v*5|sqrt}px; "></div>
+					<div if.bind="!f.killme && !f.star" class="ai_caret threat" css="left:${f.xpos}px; top:${f.ypos}px; width:${v*5|sqrt}px; height:${v*5|sqrt}px;"></div>
+				</template>
+			</template>
+			<!-- empire fast-check range bounding boxes -->
+			<template containerless if.bind="app.options.show_empire_box">
+				<template containerless repeat.for="civ of app.game.galaxy.civs">
+					<div if.bind="civ.planets.length" class="empire_box" css="
+						left:${civ.empire_box.x1}px; 
+						top:${civ.empire_box.y1}px;
+						width: ${civ.empire_box.x2 - civ.empire_box.x1}px;
+						height: ${civ.empire_box.y2 - civ.empire_box.y1}px;
+						border-color:${civ.color};
+						"></div>
+				</template>
+			</template>
+		</template>
+		
+		<div id="the_caret" class="caret ${caret.class}" if.bind="caret.obj && caret.x && caret.y" css="left:${caret.x}px; top:${caret.y}px;"></div>
+		
+		<!-- STARS -->
+		<div click.delegate="app.ClickStar(star,$event)" 
+			contextmenu.delegate="app.ClickStar(star,$event)" 
+			repeat.for="star of app.game.galaxy.stars" 
+			class="mapobj_container star_${star.color & oneTime} 
+			${star.settled ? 'settled' : ''} 
+			${star.in_range ? 'in_range' : 'out_range'} 
+			${star.explored || app.options.see_all ? 'explored' : 'unexplored'}" 
+			css="left:${star.xpos & oneTime}px; top:${star.ypos & oneTime}px;">
+			<h2 css="${star.ownership_title_css}" >${star.name}</h2>
+			<div if.bind="star.planets.length" class="planet_list"><!--  && (star.explored || app.options.see_all) -->
+				<a href="#" click.trigger="app.SwitchSideBar(p,$event)" repeat.for="p of star.planets" class="${p.settled ? 'settled' : ''}" css="color: ${p.ui_color};"><svg class="icon icon-nature"><use xlink:href="#icon-nature"></use></svg></a>
+			</div>
+			<div if.bind="star.fleets.length" class="fleet_list">
+				<span class="clickable" repeat.for="f of star.fleets" click.trigger="app.SwitchSideBar(f,$event)" css="left:${f.xpos}px; top:${f.ypos}px; color: ${f.owner.color}; border-color: ${f.owner.color};">
+					<svg class="icon icon-transport" if.bind="!f.owner.race.is_monster">
+						<use xlink:href="#icon-transport"></use>
+					</svg>
+					<span class="icon icon-transport" if.bind="f.owner.race.is_monster">✾</span>
+					<span if.bind="app.options.debug">${f.id}</span>
+				</span>	
+			</div>
+			<!-- AI DEBUG -->
+			<p if.bind="app.options.debug && star.settled_by_player"
+				style="box-sizing: border-box; margin-left: -200%; margin-top: -92px; width: 500%; text-align:center;" 
+				>
+				<span style="color: #AFA;">
+					VAL: ${star.accts.get(app.game.myciv).ai.value | round}
+					<b>(${star.accts.get(app.game.myciv).ai.value_norm | round:2})</b>
+				</span>&nbsp; 
+				<span style="color: #F66;">
+					THR: ${star.accts.get(app.game.myciv).ai.threat | round}
+					<b>(${star.accts.get(app.game.myciv).ai.threat_norm | round:2})</b>
+				</span>&nbsp;
+				<span style="color: #3CF;">
+					DEF: ${star.accts.get(app.game.myciv).ai.defense | round}
+					<b>(${star.accts.get(app.game.myciv).ai.defense_norm | round:2})</b>
+					<b if.bind="star.accts.get(app.game.myciv).ai.defense > star.accts.get(app.game.myciv).ai.threat">✔</b>
+				</span>&nbsp;
+				<span style="color: #8EF;">	
+					DefBal ${star.accts.get(app.game.myciv).ai.def_priority * app.game.myciv.ai.total_milval | round}
+					<b>(${star.accts.get(app.game.myciv).ai.def_priority | round:2})</b>
+				</span>
+			</p>
+		</div>
+		
+		<!-- ANOMALIES -->
+		<template containerless repeat.for="anom of app.game.galaxy.anoms">
+			<div if.bind="(anom.onmap && anom.vis_level <= app.game.myciv.vis_level) || app.options.see_all"
+				click.delegate="app.ClickStar(anom,$event)"  
+				contextmenu.delegate="app.ClickStar(anom,$event)" 
+				class="mapobj_container anom anom_${anom.type & oneTime} ${anom.settled ? 'settled' : ''} ${anom.in_range ? 'in_range' : 'out_range'} ${anom.explored || app.options.see_all ? 'explored' : 'unexplored'}" 
+				css="left:${anom.xpos & oneTime}px; top:${anom.ypos & oneTime}px;"
+				>
+				<h3>${(app.game.turn_num*0 + anom.ResearchIsCompleted(app.game.myciv)) ? anom.name : 'Anomaly' }</h3>
+				<p if.bind="app.options.debug">
+					${anom.onmap ? 'onmap' : 'deepspace'}<br/>
+					${anom.size} / v${anom.vis_level} / o${anom.order} / r${app.game.turn_num*0 + anom.AmountResearched(app.game.myciv)} / ${ anom.collected===null ? '-' : ( anom.collected ? '☒' : '☐' ) }
+				</p>
+				<div if.bind="anom.fleets.length" class="fleet_list">
+					<span class="clickable" repeat.for="f of anom.fleets" click.trigger="app.SwitchSideBar(f,$event)" css="left:${f.xpos}px; top:${f.ypos}px; color: ${f.owner.color}; border-color: ${f.owner.color};">
 						<svg class="icon icon-transport" if.bind="!f.owner.race.is_monster">
 							<use xlink:href="#icon-transport"></use>
 						</svg>
@@ -93,72 +138,25 @@
 						<span if.bind="app.options.debug">${f.id}</span>
 					</span>	
 				</div>
-				<!-- AI DEBUG -->
-				<p if.bind="app.options.debug && star.settled_by_player"
-					style="box-sizing: border-box; margin-left: -200%; margin-top: -92px; width: 500%; text-align:center;" 
-					>
-					<span style="color: #AFA;">
-						VAL: ${star.accts.get(app.game.myciv).ai.value | round}
-						<b>(${star.accts.get(app.game.myciv).ai.value_norm | round:2})</b>
-					</span>&nbsp; 
-					<span style="color: #F66;">
-						THR: ${star.accts.get(app.game.myciv).ai.threat | round}
-						<b>(${star.accts.get(app.game.myciv).ai.threat_norm | round:2})</b>
-					</span>&nbsp;
-					<span style="color: #3CF;">
-						DEF: ${star.accts.get(app.game.myciv).ai.defense | round}
-						<b>(${star.accts.get(app.game.myciv).ai.defense_norm | round:2})</b>
-						<b if.bind="star.accts.get(app.game.myciv).ai.defense > star.accts.get(app.game.myciv).ai.threat">✔</b>
-					</span>&nbsp;
-					<span style="color: #8EF;">	
-						DefBal ${star.accts.get(app.game.myciv).ai.def_priority * app.game.myciv.ai.total_milval | round}
-						<b>(${star.accts.get(app.game.myciv).ai.def_priority | round:2})</b>
-					</span>
-				</p>
 			</div>
-			
-			<!-- ANOMALIES -->
-			<template containerless repeat.for="anom of app.game.galaxy.anoms">
-				<div if.bind="(anom.onmap && anom.vis_level <= app.game.myciv.vis_level) || app.options.see_all"
-					click.delegate="app.ClickStar(anom,$event)"  
-					contextmenu.delegate="app.ClickStar(anom,$event)" 
-					class="mapobj_container anom anom_${anom.type & oneTime} ${anom.settled ? 'settled' : ''} ${anom.in_range ? 'in_range' : 'out_range'} ${anom.explored || app.options.see_all ? 'explored' : 'unexplored'}" 
-					css="left:${anom.xpos & oneTime}px; top:${anom.ypos & oneTime}px;"
-					>
-					<h3>${(app.game.turn_num*0 + anom.ResearchIsCompleted(app.game.myciv)) ? anom.name : 'Anomaly' }</h3>
-					<p if.bind="app.options.debug">
-						${anom.onmap ? 'onmap' : 'deepspace'}<br/>
-						${anom.size} / v${anom.vis_level} / o${anom.order} / r${app.game.turn_num*0 + anom.AmountResearched(app.game.myciv)} / ${ anom.collected===null ? '-' : ( anom.collected ? '☒' : '☐' ) }
-					</p>
-					<div if.bind="anom.fleets.length" class="fleet_list">
-						<span class="clickable" repeat.for="f of anom.fleets" click.trigger="app.SwitchSideBar(f,$event)" css="left:${f.xpos}px; top:${f.ypos}px; color: ${f.owner.color}; border-color: ${f.owner.color};">
-							<svg class="icon icon-transport" if.bind="!f.owner.race.is_monster">
-								<use xlink:href="#icon-transport"></use>
-							</svg>
-							<span class="icon icon-transport" if.bind="f.owner.race.is_monster">✾</span>
-							<span if.bind="app.options.debug">${f.id}</span>
-						</span>	
-					</div>
-				</div>
+		</template>
+		
+		<!-- FLEETS EN ROUTE -->
+		<template containerless repeat.for="f of app.game.galaxy.fleets" >
+			<!-- only display fleets en route -->
+			<template containerless if.bind="f.dest && (app.options.show_xtreme_fleets || !xtreme_zoom) && (app.options.see_all || f.in_range || f.owner == app.game.myciv)">
+				<!-- show destination indicator line -->
+				<div if.bind="!xtreme_zoom && app.options.see_all || f.owner == app.game.myciv || app.game.myciv.vis_level >= 1" class="dest_line" css="background-color: ${f.owner.color}; left:${f.xpos}px; top:${f.ypos}px; width: ${f.dest_line_length}px; transform:  rotate(${f.dest_line_angle}deg) translateY(-5px); "></div>
+				<!-- show fleet icon -->
+				<span class="fleet_en_route clickable" click.delegate="app.SwitchSideBar(f,$event)" css="left:${f.xpos}px; top:${f.ypos}px; color: ${f.owner.color}; border-color: ${f.owner.color};">
+					<svg class="icon icon-transport" if.bind="!f.owner.race.is_monster">
+						<use xlink:href="#icon-transport"></use>
+					</svg>
+					<span class="icon icon-transport" if.bind="f.owner.race.is_monster">✾</span>
+					<span if.bind="app.options.debug">${f.id}</span>
+				</span>
 			</template>
-			
-			<!-- FLEETS EN ROUTE -->
-			<template containerless repeat.for="f of app.game.galaxy.fleets" >
-				<!-- only display fleets en route -->
-				<template containerless if.bind="f.dest && (app.options.show_xtreme_fleets || !xtreme_zoom) && (app.options.see_all || f.in_range || f.owner == app.game.myciv)">
-					<!-- show destination indicator line -->
-					<div if.bind="!xtreme_zoom && app.options.see_all || f.owner == app.game.myciv || app.game.myciv.vis_level >= 1" class="dest_line" css="background-color: ${f.owner.color}; left:${f.xpos}px; top:${f.ypos}px; width: ${f.dest_line_length}px; transform:  rotate(${f.dest_line_angle}deg) translateY(-5px); "></div>
-					<!-- show fleet icon -->
-					<span class="fleet_en_route clickable" click.delegate="app.SwitchSideBar(f,$event)" css="left:${f.xpos}px; top:${f.ypos}px; color: ${f.owner.color}; border-color: ${f.owner.color};">
-						<svg class="icon icon-transport" if.bind="!f.owner.race.is_monster">
-							<use xlink:href="#icon-transport"></use>
-						</svg>
-						<span class="icon icon-transport" if.bind="f.owner.race.is_monster">✾</span>
-						<span if.bind="app.options.debug">${f.id}</span>
-					</span>
-				</template>
-			</template>
-		</div>		
+		</template>
 	</div>
 </div>
 

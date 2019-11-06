@@ -73,8 +73,8 @@
       ]
     },
     "options": {
-      "minify": "stage & prod",
-      "sourcemaps": "dev & stage"
+      "minify": "stage",
+      "sourcemaps": "stage"
     },
     "bundles": [
       {
@@ -115,11 +115,12 @@
           "aurelia-templating-binding",
           "text",
           "fastpriorityqueue",
-			{
-				"name": "chart.js",
-				"path": "../node_modules/chart.js/dist",
-				"main": "Chart.min.js"
-			},          
+          "panzoom",
+          {
+            "name": "chart.js",
+            "path": "../node_modules/chart.js/dist",
+            "main": "Chart.min.js"
+          },          
           {
             "name": "aurelia-templating-resources",
             "path": "../node_modules/aurelia-templating-resources/dist/amd",

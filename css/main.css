@@ -243,9 +243,8 @@ body,html {
 	overflow:hidden;
 	}
 
-/* map layer */
+/* map background layer */
 #layout_viewport { 
-	overflow:hidden; 
 	position:absolute; 
 	padding:0; 
 	margin:0; 
@@ -258,26 +257,15 @@ body,html {
 	transition:  background-color 0.75s ; /* for extreme zoom transition */
 	}
 
+/* darkening effect in strategic view */
 .xtreme_zoom #layout_viewport {
-	background-color: rgba(0,0,0,0.85) !important;
-/* 	background-color: #000; */
+	background-color: rgba(0,0,0,0.65) !important;
 	}
 	
-	
-#layout_mapwrap {
-	height: 2000px; 
- 	width: 2000px;  
-	position:absolute;	
-	overflow:hidden;
-/* 	perspective: 1px; */
-/* 	perspective-origin: 50% 50%; */
-	transform-origin: 50% 50%; 
-	
-	}
-	
+/* map container */
 #layout_map {
 	background: none;
-	position:relative;  
+	position:absolute;  
 	top:0;
 	left:0;
 	height: 2000px; 
@@ -285,6 +273,10 @@ body,html {
 	margin: 0;
 	padding: 0;
 	transform: scale(1.0);
+	}
+#layout_map.smooth_move {
+	transition: transform 0.5s;
+	transition-timing-function: linear;
 	}
 #layout_map.sectors {
 	background: url(../img/map/sectors.png) top left repeat; 
