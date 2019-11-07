@@ -764,15 +764,16 @@ export default class Game {
 				civs.push(c);
 				}
 			}
-		for ( let s of this.galaxy.stars ) { 
+		let stellar_objects = this.galaxy.stars.concat( this.galaxy.anoms );
+		for ( let s of stellar_objects ) { 
 			for ( let civ of civs ) { 
 				let range = civ.ship_range * civ.ship_range ; // NOTE: avoid square rooting.
 				// do i live here?
-				if ( s.Acct(civ) ) {
+				if ( s.objtype=='star' && s.Acct(civ) ) {
 					s.in_range = true;
 					break;
 					}
-				else {
+				else if ( s.objtype=='star' || (s.objtype=='anom' && s.onmap) ) {
 					s.in_range = false;
 					// use easy box test first
 					if ( utils.BoxPointIntersect( civ.empire_box, s.xpos, s.ypos ) ) {
