@@ -3,7 +3,7 @@ import {bindable} from 'aurelia-framework';
 import * as Signals from '../../util/signals';
 
 export class FleetDetailPane {
-	mode = 'fleet'; // 'fleet' for display only, 'awaiting_star_click' to be able to move fleet with rightclick.
+	mode = 'fleet'; // fleet, mission, attack, troopswap, colonize, invade
 	can_colonize = false;
 	can_send = false;
 	can_bomb = false;
@@ -13,6 +13,7 @@ export class FleetDetailPane {
 	mission_turns = 10;
 	selected_planet = null; // used for UI interaction
 	starclick_subsc = null;
+	waiting_for_starclick = false; // usually for move orders
 	turn_subscription = null;
 	playerHasLocalFleet = false;
 	ship_grid_packing = 1; // controls density of ships on UI. [1,2,4,9,16,25,36]
@@ -33,7 +34,11 @@ export class FleetDetailPane {
 		// listen for star clicks from the map
 		if ( !this.starclick_subsc ) { 
 			this.starclick_subsc = Signals.Listen('starclick', 
-				info => { if ( info.event.which > 1 ) { this.StarClickCallback(info.star) } }
+				info => { 
+					if ( info.event.which > 1 || this.waiting_for_starclick ) { 
+						this.StarClickCallback(info.star);
+						}
+					}
 				);
 			}
 		if ( !this.turn_subscription ) { 
@@ -56,7 +61,7 @@ export class FleetDetailPane {
 		};
 		
 	CaptureStarClicks() { 
-		this.mode = 'awaiting_star_click';
+		this.mode = 'fleet';
 		this.IndicateRange();
 		}
 	StopCaptureStarClicks() { 
@@ -65,7 +70,7 @@ export class FleetDetailPane {
 		
 	IndicateRange() {
 		let on = false;
-		if ( this.mode == 'awaiting_star_click' && this.can_send==2 
+		if ( this.mode == 'fleet' && this.can_send==2 
 			&& !( !this.fleet.star && this.fleet.dest ) ) {
 			on = true;
 			}
@@ -216,7 +221,7 @@ export class FleetDetailPane {
 					}
 				else if ( p.owner && !p.owner.is_player ) { 
 					this.can_bomb = 0; 
-					this.can_invade = 0; 
+					this.can_invade = 0;
 					}
 				else if ( p.owner && p.owner.is_player ) {
 					this.can_drop_troops = 0;
@@ -340,7 +345,7 @@ export class FleetDetailPane {
 		this.app.game.ProcessUIQueue();
 		}
 	ClickCancelChooseAttackTarget() {
-		this.mode = 'awaiting_star_click';
+		this.mode = 'fleet';
 		this.IndicateRange();
 		}
 	// for clicking attack fleet from star with a local player fleet
@@ -396,6 +401,11 @@ export class FleetDetailPane {
 			this.IndicateRange();
 			}
 		}
+	ClickMove() {
+		if ( this.can_send==2 ) {
+			this.waiting_for_starclick = !this.waiting_for_starclick;
+			}
+		}
 	ClickPlanetToInvade(p) { 
 		this.app.game.QueueGroundCombat( this.fleet, p );
 		this.app.game.ProcessUIQueue();	
@@ -411,7 +421,7 @@ export class FleetDetailPane {
 		
 	// closes the troop transfer subscreen
 	ClickAcceptTroopTransfer() { 
-		this.mode = 'awaiting_star_click';
+		this.mode = 'fleet';
 		this.IndicateRange();
 		}
 	// switches into troop transfer mode
@@ -504,12 +514,14 @@ export class FleetDetailPane {
 		
 	// returns false if no action taken (out of range, self-click, not routable, etc)
 	StarClickCallback( star ) { 
-		if ( this.mode == 'awaiting_star_click' && this.can_send==2 ) {
+		if ( this.mode == 'fleet' && this.can_send==2 ) {
+			// let app know we dont want it to change sidepanel
+			this.app.starclick_echo = true;
+			this.waiting_for_starclick = false;
 			// dont let fleet route to the planet its parked at
 			if ( !( star == this.fleet.star && !this.fleet.dest ) ) { 
 				// check if in range. TODO: possibly indicate to player out of range
 				if ( !this.fleet.owner.InRangeOf( star.xpos, star.ypos ) ) { return false; }
-				
 				// if we are sending all ships, just move the entire fleet.
 				// otherwise we have to split the fleet.
 				let total_ships = this.fleet.ships.length;

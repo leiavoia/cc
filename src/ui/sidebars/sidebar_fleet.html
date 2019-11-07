@@ -2,7 +2,7 @@
 <!--	<require from="./converters/percent"></require>
 	<require from="./converters/round"></require>-->
 	<!-- FLEET DISPLAY MODE -->
-	<div class="fleet" if.bind="mode == 'fleet' || mode == 'awaiting_star_click'">
+	<div class="fleet" if.bind="mode == 'fleet'">
 		<h2 css="color: ${fleet.owner.color};">${fleet.owner.name} Fleet #${fleet.id}</h2>
 		
 		<p style="font-size: 150%;" class="big" if.bind="fleet.mission">On Mission. Back in [${fleet.mission.time}] turns.</p>
@@ -70,22 +70,25 @@
 			</p>
 			
 			<!-- Fleet Actions -->
-			<p class="button_rack button_rack_fill">
-				<button click.delegate="ClickColonize()" if.bind="can_colonize" class="${can_colonize==2 ? 'alt' : 'ghost'}">COLONIZE</button>
-				<button click.delegate="ClickChooseMission()" if.bind="can_research" class="${can_research==2 ? 'alt' : 'ghost'}">MISSION</button>
-				<button click.delegate="ClickTransferTroops()" if.bind="can_pickup_troops || can_drop_troops" >TROOPS</button>
-				<button click.delegate="ClickAttack()" class="alt" if.bind="app.options.see_all && fleet.fp_remaining && fleet.star && fleet.star.fleets.length > 1"">ATTACK</button>
-				<button click.delegate="ClickBomb()" if.bind="can_bomb && app.options.see_all" class="${can_bomb==2 ? 'alt' : 'ghost'}">BOMBARD</button>
-				<button click.delegate="ClickInvade()" if.bind="can_invade && app.options.see_all" class="${can_invade==2 ? 'alt' : 'ghost'}" >INVADE</button>
+			<p class="button_rack fill" style="margin-bottom: 0.25em;">
+				<button click.delegate="ClickMove()" class="${can_send==2 ? (waiting_for_starclick ? 'bad' : '') : 'ghost'}">${waiting_for_starclick ? 'WHERE?' : 'MOVE'}</button>
+				<button click.delegate="ClickAttack()" class="${fleet.fp_remaining && fleet.star && fleet.star.fleets.length > 1 && !waiting_for_starclick ? '' : 'ghost'}">ATTACK</button>
+				<button click.delegate="ClickInvade()" class="${can_invade==2 && !waiting_for_starclick ? '' : 'ghost'}" >INVADE</button>
+			</p>
+			<p class="button_rack fill topless">
+				<button click.delegate="ClickColonize()" class="${can_colonize==2 && !waiting_for_starclick ? '' : 'ghost'}">COLONIZE</button>
+				<button click.delegate="ClickChooseMission()" class="${can_research==2 && !waiting_for_starclick ? '' : 'ghost'}">MISSION</button>
+				<button click.delegate="ClickTransferTroops()" class="${(can_pickup_troops || can_drop_troops) && !waiting_for_starclick ? '' : 'ghost'}" >TROOPS</button>
+				<!-- <button click.delegate="ClickBomb()" class="${can_bomb==2 ? '' : 'ghost'}">BOMBARD</button> -->
 			</p>
 			
 			<!-- Ship Selection --> 
 			<p class="button_rack button_rack_fill" if.bind="fleet.owner.is_player">
-				<button click.delegate="ClickClose()" class="" >CLOSE</button>
-				<button click.delegate="SelectAll()" class="${num_selected==fleet.ships.length ? 'ghost' : ''}">ALL</button>
-				<button click.delegate="SelectNone()" class="${num_selected ? '' : 'ghost'}">NONE</button>
-				<button click.delegate="SelectInvert()" class="${num_selected ? '' : 'ghost'}">INVERT</button>
-				<button click.delegate="ClickScrap()" class="${num_selected ? '' : 'ghost'}" >SCRAP</button>
+				<button click.delegate="ClickClose()" class="cool" >CLOSE</button>
+				<button click.delegate="SelectAll()" class="cool ${num_selected==fleet.ships.length ? 'ghost' : ''}">ALL</button>
+				<button click.delegate="SelectNone()" class="cool ${num_selected ? '' : 'ghost'}">NONE</button>
+				<button click.delegate="SelectInvert()" class="cool ${num_selected ? '' : 'ghost'}">INVERT</button>
+				<button click.delegate="ClickScrap()" class="cool ${num_selected ? '' : 'ghost'}" >SCRAP</button>
 <!-- 					<span>${num_selected}/${fleet.ships.length}</span> -->
 			</p>
 		</template>

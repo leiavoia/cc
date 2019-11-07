@@ -22,6 +22,7 @@ export class App {
 	state_changed_callback = null; // callback to use with ChangeState()
 	state_obj = null;
 	hilite_star = null;
+	starclick_echo = false; // kinda hacky: lets us know if a widget somewhere responded to a starclick
 	game = null;
 	notes = [];
 	options = {
@@ -189,14 +190,14 @@ export class App {
 	ClickStar( star, event ) { 
 		// deepspace anomalies not clickable. on map for debug only
 		if ( star.objtype == 'anom' && !star.onmap ) { return; }
-		// special action for right click
-		if ( event.which > 1 ) { 
-			Signals.Send('starclick',{star,event});
-			}
-		// regular left click
-		else {
+		this.starclick_echo = false;
+		// widgets that hear 'starclick' will set starclick_echo=true
+		Signals.Send('starclick',{star,event});
+		// special action for right click, used for fleet move orders
+		if ( !('which' in event && event.which !== 1) && !this.starclick_echo ) { 
 			this.SwitchSideBar( star );
 			}
+		this.starclick_echo = false;
 		}
 	// the extra event param here is required in order to be able to stop propogation.
 	// we need that to make little icons on top of stars work right.
