@@ -438,16 +438,20 @@ evenly space headers and body elements
 +----- .pane.flex -----+
 | <==== <header> ====> |
 | +----- <main> -----+ |
-| |                  | |
+| | [ DIV  ][  DIV ] | |
 | +------------------+ |
 +----------------------|
 */
+
 #layout_ui_main .pane.flex {
 	display:flex;
 	flex-flow: column nowrap;
-	height:100vh;
-	max-height: 100vh;
 	overflow: hidden;
+	height:100%;
+	max-height: 100%;
+	box-sizing: border-box;
+	padding-bottom: 0;
+	margin-bottom: 0;
 	}
 #layout_ui_main .pane.flex HEADER {
 	flex: 1;
@@ -456,14 +460,17 @@ evenly space headers and body elements
 #layout_ui_main .pane.flex MAIN {
 	flex: 20;
 	display: flex;
-	flex-flow: row nowrap;
+	flex-flow: row wrap;
 	align-items: stretch;
-/* 	max-height: 50%; */
+	max-height: 100%;
 	overflow: hidden;
+	padding-bottom: 1em;
 	}
 #layout_ui_main .pane.flex MAIN > * {
 	margin: 0 0 0 1em;
 	overflow-y: auto;
+	flex: 1 1 40%;
+	max-height: 100%;
 	}
 #layout_ui_main .pane.flex MAIN > *:first-child {
 	margin-left: 0;
@@ -471,7 +478,11 @@ evenly space headers and body elements
 #layout_ui_main .pane.flex MAIN > * > *:first-child {
 	margin-top: 0;
 	}
-
+#layout_ui_main .pane.flex MAIN > .fill {
+	flex: 1 1 100%;
+	margin-left: 0;
+	margin-top: 1em;
+	}
 	
 /* 
 ICONLISTS
@@ -744,15 +755,19 @@ TD.left, TH.left { text-align:left; }
 
 TABLE {
 	margin: 1em 0;
+	border-spacing: 0.25em;
+    border-collapse: collapse;
 }
 
 TABLE.full {
 	width:100%;
-	
 	}
-	
-TABLE.tight TD, TABLE.tight TH { padding: 0.15em; }
-TABLE.wide TD, TABLE.wide TH { padding-right: 0.5em; padding-left: 0.5em; }
+TABLE.separate { 
+    border-spacing: 0 0.35em;
+    border-collapse: separate;
+}	
+TABLE.tight TD, TABLE.tight TH { padding: 0.15em; border-spacing: 0.15em; }
+TABLE.wide TD, TABLE.wide TH { padding-right: 0.5em; padding-left: 0.5em; border-spacing: 0.5em; }
 	
 TABLE.borderless, TABLE.borderless TD, TABLE.borderless TH {
 	border:none;
@@ -762,7 +777,7 @@ TABLE.centered {
 	margin-left: auto;
 	margin-right: auto;
 	}
-	
+
 TABLE.env TD {
 	background-color: #000;
 	border:#666 1px solid;	
@@ -903,10 +918,13 @@ button.small, .button_rack.small A, .button_rack A.small, A.button.small, .butto
 .button_rack.fill {
 	display:flex;
 	flex-flow: row wrap;
+	margin-left: -0.125em;
+	margin-right: -0.125em;
 	}
 .button_rack.button_rack_fill > *,
 .button_rack.fill > * {
 	flex: 1;
+	margin: 0.125em;
 	}
 	
 button.right { float: right; margin: 0 0 1em 1em; }	
@@ -3660,6 +3678,72 @@ DIV.annoyometer .nub {
 	
 	
 	
+/* VICTORY PANE */	
+#victory_pane #recipes > .desc {
+	font-style:italic;
+	color: #AAA;
+}
+#victory_pane #recipes UL { 
+	list-style: none;
+	margin-left: 0;
+	padding-left: 0;
+}
+#victory_pane #recipes LI {
+	margin-left: 2.7em;
+	opacity: 0.35;
+	margin-bottom: 0.5em;
+}
+#victory_pane #recipes LI:before {
+	content:'☐';
+	font-size: 2.5em;
+	line-height: 1em;
+	margin-left: -1.1em;
+	float:left;
+}
+#victory_pane #recipes LI .name { 
+	font-weight: bold; 
+	font-size: 120%;
+	margin: 0;
+}
+#victory_pane #recipes LI .desc { 
+	margin: 0;
+}
+#victory_pane #recipes LI.gotcha {
+	color: #82e277;
+	opacity: 1.0;
+}
+#victory_pane #recipes LI.gotcha:before {
+	content:'🗹';
+}
+
+#victory_pane #ranks TABLE TD:first-child {
+	color:#FFF; 
+	text-shadow: 1px 1px 1px #000; 
+	border-radius: 0.25em;
+	font-weight:bold;
+	text-align:center;
+}
+#victory_pane #ranks TABLE TD:last-child {
+	width:95%;
+	text-align:right;
+	padding-right:0;
+}
+#victory_pane #ranks TABLE TD:last-child DIV {
+	height:1em; 
+	width: 0; 
+	background-color: #4BA5CC;
+	border-radius: 0.25em;
+	margin:0;
+	padding:0;
+}
+#victory_pane #ranks TR.is_player TD:last-child DIV {
+	background-color: #82e277;
+}
+#victory_pane #ranks TR.is_player TD:nth-child(2) {
+	color: #82e277;
+}
+
+
 	
 #layout_ui_main.title_screen {
 	background-size: cover;

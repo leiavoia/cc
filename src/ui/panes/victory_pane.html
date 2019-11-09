@@ -1,0 +1,64 @@
+<template containerless>
+	<div id="victory_pane" class="pane flex">
+	
+		<header>
+			<p style="float:right; margin: 0;">
+				<button class="big ${panel=='status' ? 'alt' : ''}" click.delegate="ClickStatus()" if.bind="app.options.graph_history">STATUS</button>
+				<button class="big ${panel=='history' ? 'alt' : ''}" click.delegate="ClickHistory()" if.bind="app.options.graph_history">HISTORY</button>
+				<button click.delegate="ClosePanel()" class="big bad">CLOSE</button>
+			</p>
+			<h1 if.bind="app.game.myciv.alive && !app.game.victory_achieved">Victory</h1>
+			<h1 if.bind="app.game.myciv.alive && app.game.victory_achieved">GAME OVER</h1>
+			<h1 if.bind="!app.game.myciv.alive" style="color:#D11;">🕱 U R DEAD</h1>
+		</header>
+		
+		<main>
+			
+			<div id="ranks" class="offset" show.bind="panel=='status'">
+				<h2>Civ Rankings</h2>
+				<p class="button_rack fill">
+					<button 
+						repeat.for="m of rank_modes" 
+						click.delegate="ChangeRankMode(m.key)"
+						class="${m.key == rank_mode ? 'alt' : ''} bold"
+					>${m.label}</button>
+				</p>
+				<table class="full wide separate">	
+					<tr repeat.for="row of civs" class="${row.civ.is_player ? 'is_player' : ''}">
+						<td css="background-color:${row.civ.color};">${row.civ.name}</td>
+						<td>${row.val|round}</td>
+						<td><div css="width:${row.pct*100}%;"></div></td>
+					</tr>
+				</table>
+			</div>
+			
+			<div id="recipes" class="offset" show.bind="panel=='status'">
+				<p if.bind="!recipes.length" class="buffer bold centered">You have met no victory objectives</p>
+				<template containerless repeat.for="r of recipes">
+					<h2 repeat.for="r of recipes">${r.name}</h2>
+					<p class="desc">${r.desc}</p>
+					<ul>
+						<li repeat.for="i of r.ingredients" class="${i.gotcha ? 'gotcha' : ''}">
+							<p class="name">${i.name}</p>
+							<p class="desc">${i.desc}</p>
+						</li>
+					</ul>
+				</template>
+			</div>
+			
+			<!-- graph -->
+			<div show.bind="app.options.graph_history && panel=='history'" class="fill offset"> 
+				<p class="button_rack fill topless">
+					<button 
+						repeat.for="m of modes" 
+						click.delegate="ChangeMode(m.key)"
+						class="${m.key == mode ? 'alt' : ''} bold"
+					>${m.label}</button>
+				</p>
+				<canvas id="myChart"></canvas>
+			</div>
+			
+		</main>
+		
+	</div>
+</template>

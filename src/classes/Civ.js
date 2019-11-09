@@ -183,7 +183,7 @@ export default class Civ {
 		return false;
 		}
 		
-	research = 0; // to split into cats later
+	research = 0; // all-time total
 	research_income = 0; // calculated per turn
 	
 	tech = {
@@ -242,6 +242,7 @@ export default class Civ {
 		
 	DoResearch( app ) { 
 		let income = this.research_income;
+		this.research = this.research_income; // add to total for record keeping
 		// pick something to work on if i dont already have one
 		this.AI_ChooseNextResearchProject();
 		let sanity_counter = 0;
