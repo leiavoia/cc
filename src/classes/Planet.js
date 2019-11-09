@@ -127,8 +127,10 @@ export default class Planet {
 			resource_estm:x.resource_estm
 			}) );
 		obj.physattrs = this.physattrs.map( x => x.key );
-		// [!]EXPERIMENTAL - remove history to save space;
-		delete(obj.acct_hist);
+		// optionally remove history to save space;
+		if ( !App.instance.options.graph_history ) { 
+			delete(obj.acct_hist);
+			}
 		return obj;
 		}
 		

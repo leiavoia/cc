@@ -64,7 +64,7 @@ export default class Civ {
 	color = '#FFFFFF';
 	color_rgb = [255,255,255];
 	
-	stat_history = [];
+	stat_history = []; // recording enabled by app.options.graph_history
 	
 	// diplomatic communication with other races is measured
 	// by comparing their overlapping line segments composed 
@@ -498,8 +498,10 @@ export default class Civ {
 		obj.tech.nodes_compl = Array.from( this.tech.nodes_compl.keys() ); // [!]FIXME	
 		obj.tech.current_project = this.tech.current_project ? this.tech.current_project.node.key : null;
 		obj.ai = this.ai.toJSON();
-		// [!]EXPERIMENTAL remove stat history to save space
-		delete(obj.stat_history);
+		// optionally remove stat history to save space
+		if ( !App.instance.options.graph_history ) { 
+			delete(obj.stat_history);
+			}
 		return obj;
 		}
 		
@@ -1266,7 +1268,9 @@ export default class Civ {
 			p.acct_total.$ = (p.acct_total.$||0) + p.econ.tax_rev;
 			p.owner.resource_income.$ += p.econ.tax_rev;
 			p.owner.resources.$ += p.econ.tax_rev;
-			p.RecordHistory();
+			if ( app.options.graph_history ) {
+				p.RecordHistory();
+				}
 			for ( let t of p.troops ) { 
 				this.econ.troop_maint += t.bp.cost.labor * 0.15; // HACK TODO tech and civ stats may change
 				}

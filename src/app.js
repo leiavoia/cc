@@ -48,6 +48,7 @@ export class App {
 		history_mode: 'power',
 		autoload_troops: true,
 		autosave: true,
+		graph_history: true,
 		// notifications to bug player with.
 		// you can also just set notify to boolean to en/disable all
 		notify: { 
