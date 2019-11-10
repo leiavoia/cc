@@ -848,7 +848,8 @@ BODY, SVG {
 	 background-color: #666 !important;
 }
 
-A#nav_button_turn { margin-top:auto; }
+/* A#nav_button_turn { margin-top:auto; } */
+A#nav_button_auto_turn { margin-top:auto; }
 
 
 

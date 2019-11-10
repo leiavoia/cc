@@ -425,8 +425,7 @@
 		<a href="#" title="Victory" id="nav_button_victory" click.delegate="app.SwitchMainPanel('victory')"><svg class="icon icon-black"><use xlink:href="#icon-black"></use></svg></a>
 		<a href="#" title="Options" id="nav_button_opt" click.delegate="app.SwitchMainPanel('options')" ><svg class="icon icon-gear"><use xlink:href="#icon-gear"></use></svg></a>
 		<!-- <a href="#" title="Help" id="nav_button_help"><svg class="icon icon-signs"><use xlink:href="#icon-signs"></use></svg></a> -->
-		<a href="#" title="Turbo Autoplay" id="nav_button_turn" click.delegate="app.game.ToggleAutoPlay(700)" css="color: ${app.game.autoplay ? '#AFA' : '#FFF' }"><svg class="icon icon-arrows-1"><use xlink:href="#icon-arrows-1"></use></svg></a>
-		<a href="#" title="Slow Autoplay" id="nav_button_turn" click.delegate="app.game.ToggleAutoPlay(10)" css="color: ${app.game.autoplay ? '#AFA' : '#FFF' }"><svg class="icon icon-arrows-1"><use xlink:href="#icon-arrows-1"></use></svg></a>
+		<a href="#" title="Auto-Play" id="nav_button_auto_turn" click.delegate="app.game.ToggleAutoPlay(app.options.soak?10:700)" css="color: ${app.game.autoplay ? '#AFA' : '#FFF' }"><svg class="icon icon-arrows-1"><use xlink:href="#icon-arrows-1"></use></svg></a>
 		<a href="#" title="End Turn" id="nav_button_turn" click.delegate="app.game.ProcessTurn()" css="color: ${app.game.processing_turn ? '#AFA' : '#FFF' }" ><svg class="icon icon-arrows"><use xlink:href="#icon-arrows"></use></svg></a>
 	</div>
 
