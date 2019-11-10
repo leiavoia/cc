@@ -2791,12 +2791,36 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 #planets_pane TABLE TH {
 	font-weight:bold;
 	}
-#planets_pane TABLE TD.m { color: #E68200; }
-#planets_pane TABLE TD.i { color: #FCF742; }
-#planets_pane TABLE TD.p { color: #C40000; }
-#planets_pane TABLE TD.s { color: #00AD23; }
-#planets_pane TABLE TD.t { color: #999999; }
-#planets_pane TABLE TD.f { color: #A8FF80; }
+#planets_pane TR.known {
+	cursor: pointer;
+}
+#planets_pane TR.known:hover {
+	background: rgba(75, 165, 204, 0.65);
+}
+#planets_pane TR.unknown:hover  {
+	background: rgba(128,128,128,0.35);
+}
+#planets_pane TR.known .name {
+	font-weight:bold;
+	text-decoration: underline;
+}
+#planets_pane TABLE TR.unknown TD.size,
+#planets_pane TABLE TR.unknown TD.hab,
+#planets_pane TABLE TR.unknown TD.resources,
+#planets_pane TABLE TR.unknown TD.energy,
+#planets_pane TABLE TR.unknown TD.pop,
+#planets_pane TABLE TR.unknown TD.maxpop,
+#planets_pane TABLE TR.unknown TD.spending,
+#planets_pane TABLE TR.unknown TD.taxrate,
+#planets_pane TABLE TR.unknown TD.income,
+#planets_pane TABLE TR.unknown TD.building,
+#planets_pane TABLE TR.foreign TD.pop,
+#planets_pane TABLE TR.foreign TD.maxpop,
+#planets_pane TABLE TR.foreign TD.spending,
+#planets_pane TABLE TR.foreign TD.taxrate,
+#planets_pane TABLE TR.foreign TD.income,
+#planets_pane TABLE TR.foreign TD.building
+ { opacity:0; }
 
 
 

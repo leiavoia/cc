@@ -1,58 +1,53 @@
 <template>
 	<div id="planets_pane" class="pane">
 	
-		<p style="float:right; margin: 0;"><button click.delegate="ClosePanel()" class="big">CLOSE</button></p>
+		<p style="float:right; margin: 0;"><button click.delegate="ClosePanel()" class="big bad">CLOSE</button></p>
 		
 		<h1>Planets</h1>
 		
 		<p>
-			<a href="#" class="button ${show_mine?'':'cool'}" click.delegate="show_mine=!show_mine">My Planets</a>
-			<a href="#" class="button ${show_foreign?'':'cool'}" click.delegate="show_foreign=!show_foreign">Foreign Planets</a>
-			<a href="#" class="button ${show_unclaimed?'':'cool'}" click.delegate="show_unclaimed=!show_unclaimed">Unclaimed Planets</a>
-			<b>${planets.length}</b> planets
+			<a href="#" class="button ${show_mine?'alt':''}" click.delegate="show_mine=!show_mine">My Planets</a>
+			<a href="#" class="button ${show_foreign?'alt':''}" click.delegate="show_foreign=!show_foreign">Foreign Planets</a>
+			<a href="#" class="button ${show_unclaimed?'alt':''}" click.delegate="show_unclaimed=!show_unclaimed">Unclaimed Planets</a>
+			<b>${planets.length}</b> known planets in range
 		</p>
 		
 		<table cellpadding="6" if.bind="planets.length">
 			<tr>
-				<th></th>
-				<th>Planet</th>
-				<th>Size</th>
-				<th>Environment</th>
-				<th>ATM</th>
-				<th>TMP</th>
-				<th>GRV</th>
-				<th>HAB</th>
-				<th>Resource</th>
-				<th>Energy</th>
-				<th>Pop</th>
-				<th>Tax%</th>
-				<th>Spend</th>
-				<th>Income</th>
+				<th class="clickable" click.delegate="SortBy('owner')">Owner</th>
+				<th class="clickable" click.delegate="SortBy('name')">Planet</th>
+				<th class="clickable" click.delegate="SortBy('size')">Size</th>
+				<th class="clickable" click.delegate="SortBy('hab')">Hab</th>
+				<th class="clickable" click.delegate="SortBy('resources')">Resource</th>
+				<th class="clickable" click.delegate="SortBy('energy')">Energy</th>
+				<th class="clickable" click.delegate="SortBy('pop')">Pop</th>
+				<th class="clickable" click.delegate="SortBy('popmax')">PopMax</th>
+				<th class="clickable" click.delegate="SortBy('taxrate')">Tax%</th>
+				<th class="clickable" click.delegate="SortBy('spending')">Spend</th>
+				<th class="clickable" click.delegate="SortBy('income')">Income</th>
+				<th class="clickable">Building</th>
 			</tr>
 			<template repeat.for="p of planets" containerless>
 				<tr if.bind="(show_mine && p.owner == myciv) || (show_unclaimed && !p.owner) || (show_foreign && p.owner != myciv && p.owner)"
-					click.delegate="ClickPlanet(p)" 
+					click.delegate="ClickPlanet(p)" class="${p.owner == myciv ? 'own' : 'foreign'} ${p.star.explored ? 'known' : 'unknown'}" 
 					>
-					<td><img if.bind="p.owner" class="flag" src.bind="p.owner.flag_img" style="max-height: 16px;" /></td>
-					<td><b css="color: ${p.owner ? p.owner.color : 'inherit'};">${p.name}</b></td>
-					<td class="i">${p.size}</td>
-					<td>${p.envDisplayName}</td>
-					<td>${p.atm}</td>
-					<td>${p.temp}</td>
-					<td>${p.grav}</td>
-					<td class="${p.Habitable(app.game.myciv.race) ? (p.Adaptation(app.game.myciv.race) < 0 ? 'alert' : 'good') : 'bad'}">${p.Adaptation(app.game.myciv.race)}</td>
-					
+					<!-- <td><img if.bind="p.owner" class="flag" src.bind="p.owner.flag_img" style="max-height: 16px;" /></td> -->
+					<td class="owner" css="color: ${p.owner ? p.owner.color : 'inherit'};">${p.owner ? p.owner.name : ''}</td>
+					<td class="name" css="color: ${p.owner ? p.owner.color : 'inherit'};">${p.name}</td>
+					<td class="size">${p.size}</td>
+					<td class="hab ${p.Habitable(app.game.myciv.race) ? (p.Adaptation(app.game.myciv.race) < 0 ? 'alert' : 'good') : 'bad'}">${p.Adaptation(app.game.myciv.race)}</td>
 					<td class="resources">
 						<template repeat.for="k of p.resources|props" containerless>
 							<span repeat.for="i of p.resources[k]" class="${k}"></span>
 						</template>
 					</td>
-					
-					<td>${p.energy}x</td>
-					<td class="i">${p.total_pop|round:1}</td>
-					<td class="t">${p.tax_rate|percent}</td>
-					<td class="t">${p.spending|percent}</td>
-					<td class="${p.acct_total.$ >= 0 ? 'good' : 'bad'}">${p.acct_total.$ >= 0 ? '+' : ''}${p.acct_total.$|round}</td>
+					<td class="energy">${p.energy}x</td>
+					<td class="pop">${p.total_pop|round:1}</td>
+					<td class="maxpop">${p.maxpop|round:1}</td>
+					<td class="taxrate">${p.tax_rate|percent}</td>
+					<td class="spending">${p.spending|percent}</td>
+					<td class="income ${p.acct_total.$ >= 0 ? 'good' : 'bad'}">${p.acct_total.$ >= 0 ? '+' : ''}${p.acct_total.$|round}</td>
+					<td class="building">${p.owner && p.owner.is_player && p.prod_q.length ? (p.prod_q[0].name + ' (' + p.prod_q[0].turns_left + ')') : ''}</td>
 				</tr>
 			</template>
 		</table>

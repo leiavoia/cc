@@ -19,7 +19,7 @@ export default class Planet {
 	ui_color = 'inherit'; // this way you can set defaults in CSS and override inline
 	star = null;
 	established = 0; // turn planet was settled or conquered
-	explored = false;
+	explored = false; // does what?
 	owner = null; // false indicates unowned.
 	name = 'UNKNOWN';
 	total_pop = 0;
