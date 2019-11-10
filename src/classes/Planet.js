@@ -834,6 +834,10 @@ export default class Planet {
 		if ( !App.instance.options.soak && ( previous_owner.isplayer && this.star.accts.get(previous_owner).planets == 0 ) ) { 
 			App.instance.game.RecalcStarRanges();
 			}
+		// this function can also be called from diplo trade deals, so must force "explored" if player
+		if ( this.owner.is_player ) {
+			this.star.explored = true;
+			} 
 		// TODO: morale penalty?
 		}
 		
