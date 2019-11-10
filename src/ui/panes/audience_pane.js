@@ -52,6 +52,10 @@ export class AudiencePane {
 		if ( this.data && 'message' in this.data ) {
 			this.their_text = `<p>${this.data.message}</p>`;
 			}
+		// check for where to send player after audience concludes
+		if ( this.data && 'on_exit' in this.data ) {
+			this.on_exit = this.data.on_exit;
+			}
 		}
 		
 	CreateTradeItemLists() { 
@@ -169,7 +173,7 @@ export class AudiencePane {
 	SetStandardOptions() { 
 		const acct = this.civ.diplo.contacts.get(this.app.game.myciv);
 		this.options = [];
-		if ( acct ) { 
+		if ( acct && this.comm > 0 ) { 
 			if ( acct.attspan >= 0.05 ) {
 				this.options.push({ text:"Let's make a deal.", func: () => this.StartTradeOffer() });
 				}
@@ -182,11 +186,6 @@ export class AudiencePane {
 			}
 		this.options.push({ text:"End audience.", func: () => this.Exit() });
 		};
-		
-			
-	bind( data ) {
-
-		}
 		
 	StartTradeOffer() {
 		this.CreateTradeItemLists();

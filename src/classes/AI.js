@@ -1379,7 +1379,7 @@ export class AIDiplomacyObjective extends AIObjective {
 			// respect contact range, communication ability, and current attention span
 			if ( acct.attspan < 0.2 || !acct.comm || !acct.in_range ) continue;
 			// consider an audience
-			if ( Math.random() > 0.065 ) continue;
+			if ( Math.random() > 0.04 ) continue;
 			
 			// if we are at war, let's see if we need to back out.
 			if ( acct.treaties.has('WAR') ) { 
@@ -1392,7 +1392,7 @@ export class AIDiplomacyObjective extends AIObjective {
 					let ceasefire_worth = c.AI_ScoreTradeItem(ceasefire,civ);
 					let ask = [ ceasefire ];
 					let give = [];
-					let items = civ.AI_ListItemsWantInTrade(c,false).shuffle();
+					let items = civ.AI_ListItemsWantInTrade(c,false).filter(i=>i.type!='planet').shuffle();
 					let total_score = 0;
 					for ( let i of items ) {
 						give.push(i);
@@ -1437,8 +1437,8 @@ export class AIDiplomacyObjective extends AIObjective {
 				// sometimes we want something specific.
 				// sometimes we just pitch something and see what we can get for it.
 				// sometimes we propose a fair trade on both sides.
-				let ask = civ.AI_ListItemsWantInTrade(c,false).shuffle().slice(0, utils.BiasedRandInt(0,3,1,0.5));
-				let give = c.AI_ListItemsWantInTrade(civ,false).shuffle().slice(0, utils.BiasedRandInt(0,3,1,0.5));
+				let ask = civ.AI_ListItemsWantInTrade(c,false).filter(i=>i.type!='planet').shuffle().slice(0, utils.BiasedRandInt(0,2,1,0.5));
+				let give = c.AI_ListItemsWantInTrade(civ,false).filter(i=>i.type!='planet').shuffle().slice(0, utils.BiasedRandInt(0,2,1,0.5));
 				if ( !ask.length && !give.length ) { continue; }
 				// remove duplicates;
 				let on_table = ask.map( i => i.type + i.label );

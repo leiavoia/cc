@@ -13,6 +13,7 @@ export default class GroundCombat {
 		this.max_log_length = 50;
 		this.stats = null; 
 		this.status = null;
+		this.planet = planet;
 		// set up teams
 		this.teams = [ 
 			{ 

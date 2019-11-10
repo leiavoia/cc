@@ -1172,6 +1172,7 @@ export default class Civ {
 		
 	// assumes that `civ` is the aggressor and we were attacked
 	DiplomaticEffectOfShipCombat( civ, shipcombat ) { 
+		if ( civ.race.is_monster ) { return; } // monsters dont have feelings
 		let outrage = 0.1;
 		const acct = this.diplo.contacts.get(civ);
 		// figure out if this was a small skirmish or an act of war.
@@ -1203,9 +1204,28 @@ export default class Civ {
 			if ( acct.lovenub == 0 ) { 
 				this.CreateTreaty( 'WAR', civ );
 				}
-			// audience / scolding
-			if ( civ.is_player ) { 
-				// [!]TODO 
+			// scold the player for attacking us, or make formal declaration of war
+			if ( civ.is_player || this.is_player ) { 
+				acct.attspan -= (acct.lovenub == 0) ? 1.0 : 0.5; // silent treatment
+				acct.attspan = Math.max(acct.attspan,0);
+				let starname = shipcombat.planet ? shipcombat.planet.star.name : null;
+				if ( !starname && shipcombat.teams[0].fleet.star ) { starname = shipcombat.teams[0].fleet.star.name; }
+				if ( !starname && shipcombat.teams[1].fleet.star ) { starname = shipcombat.teams[1].fleet.star.name; }
+				// we attacked them
+				let message = '';
+				if ( civ.is_player ) {
+					if ( acct.lovenub == 0 ) {
+						message = `Your attack on ${starname} was unfortunate... <i>for you</i>. Now your suffering will be legendary. To war!`;
+						}
+					else {
+						message = `The attack on our forces at ${starname} was hopefully some kind of accident. If it was not, you are leading our civilizations down the path to war.`;
+						}
+					}
+				// they attacked us and it led to war. surprise!
+				else if ( acct.lovenub == 0 ) {
+					message = `Now the game has truly begun. We will accept your surrender any time.`;
+					}
+				App.instance.game.QueueAudience( this, {message} );
 				}							
 			}						
 		}
@@ -1219,7 +1239,17 @@ export default class Civ {
 			this.CreateTreaty( 'WAR', civ ); // this also cancels all other treaties
 			// audience / scolding
 			if ( civ.is_player ) { 
-				// [!]TODO 
+				let message = `Invading ${groundcombat.planet.name} will be remembered as the greatest of your mistakes. Prepare for your demise. To war!`;
+				acct.attspan = 0; // silent treatment
+				App.instance.game.QueueAudience( this, {message} );
+				}
+			// surprise attack!					
+			else if ( this.is_player ) {
+				// TODO: this might also be a good opportunity to try extortion.
+				// Propose trade for planet in exchange for not going to war.
+				let message = `In a unanimous vote, we have decided this galaxy is too small for the both of us. The time for your extermination has arrived.`;
+				acct.attspan = 0; // silent treatment
+				App.instance.game.QueueAudience( this, {message} );
 				}					
 			}						
 		}
