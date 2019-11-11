@@ -14,8 +14,9 @@
 		
 		<table cellpadding="6" if.bind="planets.length">
 			<tr>
-				<th class="clickable" click.delegate="SortBy('owner')">Owner</th>
+				<th></th>
 				<th class="clickable" click.delegate="SortBy('name')">Planet</th>
+				<th class="clickable" click.delegate="SortBy('owner')">Owner</th>
 				<th class="clickable" click.delegate="SortBy('size')">Size</th>
 				<th class="clickable" click.delegate="SortBy('hab')">Hab</th>
 				<th class="clickable" click.delegate="SortBy('resources')">Resource</th>
@@ -31,9 +32,9 @@
 				<tr if.bind="(show_mine && p.owner == myciv) || (show_unclaimed && !p.owner) || (show_foreign && p.owner != myciv && p.owner)"
 					click.delegate="ClickPlanet(p)" class="${p.owner == myciv ? 'own' : 'foreign'} ${p.star.explored ? 'known' : 'unknown'}" 
 					>
-					<!-- <td><img if.bind="p.owner" class="flag" src.bind="p.owner.flag_img" style="max-height: 16px;" /></td> -->
-					<td class="owner" css="color: ${p.owner ? p.owner.color : 'inherit'};">${p.owner ? p.owner.name : ''}</td>
+					<td class="image"><div class="planet atm${p.atm} tmp${p.temp}" css="background-size: ${p.size|planetsizer}% auto;"></div></td>
 					<td class="name" css="color: ${p.owner ? p.owner.color : 'inherit'};">${p.name}</td>
+					<td class="owner" css="color: ${p.owner ? p.owner.color : 'inherit'};">${p.owner ? p.owner.name : ''}</td>
 					<td class="size">${p.size}</td>
 					<td class="hab ${p.Habitable(app.game.myciv.race) ? (p.Adaptation(app.game.myciv.race) < 0 ? 'alert' : 'good') : 'bad'}">${p.Adaptation(app.game.myciv.race)}</td>
 					<td class="resources">

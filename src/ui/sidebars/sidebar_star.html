@@ -10,7 +10,7 @@
 				<input type="text" value.bind="star.name" />
 				<a href="" click.delegate="ToggleNameEdit()">OK</a>
 			</p>
-			<div class="hilite_wrapper" repeat.for="p of star.planets"  click.delegate="app.SwitchSideBar(p)">
+			<div class="hilite_wrapper smallplanetbg" repeat.for="p of star.planets"  click.delegate="app.SwitchSideBar(p)">
 				<div class="planet atm${p.atm} tmp${p.temp} grav${p.grav}" css.one-time="PlanetSizeCSS(p)">
 					<img if.bind="p.owner" class="flag" src.bind="p.owner.flag_img" style="border:1px solid #666;" />
 					<!--<div class="env_box"> <div class="target"></div> </div>-->	

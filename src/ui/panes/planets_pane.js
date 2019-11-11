@@ -69,3 +69,11 @@ export class PlanetsPane {
 		
 		
 	}
+
+export class PlanetsizerValueConverter {
+	toView( n ) {
+		if ( n < 8 ) { n = 8; }
+		if ( n > 20 ) { n = 20; }
+		return n * 5;
+		}
+	}

@@ -1832,6 +1832,38 @@ DIV.planet.atm2.tmp4 { background-image: url(../img/planets/planet_10.png); }
 DIV.planet.atm3.tmp4 { background-image: url(../img/planets/planet_12.png); }
 DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 
+.smallplanetbg .planet.atm0.tmp0 { background-image: url(../img/planets/planet_20s.png); }
+.smallplanetbg .planet.atm1.tmp0 { background-image: url(../img/planets/planet_19s.png); }
+.smallplanetbg .planet.atm2.tmp0 { background-image: url(../img/planets/planet_24s.png); }
+.smallplanetbg .planet.atm3.tmp0 { background-image: url(../img/planets/planet_15s.png); }
+.smallplanetbg .planet.atm4.tmp0 { background-image: url(../img/planets/planet_33s.png); }
+.smallplanetbg .planet.atm0.tmp1 { background-image: url(../img/planets/planet_16s.png); }
+.smallplanetbg .planet.atm1.tmp1 { background-image: url(../img/planets/planet_11s.png); }
+.smallplanetbg .planet.atm2.tmp1 { background-image: url(../img/planets/planet_00s.png); }
+.smallplanetbg .planet.atm3.tmp1 { background-image: url(../img/planets/planet_17s.png); }
+.smallplanetbg .planet.atm4.tmp1 { background-image: url(../img/planets/planet_23s.png); }
+.smallplanetbg .planet.atm0.tmp2 { background-image: url(../img/planets/planet_01s.png); }
+.smallplanetbg .planet.atm1.tmp2 { background-image: url(../img/planets/planet_08s.png); }
+.smallplanetbg .planet.atm2.tmp2 { background-image: url(../img/planets/planet_31s.png); }
+.smallplanetbg .planet.atm3.tmp2 { background-image: url(../img/planets/planet_21s.png); }
+.smallplanetbg .planet.atm4.tmp2 { background-image: url(../img/planets/planet_35s.png); }
+.smallplanetbg .planet.atm0.tmp3 { background-image: url(../img/planets/planet_03s.png); }
+.smallplanetbg .planet.atm1.tmp3 { background-image: url(../img/planets/planet_27s.png); }
+.smallplanetbg .planet.atm2.tmp3 { background-image: url(../img/planets/planet_26s.png); }
+.smallplanetbg .planet.atm3.tmp3 { background-image: url(../img/planets/planet_36s.png); }
+.smallplanetbg .planet.atm4.tmp3 { background-image: url(../img/planets/planet_02s.png); }
+.smallplanetbg .planet.atm0.tmp4 { background-image: url(../img/planets/planet_06s.png); }
+.smallplanetbg .planet.atm1.tmp4 { background-image: url(../img/planets/planet_04s.png); }
+.smallplanetbg .planet.atm2.tmp4 { background-image: url(../img/planets/planet_10s.png); }
+.smallplanetbg .planet.atm3.tmp4 { background-image: url(../img/planets/planet_12s.png); }
+.smallplanetbg .planet.atm4.tmp4 { background-image: url(../img/planets/planet_22s.png); }
+
+.planet { 
+	background-repeat: no-repeat; 
+	background-position: 50% 50%; 
+	}
+
+
 /* resource colors */
 .resources .o { color:#AA7449; }
 .resources .s { color:#666666; }
@@ -2666,40 +2698,11 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	}
 	
 #layout_ui_side > .star .planet {
-	background: url(../img/planets/planet_00.png) 0% 0% no-repeat ;
 	background-color:none;
 	padding-left: 85px;
 	clear:both;
 	min-height: 75px;
 	}
-
-#layout_ui_side > .star .planet.atm0.tmp0 { background-image: url(../img/planets/planet_20s.png); }
-#layout_ui_side > .star .planet.atm1.tmp0 { background-image: url(../img/planets/planet_19s.png); }
-#layout_ui_side > .star .planet.atm2.tmp0 { background-image: url(../img/planets/planet_24s.png); }
-#layout_ui_side > .star .planet.atm3.tmp0 { background-image: url(../img/planets/planet_15s.png); }
-#layout_ui_side > .star .planet.atm4.tmp0 { background-image: url(../img/planets/planet_33s.png); }
-#layout_ui_side > .star .planet.atm0.tmp1 { background-image: url(../img/planets/planet_16s.png); }
-#layout_ui_side > .star .planet.atm1.tmp1 { background-image: url(../img/planets/planet_11s.png); }
-#layout_ui_side > .star .planet.atm2.tmp1 { background-image: url(../img/planets/planet_00s.png); }
-#layout_ui_side > .star .planet.atm3.tmp1 { background-image: url(../img/planets/planet_17s.png); }
-#layout_ui_side > .star .planet.atm4.tmp1 { background-image: url(../img/planets/planet_23s.png); }
-#layout_ui_side > .star .planet.atm0.tmp2 { background-image: url(../img/planets/planet_01s.png); }
-#layout_ui_side > .star .planet.atm1.tmp2 { background-image: url(../img/planets/planet_08s.png); }
-#layout_ui_side > .star .planet.atm2.tmp2 { background-image: url(../img/planets/planet_31s.png); }
-#layout_ui_side > .star .planet.atm3.tmp2 { background-image: url(../img/planets/planet_21s.png); }
-#layout_ui_side > .star .planet.atm4.tmp2 { background-image: url(../img/planets/planet_35s.png); }
-#layout_ui_side > .star .planet.atm0.tmp3 { background-image: url(../img/planets/planet_03s.png); }
-#layout_ui_side > .star .planet.atm1.tmp3 { background-image: url(../img/planets/planet_27s.png); }
-#layout_ui_side > .star .planet.atm2.tmp3 { background-image: url(../img/planets/planet_26s.png); }
-#layout_ui_side > .star .planet.atm3.tmp3 { background-image: url(../img/planets/planet_36s.png); }
-#layout_ui_side > .star .planet.atm4.tmp3 { background-image: url(../img/planets/planet_02s.png); }
-#layout_ui_side > .star .planet.atm0.tmp4 { background-image: url(../img/planets/planet_06s.png); }
-#layout_ui_side > .star .planet.atm1.tmp4 { background-image: url(../img/planets/planet_04s.png); }
-#layout_ui_side > .star .planet.atm2.tmp4 { background-image: url(../img/planets/planet_10s.png); }
-#layout_ui_side > .star .planet.atm3.tmp4 { background-image: url(../img/planets/planet_12s.png); }
-#layout_ui_side > .star .planet.atm4.tmp4 { background-image: url(../img/planets/planet_22s.png); }
-
-
 
 
 
@@ -2818,6 +2821,7 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 #planets_pane TABLE TR.unknown TD.taxrate,
 #planets_pane TABLE TR.unknown TD.income,
 #planets_pane TABLE TR.unknown TD.building,
+#planets_pane TABLE TR.unknown TD.image,
 #planets_pane TABLE TR.foreign TD.pop,
 #planets_pane TABLE TR.foreign TD.maxpop,
 #planets_pane TABLE TR.foreign TD.spending,
@@ -2826,7 +2830,14 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 #planets_pane TABLE TR.foreign TD.building
  { opacity:0; }
 
-
+#planets_pane .planet {
+	display: inline-block;
+	vertical-align:middle;
+	background-size: cover;
+	height: 45px;
+	width: 45px;
+	margin: -0.25em 0 -0.25em -0.25em;
+	}
 
 
 

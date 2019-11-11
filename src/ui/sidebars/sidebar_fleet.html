@@ -152,7 +152,7 @@
 	<div class="star star_${fleet.star.color}" if.bind="mode == 'colonize'">
 		<h2>Colonize ${fleet.star.name}</h2>
 		<p style="font-weight:bold; color: #FAA;" >Choose a planet to colonize:</p>
-		<div repeat.for="p of fleet.star.planets" class="hilite_wrapper" if.bind="!p.owner && p.Habitable(fleet.owner.race)" click.delegate="ChoosePlanetToColonize(p)">
+		<div repeat.for="p of fleet.star.planets" class="smallplanetbg hilite_wrapper smallplanetbg" if.bind="!p.owner && p.Habitable(fleet.owner.race)" click.delegate="ChoosePlanetToColonize(p)">
 			<div class="planet atm${p.atm} tmp${p.temp} grav${p.grav}" css.one-time="PlanetSizeCSS(p)">
 				<h3 css="color: ${p.ui_color};">${p.name}</h3>
 				<p class="env_label" style="font-size: 80%; text-align:left; float:none; width: 100%">${p.gravDisplayName}  ${p.envDisplayName}</p>
@@ -219,7 +219,7 @@
 			</p>
 			
 			<div repeat.for="p of fleet.star.planets" 
-				class="hilite_wrapper ${p==selected_planet ? 'selected' : ''}" 
+				class="smallplanetbg hilite_wrapper ${p==selected_planet ? 'selected' : ''}" 
 				if.bind="p.owner && p.owner == fleet.owner"
 				click.delegate="ClickPlanetForTroops(p)"
 				>
@@ -272,7 +272,7 @@
 			
 			<h2>Invade Which?</h2>
 			<div repeat.for="p of fleet.star.planets" 
-				class="hilite_wrapper ${p==selected_planet ? 'selected' : ''}" 
+				class="smallplanetbg hilite_wrapper ${p==selected_planet ? 'selected' : ''}" 
 				if.bind="p.owner && p.owner != fleet.owner"
 				click.delegate="ClickPlanetToInvade(p)"
 				>
