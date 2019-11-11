@@ -115,6 +115,14 @@ export class App {
 		
 		window.document.title = `Constellation Control v.${this.version}`;
 		this.LoadOptions();
+		// close-tab confirmation
+		if ( !this.options.soak ) { 
+			window.onbeforeunload = function (e) {
+				e = e || window.event;
+				if (e) { e.returnValue = 'Close your game?'; } // IE, FF<4.0
+				return 'Close your game?'; // For Safari
+				};
+			}
 		// debug shortcut
 		if ( this.options.debug ) {
 			this.game = new Game(this);
