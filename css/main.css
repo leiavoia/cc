@@ -469,7 +469,7 @@ evenly space headers and body elements
 #layout_ui_main .pane.flex MAIN > * {
 	margin: 0 0 0 1em;
 	overflow-y: auto;
-	flex: 1 1 40%;
+	flex: 1 1 auto;
 	max-height: 100%;
 	}
 #layout_ui_main .pane.flex MAIN > *:first-child {
@@ -1842,6 +1842,7 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 .resources .c { color:#11EEFF; }
 .resources .v { color:#EE11FF; }
 .resources .y { color:#FFFF00; }
+.resources .cash { color:rgb(129, 204, 69); }
 
 /* fun symbols we might use later: ◼ ● ◆ ▲ ▰ ⬣ ⬢ ⊕ ⏣ ✪ ▮ */
 .resources .o:before { content:'⬢'; }
@@ -1853,6 +1854,7 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 .resources .c:before { content:'⬢'; }
 .resources .v:before { content:'⬢'; }
 .resources .y:before { content:'⬢'; }
+.resources .cash:before { content:'$'; }
 
 /* hivis letters for helping the color blind */
 .colorblind .resources .o:before { content:'O'; }
@@ -1864,6 +1866,7 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 .colorblind .resources .c:before { content:'C'; }
 .colorblind .resources .v:before { content:'V'; }
 .colorblind .resources .y:before { content:'Y'; }
+.colorblind .resources .cash:before { content:'$'; }
 
 /* zoning */
 .planet .zones {

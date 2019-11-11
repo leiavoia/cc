@@ -1,39 +1,54 @@
-<template>
-	<div id="econ_pane" class="pane">
+<template containerless>
+	<div id="econ_pane" class="pane flex">
 	
-		<p style="float:right; margin: 0;"><button click.delegate="ClosePanel()" class="big">CLOSE</button></p>
+		<header>
+			<p style="float:right; margin: 0;"><button click.delegate="ClosePanel()" class="big bad">CLOSE</button></p>
+			<h1>Economy</h1>
+		</header>
 		
-		<h1>Economy</h1>
+		<main>			
+			<div class="offset">
+				<h2>Resources</h2>
+				<table class="right wide resources">
+					<tr>
+						<th></th>
+						<th>Reserve</th>
+						<th>Income</th>
+						<th>Expense</th>
+						<th>Net</th>
+					</tr>				
+					<tr repeat.for="k of resource_keys|props">
+						<th>
+							<span class="${k=='$'?'cash':k}" style="width:1.5em; display:inline-block;"></span>&nbsp;
+							${resource_keys[k]}
+						</th>
+						<td class="${app.game.myciv.resources[k] < 1 && app.game.myciv.resource_spent[k] > 0.001 ? 'bad' : (app.game.myciv.resources[k] > 0 ? '' : 'zero')}">${app.game.myciv.resources[k]|round}</td>
+						<td class="${!app.game.myciv.resource_income[k] ? 'zero' : 'good'}">${app.game.myciv.resource_income[k]|round}</td>
+						<td class="${!app.game.myciv.resource_spent[k] ? 'zero' : 'bad'}">${app.game.myciv.resource_spent[k]|round}</td>
+						<td class="${!(app.game.myciv.resource_income[k] - app.game.myciv.resource_spent[k]) ? 'zero' : ( app.game.myciv.resource_income[k] - app.game.myciv.resource_spent[k] < 0 ? 'bad' : 'good')}">${app.game.myciv.resource_income[k] - app.game.myciv.resource_spent[k]|round}</td>
+					</tr>
+				</table>
+			</div>
+			
+			<div class="offset data ">
+				<h2>Zone Production</h2>
+				<table class="right wide">		
+					<tr repeat.for="k of zoneprod_keys|props">
+						<th>${zoneprod_keys[k]}&nbsp;</th>
+						<td class="${!app.game.myciv.resource_income[k] ? 'zero' : 'good'}">${app.game.myciv.resource_income[k]|round}</td>
+					</tr>
+				</table>
+					
+				<h2>Cash Expenses</h2>
+				<table class="right wide">	
+					<tr repeat.for="k of spending_cats|props">
+						<th>${spending_cats[k]}&nbsp;</th>
+						<td>${app.game.myciv.econ.subcat_spending[k] / app.game.myciv.resource_spent.$ |percent}%</td>
+						<td>(${app.game.myciv.econ.subcat_spending[k]|round})</td>
+					</tr>
+				</table>				
+			</div>
+		</main>
 		
-		<p class="button_rack button_rack_fill">
-			<button 
-				repeat.for="m of modes" 
-				click.delegate="ChangeMode(m.key)"
-				class="${m.key == mode ? 'alt' : ''} bold"
-			>${m.label}</button>
-		</p>
-		
-		<canvas id="myChart"></canvas>
-		
-		<table if.bind="app.options.debug">
-			<tr>
-				<th>Power</th>
-				<th>Planets</th>
-				<th>Ships</th>
-				<th>Military</th>
-				<th>Research</th>
-				<th>Research/turn</th>
-				<th>Techs</th>
-			</tr>
-			<tr repeat.for="i of app.game.myciv.stat_history">
-				<td>${i.power|round}</td>
-				<td>${i.planets}</td>
-				<td>${i.ships}</td>
-				<td>${i.milval}</td>
-				<td>${i.research}</td>
-				<td>${i.research_income}</td>
-				<td>${i.techs}</td>
-			</tr>
-		</table>
 	</div>
 </template>
