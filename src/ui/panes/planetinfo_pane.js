@@ -3,6 +3,8 @@ import { Chart } from 'chart.js';
 
 export class PlanetinfoPane {
 
+	now_building = null; // object
+	
 	ship_dest_opts = [];
 	// chart = null;
 	// datasets = [];
@@ -41,16 +43,20 @@ export class PlanetinfoPane {
 				}
 			}
 			
+		// next building project
+		this.now_building = this.planet.prod_q[0]; 
+		
 		// graphing
 		// this.BuildDataset();
-		this.turn_subscription = Signals.Listen( 'turn', data => this.AddTurn() );			
+		this.turn_subscription = Signals.Listen( 'turn', data => this.TurnUpdate() );			
 		}
 		
 	 ClosePanel() {
 		this.app.CloseMainPanel();
 		}
 		
-	AddTurn( data ) { 
+	TurnUpdate( data ) { 
+		this.now_building = this.planet.prod_q[0]; 
 	    // if ( !this.datasets.length ) { this.BuildDataset(); }
 	    // if ( !this.chart ) { this.AttachGraph(); }
 		// this.chart.data.labels.push(this.chart.data.labels.length+1);
@@ -145,8 +151,5 @@ export class PlanetinfoPane {
 	unbind() { 
 		this.turn_subscription.dispose();
 		}
-				
-		
-		
-				
+	
 	}

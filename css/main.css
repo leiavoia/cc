@@ -1624,6 +1624,9 @@ invisible when unexplored, dim when explored */
 		);*/
 	}
 
+#layout_ui_side .planet .cost > SPAN { margin-right: 0.55em; }
+#layout_ui_side .zone_detail .resources > SPAN { margin-right: 0.55em; }
+
 #layout_ui_side > .planet > IMG {
 	float:right;
 	height: 30px;
@@ -1875,6 +1878,11 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 .resources .v { color:#EE11FF; }
 .resources .y { color:#FFFF00; }
 .resources .cash { color:rgb(129, 204, 69); }
+.resources .labor { color:rgb(228, 119, 18); }
+.resources .ship { color:rgb(196, 28, 28); }
+.resources .def { color:rgb(133, 104, 77); }
+.resources .res { color:rgb(18, 102, 228); }
+.resources .hou { color:rgb(18, 168, 228); }
 
 /* fun symbols we might use later: ◼ ● ◆ ▲ ▰ ⬣ ⬢ ⊕ ⏣ ✪ ▮ */
 .resources .o:before { content:'⬢'; }
@@ -1887,6 +1895,13 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 .resources .v:before { content:'⬢'; }
 .resources .y:before { content:'⬢'; }
 .resources .cash:before { content:'$'; }
+.resources .labor:before { content:'🔨'; }
+.resources .ship:before { content:'🚀'; }
+.resources .def:before { content:'🛡'; }
+.resources .res:before { content:'💡'; }
+.resources .hou:before { content:'🏠'; } /*⌂*/
+/* .resources .esp:before { content:'🔨'; } */
+/* .resources .gov:before { content:'🔨'; } */
 
 /* hivis letters for helping the color blind */
 .colorblind .resources .o:before { content:'O'; }
@@ -1898,7 +1913,6 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 .colorblind .resources .c:before { content:'C'; }
 .colorblind .resources .v:before { content:'V'; }
 .colorblind .resources .y:before { content:'Y'; }
-.colorblind .resources .cash:before { content:'$'; }
 
 /* zoning */
 .planet .zones {
@@ -2871,13 +2885,7 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	flex: 1;
 	}
 	
-#planetinfo_pane .content SPAN {
-	display: block;
-	margin: 0.2em 0;
-	line-height: 1.0em;
-	}
-
-
+#planetinfo_pane .resources > SPAN { margin-right: 0.55em; }
 
 	
 	

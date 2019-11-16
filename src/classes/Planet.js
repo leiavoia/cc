@@ -371,7 +371,7 @@ export default class Planet {
 			name: bp.name,
 			cost: bp.cost,
 			qty: 1,
-			turns_left: ( Math.min( 999, Math.ceil( bp.cost.labor/this.output_rec.ship ) ) || '-'),
+			turns_left: ( Math.min( 999, Math.ceil( bp.cost.labor/(this.output_rec.ship||0.001) ) ) || '-'),
 			pct: 0
 			};
 		this.prod_q.push(item);
@@ -387,7 +387,7 @@ export default class Planet {
 			name: bp.name,
 			cost: bp.cost,
 			qty: 1,
-			turns_left: ( Math.min( 999, Math.ceil( bp.cost.labor/this.output_rec.def ) ) || '-'),
+			turns_left: ( Math.min( 999, Math.ceil( bp.cost.labor/(this.output_rec.def||0.001) ) ) || '-'),
 			pct: 0
 			};
 		this.prod_q.push(item);
@@ -577,7 +577,7 @@ export default class Planet {
 				// update the stats
 				else {
 					let maxlabor = item.type=='ship' ? this.output_rec.ship : this.output_rec.def;
-					item.turns_left = Math.min( 999, Math.ceil( ( 1 - item.pct ) / (maxlabor/item.cost.labor) ) ); // assumes full resource availability
+					item.turns_left = Math.min( 999, Math.ceil( ( 1 - item.pct ) / ((maxlabor/item.cost.labor)||1) ) ); // assumes full resource availability
 					}
 					
 				// exhausted?

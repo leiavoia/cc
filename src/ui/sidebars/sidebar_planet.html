@@ -34,16 +34,16 @@
 			<p class="env_label">${planet.gravDisplayName} ${planet.envDisplayName}</p>
 			<p if.bind="planet.owner && !planet.owner.alive" style="color:#D11;font-size:100px;line-height:1em;padding:0;text-align:center">🕱</p>
 			<div class="size">
-				<span class="pop" if.bind="planet.owner">${planet.total_pop|round} / ${planet.maxpop|round}<br/><span class="pop">POPULATION</span></span>
+				<span class="pop" if.bind="planet.owner">${planet.total_pop|ceil} / ${planet.maxpop|ceil}<br/><span class="pop">POPULATION</span></span>
 				<span class="size">${planet.size}<br/><span class="size">SIZE</span></span>
 				<span class="en">${planet.energy}<br/><span class="en">ENERGY</span></span>			
 				<span class="${habitable ? (habitat < 0 ? 'alert' : 'good') : 'bad'}">	
 					${(habitat >= 0 ? '+' : '')}${habitat}<br /> 
 					<span class="">${habitable ? "HABITABILITY" : "UNINHABITABLE"}</span>
 				</span>
-				<span if.bind="planet.owner">
+				<!-- <span if.bind="planet.owner">
 					<img src.bind="planet.morale | moraleToMoodIcon"  style="width: 1.1em; height: 1.1em;" /><br/>
-				</span>
+				</span> -->
 			</div>
 			<div class="resources">
 				<template repeat.for="k of planet.resources|props" containerless>
@@ -86,15 +86,15 @@
 					<p class="name">${sel_zone.name}</p>
 					<p class="type">${sel_zone.type}</p>
 					<p class="desc">${sel_zone.desc}</p>
-					<p class="stats">	
+					<p class="stats resources">	
 						Size: <b>${sel_zone.size}</b>
 						<br/>
-						Matures In: <b>${(1-sel_zone.val) / (1/(sel_zone.gf * planet.zone_hab_mod)) | ceil} turns</b> &nbsp;
+						Matures In: <b>${(app.game.turn_num*0) + (1-sel_zone.val) / (1/(sel_zone.gf * planet.zone_hab_mod)) | ceil} turns</b> &nbsp;
 						<br/>
 						<!-- could also use zone.resource_rec data here -->
-						Costs [<span class="k" repeat.for="k of sel_zone.resource_estm|props">${k|uppercase}:<b>${sel_zone.resource_estm[k]|round:1}</b>&nbsp;</span>]
+						Costs: <span class="${k=='$'?'cash':k}" repeat.for="k of sel_zone.resource_estm|props">${sel_zone.resource_estm[k]|round:1}</span>
 						<br/>
-						Output [<span class="k" repeat.for="k of sel_zone.output_rec|props">${k|uppercase}:<b>${sel_zone.output_rec[k]|round:1}</b>&nbsp;</span>]
+						Output: <span class="${k=='$'?'cash':k}" repeat.for="k of sel_zone.output_rec|props">${sel_zone.output_rec[k]|round:1}</span>
 					</p>
 					<p if.bind="sel_zone.insuf" class="nag bad">⚠️ Zone in Decline</p>
 				</div>
@@ -119,13 +119,13 @@
 						<p class="name">${zone_to_add.name}</p>
 						<p class="type">${zone_to_add.type}</p>
 						<p class="desc">${zone_to_add.desc}</p>
-						<p class="stats">	
+						<p class="stats resources">	
 							Size: <b>${zone_to_add.size}</b><br/>
 							Matures In: <b>${zone_to_add.gf * planet.zone_hab_mod | ceil} turns</b> &nbsp;
 							<br/>
-							Costs [<span class="k" repeat.for="k of zone_to_add.inputs|props">${k|uppercase}:<b>${zone_to_add.inputs[k]|round:1}</b>&nbsp;</span>]
+							Costs: <span class="${k=='$'?'cash':k}" repeat.for="k of zone_to_add.inputs|props">${zone_to_add.inputs[k]|round:1}</span>
 							<br/>
-							Output [<span class="k" repeat.for="k of zone_to_add.outputs|props">${k|uppercase}:<b>${zone_to_add.outputs[k]|round:1}</b>&nbsp;</span>]
+							Output: <span class="${k=='$'?'cash':k}" repeat.for="k of zone_to_add.outputs|props">${zone_to_add.outputs[k]|round:1}</span>
 						</p>
 					</div>
 					<div>
@@ -138,10 +138,10 @@
 			</div>
 			
 			<!-- Colony Data -->
-			<div class="data wrapper" if.bind="planet.owner">
-				<span class="${k}" repeat.for="k of ['$','o','s','m','r','g','b','c','v','y','ship','def','esp','res','def','gov','hou']"
+			<div class="data wrapper resources" if.bind="planet.owner">
+				<span class="${k=='$'?'cash':k}" repeat.for="k of ['$','o','s','m','r','g','b','c','v','y','ship','res','def','hou']"
 					style="width: 23%; margin: 0.5%; padding: 0.5%; border-radius:2px; display: inline-block; height:0.8em;line-height:0.8em;">
-					${k|uppercase}:
+					<!-- ${k|uppercase}: -->
 					<b style="color:#D11;" if.bind="planet.resource_rec[k] > 0">-${planet.resource_rec[k]|ceil}</b>
 					<b style="color:#AEA;" if.bind="planet.output_rec[k] > 0">+${planet.output_rec[k]|ceil}</b>
 				</span>
@@ -152,15 +152,19 @@
 					GDP: <b>${planet.econ.GDP|round:1}</b>
 				</span>				
 				<span class="" style="width: 23%; margin: 0.5%; padding: 0.5%; border-radius:2px; display: inline-block; height:0.8em;line-height:0.8em;">
-					PCI: <b>${planet.econ.PCI|round:1}</b> ➞ <b>${planet.econ.target_PCI|round:1}</b>
+					PCI: <b>${planet.econ.PCI|round:1}</b><!-- ➞ <b>${planet.econ.target_PCI|round:1}</b> -->
 				</span>				
-				<span class="" style="width: 23%; margin: 0.5%; padding: 0.5%; border-radius:2px; display: inline-block; height:0.8em;line-height:0.8em;">
+				<!-- <span class="" style="width: 23%; margin: 0.5%; padding: 0.5%; border-radius:2px; display: inline-block; height:0.8em;line-height:0.8em;">
 					Morale: <b>${planet.morale|percent}%</b>
-				</span>
+				</span> -->
 			</div>
 			
 			<div class="wrapper" if.bind="planet.owner">
-				<h3>Now Building:</h3>
+				<!-- <h3>Now Building:</h3> -->
+				<!-- hacky way of dodging aurelia binding problem to hilite only first element -->
+				<template containerless repeat.for="now_building of planet.prod_q">
+					<p if.bind="$index===0" class="marginless resources cost">Remaining: <span class="${k}" repeat.for="k of now_building.cost|props">${(1-now_building.pct)*now_building.cost[k]|ceil}</span></p>
+				</template>
 				<table class="prod_queue">
 					<tr repeat.for="item of planet.prod_q">
 						<td>${item.turns_left >= 999 ? '-' : item.turns_left}</td>
@@ -194,8 +198,8 @@
 				</p>
 			</div>
 			
-			<div class="defenses wrapper" if.bind="planet.owner">
-				<h3>Defenses:</h3>
+			<div class="defenses wrapper" if.bind="planet.owner && planet.troops.length">
+				<!-- <h3>Defenses:</h3> -->
 				<div repeat.for="[bp,count] of planet.ListUniqueGroundUnits()" style="display:inline-block;">
 					<img src.bind="bp.img" title.bind="bp.name"
 						style="

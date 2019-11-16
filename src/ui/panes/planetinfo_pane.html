@@ -2,17 +2,13 @@
 <!--	<require from="./converters/percent"></require>
 	<require from="./converters/round"></require>-->
 
-	<div id="planetinfo_pane" class="pane">
-		<p style="float:right;"><a href="#"  click.delegate="ClosePanel()" class="button big">CLOSE</a></p>
-		<h1>${planet.name}</h1>
-					
-		<div class="flexwrap" if.bind="planet.owner">
+	<div id="planetinfo_pane" class="pane flex">
+		<header>
+			<p style="float:right;"><a href="#"  click.delegate="ClosePanel()" class="button big bad">CLOSE</a></p>
+			<h1>${planet.name}</h1>
+		</header>
 			
-			<!-- <div class="content acct_graph" style="min-width: 85%;">
-				<h2>Accounting History</h2>
-				<canvas id="acct_graph"></canvas>
-			</div> -->
-		
+		<main class="" if.bind="planet.owner">
 			<div class="content data" style="min-width: 45%;">
 				<h2>Accounting</h2>
 				<table class="small wide">
@@ -48,39 +44,29 @@
 					</tr>
 				</table>		
 			</div>
-			
-			<!-- <div class="content data">
-				<h2>Summary</h2>
-				<span>POP: ${planet.total_pop|round:1}</span>
-			</div> -->
-			
-			<div class="content financial">
-				<h2>Financial</h2>
-				<span>Tax Rate: ${(planet.tax_rate)|percent}%</span>
-				<span>Tax Income: ${(planet.econ.tax_rev)|round}</span>
-				<br>
-				<span>GDP: ${planet.econ.GDP|round:1}</span>
-				<span>PCI: ${planet.econ.PCI|round:1} ➞ ${planet.econ.target_PCI|round:1} </span>
-			</div>
 						
-			<!--
-				
 			<div class="content production">
 				<h2>Production</h2>
-				<span>Currently Building: ${planet.prod_q[0].name} FIXME - AURELIA BINDING PROBLEM</span>
-				<span>Complete In: ${planet.prod_q[0].turns_left} turns</span>
+				<p>Currently Building: ${now_building.name}</p>
+				<p>Completed: ${now_building.pct|percent}% (<b>${now_building.turns_left}</b> more turns!)</p>
+				<p class="resources">Remaining: <span class="${k}" repeat.for="k of now_building.cost|props">${(1-now_building.pct)*now_building.cost[k]|ceil}/${now_building.cost[k]}</span></p>
+				
 				<p><b>When ships are completed, send them to:</b></p>
 				<select value.bind="planet.ship_dest">
 					<option repeat.for="option of ship_dest_opts" model.bind="option.value">${option.name}</option>
 				</select>
 			</div>
 			
-			-->
-			
-		</div>
+			<!-- <div class="content financial">
+				<h2>Financial</h2>
+				<span>Tax Rate: ${(planet.tax_rate)|percent}%</span>
+				<span>Tax Income: ${(planet.econ.tax_rev)|round}</span>
+				<br>
+				<span>GDP: ${planet.econ.GDP|round:1}</span>
+				<span>PCI: ${planet.econ.PCI|round:1} ➞ ${planet.econ.target_PCI|round:1} </span>
+			</div> -->
+						
+		</main>
 		
 	</div>
-
-
-
 </template>
