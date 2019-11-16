@@ -348,6 +348,7 @@ export let TechNodes = {
 	
 	BASE: {
 		rp: 0,
+		hidden: true, // dont display in UI
 		},
 			
 		

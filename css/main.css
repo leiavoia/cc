@@ -469,7 +469,7 @@ evenly space headers and body elements
 #layout_ui_main .pane.flex MAIN > * {
 	margin: 0 0 0 1em;
 	overflow-y: auto;
-	flex: 1 1 auto;
+	flex: 1 1 45%;
 	max-height: 100%;
 	}
 #layout_ui_main .pane.flex MAIN > *:first-child {
@@ -3406,37 +3406,14 @@ DIV.annoyometer .nub {
 	
 
 /* TECHNOLOGY PANE */
-#tech_pane {
-	height:100%;
-	padding: 0 !important; 	/* special override for #layout_ui_main .pane */
-/* 	background: url(../img/workshop/tech/techmock.jpg)  50% 50% no-repeat; */
-/* 	background-size: cover; */
-	display: flex;
-	flex-flow: column nowrap;
-/* 	height:100%; */
-	}
-#tech_pane #now_researching {
-	box-sizing: border-box;
-	border: 5px #11436B outset;
-	border-radius: 1.0em;
-	padding: 1.5em;
-	margin: 1em;
-	flex: 1 1;
-	background: #11436B;
-	}
-#tech_pane > H1 {
-	box-sizing: border-box;
-	margin: 1rem 0 0.5rem 1rem;
-	padding: 0;
-/* 	flex: 1 1; */
-	}
+
 #tech_pane DIV H2 {
 	margin-top: 0;
 	margin-bottom: 1rem;
 	}
 #tech_pane  OL, 	
 #tech_pane  UL {	
-	margin: 0.5em 0 0.5em 1.5em; ;
+	margin: 0.5em 0 0.5em 0.5em; ;
 	}
 #tech_pane  LI {	
 	list-style-type: disc;
@@ -3445,32 +3422,14 @@ DIV.annoyometer .nub {
 #tech_pane  OL LI {	
 	list-style-type: decimal;
 	}
-#tech_pane #inner_wrapper {
-	flex: 10 10;
-	display: flex;
-	flex-flow: row no-wrap;
-	padding: 0 !important; 	/* special override for #layout_ui_main .pane */
-	}
-#tech_pane #inner_wrapper > DIV {
-	box-sizing: border-box;
-	border: 5px #11436B outset;
-	border-radius: 1.0em;
-	padding: 1.5em;
-	margin: 1em;
-	flex: 1 1;
-	background: rgb( 17, 67, 107);
-/* 	background: rgba( 17, 67, 107, 0.9); */
-/* 	background: rgba( 0,0,0, 0.65); */
-	}	
-	
 #tech_pane .techlist DIV {
 	box-sizing: border-box;
 	margin: 0 -1.5rem;
-	padding: 1.0rem 1.5rem;
+	padding: 0.5rem 1.5rem;
 	cursor:pointer;
 	}
 #tech_pane .techlist P {
-	font-size: 150%;
+	font-size: 125%;
 	margin: 0;
 	}
 #tech_pane .techlist SPAN {
@@ -3478,17 +3437,13 @@ DIV.annoyometer .nub {
 	font-size: 1rem;
 	color:  #3C96BA;
 	}
-#tech_pane .techlist .researching { 
-/* 	background-image: radial-gradient(circle closest-corner at 50% 50% , transparent 0%, transparent 50%, #3C96BA 100%); */
-/* 	border: #777 outset 1px; */
+#tech_pane .techlist .hilite { 
 	background: #3C96BA;
 	}
 #tech_pane .techlist .focus { 
-/* 	background-image: radial-gradient(circle closest-corner at 50% 50% , transparent 0%, transparent 50%, #3C96BA 100%); */
 	background: #3C96BA;
-
 	}
-#tech_pane .techlist .researching SPAN { 
+#tech_pane .techlist .hilite SPAN { 
 	color: #11436b;
 	}
 #tech_pane .techlist PROGRESS {
@@ -3497,6 +3452,13 @@ DIV.annoyometer .nub {
 	height: 0.6em;
 	margin-top: 0.25em;
 	}
+#tech_pane #featured IMG {
+	max-width: 100%; 
+	max-height: 10em;
+	margin: 0 auto 1em auto;
+	}
+	
+	
 	
 @media screen and (max-width:1600px) {
 	#tech_pane .techlist SPAN {

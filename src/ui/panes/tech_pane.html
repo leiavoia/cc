@@ -1,57 +1,77 @@
-<template>
-<!--	<require from="./converters/percent"></require>
-	<require from="./converters/round"></require>-->
+<template containerless>
+	<div id="tech_pane" class="pane flex">
+		<header>
+			<p class="button_rack marginless" style="float:right;">
+				<button click.delegate="ChangeMode('available')" class="big ${mode=='available'?'alt':'cool'}">AVAILABLE</button>
+				<button click.delegate="ChangeMode('completed')" class="big ${mode=='completed'?'alt':'cool'}">COMPLETED</button>
+				<button click.delegate="ClosePanel()" class="big bad">CLOSE</button>
+			</p>
+			<h1>Research</h1>
+		</header>
 		
-	<div id="tech_pane" class="pane">
-
-<!-- 		<p><a href="#"  click.delegate="ClosePanel()" class="button big" style="float: right">CLOSE</a></p> -->
-		
-		<h1>Research</h1>
-	
-		<div id="inner_wrapper">
-			<div id="available" class="techlist"><!-- if.bind="app.game.myciv.tech.nodes_avail.size" -->
+		<main>
+			<div id="available" class="offset techlist" if.bind="mode=='available'">
 				<h2>Available</h2>
+				<p if.bind="!nodes_avail.length" class="bold center">No projects available</p>
 				<div 
-					repeat.for="[key,n] of app.game.myciv.tech.nodes_avail" 
-					class="${key == app.game.myciv.tech.current_project.node.key ? 'researching' : ''} fadeIn"
-					click.delegate="ClickAvailableTech(key)"
+					repeat.for="n of nodes_avail" 
+					class="${n == app.game.myciv.tech.current_project ? 'hilite' : ''}"
+					click.delegate="ClickAvailableTech(n)"
 					>
-					<p>${n.node.name}
+					<p>
+						${n.node.name}
 						<span>
-						<!--${n.rp|round}
-						/-->
-						${n.node.rp|round} RP
-						</span></p>
+							<!-- if researching, show turns remaining -->
+							<b if.bind="n.rp">
+								${(n.node.rp - n.rp) / (app.game.myciv.research_income||1) | ceil}
+							</b>
+							<!-- otherwise show turns estimated -->
+							<b else>
+								${n.node.rp / (app.game.myciv.research_income||1) | ceil}
+							</b> Turns  &nbsp;&nbsp; 
+							<b>${n.node.rp|round}</b> RP
+						</span>
+					</p>
 					<progress value="${n.rp}" max="${n.node.rp}" if.bind="n.rp"></progress>
 				</div>
 			</div>
 			
-			<div id="completed" class="techlist">
+			<div id="completed" class="offset techlist" if.bind="mode=='completed'">
 				<h2>Completed</h2>
-				<div repeat.for="[key,n] of app.game.myciv.tech.nodes_compl" 
-					click.delegate="ClickCompletedTech(key)"
-					class="fadeIn"
-					>
+				<div repeat.for="n of nodes_compl" click.delegate="ClickCompletedTech(n)" class="${n == featured_node ? 'hilite' :''}">
 					<p>${n.name}</p>
 				</div>
 			</div>
 			
-			<div id="featured">
-				<h2>${app.game.myciv.tech.current_project.node.name}</h2>
-				<img src="${app.game.myciv.tech.current_project.node.img}" style="width: 100%; margin-bottom:1em;" />
-				<div innerhtml.bind="AutoDesc( app.game.myciv.tech.current_project )">
-				</div>
-				<p>${app.game.myciv.tech.current_project.node.rp} RP</p>
-				<p>Requires:</p>
-				<ul>
-					<li repeat.for="req of app.game.myciv.tech.current_project.node.requires">${req}</li>
-				</ul>
-				<p>Yields:</p>
-				<ul>
-					<li repeat.for="yield of app.game.myciv.tech.current_project.node.yields">${yield}</li>
-				</ul>
+			<div id="featured" class="offset" if.bind="featured_node">
+				<h2>${featured_node.name}</h2> 
+				<!-- <img src.bind="featured_node.img" /> -->
+				<div innerhtml.bind="featured_node.desc"></div>
+				<p class="big bold good">${featured_node.rp} RP</p>
+				<template containerless if.bind="featured_node.yields.length > 1">
+					<p>Provides:</p>
+					<ul>
+						<li repeat.for="yield of featured_node.yields"> 
+							<b>${Techs[yield].name}</b>
+							${app.options.debug ? ('('+yield+')') : ''}
+							<br/>
+							<span class="dim" innerhtml.bind="Techs[yield].desc"></span>
+						</li>
+					</ul>
+				</template>
+				<!-- "requires" section isnt necessary for player because because they can't see it unless its already unlocked -->
+				<template containerless if.bind="app.options.debug && featured_node.requires.length">
+					<p>Requires:</p>
+					<ul>
+						<li repeat.for="req of featured_node.requires">
+							<b>${TechNodes[req].name}</b>
+							${app.options.debug ? ('('+req+')') : ''}
+						</li>
+					</ul>
+				</template>
 			</div>
-		</div>
+			
+		</main>
 	</div>
 
 </template>
