@@ -53,7 +53,7 @@ export let Techs = {
 			carrier.AddComponent( 'CARRIER1' );
 			carrier.AddComponent( 'ENGINE1' );
 			carrier.AddComponent( 'ARMOR1' );
-			carrier.AddComponent( 'SHIELD2' );
+			carrier.AddComponent( 'SHIELD1' );
 			civ.ship_blueprints.push(carrier);
 				
 			// default militia unit

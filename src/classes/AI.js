@@ -750,7 +750,7 @@ export class AIOffenseObjective extends AIObjective {
 		civ.ai.needs.troop_ships = Math.ceil( civ.ai.needs.troop_ships * utils.Clamp( app.game.turn_num / 10, 0, 1 ) );
 		civ.ai.needs.troops = Math.ceil( civ.ai.needs.troops * utils.Clamp( app.game.turn_num / 10, 0, 1 ) );
 		// game so far seems to chronically undervalue troop_ships
-		civ.ai.needs.troop_ships *= 3; // [!]MAGICNUMBER
+		// civ.ai.needs.troop_ships *= 3; // [!]MAGICNUMBER
 		
 		this.note += `, ${att_missions.length}/${max_missions} missions`;
 		

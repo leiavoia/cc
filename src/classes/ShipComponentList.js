@@ -95,7 +95,7 @@ export const ShipComponentList = {
 			new Mod( 'mass', '*', 1.1, '', null ),
 			],
 		scaled: true,
-		cost: { labor:0.05, r:0.1 }
+		cost: { labor:0.05, s:0.1 }
 		},
 	SHIELD2: {
 		name: 'Deflectors',
