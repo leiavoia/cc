@@ -155,7 +155,8 @@ export default class Planet {
 		this.physattrs = this.physattrs.map( x => PlanetAttrs[x] );
 		this.mods = new Modlist(this.mods);
 		this.mods.Unpack(catalog);
-		if ( this.owner ) this.mods.parent = this.owner.mods;
+		// this line doesnt work because parent's modlist may not yet be unpacked
+		// if ( this.owner ) this.mods.parent = this.owner;
 		}
 				
 	static Random( star ) {

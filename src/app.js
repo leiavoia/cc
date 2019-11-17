@@ -444,6 +444,12 @@ export class App {
 					catalog[k].Unpack(catalog);
 					}
 				}
+			// [!]HACK - reconnect modlist parent chain
+			for ( let k in catalog ) {
+				if ( catalog[k]._classname == 'Planet' && catalog[k].owner ) {
+					catalog[k].mods.parent = catalog[k].owner.mods;
+					}
+				}
 			let app = this;
 			this.ChangeState('loading_screen', function() { 
 				app.ResetEverything();

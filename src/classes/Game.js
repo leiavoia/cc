@@ -600,7 +600,11 @@ export default class Game {
 		if ( this.shipcombats.length ) this.PresentNextPlayerShipCombat();
 		else if ( this.groundcombats.length ) this.PresentNextPlayerGroundCombat();
 		else if ( this.audiences.length ) this.PresentNextAudience();
-		else this.ProcessNewlyExploredStars();
+		else { 
+			this.ProcessNewlyExploredStars();
+			this.CheckForCivDeath();
+			this.CheckForVictory(true);
+			}
 		}
 		
     // this will look through the shipcombats queued for 
@@ -616,7 +620,7 @@ export default class Game {
  			}
 		let sc = this.shipcombats.shift();
 		// fleet may have been destroyed in previous battle.
-		if ( sc.attacker.killme || sc.defender.killme || !sc.attacker.ships.length || !sc.defender.ships.length ) { 
+		if ( sc.attacker.killme || sc.defender.killme || !sc.attacker.ships.length || !sc.defender.ships.length || !sc.defender.owner.alive || !sc.attacker.owner.alive ) { 
 			this.ProcessUIQueue();
 			return;
 			}
@@ -680,7 +684,7 @@ export default class Game {
  		if ( !this.groundcombats.length ) { return false; }
 		let c = this.groundcombats.shift();
 		// fleet may have been destroyed in previous battle.
-		if ( c.attacker.killme || !c.attacker.troops || !c.planet.owner ) { 
+		if ( c.attacker.killme || !c.attacker.troops || !c.planet.owner || !c.planet.owner.alive || !c.attacker.owner.alive ) { 
 			this.ProcessUIQueue();
 			return;
 			}
@@ -726,8 +730,11 @@ export default class Game {
     PresentNextAudience() { 
  		if ( !this.audiences.length ) { return false; }
 		let a = this.audiences.shift();
-		// if we are soaking, skip it - internal code knows to handle automatically already
-		if ( this.app.options.soak ) { this.ProcessUIQueue(); }
+		// croaked or soaked
+		if ( this.app.options.soak || !a.civ.alive || !this.myciv.alive ) { 
+			this.ProcessUIQueue(); 
+			return false;
+			}
 		else { this.LaunchAudience(a); }
     	}
     	
