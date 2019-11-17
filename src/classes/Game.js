@@ -28,6 +28,9 @@ export default class Game {
 	victory_recipes = [];	
 	victory_achieved = false;
 	top10civs = []; // for AI / UI fun
+	new_explored_star_queue = []; // stores fleets that just arrived on unexplored stars.
+	// required to prevent arriving fleets from marking star as explored if
+	// fleet is destroyed or chased away before the end of the turn.
 	
 	constructor( app, data ) {
 		this.app = app;
@@ -265,10 +268,10 @@ export default class Game {
 		this.DeployVictoryIngredients();
 
 		// TODO: random fun stuff
-		CrazyBox.AddGiantSpaceAmoeba(this.app);
-		CrazyBox.AddRedSpaceAmoeba(this.app);
-		CrazyBox.AddGreenMites(this.app);
-		CrazyBox.AddBlueSpaceAmoeba(this.app);
+		// CrazyBox.AddGiantSpaceAmoeba(this.app);
+		// CrazyBox.AddRedSpaceAmoeba(this.app);
+		// CrazyBox.AddGreenMites(this.app);
+		// CrazyBox.AddBlueSpaceAmoeba(this.app);
 		}
 
 	ToggleAutoPlay( speed = 500 ) { 
@@ -287,200 +290,183 @@ export default class Game {
 			}
 		}
 		
-	ProcessTurn( num_turns = 1 ) {
+	ProcessTurn() {
 		this.processing_turn = true;
 		
 		// TODO: lock the UI
 		
-		for ( let t=0; t < num_turns; t++ ) { 
-// 			console.time('Turn Processor');
+// 		console.time('Turn Processor');
 
-			this.CheckForCivDeath();
-			
-			// calculate resource being demanded by planetary zones
-			for ( let civ of this.galaxy.civs ) { 
-				civ.EstimateResources();
-				// recalculate box filter while we're here
+		this.CheckForCivDeath();
+		
+		// calculate resource being demanded by planetary zones
+		for ( let civ of this.galaxy.civs ) { 
+			civ.EstimateResources();
+			// recalculate box filter while we're here
 // 				civ.RecalcEmpireBox();
-				// reset some stuff
-				civ.research_income = 0;
-				for ( let k in civ.resource_income ) { civ.resource_income[k] = 0; }
-				for ( let k in civ.resource_spent ) { civ.resource_spent[k] = 0; }
-				}
-			
-			// Planetary Economics
+			// reset some stuff
+			civ.research_income = 0;
+			for ( let k in civ.resource_income ) { civ.resource_income[k] = 0; }
+			for ( let k in civ.resource_spent ) { civ.resource_spent[k] = 0; }
+			}
+		
+		// Planetary Economics
 // 			console.time('Planetary Econ');
-			for ( let s of this.galaxy.stars ) { 
-				for ( let p of s.planets ) {
-					if ( p.owner ) {  					
-						// HACK zone production; TODO: MOVE THIS TO planet.js
-						for ( let k in p.acct_total ) { p.acct_total[k] = 0; }
-						for ( let k in p.output_rec ) { p.output_rec[k] = 0; }
-						for ( let k in p.resource_rec ) { p.resource_rec[k] = 0; }
-						p.acct_ledger.splice(0, p.acct_ledger.length); // clear accounting records
-						for ( let z of p.zones ) { z.Do(p); }							
-						p.DoProduction();
-						p.GrowEconomy();
-            			p.UpdateMorale();
-						p.GrowPop();
-						}
+		for ( let s of this.galaxy.stars ) { 
+			for ( let p of s.planets ) {
+				if ( p.owner ) {  					
+					// HACK zone production; TODO: MOVE THIS TO planet.js
+					for ( let k in p.acct_total ) { p.acct_total[k] = 0; }
+					for ( let k in p.output_rec ) { p.output_rec[k] = 0; }
+					for ( let k in p.resource_rec ) { p.resource_rec[k] = 0; }
+					p.acct_ledger.splice(0, p.acct_ledger.length); // clear accounting records
+					for ( let z of p.zones ) { z.Do(p); }							
+					p.DoProduction();
+					p.GrowEconomy();
+					p.UpdateMorale();
+					p.GrowPop();
 					}
 				}
+			}
 // 			console.timeEnd('Planetary Econ');
+		
+		// collects taxes, handles expenses, makes accounting records
+		for ( let civ of this.galaxy.civs ) {
+			civ.DoAccounting( this.app );
+			} 
 			
-			// collects taxes, handles expenses, makes accounting records
-			for ( let civ of this.galaxy.civs ) {
-				civ.DoAccounting( this.app );
-				} 
-				
-			// restock weapons
+		// restock weapons
 // 			console.time('Fleet Reloading');
-			for ( let f of this.galaxy.fleets ) { 
-				f.ReloadAllShipWeapons();
-				f.ReevaluateStats();
-				}
+		for ( let f of this.galaxy.fleets ) { 
+			f.ReloadAllShipWeapons();
+			f.ReevaluateStats();
+			}
 // 			console.timeEnd('Fleet Reloading');
-			
-			// AI!
-			if ( this.app.options.ai ) { 
+		
+		// AI!
+		if ( this.app.options.ai ) { 
 // 				console.time('AI');
-				for ( let civ of this.galaxy.civs ) { 
-					if ( !civ.is_player || this.app.options.soak ) { 
-						civ.TurnAI( this.app );
-						}
+			for ( let civ of this.galaxy.civs ) { 
+				if ( !civ.is_player || this.app.options.soak ) { 
+					civ.TurnAI( this.app );
 					}
+				}
 // 				console.timeEnd('AI');
-				}
-				
-			// important to do ship research BEFORE moving ships,
-			// otherwise they get to do both in one turn. Not allowed.
+			}
+			
+		// important to do ship research BEFORE moving ships,
+		// otherwise they get to do both in one turn. Not allowed.
 // 			console.time('Fleet Research');
-			this.DoFleetResearch();
+		this.DoFleetResearch();
 // 			console.timeEnd('Fleet Research');
-			
+		
 // 			console.time('Ship Movement');
-			// ship movement. TECHNICAL: loop backwards because moving can 
-			// remove fleets from the list when they land at destinations.
-			for ( let i = this.galaxy.fleets.length-1; i >= 0; i-- ) { 
-				let f = this.galaxy.fleets[i];
-				if ( f.MoveFleet() ) {
-					// if the fleet arrived, mark the star as explored to help the UI
-					if ( f.owner == this.myciv && f.star && !f.dest && !f.star.explored ) { 
-						f.star.explored = true;
-						if ( this.app.options.notify.explore && f.star.objtype == 'star' ) { 
-							// count habitable systems
-							let goods = 0;
-							f.star.planets.forEach( (p) => {if (!p.owner && p.Habitable(f.owner.race)) { goods++; }} )
-							let app = this.app; 
-							let star = f.star; // fleet may disappear leaving `f` == null
-							let note = `${goods ? goods : 'No'} habitable system${goods==1 ? '' : 's'} found.`;
-							this.app.AddNote(
-								'neutral',
-								`Scouts Explore ${f.star.name}`,
-								note,
-								function(){app.FocusMap(star); app.SwitchSideBar(star);}
-								);						
-							}
-						}
+		// ship movement. TECHNICAL: loop backwards because moving can 
+		// remove fleets from the list when they land at destinations.
+		for ( let i = this.galaxy.fleets.length-1; i >= 0; i-- ) { 
+			let f = this.galaxy.fleets[i];
+			if ( f.MoveFleet() ) {
+				// if the fleet arrived, mark the star as explored to help the UI
+				if ( f.owner == this.myciv && f.star && !f.dest && !f.star.explored ) {
+					this.new_explored_star_queue.push(f);
 					}
-				};
-			// update caret (check for dead fleets removed from ship movement ) 
-			if ( this.app.CurrentState().caret ) { 
-				this.app.CurrentState().SetCaret( this.app.CurrentState().caret.obj );
 				}
-			if ( this.app.sidebar_obj instanceof Fleet && this.app.sidebar_obj.killme ) { 
-				this.app.sidebar_obj = null;
-				this.app.sidebar_mode = null;
-				}
-			if ( !this.app.sidebar_obj && this.app.sidebar_mode ) { 
-				this.app.sidebar_mode = null;
-				}
-			if ( this.app.sidebar_obj && !this.app.sidebar_mode ) { 
-				this.app.sidebar_obj = null;
-				}
+			};
+		// update caret (check for dead fleets removed from ship movement ) 
+		if ( this.app.CurrentState().caret ) { 
+			this.app.CurrentState().SetCaret( this.app.CurrentState().caret.obj );
+			}
+		if ( this.app.sidebar_obj instanceof Fleet && this.app.sidebar_obj.killme ) { 
+			this.app.sidebar_obj = null;
+			this.app.sidebar_mode = null;
+			}
+		if ( !this.app.sidebar_obj && this.app.sidebar_mode ) { 
+			this.app.sidebar_mode = null;
+			}
+		if ( this.app.sidebar_obj && !this.app.sidebar_mode ) { 
+			this.app.sidebar_obj = null;
+			}
 // 			console.timeEnd('Ship Movement');
-			
-			// RESEARCH
+		
+		// RESEARCH
 // 			console.time('Research');
-			for ( let civ of this.galaxy.civs ) { 
-				civ.DoResearch( this.app );
-				}	
+		for ( let civ of this.galaxy.civs ) { 
+			civ.DoResearch( this.app );
+			}	
 // 			console.timeEnd('Research');
-			
-			// find potential combats
+		
+		// find potential combats
 // 			console.time('Finding combats');
-			this.FindShipCombats();
-			this.FindGroundCombats();
+		this.FindShipCombats();
+		this.FindGroundCombats();
 // 			console.timeEnd('Finding combats');
-			
-			// [!]OPTIMIZE we can optimize this out of the loop if 
-			// we limit it to events that change planets or ship ranges
+		
+		// [!]OPTIMIZE we can optimize this out of the loop if 
+		// we limit it to events that change planets or ship ranges
 // 			console.time('Recalc Civ Contact');
-			this.RecalcCivContactRange();
+		this.RecalcCivContactRange();
 // 			console.timeEnd('Recalc Civ Contact');
-			
+		
 // 			console.time('Recalc Star Range');
-			this.RecalcStarRanges();
+		this.RecalcStarRanges();
 // 			console.timeEnd('Recalc Star Range');
-				
-			// fleets move, so we need to do this on each turn
+			
+		// fleets move, so we need to do this on each turn
 // 			console.time('Recalc Fleet Range');
-			this.RecalcFleetRanges(); 
+		this.RecalcFleetRanges(); 
 // 			console.timeEnd('Recalc Fleet Range');
-				
-			this.UpdateDiplomaticRelations();
 			
-			// calculate overall civ power scores
-			for ( let civ of this.galaxy.civs ) { 
-				civ.CalcPowerScore();
-				}
-			this.top10civs = this.galaxy.civs.filter( c => c.alive && !c.race.is_monster && c.power_score > 0 );
-			this.top10civs.sort( (a,b) => b.power_score - a.power_score );
-			this.top10civs = this.top10civs.slice(0,10)
-				.map( (c,i) => { return {
-					civ:c, 
-					score:c.power_score, 
-					rank:(i+1), 
-					pct:(c.power_score / this.top10civs[0].power_score) 
-					};
-				 } );
-			
-			// compile stats
-			for ( let civ of this.galaxy.civs ) { 
-				civ.ArchiveStats();
-				}
-			
-			this.CheckForCivDeath(); // second time 
-			
-			this.turn_num++;
-			
+		this.UpdateDiplomaticRelations();
+		
+		// calculate overall civ power scores
+		for ( let civ of this.galaxy.civs ) { 
+			civ.CalcPowerScore();
+			}
+		this.top10civs = this.galaxy.civs.filter( c => c.alive && !c.race.is_monster && c.power_score > 0 );
+		this.top10civs.sort( (a,b) => b.power_score - a.power_score );
+		this.top10civs = this.top10civs.slice(0,10)
+			.map( (c,i) => { return {
+				civ:c, 
+				score:c.power_score, 
+				rank:(i+1), 
+				pct:(c.power_score / this.top10civs[0].power_score) 
+				};
+				} );
+		
+		// compile stats
+		for ( let civ of this.galaxy.civs ) { 
+			civ.ArchiveStats();
+			}
+		
+		this.CheckForCivDeath(); // second time 
+		
+		this.turn_num++;
+		
 // 			console.timeEnd('Turn Processor');
-			//
-			// At this point the turn is considered "processed",
-			// however the player may still need to complete
-			// some interactivities like combat resolution, 
-			// subscreens, events, etc.
-			//
-			
-			Signals.Send('turn', this.turn_num );
-			
-			if ( !this.CheckForVictory() ) { 				
-				if ( !this.app.options.soak ) { 
-					// event queue needs the new turn number
-					this.ProcessEventCardQueue();
-					this.ProcessUIQueue(); // present subscreens
-					}
+		//
+		// At this point the turn is considered "processed",
+		// however the player may still need to complete
+		// some interactivities like combat resolution, 
+		// subscreens, events, etc.
+		//
+		
+		Signals.Send('turn', this.turn_num );
+		
+		if ( !this.CheckForVictory() ) { 				
+			if ( !this.app.options.soak ) { 
+				// event queue needs the new turn number
+				this.ProcessEventCardQueue();
+				this.ProcessUIQueue(); // present subscreens
 				}
-			// GAME OVER!
-			else {
-				Signals.Send('game_over', this.turn_num );
-				if ( this.autoplay ) { 
-					clearInterval( this.autoplay );
-					this.autoplay = false;
-					}
+			}
+		// GAME OVER!
+		else {
+			Signals.Send('game_over', this.turn_num );
+			if ( this.autoplay ) { 
+				clearInterval( this.autoplay );
+				this.autoplay = false;
 				}
-				
-			} // foreach turn (in case of multiple).
+			}
 		
 		// autosave
 		if ( this.app.options.autosave && !this.app.options.soak ) {
@@ -490,10 +476,33 @@ export default class Game {
 		this.processing_turn = false;
 		} // end process turn
 		
+	ProcessNewlyExploredStars() {
+		while( this.new_explored_star_queue.length ) { 
+			let f = this.new_explored_star_queue.shift();
+			if ( f.owner == this.myciv && f.star && !f.dest && !f.star.explored ) {
+				f.star.explored = true;
+				if ( this.app.options.notify.explore && f.star.objtype == 'star' ) { 
+					// count habitable systems
+					let goods = 0;
+					f.star.planets.forEach( (p) => {if (!p.owner && p.Habitable(f.owner.race)) { goods++; }} )
+					let app = this.app; 
+					let star = f.star; // fleet may disappear leaving `f` == null
+					let note = `${goods ? goods : 'No'} habitable system${goods==1 ? '' : 's'} found.`;
+					this.app.AddNote(
+						'neutral',
+						`Scouts Explore ${f.star.name}`,
+						note,
+						function(){app.FocusMap(star); app.SwitchSideBar(star);}
+						);						
+					}
+				}
+			}
+		}
+		
 	// `data` is whatever the civ is wanting to discuss, which isnt programmed yet.
 	// currently only takes `data.offer` for trade offers and `data.message` for raw text.
 	QueueAudience( civ, data ) {
-		this.audiences.push({ civ, data, label: `${civ.name} requesting audience` });	
+		this.audiences.push({ civ, data, label: `${civ.name} audience` });	
 		}
 		
 	QueueShipCombat( attacker, defender, planet ) {
@@ -591,6 +600,7 @@ export default class Game {
 		if ( this.shipcombats.length ) this.PresentNextPlayerShipCombat();
 		else if ( this.groundcombats.length ) this.PresentNextPlayerGroundCombat();
 		else if ( this.audiences.length ) this.PresentNextAudience();
+		else this.ProcessNewlyExploredStars();
 		}
 		
     // this will look through the shipcombats queued for 
