@@ -368,7 +368,8 @@ export default class Game {
 			if ( f.MoveFleet() ) {
 				// if the fleet arrived, mark the star as explored to help the UI
 				if ( f.owner == this.myciv && f.star && !f.dest && !f.star.explored ) {
-					this.new_explored_star_queue.push(f);
+					if ( this.app.options.soak ) { f.star.explored = true; }
+					else { this.new_explored_star_queue.push(f); }
 					}
 				}
 			};

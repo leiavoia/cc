@@ -3440,7 +3440,6 @@ DIV.annoyometer .nub {
 	color:  #3C96BA;
 	margin: 0; 
 	padding: 0;
-	vertical-align:middle;
 	margin-left: 4rem;
 	}
 #tech_pane .techlist .hilite { 
@@ -3485,7 +3484,7 @@ DIV.annoyometer .nub {
 .techtags SPAN::before {
 	content: '';
 	display: inline-block;
-	background: url(/img/icons/svg/boxwire.svg) 50% 50% no-repeat;
+	background: url(../img/icons/svg/boxwire.svg) 50% 50% no-repeat;
 	background-size:0.85em 0.85em !important;
 	height: 1.25em;
 	width: 1.25em;
@@ -3500,63 +3499,63 @@ DIV.annoyometer .nub {
 
 .techtag.housing::before {
 	background-color: #4cb0e9;
-	background-image: url(/img/icons/svg/city.svg);
+	background-image: url(../img/icons/svg/city.svg);
 	}
 .techtag.mining::before {
 	background-color: #fa9a30;
-	background-image: url(/img/icons/svg/cube01.svg);
+	background-image: url(../img/icons/svg/cube01.svg);
 	}
 .techtag.stardock::before {
 	background-color: #D11;
-	background-image: url(/img/icons/svg/stardock01.svg);
+	background-image: url(../img/icons/svg/stardock01.svg);
 	}
 .techtag.research::before {
 	background-color: #14A;
-	background-image: url(/img/icons/svg/tool.svg);
+	background-image: url(../img/icons/svg/tool.svg);
 	}
 .techtag.military::before {
 	background-color: #98543D;
-	background-image: url(/img/icons/svg/game.svg);
+	background-image: url(../img/icons/svg/game.svg);
 	}
 .techtag.economic::before {
 	background-color: #296;
-	background-image: url(/img/icons/svg/coins-1.svg);
+	background-image: url(../img/icons/svg/coins-1.svg);
 	}
 .techtag.propulsion::before {
 	background-color: #c263c2;
-	background-image: url(/img/icons/svg/rocket.svg);
+	background-image: url(../img/icons/svg/rocket.svg);
 	}
 .techtag.biology::before {
 	background-color: #40ac45;
-	background-image: url(/img/icons/svg/leaf.svg);
+	background-image: url(../img/icons/svg/leaf.svg);
 	}
 .techtag.socialogy::before {
 	background-color: #968270;
-	background-image: url(/img/icons/svg/talkbubble.svg);
+	background-image: url(../img/icons/svg/talkbubble.svg);
 	}
 .techtag.espionage::before {
 	background-color: #6c13b3;
-	background-image: url(/img/icons/svg/medical.svg);
+	background-image: url(../img/icons/svg/medical.svg);
 	}
 .techtag.engineering::before {
 	background-color: #854102;
-	background-image: url(/img/icons/svg/transport.svg);
+	background-image: url(../img/icons/svg/transport.svg);
 	}
 .techtag.weapons::before {
 	background-color: #000;
-	background-image: url(/img/icons/svg/target.svg);
+	background-image: url(../img/icons/svg/target.svg);
 	}
 .techtag.physics::before {
 	background-color: #d1d40b;
-	background-image: url(/img/icons/svg/atom02.svg);
+	background-image: url(../img/icons/svg/atom02.svg);
 	}
 .techtag.defense::before {
 	background-color: #00b9b9;
-	background-image: url(/img/icons/svg/shield.svg);
+	background-image: url(../img/icons/svg/shield.svg);
 	}
 .techtag.special::before {
 	background-color: #AA509F;
-	background-image: url(/img/icons/svg/decoration.svg);
+	background-image: url(../img/icons/svg/decoration.svg);
 	}
 	
 
