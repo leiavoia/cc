@@ -11,6 +11,7 @@
 		
 		<main>
 			<div id="available" class="offset techlist" if.bind="mode=='available'">
+				<p class="marginless" style="float:right"><b class="good">${app.game.myciv.research_income||0|round} RP</b> /turn</p>
 				<h2>Available</h2>
 				<p if.bind="!nodes_avail.length" class="bold center">No projects available</p>
 				<div 
@@ -18,19 +19,22 @@
 					class="${n == app.game.myciv.tech.current_project ? 'hilite' : ''}"
 					click.delegate="ClickAvailableTech(n)"
 					>
-					<p>
-						${n.node.name}
-						<span>
-							<!-- if researching, show turns remaining -->
+					<div class="techtags">
+						<span class="techtag ${n.node.tags[0]}"></span>
+					</div>
+					<p>${n.node.name}</p>
+					<p class="subtext">
+						<!-- if researching, show turns remaining -->
+						<span if.bind="app.game.myciv.research_income">
 							<b if.bind="n.rp">
-								${(n.node.rp - n.rp) / (app.game.myciv.research_income||1) | ceil}
+								${(n.node.rp - n.rp) / app.game.myciv.research_income | ceil}
 							</b>
 							<!-- otherwise show turns estimated -->
 							<b else>
-								${n.node.rp / (app.game.myciv.research_income||1) | ceil}
+								${n.node.rp / app.game.myciv.research_income | ceil}
 							</b> Turns  &nbsp;&nbsp; 
-							<b>${n.node.rp|round}</b> RP
 						</span>
+						<b>${n.node.rp|round}</b> RP  &nbsp;&nbsp; 
 					</p>
 					<progress value="${n.rp}" max="${n.node.rp}" if.bind="n.rp"></progress>
 				</div>
@@ -39,15 +43,21 @@
 			<div id="completed" class="offset techlist" if.bind="mode=='completed'">
 				<h2>Completed</h2>
 				<div repeat.for="n of nodes_compl" click.delegate="ClickCompletedTech(n)" class="${n == featured_node ? 'hilite' :''}">
+					<div class="techtags">
+						<span class="techtag ${n.tags[0]}"></span>
+					</div>
 					<p>${n.name}</p>
 				</div>
 			</div>
 			
 			<div id="featured" class="offset" if.bind="featured_node">
 				<h2>${featured_node.name}</h2> 
+				<p class="techtags">
+					<span repeat.for="t of featured_node.tags" class="techtag ${t}">${t|uppercaseFirst}</span>
+				</p>
+				<p class="desc bold good">${featured_node.rp} RP</p>
 				<!-- <img src.bind="featured_node.img" /> -->
-				<div innerhtml.bind="featured_node.desc"></div>
-				<p class="big bold good">${featured_node.rp} RP</p>
+				<div class="desc" innerhtml.bind="featured_node.desc"></div>
 				<template containerless if.bind="featured_node.yields.length > 1">
 					<p>Provides:</p>
 					<ul>

@@ -3422,20 +3422,26 @@ DIV.annoyometer .nub {
 #tech_pane  OL LI {	
 	list-style-type: decimal;
 	}
-#tech_pane .techlist DIV {
+#tech_pane .techlist > DIV {
 	box-sizing: border-box;
 	margin: 0 -1.5rem;
 	padding: 0.5rem 1.5rem;
 	cursor:pointer;
 	}
-#tech_pane .techlist P {
-	font-size: 125%;
+#tech_pane .techlist P:first-of-type {
+	font-size: 150%;
 	margin: 0;
+	vertical-align:middle;
+	margin-left: 4rem;
 	}
-#tech_pane .techlist SPAN {
-	display: inline-block;
+#tech_pane .techlist .subtext {
+	display: block;
 	font-size: 1rem;
 	color:  #3C96BA;
+	margin: 0; 
+	padding: 0;
+	vertical-align:middle;
+	margin-left: 4rem;
 	}
 #tech_pane .techlist .hilite { 
 	background: #3C96BA;
@@ -3443,7 +3449,7 @@ DIV.annoyometer .nub {
 #tech_pane .techlist .focus { 
 	background: #3C96BA;
 	}
-#tech_pane .techlist .hilite SPAN { 
+#tech_pane .techlist .hilite .subtext { 
 	color: #11436b;
 	}
 #tech_pane .techlist PROGRESS {
@@ -3452,20 +3458,108 @@ DIV.annoyometer .nub {
 	height: 0.6em;
 	margin-top: 0.25em;
 	}
+#tech_pane #featured .desc {
+	font-size: 150%;
+	}
 #tech_pane #featured IMG {
 	max-width: 100%; 
 	max-height: 10em;
 	margin: 0 auto 1em auto;
 	}
-	
-	
-	
-@media screen and (max-width:1600px) {
-	#tech_pane .techlist SPAN {
-		display: block;
-		float: none;
-		}
+
+#tech_pane .techlist .techtags {
+	font-size: 2.25rem;
+	float:left;
+	clear:left;
+	height:1em;
+	width: 1em;
+	margin: 0 0.25em 0.25em 0;
+	padding:0;
+}
+
+#tech_pane #featured .techtags { font-size: 1.5rem; }
+#tech_pane #completed.techlist .techtags { font-size: 1.25rem; }
+#tech_pane #completed.techlist P { margin-left: 2rem; }
+
+.techtag::before,
+.techtags SPAN::before {
+	content: '';
+	display: inline-block;
+	background: url(/img/icons/svg/boxwire.svg) 50% 50% no-repeat;
+	background-size:0.85em 0.85em !important;
+	height: 1.25em;
+	width: 1.25em;
+	margin: 0 0.25em 0 0 ;
+	padding: 0.2em;
+	vertical-align: middle;
+	background-color: #666;
+	/* border: rgba(255,255,255,0.4) 1px solid; */
+	border-radius: 0.25em;
+	box-sizing:border-box;
+}
+
+.techtag.housing::before {
+	background-color: #4cb0e9;
+	background-image: url(/img/icons/svg/city.svg);
 	}
+.techtag.mining::before {
+	background-color: #fa9a30;
+	background-image: url(/img/icons/svg/cube01.svg);
+	}
+.techtag.stardock::before {
+	background-color: #D11;
+	background-image: url(/img/icons/svg/stardock01.svg);
+	}
+.techtag.research::before {
+	background-color: #14A;
+	background-image: url(/img/icons/svg/tool.svg);
+	}
+.techtag.military::before {
+	background-color: #98543D;
+	background-image: url(/img/icons/svg/game.svg);
+	}
+.techtag.economic::before {
+	background-color: #296;
+	background-image: url(/img/icons/svg/coins-1.svg);
+	}
+.techtag.propulsion::before {
+	background-color: #c263c2;
+	background-image: url(/img/icons/svg/rocket.svg);
+	}
+.techtag.biology::before {
+	background-color: #40ac45;
+	background-image: url(/img/icons/svg/leaf.svg);
+	}
+.techtag.socialogy::before {
+	background-color: #968270;
+	background-image: url(/img/icons/svg/talkbubble.svg);
+	}
+.techtag.espionage::before {
+	background-color: #6c13b3;
+	background-image: url(/img/icons/svg/medical.svg);
+	}
+.techtag.engineering::before {
+	background-color: #854102;
+	background-image: url(/img/icons/svg/transport.svg);
+	}
+.techtag.weapons::before {
+	background-color: #000;
+	background-image: url(/img/icons/svg/target.svg);
+	}
+.techtag.physics::before {
+	background-color: #d1d40b;
+	background-image: url(/img/icons/svg/atom02.svg);
+	}
+.techtag.defense::before {
+	background-color: #00b9b9;
+	background-image: url(/img/icons/svg/shield.svg);
+	}
+.techtag.special::before {
+	background-color: #AA509F;
+	background-image: url(/img/icons/svg/decoration.svg);
+	}
+	
+
 
 	
 /* SHIP DESIGN PANE */
