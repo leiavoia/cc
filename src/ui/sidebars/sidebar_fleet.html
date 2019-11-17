@@ -92,11 +92,10 @@
 <!-- 					<span>${num_selected}/${fleet.ships.length}</span> -->
 			</p>
 		</template>
-		
-		
-		
-		<!-- ship list -->
-		<div class="shipgrid ${app.options.ship_scaling ? 'dynasize' : ''} pack_${ship_grid_packing}x">
+		 
+		<!-- ship list for player view -->
+		<div if.bind="fleet.owner.is_player || app.options.see_all"
+			class="shipgrid ${app.options.ship_scaling ? 'dynasize' : ''} pack_${ship_grid_packing}x">
 			<div class="ship ${ship.selected ? 'selected' : ''} health_${ship.health_class} size_${ship.bp.sizeclass}" click.delegate="SelectShip(ship)" repeat.for="ship of fleet.ships" >
 				<p class=" top">
 					<span>${ship.bp.colonize ? '🅲' : ''} ${ship.bp.research ? '🆁' : ''}</span>
@@ -112,6 +111,15 @@
 				<p class="name">${ship.bp.name} </p>
 			</div>
 		</div>
+		
+		<!-- ship summary for unprivileged enemy fleet views -->
+		<div else>
+			<p repeat.for="[bp,count] of fleet.ListUniqueModels()" style="vertical-align:top;">
+				<img src.one-time="bp.img" style="height:4em; width:4em; object-fit: contain;vertical-align:top;"  />
+				<b>${count}</b> ${bp.name}
+			</p>
+		</div>	
+		
 	</div>
 		
 	<div class="fleet" if.bind="mode=='mission' && !fleet.mission" style="font-weight:bold; font-size: 150%;">

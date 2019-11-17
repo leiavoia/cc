@@ -113,7 +113,13 @@ export class FleetDetailPane {
 			this.app.SwitchSideBar( this.fleet.merged_with );
 			}
 		// fleet will have killme flag if it needs to be treated as deleted
-		else if ( this.fleet.killme === true ) { 
+		else if ( this.fleet.killme === true || !this.fleet.owner.alive ) { 
+			this.fleet.SetOnUpdate(null);
+			this.app.CloseSideBar();
+			this.app.options.show_range = false;
+			}
+		// if enemy fleet is no longer is range, close view
+		else if ( !this.fleet.owner.is_player && !this.fleet.star && !this.fleet.in_range ) { 
 			this.fleet.SetOnUpdate(null);
 			this.app.CloseSideBar();
 			this.app.options.show_range = false;
