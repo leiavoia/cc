@@ -167,13 +167,13 @@ export class Mod {
 		}
 	toDisplay( precision = 0 ) { 
 		switch ( this.op ) { 
-			case 'H': { return `Highest of ${this.val.toFixed(precision)}, ${this.label}`; } // highest of
-			case 'L': { return `Lowest of ${this.val.toFixed(precision)}, ${this.label}`; } // lowest of
+			case 'H': { return `Maximum ${this.val.toFixed(precision)}, ${this.label}`; } // highest of
+			case 'L': { return `Minimum of ${this.val.toFixed(precision)}, ${this.label}`; } // lowest of
 			case '^': { return `Power of ${this.val.toFixed(precision)}, ${this.label}`; } // to the power of (i.e. "exponent")
 			case '/': { return `÷ ${this.val.toFixed(precision)}, ${this.label}`; }
 			case '+': { return `+ ${this.val.toFixed(precision)}, ${this.label}`; }
 			case '-': { return `- ${this.val.toFixed(precision)}, ${this.label}`; }
-			case '=': { return `= ${this.val.toFixed(precision)}, ${this.label}`; } // per se "is" (i.e. "ends with")
+			case '=': { return `${this.val.toFixed(precision)}, ${this.label}`; } // per se "is" (i.e. "ends with")
 			case 'B': { return `Base value of ${this.val.toFixed(precision)}, ${this.label}`; } // [B]ase value (i.e. "starts with")
 			case '%': { return `${this.val.toFixed(precision)}%, ${this.label}`; }
 			case '*': { 
@@ -181,6 +181,27 @@ export class Mod {
 				let op = (v >= 0) ? '+' : '';
 				v = v.toFixed(precision).replace(/\.*0+$/,'');
 				let str = `${op}${v}%, ${this.label}`; 
+				return str;
+				}
+			default: { return value; }
+			}
+		}
+	toString( precision = 0 ) { 
+		switch ( this.op ) { 
+			case 'H': { return `Maximum ${this.val.toFixed(precision)} ${this.abil}`; } // highest of
+			case 'L': { return `Minimum of ${this.val.toFixed(precision)} ${this.abil}`; } // lowest of
+			case '^': { return `Power of ${this.val.toFixed(precision)} ${this.abil}`; } // to the power of (i.e. "exponent")
+			case '/': { return `÷${this.val.toFixed(precision)} ${this.abil}`; }
+			case '+': { return `+${this.val.toFixed(precision)} ${this.abil}`; }
+			case '-': { return `-${this.val.toFixed(precision)} ${this.abil}`; }
+			case '=': { return `${this.val.toFixed(precision)} ${this.abil}`; } // per se "is" (i.e. "ends with")
+			case 'B': { return `Base of ${this.val.toFixed(precision)} ${this.abil}`; } // [B]ase value (i.e. "starts with")
+			case '%': { return `${this.val.toFixed(precision)}% ${this.abil}`; }
+			case '*': { 
+				let v = (this.val - 1) * 100;
+				let op = (v >= 0) ? '+' : '';
+				v = v.toFixed(precision).toString();
+				let str = `${op}${v}% ${this.abil}`; 
 				return str;
 				}
 			default: { return value; }

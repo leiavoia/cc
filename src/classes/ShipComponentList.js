@@ -15,7 +15,7 @@ import {Mod,Modlist} from './Mods';
 export const ShipComponentList = {
 	ENGINE1: {
 		name: 'Nuclear Engines',
-		desc: 'Nuclear engines have just enough to power a ship capable of hyperspace travel.',
+		desc: 'Enables hyperspace travel.',
 		type: 'engine',
 		mx: 'engine',
 		mods: [
@@ -27,7 +27,7 @@ export const ShipComponentList = {
 		},
 	ENGINE2: {
 		name: 'Stellar Folder',
-		desc: 'Makes nuclear power look primitive, but are very expensive. These engines bend space itself by synchronized fiddling with sub-atomic bonds.',
+		desc: 'Improved map speed.',
 		type: 'engine',
 		mx: 'engine',
 		mods: [
@@ -39,7 +39,7 @@ export const ShipComponentList = {
 		},
 	ENGINE3: {
 		name: 'Hyperspace Warp',
-		desc: 'A true warp drive. Uses anti-gravity to create a warp field around the ship, driving it forward and superluminal speeds.',
+		desc: 'Superior map speed.',
 		type: 'engine',
 		mx: 'engine',
 		mods: [
@@ -51,7 +51,7 @@ export const ShipComponentList = {
 		},
 	ARMOR1: {
 		name: 'Composite Armor',
-		desc: 'Lightweight composite armor is an extension of primitive hull technology.',
+		desc: 'Adds hit points.',
 		type: 'armor',
 		mx: 'armor',
 		mods: [
@@ -63,7 +63,7 @@ export const ShipComponentList = {
 		},
 	ARMOR2: {
 		name: 'Ooblek Armor',
-		desc: 'Shock-absorbing composite material weighs less than traditional armors but provides more protection.',
+		desc: 'Adds hit points.',
 		type: 'armor',
 		mx: 'armor',
 		mods: [
@@ -75,7 +75,7 @@ export const ShipComponentList = {
 		},
 	ARMOR3: {
 		name: 'Neutronium Armor',
-		desc: 'Ultra-dense neutronium is heavy, but even a thin layer can be a wonderful defense.',
+		desc: 'Adds hit points.',
 		type: 'armor',
 		mx: 'armor',
 		mods: [
@@ -87,7 +87,7 @@ export const ShipComponentList = {
 		},
 	SHIELD1: {
 		name: 'Force Shield',
-		desc: 'Basic energy field help protect ship from incoming objects and weapons fire.',
+		desc: 'Reduces damage by a fixed amount.',
 		type: 'armor',
 		mx: 'shield',
 		mods: [
@@ -99,7 +99,7 @@ export const ShipComponentList = {
 		},
 	SHIELD2: {
 		name: 'Deflectors',
-		desc: 'Anti-gravity field deflects weapons of all kinds.',
+		desc: 'Reduces damage by a fixed amount.',
 		type: 'shield',
 		mx: 'shield',
 		mods: [
@@ -111,7 +111,7 @@ export const ShipComponentList = {
 		},
 	SHIELD3: {
 		name: 'Hyper-Refractors',
-		desc: 'Bends local hyperspace to redirect incoming attacks.',
+		desc: 'Reduces damage by a fixed amount.',
 		type: 'shield',
 		mx: 'shield',
 		mods: [
@@ -123,7 +123,7 @@ export const ShipComponentList = {
 		},
 	BEAMAMP: {
 		name: 'Beam Amplifier',
-		desc: 'Boosts the raw attack power of all beam weapons on the ship by 25%.',
+		desc: 'Boosts attack power of all beam weapons on the ship.',
 		type: 'beammod',
 		mods: [
 			new Mod( 'beam', '*', 1.25, '', null ),
@@ -135,17 +135,17 @@ export const ShipComponentList = {
 		},
 	COLONY1: {
 		name: 'Colony Module',
-		desc: 'Allows us to settle new worlds with similar environments.',
+		desc: 'Allows us to settle new worlds.',
 		type: 'colony',
 		mods: [
-			new Mod( 'colonize', 'H', 1, '', null ),
+			new Mod( 'colonize', '=', 1, '', null ),
 			new Mod( 'mass', '+', 200, '', null ),
 			],
 		cost: { labor:100, o:50, s:50, m:50 }
 		},
 	CARRIER1: {
 		name: 'Troop Carrier Module',
-		desc: 'Allows the transport of one ground combat unit.',
+		desc: 'Allows the transport of ground combat units.',
 		type: 'troop',
 		mods: [
 			new Mod( 'troopcap', 'H', 2, '', null ),
@@ -155,7 +155,7 @@ export const ShipComponentList = {
 		},
 	CARRIER2: {
 		name: 'Heavy Troop Carrier Module',
-		desc: 'Allows the transport of two ground combat units.',
+		desc: 'Allows the transport of ground combat units.',
 		type: 'troop',
 		mods: [
 			new Mod( 'troopcap', 'H', 4, '', null ),
@@ -165,7 +165,7 @@ export const ShipComponentList = {
 		},
 	RESEARCHLAB1: {
 		name: 'Space Lab',
-		desc: 'Allows our fleet to conduct research in space, investigate anomalies, and study new worlds.',
+		desc: 'Enables anomaly research.',
 		type: 'research',
 		mods: [
 			new Mod( 'research', '+', 100, '', null ),
@@ -177,7 +177,7 @@ export const ShipComponentList = {
 	// THRUSTERS / COMBATSPEED
 	THRUSTERS1: {
 		name: 'Impulse Thrusters',
-		desc: '+1 combat speed, improves initiative and evasion.',
+		desc: 'Improved initiative and evasion.',
 		type: 'thrusters',
 		mx: 'thrusters',
 		mods: [
@@ -189,7 +189,7 @@ export const ShipComponentList = {
 		},		
 	THRUSTERS2: {
 		name: 'Neutron Thrusters',
-		desc: '+3 combat speed, improves initiative and evasion.',
+		desc: 'High initiative and evasion.',
 		type: 'thrusters',
 		mx: 'thrusters',
 		mods: [
@@ -201,7 +201,7 @@ export const ShipComponentList = {
 		},		
 	THRUSTERS3: {
 		name: 'Quantum Thrusters',
-		desc: '+5 combat speed, improves initiative and evasion.',
+		desc: 'Advanced initiative and evasion.',
 		type: 'thrusters',
 		mx: 'thrusters',
 		mods: [
@@ -213,7 +213,7 @@ export const ShipComponentList = {
 		},		
 	THRUSTERS4: {
 		name: 'Phasing Thrusters',
-		desc: '+7 combat speed, improves initiative and evasion.',
+		desc: 'Superior initiative and evasion.',
 		type: 'thrusters',
 		mx: 'thrusters',
 		mods: [
@@ -225,7 +225,7 @@ export const ShipComponentList = {
 		},		
 	THRUSTERS5: {
 		name: 'Dimensional Thrusters',
-		desc: '+10 combat speed, improves initiative and evasion.',
+		desc: 'Ultimate initiative and evasion.',
 		type: 'thrusters',
 		mx: 'thrusters',
 		mods: [
@@ -238,7 +238,7 @@ export const ShipComponentList = {
 		
 	CLOAK1: {
 		name: 'Cloaking',
-		desc: '+5 evasion and initiative.',
+		desc: 'Additional evasion and initiative.',
 		type: 'cloak',
 		mx: 'cloak',
 		mods: [
@@ -250,7 +250,7 @@ export const ShipComponentList = {
 		},		
 	CLOAK2: {
 		name: 'Phasing Cloak',
-		desc: '+10 evasion and initiative.',
+		desc: 'Additional evasion and initiative.',
 		type: 'cloak',
 		mx: 'cloak',
 		mods: [
@@ -262,7 +262,7 @@ export const ShipComponentList = {
 		},		
 	CLOAK3: {
 		name: 'Dimensional Cloak',
-		desc: '+20 evasion and initiative.',
+		desc: 'Additional evasion and initiative.',
 		type: 'cloak',
 		mx: 'cloak',
 		mods: [
@@ -275,7 +275,7 @@ export const ShipComponentList = {
 		
 	TARGETTING1: {
 		name: 'Predictive Targetting',
-		desc: '+3 to hit.',
+		desc: 'Improved accuracy on to-hit calculations.',
 		type: 'targetting',
 		mx: 'targetting',
 		mods: [
@@ -286,22 +286,22 @@ export const ShipComponentList = {
 		},		
 	TARGETTING2: {
 		name: 'AI Targetting',
-		desc: '+6 to hit.',
+		desc: 'High accuracy on to-hit calculations.',
 		type: 'targetting',
 		mx: 'targetting',
 		mods: [
-			new Mod( 'hit', '+', 2, '', null ),
+			new Mod( 'hit', '+', 6, '', null ),
 			],
 		scaled: false,
 		cost: { labor:60 }
 		},		
 	TARGETTING3: {
 		name: 'Quantum Targetting',
-		desc: '+12 to hit.',
+		desc: 'Extreme accuracy on to-hit calculations.',
 		type: 'targetting',
 		mx: 'targetting',
 		mods: [
-			new Mod( 'hit', '+', 2, '', null ),
+			new Mod( 'hit', '+', 12, '', null ),
 			],
 		scaled: false,
 		cost: { labor:90 }

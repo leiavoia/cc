@@ -3466,7 +3466,7 @@ DIV.annoyometer .nub {
 	margin: 0 auto 1em auto;
 	}
 
-#tech_pane .techlist .techtags {
+#tech_pane .techlist .tagicons {
 	font-size: 2.25rem;
 	float:left;
 	clear:left;
@@ -3476,12 +3476,12 @@ DIV.annoyometer .nub {
 	padding:0;
 }
 
-#tech_pane #featured .techtags { font-size: 1.5rem; }
-#tech_pane #completed.techlist .techtags { font-size: 1.25rem; }
+#tech_pane #featured .tagicons { font-size: 1.5rem; }
+#tech_pane #completed.techlist .tagicons { font-size: 1.25rem; }
 #tech_pane #completed.techlist P { margin-left: 2rem; }
 
-.techtag::before,
-.techtags SPAN::before {
+.tagicon::before,
+.tagicons SPAN::before {
 	content: '';
 	display: inline-block;
 	background: url(../img/icons/svg/boxwire.svg) 50% 50% no-repeat;
@@ -3497,65 +3497,131 @@ DIV.annoyometer .nub {
 	box-sizing:border-box;
 }
 
-.techtag.housing::before {
+.tagicon.housing::before {
 	background-color: #4cb0e9;
 	background-image: url(../img/icons/svg/city.svg);
 	}
-.techtag.mining::before {
+.tagicon.mining::before {
 	background-color: #fa9a30;
 	background-image: url(../img/icons/svg/cube01.svg);
 	}
-.techtag.stardock::before {
+.tagicon.stardock::before {
 	background-color: #D11;
 	background-image: url(../img/icons/svg/stardock01.svg);
 	}
-.techtag.research::before {
+.tagicon.research::before {
 	background-color: #14A;
 	background-image: url(../img/icons/svg/tool.svg);
 	}
-.techtag.military::before {
+.tagicon.military::before {
 	background-color: #98543D;
 	background-image: url(../img/icons/svg/game.svg);
 	}
-.techtag.economic::before {
+.tagicon.economic::before {
 	background-color: #296;
 	background-image: url(../img/icons/svg/coins-1.svg);
 	}
-.techtag.propulsion::before {
+.tagicon.propulsion::before {
 	background-color: #c263c2;
 	background-image: url(../img/icons/svg/rocket.svg);
 	}
-.techtag.biology::before {
+.tagicon.biology::before {
 	background-color: #40ac45;
 	background-image: url(../img/icons/svg/leaf.svg);
 	}
-.techtag.socialogy::before {
+.tagicon.socialogy::before {
 	background-color: #968270;
 	background-image: url(../img/icons/svg/talkbubble.svg);
 	}
-.techtag.espionage::before {
+.tagicon.espionage::before {
 	background-color: #6c13b3;
 	background-image: url(../img/icons/svg/medical.svg);
 	}
-.techtag.engineering::before {
+.tagicon.engineering::before {
 	background-color: #854102;
 	background-image: url(../img/icons/svg/transport.svg);
 	}
-.techtag.weapons::before {
+.tagicon.weapons::before {
 	background-color: #000;
 	background-image: url(../img/icons/svg/target.svg);
 	}
-.techtag.physics::before {
+.tagicon.physics::before {
 	background-color: #d1d40b;
 	background-image: url(../img/icons/svg/atom02.svg);
 	}
-.techtag.defense::before {
+.tagicon.defense::before {
 	background-color: #00b9b9;
 	background-image: url(../img/icons/svg/shield.svg);
 	}
-.techtag.special::before {
+	
+.tagicon.special::before {
 	background-color: #AA509F;
 	background-image: url(../img/icons/svg/decoration.svg);
+	}
+	
+.tagicon.beam::before {
+	background-color: #cf0080;
+	background-image: url(../img/icons/svg/prism02.svg);
+	}
+.tagicon.beammod::before {
+	background-color: #cf0080;
+	background-image: url(../img/icons/svg/prism02.svg);
+	}
+.tagicon.missile::before {
+	background-color: #DDBB00;
+	background-image: url(../img/icons/svg/rocket.svg);
+	}
+.tagicon.missilemod::before {
+	background-color: #DDBB00;
+	background-image: url(../img/icons/svg/rocket.svg);
+	}
+.tagicon.kinetic::before {
+	background-color: #3e5ec7;
+	background-image: url(../img/icons/svg/geoshape05.svg);
+	}
+.tagicon.kineticmod::before {
+	background-color: #3e5ec7;
+	background-image: url(../img/icons/svg/geoshape05.svg);
+	}
+.tagicon.cluster::before {
+	background-color: #AA509F;
+	background-image: url(../img/icons/svg/geoshape03.svg);
+	}
+.tagicon.engine::before {
+	background-color: #e278cb;
+	background-image: url(../img/icons/svg/rocket.svg);
+	}
+.tagicon.armor::before {
+	background-color: #b1572d;
+	background-image: url(../img/icons/svg/shield.svg);
+	}
+.tagicon.shield::before {
+	background-color: #64da59;
+	background-image: url(../img/icons/svg/spinner4.svg);
+	}
+.tagicon.colony::before {
+	background-color: #588a61;
+	background-image: url(../img/icons/svg/planet01.svg);
+	}
+.tagicon.troop::before {
+	background-color: #86674d;
+	background-image: url(../img/icons/svg/circle01.svg);
+	}
+.tagicon.research::before {
+	background-color: #126eb9;
+	background-image: url(../img/icons/svg/tool.svg);
+	}
+.tagicon.thrusters::before {
+	background-color: #AA509F;
+	background-image: url(../img/icons/svg/star.svg);
+	}
+.tagicon.cloak::before {
+	background-color: #1ee0e0;
+	background-image: url(../img/icons/svg/hexstar3.svg);
+	}
+.tagicon.targetting::before {
+	background-color: #5a5a5a;
+	background-image: url(../img/icons/svg/focus.svg);
 	}
 	
 
@@ -3593,15 +3659,17 @@ DIV.annoyometer .nub {
 #ship_des_pane #bp_detail H3 { 
 	margin: 1em 0 0.65em 0;
 	}
-
-/*#ship_des_pane IMG.zoomzoom {
-	opacity: 1;
-	animation: shipdes_zoomzoom 0.75s linear;
+#ship_des_pane TABLE TD {
+	vertical-align:top;
 	}
-@keyframes shipdes_zoomzoom {
-	from { transform: translateY(300px); opacity: 0; }
-	100% { transform: translateY(0); opacity: 1; }
-	}*/	
+#ship_des_pane .resources SPAN { margin-right:0.65em; }
+#ship_des_pane TD P.subtext { color: #AAA; }
+#ship_des_pane P.subtext SPAN { margin-right:1em; }
+
+
+
+
+	
 	
 /* SHIP COMBAT PANE */
 #combat_pane {
