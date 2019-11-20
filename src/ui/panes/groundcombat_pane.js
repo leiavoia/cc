@@ -61,12 +61,8 @@ export class GroundCombatPane {
 		}
 		
 	ClosePanel() {
-		this.app.CloseSideBar();
-		this.app.CloseMainPanel();
-		// finish up the battles
 		this.FinishCombat();
-		// tell game this battle is over and continue with other battles
-		this.app.game.ProcessUIQueue();
+		this.app.CloseMainPanel();
 		}
 
 
@@ -149,6 +145,7 @@ export class GroundCombatPane {
 	DoWeaponFX() { 
 		if ( !this.last_turnlog || this.combat_speed <= 0.05 ) { return; }
 		let log = Object.assign( {}, this.last_turnlog ); // can't rely on this with setTimeouts
+		if ( !log.unit || !log.target ) { return; } // fighting windmills
 		
 		// origin and target points on screen
 		let attacker_el = document.querySelector( '#groundunit-' + log.unit.id.toString() + ' IMG');

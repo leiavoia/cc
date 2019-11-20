@@ -60,8 +60,6 @@ export class ShipCombatPane {
 		// finish up the battles
 		this.FinishCombat();
 		this.combat.End(); // cleanup
-		this.app.CloseSideBar();
-		this.app.CloseMainPanel();
 		// switch to ground combat if there was a planet involved and attacker wants it 
 		if ( this.combat.planet 
 			&& this.combatdata.attacker.troops 
@@ -75,7 +73,7 @@ export class ShipCombatPane {
 			}
 		// tell game this battle is over and continue with other battles
 		else {
-			this.app.game.ProcessUIQueue();
+			this.app.CloseMainPanel(); // triggers additional UI Queue items
 			}
 		}
 

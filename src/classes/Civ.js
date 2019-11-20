@@ -1221,13 +1221,14 @@ export default class Civ {
 					else {
 						message = `The attack on our forces at ${starname} was hopefully some kind of accident. If it was not, you are leading our civilizations down the path to war.`;
 						}
+					App.instance.game.QueueAudience( this, {message} );
 					}
 				// they attacked us and it led to war. surprise!
 				else if ( acct.lovenub == 0 ) {
 					message = `Now the game has truly begun. We will accept your surrender any time.`;
+					App.instance.game.QueueAudience( civ, {message} );
 					}
-				App.instance.game.QueueAudience( this, {message} );
-				}							
+				}
 			}						
 		}
 		

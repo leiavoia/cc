@@ -47,17 +47,15 @@ export default class Game {
 		obj.galaxy = this.galaxy.id;
 		obj.victory_achieved = this.victory_achieved;
 		obj.eventcard_queue = []; // [!]TODO - not sure how to format yet
-		obj.shipcombats = this.shipcombats.map( x => {
-			x.attacker = x.attacker.id;
-			x.defender = x.defender.id;
-			if ( x.planet ) { x.planet = x.planet.id; }
-			return x;
-			} );
-		obj.groundcombats = this.groundcombats.map( x => {
-			x.attacker = x.attacker.id;
-			x.planet = x.planet.id;
-			return x;
-			} );
+		obj.shipcombats = this.shipcombats.map( x => ({
+			attacker: x.attacker.id,
+			defender: x.defender.id,
+			planet: (x.planet ? x.planet.id : null)
+			}) );
+		obj.groundcombats = this.groundcombats.map( x => ({
+			attacker: x.attacker.id,
+			planet: x.planet.id
+			}) );
 		obj.audiences = []; // you lost your chance
 		return obj;
 		}
@@ -597,14 +595,21 @@ export default class Game {
 			}
 		}
     
+	// This queue will launch certain interaction-required subscreens (UI panels)
+	// such as ship combat, ground combat, diplomatic audiences, etc. The queue is
+	// process-locked by (bool) game.processing_ui_queue. It will not process multiple
+	// items at once. The process is pumped by calling app.CloseMainPanel() since
+	// all Panel objects call this function to close themselves out. This triggers the
+	// next queue item. Process ends when queue is empty. 
 	ProcessUIQueue() {
-		if ( this.shipcombats.length ) this.PresentNextPlayerShipCombat();
-		else if ( this.groundcombats.length ) this.PresentNextPlayerGroundCombat();
-		else if ( this.audiences.length ) this.PresentNextAudience();
+		if ( this.shipcombats.length ) { this.PresentNextPlayerShipCombat(); }
+		else if ( this.groundcombats.length ) { this.PresentNextPlayerGroundCombat(); }
+		else if ( this.audiences.length ) { this.PresentNextAudience(); }
 		else { 
 			this.ProcessNewlyExploredStars();
 			this.CheckForCivDeath();
 			this.CheckForVictory(true);
+			return true;
 			}
 		}
 		
@@ -696,6 +701,7 @@ export default class Game {
 			// console.log(`INVASION :: ${c.attacker.owner.name} invading ${c.planet.name}, winner: ${combat.winner}`);
 			this.CheckForCivDeath();
 			this.ProcessUIQueue();
+			return;
 			}			
 		// if player is the defender, present mandatory battle
 		else if ( c.planet.owner.is_player ) { 
@@ -759,7 +765,10 @@ export default class Game {
 		// double check all players are still active
 		if ( combat.defender.killme || combat.attacker.killme 
 		|| combat.defender.merged_with || combat.attacker.merged_with 
-		|| !combat.defender.owner.alive || !combat.attacker.owner.alive ) { return false; }
+		|| !combat.defender.owner.alive || !combat.attacker.owner.alive ) { 
+			this.ProcessUIQueue(); 
+			return false; 
+			}
 		if ( this.autoplay ) { 
 			clearInterval( this.autoplay );
 			this.autoplay = false;
