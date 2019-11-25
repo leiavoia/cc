@@ -231,7 +231,7 @@ export class ShipBlueprint {
 		// check for existing weapons, just add qty
 		for ( let i = 0; i < this.weapons.length; i++ ) { 
 			if ( this.weapons[i].tag == tag ) { 
-				this.weapons[i].qty += qty;
+				this.weapons[i].qty = parseInt(this.weapons[i].qty) + parseInt(qty);
 				if ( this.weapons[i].qty <= 0 ) {
 					this.RemoveWeapon( this.weapons[i] );
 					}
@@ -243,8 +243,8 @@ export class ShipBlueprint {
 		// but also radically increases memory usage for ships. Switch 
 		// these lines if memory performance isn't a problem and we
 		// still can't find a solution for aurelia bugs.
-// 		let o = Object.assign( {}, WeaponList[tag] );
-		let o = Object.create( WeaponList[tag] );
+		let o = Object.assign( {}, WeaponList[tag] ); // this one takes more memory
+		// let o = Object.create( WeaponList[tag] ); // this one has binding bugs
 		o.qty = qty; // default, user can change later
 		this.weapons.push(o);
 		this.RecalcStats(); // TODO: parent?
@@ -401,10 +401,31 @@ export class ShipBlueprint {
 		
 	Copy() { 
 		let newbp = new ShipBlueprint();
-		newbp.name = this.name + ' Copy';
 		newbp.img = this.img;
 		this.weapons.forEach( w => { newbp.AddWeapon( w.tag, w.qty ); });
 		this.comps.forEach( c => { newbp.AddComponent( c.tag ); });
+		let newname = this.name.replace( /([ \.-])(\d+|[IVX]+)$/i, (match, base, x) => {
+			// convert integers
+			if ( x.match(/\d+/) ) { return base + (parseInt(x)+1); }
+			// roman
+			else if ( x.match(/[IVX]+/i) ) {
+				switch ( x.toUpperCase() ) {
+					case 'I': return base+' II';
+					case 'II': return base+' III';
+					case 'III': return base+' IV';
+					case 'IV': return base+' V';
+					case 'V': return base+' VI';
+					case 'VI': return base+' VII';
+					case 'VII': return base+' VIII';
+					case 'VIII': return base+' IX';
+					case 'IX': return base+' X';
+					}
+				}
+			// shrug
+			else { return base+' Copy'; }
+			});
+		if ( newname === this.name ) newbp.name = newname + ' 2';
+		else newbp.name = newname;
 		return newbp;
 		}
 	};

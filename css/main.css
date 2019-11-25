@@ -92,6 +92,11 @@ We also link to Google Fonts:
 	0% {  opacity: 1.0; }
 	100% {  opacity: 0.0; }
 }
+@keyframes fadeRepeat {
+	0% {  opacity: 1.0; }
+	50% {  opacity: 0.1; }
+	100% {  opacity: 1.0; }
+}
 @keyframes normalIn {
 	from { transform: scale3d(1,1,1) rotate3d(0,0,0,0) translate3d(0,0,0) }
 }
@@ -196,6 +201,10 @@ We also link to Google Fonts:
 }
 .fadeOut {
 	animation: fadeOut .5s both ease-in;
+	opacity:0;
+}
+.fadeRepeat {
+	animation: fadeRepeat 1.5s both ease-in-out infinite;
 	opacity:0;
 }
 .fuzzIn {
@@ -778,6 +787,9 @@ TABLE.centered {
 	margin-right: auto;
 	}
 
+TABLE.headers_right TH {
+	text-align:right;
+}
 TABLE.env TD {
 	background-color: #000;
 	border:#666 1px solid;	
@@ -809,6 +821,7 @@ TABLE.env TD.ideal {
 .small { font-size: 80%; }
 .big { font-size: 120%; }
 
+.pretty TD { color: #4BA5CC; }
 
 
 /* ICONS */
@@ -886,7 +899,7 @@ button.good, A.button.good, .button_rack A.good {
 	color: #FFF;
 	}
 button.bad, A.button.bad, .button_rack A.bad {
-	background-color: #FAA;
+	background-color: #c74d67;
 	color: #FFF;
 	}
 button.alt, A.button.alt, .button_rack A.alt {
@@ -1004,15 +1017,36 @@ progress::-webkit-progress-value {
 	transition : width 0.5s ease-out; /* NOTE: doesn't seem to work :-( */
 	}
 
+/* colors */ 
+progress.good[value]::-webkit-progress-value,
+progress.good[value]::-moz-progress-bar,
+progress.full[value]::-webkit-progress-value,
 progress.full[value]::-moz-progress-bar {
 	background-image: linear-gradient( to bottom, #54B848 0%, #00DC00 33%, #00DC00 66%, #54B848 100%);
 	}
+progress.bad[value]::-webkit-progress-value,
+progress.bad[value]::-moz-progress-bar {
+	background-image: linear-gradient( to bottom, #a72626 0%, #d15353 33%, #d15353 66%, #a72626 100%);
+	}
+progress.warning[value]::-webkit-progress-value,
+progress.warning[value]::-moz-progress-bar {
+	background-image: linear-gradient( to bottom, #dfa527 0%, #f0bc2d 33%, #f0bc2d 66%, #dfa527 100%);
+	}
+progress.neutral[value]::-webkit-progress-value,
+progress.neutral[value]::-moz-progress-bar {
+	background-image: linear-gradient( to bottom, #45708F 0%, #6693B3 33%, #6693B3 66%, #45708F 100%);
+	}
+	
+/* sizes */
 progress.short {
 	height:0.5em;
 	}
 progress.skinny {
 	height:0.25em;
 	}
+
+
+
 
 INPUT.ghost, INPUT.disabled {
 	pointer-events: none; 
@@ -3651,6 +3685,7 @@ DIV.annoyometer .nub {
 	margin: 0;
 	border-radius: 0.25em;
 	}	
+#ship_des_pane P.subtext,
 #ship_des_pane #newbp P,
 #ship_des_pane #bp_detail P { 
 	margin: 0.2em 0;

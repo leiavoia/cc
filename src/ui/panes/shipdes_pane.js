@@ -7,6 +7,7 @@ export class ShipDesignPane {
 	 	this.mode = null; // used to switch panes
 	 	this.subpanel = null; // indicates which, if any, subpanel is visible
 	 	this.newbp = null; // unsaved blueprint used for making new ones
+		this.design_is_valid = false;
 	 	this.max_hull_size = 0;
 	 	this.scrap_delete_all = false;
 	 	this.scrap_remove_from_queues = false;
@@ -49,26 +50,50 @@ export class ShipDesignPane {
 		this.bp = bp;
 		}
 		
+	ValidateNewDesign() { 
+		this.design_is_valid = true;
+		if ( this.newbp.mass > this.app.game.myciv.max_hull_size ) { this.design_is_valid = false; }
+		if ( this.newbp.mass <= 0 ) { this.design_is_valid = false; }
+		}
+		
 	// BUG: Aurelia has a known bug where it doesn't track the
 	// weapon.qty value if the weapon is added, removed, and re-added.
 	IncWeaponQty( bp, weapon ) { 
 		weapon.qty++;
 		bp.RecalcStats();
+		this.ValidateNewDesign();
 		this.force_update_shim++;
 		}
 	DecWeaponQty( bp, weapon ) { 
 		weapon.qty--;
 		if ( weapon.qty < 1 ) { weapon.qty = 1; }
 		bp.RecalcStats();
+		this.ValidateNewDesign();
+		this.force_update_shim++;
+		}
+	UpdateWeaponQty( bp, weapon ) { 
+		if ( weapon.qty < 1 ) { weapon.qty = 1; }
+		weapon.qty = parseInt(weapon.qty);
+		bp.RecalcStats();
+		this.ValidateNewDesign();
 		this.force_update_shim++;
 		}
 		
 	ClickAddWeapon( weapon ) {
 		this.newbp.AddWeapon(weapon.tag);
+		this.ValidateNewDesign();
 		this.force_update_shim++;
+		this.subpanel = null;
 		}
 	ClickAddComponent( comp ) {
 		this.newbp.AddComponent(comp.tag);
+		this.ValidateNewDesign();
+		this.force_update_shim++;
+		this.subpanel = null;
+		}
+	ClickRemoveComponent( comp ) {
+		let result = this.newbp.RemoveComponent(comp);
+		this.ValidateNewDesign();
 		this.force_update_shim++;
 		}
 		
@@ -76,10 +101,12 @@ export class ShipDesignPane {
 		this.newbp = new ShipBlueprint;
 		this.newbp.img = this.avail_imgs[0];
 		this.mode = 'new';
+		this.design_is_valid = false;
 		this.subpanel = null;
 		}
 		
-	CommitNewBlueprint() { 
+	CommitNewBlueprint() {
+		if ( !this.design_is_valid ) { return false; }
 		this.bps.push( this.newbp );
 		this.bp = this.newbp;
 		this.newbp = null;
@@ -95,6 +122,7 @@ export class ShipDesignPane {
 		
 	CopyBlueprint() { 
 		this.newbp = this.bp.Copy();
+		this.ValidateNewDesign();
 		this.mode = 'new';
 		}
 		

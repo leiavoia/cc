@@ -4,7 +4,7 @@
 		<header>
 			<div class="button_rack big" style="float:right;">
 				<button click.delegate="StartNewBlueprint()" if.bind="mode!='new'" class="alt">NEW DESIGN</button>	
-				<button click.delegate="CommitNewBlueprint()" if.bind="mode=='new'" class="alt ${newbp.mass > 0 ? '' : 'ghost'}">COMMIT DESIGN</button>
+				<button click.delegate="CommitNewBlueprint()" if.bind="mode=='new'" class="alt ${design_is_valid ? '' : 'ghost'}">COMMIT DESIGN</button>
 				<button click.delegate="CancelNewBlueprint()" if.bind="mode=='new'" class="bad">CANCEL DESIGN</button>
 				<button click.delegate="ClosePanel()">CLOSE</button>
 			</div>
@@ -22,10 +22,7 @@
 					<div class="info">
 						<p>${shipbp.name}</p>
 						<p class="subtext">
-							${shipbp.sizeclass}-Class,  
-							${shipbp.research ? 'Research' : ''}
-							${shipbp.colonize ? 'Colonizer' : ''} 
-							<span containerless if.bind="shipbp.fp">${shipbp.fp} Firepower</span>
+							${shipbp.sizeclass}-Class${shipbp.research ? ', Research' : ''}${shipbp.colonize ? ', Colonizer' : ''}${shipbp.troopcap ? ', Carrier' : ''}<span containerless if.bind="shipbp.fp">, ${shipbp.fp} Firepower</span>
 						</p>
 					</div>
 				</div>
@@ -41,19 +38,59 @@
 					<br/>
 					<img src.bind="bp.img" class="zoomzoom" style="width: 100%; min-width: 100px;"/>
 				</div>
-				<h2>${bp.name} <span style="color:#4BA5CC;">${bp.sizeclass}-Class</span></h2>
-				<p>Structure: <b>${bp.mass}</b> Mass, <b>${bp.hull}</b> Hull, <b>${bp.armor}</b> Armor,  <b>${bp.shield}</b> Shielding</p>
-				<p class="resources">Costs: <span repeat.for="k of bp.cost|props" class="${k}">${bp.cost[k]}</span></p>
-				<p>Discount: ${bp.bulk_discount}% (${bp.num_built} Made)</p>
-				<p>Firepower: ${bp.fp}</p>
-				<p>AI Threat: ${bp.milval}</p>
-				<p>Map Speed: ${bp.speed}</p>
-				<p>Combat Speed: ${bp.combatspeed}</p>
-				<p>Colony Ship: ${bp.colonize ? 'YES' : 'NO'}</p>
-				<p>Research Capacity: ${bp.research}</p>
-			
+				<h2>${bp.name}</h2>
+				
+				<table class="wide headers_right pretty">
+					<tr>
+						<th>Mass</th>	
+						<td>${bp.mass}</td>
+						<th>Size Class</th>	
+						<td>${bp.sizeclass}</td>
+					</tr>
+					<tr>
+						<th>Hull</th>	
+						<td>${bp.hull}</td>
+						<th>Units Built</th>	
+						<td>${bp.num_built}</td>
+					</tr>
+					<tr>
+						<th>Armor</th>	
+						<td>${bp.armor}</td>
+						<th>Discount</th>	
+						<td>${bp.bulk_discount}%</td>
+					</tr>
+					<tr>
+						<th>Shielding</th>	
+						<td>${bp.shield}</td>
+						<th>Research Capacity</th>	
+						<td>${bp.research}</td>
+					</tr>
+					<tr>
+						<th>Firepower</th>	
+						<td>${bp.fp}</td>
+						<th>Can Colonize</th>	
+						<td>${bp.colonize ? 'YES' : 'NO'}</td>
+					</tr>
+					<tr>
+						<th>Map Speed</th>	
+						<td>${bp.speed}</td>
+						<th>Carrier</th>	
+						<td>${bp.troopcap ? 'YES' : 'NO'}</td>
+					</tr>
+					<tr>
+						<th>Combat Speed</th>	
+						<td>${bp.combatspeed}</td>
+						<th>AI Value</th>	
+						<td>${bp.milval}</td>
+					</tr>
+					<tr>
+						<th>Costs</th>	
+						<td colspan="3" class="resources"><span repeat.for="k of bp.cost|props" class="${k}">${bp.cost[k]}</span></td>
+					</tr>
+				</table>
+				
 				<h3>Weapons</h3>
-				<table if.bind="bp.weapons.length">
+				<table if.bind="bp.weapons.length" class="wide">
 					<tr>
 						<th></th>
 						<th>Qty</th>
@@ -63,6 +100,7 @@
 						<th>Shot</th>
 						<th>Spd</th>
 						<th>Acu</th>
+						<th>Size</th>
 						<th>Cost</th>
 					</tr>
 					<tr repeat.for="w of bp.weapons">
@@ -74,13 +112,14 @@
 						<td>${w.shots}</td>
 						<td>${w.reload}</td>
 						<td>${w.accu}</td>
+						<td>${w.mass}</td>
 						<td class="resources"><span repeat.for="k of w.cost|props" class="${k}">${w.cost[k]}</span></td>
 					</tr>
 				</table>
 				<p if.bind="!bp.weapons.length">None</p>
 				
 				<h3>Components</h3>
-				<table if.bind="bp.comps.length">
+				<table if.bind="bp.comps.length" class="wide">
 					<tr repeat.for="c of bp.comps">
 						<td><span class="tagicon comp ${c.type}"></span></td>
 						<td><b>${c.name}</b></td>
@@ -90,7 +129,10 @@
 								<span repeat.for="m of c.mods">${m.toString()}</span>
 							</p>
 						</td>
-						<td class="resources"><span repeat.for="k of c.cost|props" class="${k}">${c.cost[k]}</span></td>
+						<td class="resources">
+							<span repeat.for="k of c.cost|props" class="${k}">${c.cost[k]}</span>
+							<p class="subtext" if.bind="c.scaled">p/ mass</p>
+						</td>
 					</tr>
 				</table>			
 				<p if.bind="!bp.comps.length">None</p>
@@ -98,13 +140,15 @@
 			
 			
 			<!-- new blueprint pane -->
-			<div id="newbp" class="offset" if.bind="newbp && mode=='new'">
+			<div id="newbp" class="offset" if.bind="newbp && mode=='new' && !subpanel">
 				<p>
-					<input type="text" name="shipname" value.bind="newbp.name" />
+					<input type="text" name="shipname" value.bind="newbp.name" placeholder="Name This Ship" />
 				</p>
 				<p>
-					<progress max.one-time="max_hull_size" value.bind="newbp.mass || 0"></progress>
-					<b>${(((newbp.mass||1) / max_hull_size ) * 100) | round}%</b> Maximum Capacity
+					<progress max.one-time="max_hull_size" value.bind="newbp.mass || 0" class="${newbp.mass > max_hull_size ? 'bad' : ''}"></progress>
+					<span class="${newbp.mass > max_hull_size ? 'bad fadeRepeat' : ''}">
+						<b>${(((newbp.mass||1) / max_hull_size ) * 100) | round}%</b> Maximum Capacity
+					</span>
 				</p> 
 				<div style="float:right; max-width: 12em; width: 20%; min-width: 100px; margin:0; max-height:10em" >
 					<p class="button_rack button_rack_fill topless" style="text-align:center;">
@@ -113,41 +157,78 @@
 					</p>
 					<img src.bind="newbp.img" class="zoomzoom" style="width: 100%; min-width: 100px;"/>
 				</div>
-				<h2>
-					<span style="color:#4BA5CC;">${newbp.sizeclass}-Class</span>
-				</h2>
-				<p>Structure: <b>${newbp.mass}</b> Mass, <b>${newbp.hull}</b> Hull, <b>${newbp.armor}</b> Armor,  <b>${newbp.shield}</b> Shielding</p>
-				<p class="resources">Costs: 
-					<!-- silly structure help dodge aurelia binding problems when iterating over properties -->
-					<span repeat.for="k of ['labor','$','o','s','m','r','g','b','c','y','v']" class="${k}">
-						<template containerless if.bind="newbp.cost[k]">${k}:${newbp.cost[k]}</template>
-					</span>
-				</p>
-				<p>Firepower: ${newbp.fp}</p>
-				<p>Map Speed: ${newbp.speed}</p>
-				<p>Combat Speed: ${newbp.combatspeed}</p>
-				<p>Colony Ship: ${newbp.colonize ? 'YES' : 'NO'}</p>
-				<p>Research Capacity: ${newbp.research}</p>
-			
+
+				<table class="wide headers_right pretty">
+					<tr>
+						<th>Mass</th>	
+						<td>${newbp.mass}</td>
+						<th>Size Class</th>	
+						<td>${newbp.sizeclass}</td>
+					</tr>
+					<tr>
+						<th>Hull</th>	
+						<td>${newbp.hull}</td>
+						<th>Units Built</th>	
+						<td>${newbp.num_built}</td>
+					</tr>
+					<tr>
+						<th>Armor</th>	
+						<td>${newbp.armor}</td>
+						<th>Discount</th>	
+						<td>${newbp.bulk_discount}%</td>
+					</tr>
+					<tr>
+						<th>Shielding</th>	
+						<td>${newbp.shield}</td>
+						<th>Research Capacity</th>	
+						<td>${newbp.research}</td>
+					</tr>
+					<tr>
+						<th>Firepower</th>	
+						<td>${newbp.fp}</td>
+						<th>Can Colonize</th>	
+						<td>${newbp.colonize ? 'YES' : 'NO'}</td>
+					</tr>
+					<tr>
+						<th>Map Speed</th>	
+						<td>${newbp.speed}</td>
+						<th>Carrier</th>	
+						<td>${newbp.troopcap ? 'YES' : 'NO'}</td>
+					</tr>
+					<tr>
+						<th>Combat Speed</th>	
+						<td>${newbp.combatspeed}</td>
+						<th>AI Value</th>	
+						<td>${newbp.milval}</td>
+					</tr>
+					<tr>
+						<th>Costs</th>	
+						<td class="resources" colspan="3">
+							<!-- silly structure help dodge aurelia binding problems when iterating over properties -->
+							<template repeat.for="k of ['labor','$','o','s','m','r','g','b','c','y','v']">
+								<span containerless if.bind="force_update_shim && newbp.cost[k]" class="${k}">${newbp.cost[k]}</span>
+							</template>
+						</td>
+					</tr>
+				</table>
+						
 				<h3>Weapons</h3>
-				<table if.bind="newbp.weapons.length">
+				<table if.bind="newbp.weapons.length" class="wide">
 					<tr>
 						<th></th>
-						<th></th>
-						<th>Qty</th>
 						<th>Name</th>
+						<th>Qty</th>
 						<th>Type</th>
 						<th>Dmg</th>
 						<th>Shot</th>
 						<th>Spd</th>
 						<th>Acu</th>
+						<th>Size</th>
 						<th>Cost</th>
 					</tr>
 					<tr repeat.for="w of newbp.weapons">
 						<td>
-							<button class="bad bold" click.delegate="newbp.RemoveWeapon(w)">X</button>
-							<button class="cool bold" click.delegate="DecWeaponQty(newbp,w)">-</button>
-							<button class="cool bold" click.delegate="IncWeaponQty(newbp,w)">+</button>
+							<button class="bad small" click.delegate="newbp.RemoveWeapon(w)">X</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						</td>
 						<!-- 
 							BUG: Aurelia doesn't rebind to weapons that are added, 
@@ -155,14 +236,19 @@
 							even if +/- buttons are used, however, the actual data
 							does change. Maybe there will be a fix one day.							
 						-->
-						<td><span class="tagicon weapon ${w.type}"></span></td>
-						<td>x${w.qty + force_update_shim*0}</td>
 						<td><b>${w.name}</b></td>
-						<td>${w.type}</td>
+						<td>
+							<button click.delegate="DecWeaponQty(newbp,w)" class="cool small">-</button>
+							${w.qty}
+							<button click.delegate="IncWeaponQty(newbp,w)" class="cool small">+</button>
+							<!-- <input type="number" value.bind="w.qty" style="width:3em" min="1" max="999" change.delegate="UpdateWeaponQty(newbp,w)" /> -->
+						</td>
+						<td><span class="tagicon weapon ${w.type}"></span>${w.type}</td>
 						<td>${w.mindmg}-${w.maxdmg}</td>
 						<td>${w.shots}</td>
 						<td>${w.reload}</td>
 						<td>${w.accu}</td>
+						<td>${w.mass}</td>
 						<td class="resources"><span repeat.for="k of w.cost|props" class="${k}">${w.cost[k]}</span></td>
 					</tr>
 				</table>
@@ -171,24 +257,29 @@
 				</p>
 			
 				<h3>Components</h3>
-				<table if.bind="newbp.comps.length">
+				<table if.bind="newbp.comps.length" class="wide">
 					<tr>
-						<th></th>
 						<th></th>
 						<th>Name</th>
 						<th>Desc</th>
 						<th>Cost</th>
-						<th>Effects</th>
 					</tr>
 					<tr repeat.for="c of newbp.comps">
 						<td>
-							<button class="bad bold" click.delegate="newbp.RemoveComponent(c)">X</button>
+							<button class="bad small" click.delegate="ClickRemoveComponent(c)">X</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						</td>
-						<td><span class="tagicon comp ${c.type}"></span></td>
 						<td><b>${c.name}</b></td>
-						<td>${c.desc}</td>
-						<td class="resources"><span repeat.for="k of c.cost|props" class="${k}">${c.cost[k]}</span></td>
-						<td><span repeat.for="m of c.mods">${m.op}${m.val} ${m.abil} </span> </td>
+						<td>
+							<span class="tagicon comp ${c.type}"></span>
+							${c.desc}
+							<p class="subtext">
+								<span repeat.for="m of c.mods">${m.toString()}</span>
+							</p>
+						</td>
+						<td class="resources">
+							<span repeat.for="k of c.cost|props" class="${k}">${c.cost[k]}</span>
+							<p class="subtext" if.bind="c.scaled">p/ mass</p>
+						</td>
 					</tr>
 				</table>
 				<p class="button_rack">
@@ -218,9 +309,8 @@
 					<button class="big" click.delegate="subpanel=null">CLOSE</button>
 				</p>
 				<h3>Add Weapons:</h3>
-				<table>
+				<table class="wide">
 					<tr>
-						<th></th>
 						<th></th>
 						<th>Name</th>
 						<th>Type</th>
@@ -234,9 +324,8 @@
 						<td>
 							<button class="" click.delegate="ClickAddWeapon(w)">Add</button>
 						</td>
-						<td><span class="tagicon weapon ${w.type}"></span></td>
 						<td><b>${w.name}</b></td>
-						<td>${w.type}</td>
+						<td><span class="tagicon weapon ${w.type}"></span> ${w.type}</td>
 						<td>${w.mindmg}-${w.maxdmg}</td>
 						<td>${w.shots}</td>
 						<td>${w.reload}</td>
@@ -252,24 +341,29 @@
 					<button class="big" click.delegate="subpanel=null">CLOSE</button>
 				</p>
 				<h3>Add Components:</h3>
-				<table>
+				<table class="wide">
 					<tr>
-						<th></th>
 						<th></th>
 						<th>Name</th>
 						<th>Desc</th>
 						<th>Cost</th>
-						<th>Effects</th>
 					</tr>					
 					<tr repeat.for="c of app.game.myciv.avail_ship_comps">
 						<td>
 							<button class="" click.delegate="ClickAddComponent(c)">Add</button>
 						</td>
-						<td><span class="tagicon comp ${c.type}"></span></td>
 						<td><b>${c.name}</b></td>
-						<td>${c.desc}</td>
-						<td><span repeat.for="m of c.mods">${m.op}${m.val} ${m.abil} </span> </td>
-						<td class="resources"><span repeat.for="k of c.cost|props" class="${k}">${c.cost[k]}</span></td>
+						<td>
+							<span class="tagicon comp ${c.type}"></span>
+							${c.desc}
+							<p class="subtext">
+								<span repeat.for="m of c.mods">${m.toString()}</span>
+							</p>
+						</td>
+						<td class="resources">
+							<span repeat.for="k of c.cost|props" class="${k}">${c.cost[k]}</span>
+							<p class="subtext" if.bind="c.scaled">p/ mass</p>
+						</td>
 					</tr>
 				</table>
 			</div>
