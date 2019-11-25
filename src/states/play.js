@@ -21,6 +21,7 @@ export class PlayState {
 	xtreme_zoom = false;
 	caret = { obj: null, x: 0, y: 0, class: null };
 	panzoom = null; // scroll controller
+	content_pane_obj = null; // composed content pane element. populates dynamically when content pane loads.
 	
 	constructor( app ) {
 		this.app = app;
@@ -83,7 +84,10 @@ export class PlayState {
 		let x, y = 0;
 		if ( obj instanceof Star || obj instanceof Anom ) { x = obj.xpos; y = obj.ypos; }
 		else if ( obj instanceof Planet ) { x = obj.star.xpos; y = obj.star.ypos; }
-		else if ( obj instanceof Fleet ) { x = obj.xpos; y = obj.ypos; }
+		else if ( obj instanceof Fleet ) { 
+			if ( obj.star ) { x = obj.star.xpos; y = obj.star.ypos; }
+			else { x = obj.xpos; y = obj.ypos; }
+			}
 		else { x = obj.x; y = obj.y; } // not a safe fallback
 		this.SetCaret( obj );
 		let map = document.getElementById('layout_map');

@@ -411,7 +411,9 @@ body,html {
    scrollbars do not respond to pointer events */
 #layout_ui_content.active { 
 	pointer-events: auto; 
-	background: rgba(0,0,0,1.0);
+	}
+.pane {
+	background: #000; /* override if you want transparency */
 	}
 	
 #layout_ui_visor SPAN { margin-right: 1em; }
@@ -439,7 +441,7 @@ body,html {
 	box-sizing: border-box;
 	padding: 1em; 	
 	pointer-events: auto; /* capture click events */
-/* 	min-height: 100%; */
+	min-height: 100%;
 	}
 /* 
 flex panes are designed to have wrappers to 
@@ -823,6 +825,12 @@ TABLE.env TD.ideal {
 
 .pretty TD { color: #4BA5CC; }
 
+TABLE.hover_rows TR:hover {
+	background: rgba(75, 165, 204, 0.65);
+	}
+TABLE.clickable {
+	cursor: pointer;
+	}
 
 /* ICONS */
 
@@ -3657,6 +3665,18 @@ DIV.annoyometer .nub {
 	background-color: #5a5a5a;
 	background-image: url(../img/icons/svg/focus.svg);
 	}
+.tagicon.attack::before {
+	background-color: #b41b1b;
+	background-image: url(../img/icons/svg/star.svg);
+	}
+.tagicon.colonize::before {
+	background-color: #158b0b;
+	background-image: url(../img/icons/svg/planet01.svg);
+	}
+.tagicon.invade::before {
+	background-color: #e97c00;
+	background-image: url(../img/icons/svg/robot.svg);
+	}
 	
 
 
@@ -3665,7 +3685,7 @@ DIV.annoyometer .nub {
 #ship_des_pane {
 	height:100%;
 	max-height: 100%;
-	background: url(../img/workshop/technic1.png) repeat;
+	background: #000 url(../img/workshop/technic1.png) repeat;
 	}
 #ship_des_pane #bp_list { 
 	flex: 1 1 20em;
@@ -3982,6 +4002,11 @@ DIV.annoyometer .nub {
 	color: #AAA;
 	}
 
+#layout_ui_content.active #fleets_pane {
+	background: rgba(0,0,0,0.7);
+	}
+	
+	
 /* overkill title intro */
 #layout_ui_main.title_screen H1 SPAN { opacity: 0.001; }
 #layout_ui_main.title_screen H1 SPAN:nth-child(1) { opacity: 1; animation: fadeIn 2s both ease-out 0s; }

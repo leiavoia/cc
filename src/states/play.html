@@ -369,7 +369,9 @@
 			<div id="layout_ui_content" class="${app.main_panel_mode ? 'active trekIn' : 'trekOut'}">
 				<compose if.bind="app.main_panel_mode" 
 					model.bind="{app: app, obj: app.main_panel_obj, data: app.main_panel_data}"  
-					view-model="../ui/panes/${app.main_panel_mode}_pane" containerless>
+					view-model="../ui/panes/${app.main_panel_mode}_pane" 
+					view-model.ref="content_pane_obj"
+					containerless>
 				</compose>
 			</div>
 

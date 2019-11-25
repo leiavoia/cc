@@ -1,32 +1,40 @@
-<template>
+<template containerless>
 	<div id="fleets_pane" class="pane">
 	
-		<p style="float:right; margin: 0;"><button click.delegate="ClosePanel()" class="big">CLOSE</button></p>
+		<p style="float:right; margin: 0;"><button click.delegate="ClosePanel()" class="big bad">CLOSE</button></p>
 		
 		<h1>Fleets</h1>
 		
-		<table>
-			<!--app.game.myciv.fleets-->
-			<tr repeat.for="f of app.game.galaxy.fleets" 
-				style="${f.killme?'line-through':'none'};"
-				click.delegate="ClickObject(f)"
-				>
-				<td>#${f.id}</td>
-				<td style="color: ${f.owner.color};"><b>${f.owner.name}</b></td>
-				<td>
-					<b style="color: #000; text-shadow: 1px 1px 0 #FFF; background-color: #F33;" if.bind="f.fp">⚔</b>
-					<b style="color: #000; text-shadow: 1px 1px 0 #FFF; background-color: #4C4;" if.bind="f.research">⚛</b>
-					<b style="color: #000; text-shadow: 1px 1px 0 #FFF; background-color: #FF9F00;" if.bind="f.troops">☠</b>
-					<b style="color: #000; text-shadow: 1px 1px 0 #FFF; background-color: #FF0;" if.bind="f.colonize">⚑</b>
+		<table class="big wide hover_rows clickable">
+			<tr>
+				<th>ID</th>
+				<th>Ships</th>
+				<th>Abilities</th>
+				<th>Stationed At</th>
+				<th>Destination</th>
+				<th>Strength</th>
+				<th>Firepower</th>
+				<th>Health</th>
+				<th>Troops</th>
+				<th>Research</th>
+			</tr>
+			<tr repeat.for="f of app.game.myciv.fleets" click.delegate="ClickObject(f)">
+				<td style="color: #999">#${f.id}</td>
+				<!-- <td css="color: ${f.owner.color};"><b>${f.owner.name}</b></td> -->
+				<td>${f.ships.length}</td>
+				<td class="tagicons">
+					<span class="tagicon attack" if.bind="f.fp"></span>
+					<span class="tagicon research" if.bind="f.research"></span>
+					<span class="tagicon invade" if.bind="f.troops"></span>
+					<span class="tagicon colonize" if.bind="f.colonize"></span>
 				</td>
-				<td>SHIPS: ${f.ships.length}</td>
-				<td>Threat: ${f.milval}</td>
-				<td>STAR: ${f.star ? f.star.name : '-'}</td>
-				<td>DEST: ${f.mission ? 'On Mission' : (f.dest ? f.dest.name : '-')}</td>
-				<td>X: ${f.xpos|round}</td>
-				<td>Y: ${f.ypos|round}</td>
-				<td>FP: ${f.fp} (${f.fp_remaining / f.fp | percent}%)</td>
-				<td>HP: ${f.health / f.healthmax | percent}%</td>
+				<td>${f.star ? f.star.name : ''}</td>
+				<td>${f.mission ? 'On Mission' : (f.dest ? f.dest.name : '')}</td>
+				<td>${f.milval}</td>
+				<td>${f.fp_remaining / f.fp | percent}%</td>
+				<td>${f.health / f.healthmax | percent}%</td>
+				<td>${f.troops}</td>
+				<td>${f.research}</td>
 			</tr>
 		</table>
 			
