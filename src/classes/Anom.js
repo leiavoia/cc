@@ -1,5 +1,6 @@
 import * as utils from '../util/utils';
 import {Mod} from './Mods';
+import {ShipBlueprint} from './Ship';
 
 export default class Anom {
 	
@@ -148,9 +149,25 @@ let anom_list = {
 		},
 	WRECKAGE: {
 		pre_desc: 'Small object or gravitational disturbance detected.',
-		post_desc: 'Research teams happened upon what appears to be the wreckage of a failed "orgship". It seems to have suffered an accident and was found drifting eternally end over end. Studying the wreckage may give us some insights into its makers.',		
+		post_desc: 'Research teams happened upon what appears to be the wreckage of a failed "orgship". It seems to have suffered an accident and was found drifting eternally end over end.',		
 		onComplete: function (fleet) { 
-			//  TODO ????
+			// find the next biology or engineering tech available
+			let best_node = null;
+			let max_rp = 4 * (fleet.owner.tech.current_project ? fleet.owner.tech.current_project.node.rp : 200);
+			for ( let [k,n] of fleet.owner.tech.nodes_avail ) {
+				if ( n.node.tags.contains('biology') || n.node.tags.contains('engineering') ) {
+					if ( ( !best_node || n.node.rp < best_node.rp ) && n.node.rp <= max_rp ) { 
+						best_node = n.node;
+						}
+					}
+				}
+			if ( best_node ) {
+				fleet.owner.CompleteTechNode( best_node );
+				this.post_desc += ` Studying the ship and its contents has taught us <b>${best_node.name}</b> technology.`;
+				}
+			else {
+				this.post_desc += ` However, there was nothing to learn from this curiosity.`;
+				}
 			this.name = 'Mysterious Wreckage';
 			}
 		},
@@ -166,8 +183,26 @@ let anom_list = {
 		},
 	PROBE: {
 		pre_desc: 'Abnormal energy signatures detected.',
-		post_desc: 'Drifting though space at sub-light speeds, research teams intercepted an uncrewed alien probe. More research is needed to uncover its origins.',		
+		post_desc: 'Drifting though space at sub-light speeds, research teams intercepted an uncrewed alien probe.',		
 		onComplete: function (fleet) {
+			// find the next propulsion or armor or shield or weapon tech available
+			let best_node = null;
+			let max_rp = 2 * (fleet.owner.tech.current_project ? fleet.owner.tech.current_project.node.rp : 200);
+			for ( let [k,n] of fleet.owner.tech.nodes_avail ) {
+				if ( n.node.tags.contains('propulsion') || n.node.tags.contains('armor') 
+					|| n.node.tags.contains('weapon') || n.node.tags.contains('shield') ) {
+					if ( ( !best_node || n.node.rp < best_node.rp ) && n.node.rp <= max_rp ) { 
+						best_node = n.node;
+						}
+					}
+				}
+			if ( best_node ) {
+				fleet.owner.CompleteTechNode( best_node );
+				this.post_desc += ` Studying the probe has taught us <b>${best_node.name}</b> technology.`;
+				}
+			else {
+				this.post_desc += ` However, there was nothing to learn.`;
+				}			
 			this.name = 'Probe';
 			}
 		},
@@ -184,19 +219,23 @@ let anom_list = {
 		},
 	LOST_FIGHTER: {
 		pre_desc: 'Small object or gravitational disturbance detected.',
-		post_desc: 'Drifting in deep space, we discovered an abandoned spacecraft of unknown origin. The reseach team will tow it back for follow up examination and retrofitting for use in our fleet.',		
+		post_desc: 'Drifting in deep space, we discovered an abandoned spacecraft of unknown origin. The reseach team will will retrofit the craft for use in our own fleet and further manufacturing.',		
 		onComplete: function (fleet) {
 			this.name = 'Lost Spacecraft';
 			let bp = new ShipBlueprint();
 			bp.name = 'Lost Fighter';
-			bp.img = 'img/ships/ship005_mock.png';
-			bp.AddWeapon('RAYGUN',5);
-			bp.AddWeapon('LASER',3);
-			bp.AddWeapon('MISSILE',5);      
-			bp.hull = 400;
-			bp.armor = 100;
-			bp.speed = 200;
-			fleet.AddShip( new Ship(bp) );
+			bp.img = 'img/ships/ship030_mock.png';
+			if ( Math.random() > 0.2 ) bp.AddWeapon('RAYGUN', Math.ceil( Math.random() * 3 ) );
+			if ( Math.random() > 0.2 ) bp.AddWeapon('LASER', Math.ceil( Math.random() * 3 ) );
+			if ( Math.random() > 0.2 ) bp.AddWeapon('MISSILE', Math.ceil( Math.random() * 3 ) );
+			if ( Math.random() > 0.6 ) bp.AddComponent('ENGINE1');
+			if ( Math.random() > 0.6 ) bp.AddComponent('ARMOR1');
+			if ( Math.random() > 0.6 ) bp.AddComponent('THRUSTERS1');
+			if ( Math.random() > 0.6 ) bp.AddComponent('TARGETTING1');
+			if ( Math.random() > 0.6 ) bp.AddComponent('SHIELD1');
+			if ( Math.random() > 0.75 ) bp.AddComponent('RESEARCHLAB1');
+			fleet.owner.ship_blueprints.push(bp);
+			fleet.AddShip( bp.Make() );
 			}
 		}
 	};
