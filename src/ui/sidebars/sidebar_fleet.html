@@ -53,7 +53,7 @@
 		</div>
 					
 		<!-- local anomoly research info -->
-		<p if.bind="fleet.star && !fleet.dest && fleet.star.objtype == 'anom' && (app.options.see_all || fleet.owner.is_player)">
+		<p class="centered" if.bind="fleet.star && !fleet.dest && fleet.star.objtype == 'anom' && (app.options.see_all || fleet.owner.is_player)">
 			Anomaly Research: ${(app.game.turn_num*0) + fleet.star.AmountResearched( fleet.owner ) / fleet.star.size | percent}% 
 			<progress value.bind="(app.game.turn_num*0) + fleet.star.AmountResearched( fleet.owner ) / fleet.star.size" />
 		</p>

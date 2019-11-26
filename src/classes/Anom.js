@@ -54,8 +54,8 @@ export default class Anom {
 		// 'fromJSON' style object as first param. Note that stored JSON objects
 		// do not contain all necessary properties. We need to fetch from the anom library.
 		if ( type && typeof(type)==='object' && 'xpos' in type ) { 
-			Object.assign( this, type ); 
 			Object.assign( this, anom_list[type.key] );
+			Object.assign( this, type ); 
 			}
 		// regular constructor
 		else { 
@@ -71,8 +71,7 @@ export default class Anom {
 		
 	toJSON() { 
 		let obj = {};
-		// we dont need the common info stored in the library, just instance data
-		for ( let k of ['collected','size','vis_level','onmap','order','in_range', 'explored','settled','ypos','xpos','type','name','id'] ) { 
+		for ( let k of ['pre_desc','post_desc','key','collected','size','vis_level','onmap','order','in_range', 'explored','settled','ypos','xpos','type','name','id'] ) { 
 			obj[k] = this[k];
 			}
 		obj._classname = 'Anom';

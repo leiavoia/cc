@@ -1,15 +1,16 @@
 <template>
-<!--	<require from="./converters/percent"></require>
-	<require from="./converters/round"></require>-->
-	
 	<div class="star">
-		<template if.bind="!anom.explored && !app.options.see_all">
+		<template if.bind="!research_completed && !app.options.see_all">
 			<h2>Unexplored Anomaly</h2>
-			<p class="desc">${anom.pre_desc}</p>
+			<p class="centered">
+				Anomaly Research: ${amount_researched / anom.size | percent}% 
+				<progress value.bind="amount_researched / anom.size" />
+			</p>
+			<p class="desc" innerhtml.bind="anom.pre_desc"></p>
 		</template>
-		<template if.bind="anom.explored || app.options.see_all">
+		<template if.bind="research_completed || app.options.see_all">
 			<h2>${anom.name}</h2>
-			<p class="desc">${anom.post_desc}</p>
+			<p class="desc" innerhtml.bind="anom.post_desc"></p>
 		</template>
 	</div>
 </template>
