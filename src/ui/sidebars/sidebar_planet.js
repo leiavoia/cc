@@ -18,6 +18,7 @@ export class PlanetDetailPane {
 		this.sel_zone = null;
 		this.show_add_zone_panel = false;
 		this.zone_to_add = null;
+		this.ground_units = this.planet.ListUniqueGroundUnits(); // Map
 		}
 		
 	unbind() { 	
@@ -47,6 +48,7 @@ export class PlanetDetailPane {
 			this.habitat_bonus = planet.HabitationBonus( this.app.game.myciv.race );
 			this.playerHasLocalFleet = planet.star.PlayerHasLocalFleet;
 			this.CompileBuildQueueItemList();
+			this.ground_units = planet.ListUniqueGroundUnits(); // Map
 			// if a zone was selected for viewing, make sure still exists
 			if ( this.sel_zone && !planet.zones.contains(this.sel_zone) ) {
 				this.sel_zone = null;

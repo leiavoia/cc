@@ -200,7 +200,7 @@
 			
 			<div class="defenses wrapper" if.bind="planet.owner && planet.troops.length">
 				<!-- <h3>Defenses:</h3> -->
-				<div repeat.for="[bp,count] of planet.ListUniqueGroundUnits()" style="display:inline-block;">
+				<div repeat.for="[bp,count] of ground_units" style="display:inline-block;">
 					<img src.bind="bp.img" title.bind="bp.name"
 						style="
 							height: 32px; 
