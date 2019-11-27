@@ -27,7 +27,7 @@ export default class Planet {
 	popmax_contrib = 0; // used to calculate housing development from zones. resets every turn.
 	morale = 1.0;	// multiplier, default 1.0, range 0-2
 	troops = []; // list of GroundUnits defending planet.
-	prod_q = [];
+	prod_q = []; // { type, obj (blueprint), name, cost (labor), qty, turns_left, pct }
 	
 	// PHYSICAL ATTRIBUTES -------------------------------
 	energy = 1.0; // speeds up zone development

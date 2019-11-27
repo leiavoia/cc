@@ -186,7 +186,7 @@ export class ShipBlueprint {
 			// costs go down as we build more of them. 
 			// this gives an incentive to build smaller ships.
 			this.num_built = 0;
-			this.bulk_discount = 0; // percentage, for UI only
+			this.bulk_discount = 0; // amount to reduce costs (0..1)
 			}
 		}
 
@@ -315,9 +315,9 @@ export class ShipBlueprint {
 				this.cost[k] += c.cost[k] * ( c.scaled ? this.mass : 1 ); 
 				} 
 			});
-		this.cost.labor = this.mods.Apply( this.cost.labor, 'labor', parent );
+		// bulk discounts
 		for ( let k in this.cost ) { 
-			this.cost[k] = Math.ceil( this.cost[k] );
+			this.cost[k] = Math.ceil( (1-this.bulk_discount) * this.cost[k] );
 			}
 		for ( let k in this.cost ) { 
 			if ( !this.cost[k] ) {
@@ -390,13 +390,13 @@ export class ShipBlueprint {
 		
 	IncNumBuilt() { 
 		this.num_built++;
-		// retract our previous mod
-		this.mods.RemoveMatching('labor', null, 'bulk_discount');
-		// add a new one
 		let rate = 1.0
 		for ( let max=5; this.num_built >= max && rate > 0.05; max*=2, rate-=0.05 ) { ;; }
-		this.bulk_discount = Math.round( ( 1.0 - rate ) * 100 );
-		this.mods.Add( new Mod( 'labor', '*', rate, 'Mass Production Discount', 'bulk_discount' ) );
+		let new_discount = 1.0 - rate;
+		if ( new_discount != this.bulk_discount ) { 
+			this.bulk_discount = new_discount; 
+			this.RecalcStats();
+			}
 		}
 		
 	Copy() { 
