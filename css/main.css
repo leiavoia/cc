@@ -377,6 +377,7 @@ body,html {
 	box-sizing:border-box;
 	padding: 1em;
 	max-width: 30em;
+	min-width: 300px;
 	overflow: hidden; /* scrollbars are ugly */
 	/* allows click-though to map space when child elements are hidden */
 	pointer-events: none;
@@ -675,7 +676,10 @@ where each item has an icon and some text data.
 	border-radius: 1em;
 	padding: 0.5em 1em 0.5em 4em;
 	margin: 0 0 1em 0;
-	background: rgba(0,0,0,0.78) url(../img/layout/notice_good.png) no-repeat top left ;
+	background: 
+		url(../img/layout/notice_good.png) no-repeat 8px 8px,
+		linear-gradient( to right, #218a2d 0, #218a2d 48px, rgba(0,0,0,0.78) 48px, rgba(0,0,0,0.78) 100%)
+		;	
 	color: #FFF;
 	min-height: 3em;
 	border: 1px solid #218A2D;
@@ -712,25 +716,31 @@ where each item has an icon and some text data.
 	margin-bottom: 0.5em;
 	}
 #layout_ui_news > DIV.good {	
-	background-image: url(../img/layout/notice_good.png);
+	background: 
+		url(../img/layout/notice_good.png) no-repeat 8px 8px, 
+		linear-gradient( to right, #218a2d 0, #218a2d 48px, rgba(0,0,0,0.78) 48px, rgba(0,0,0,0.78) 100%) no-repeat top left
+		;
 	border-color: #218A2D;
-	background-size: 3em;
 	}
 #layout_ui_news > DIV.good H3 {
 	color: #218A2D;
 	}
 #layout_ui_news > DIV.bad {	
-	background-image: url(../img/layout/notice_bad.png);
+	background: 
+		url(../img/layout/notice_bad.png) no-repeat 8px 8px, 
+		linear-gradient( to right, #D11 0, #D11 48px, rgba(0,0,0,0.78) 48px, rgba(0,0,0,0.78) 100%) no-repeat top left
+		;
 	border-color: #D11;
-	background-size: 3em;
 	}
 #layout_ui_news > DIV.bad H3 {
 	color: #D11;
 	}
 #layout_ui_news > DIV.neutral {	
-	background-image: url(../img/layout/notice_neutral.png);
+	background: 
+		url(../img/layout/notice_neutral.png) no-repeat 9px 4px,
+		linear-gradient( to right, #3B5A9A 0, #3B5A9A 48px, rgba(0,0,0,0.78) 48px, rgba(0,0,0,0.78) 100%) no-repeat top left
+		;
 	border-color: #3B5A9A;
-	background-size: 3em;
 	}
 #layout_ui_news > DIV.neutral H3 {
 	color: #6091D1;
