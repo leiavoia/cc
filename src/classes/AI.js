@@ -1003,62 +1003,62 @@ export class AIPlanetsObjective extends AIObjective {
 				this.ZonePlanet(p);
 				}
 			// remodeling
-			else if ( (app.game.turn_num - p.established) % p.owner.ai.strat.zone_remodel_freq == 0 )  {
-				// wipe strategy: just reset the entire planet every few years
-				if ( p.owner.ai.strat.zone_remodel == 'wipe' ) {
-					let i = p.zones.length;
-					while ( i-- ) {
-						if ( p.zones[i].type != 'government' ) { 
-							p.zoned -= p.zones[i].size;
-							p.zones.splice( i, 1 );
-							}
-						}
-					}
-				// random strategy: randomly destroy zones
-				else if ( p.owner.ai.strat.zone_remodel == 'rand' ) { 
-					let i = p.zones.length;
-					while ( i-- ) {
-						if ( Math.random() <= p.owner.ai.strat.zone_remodel_rand_chance && p.zones[i].type != 'government' ) { 
-							p.zoned -= p.zones[i].size;
-							p.zones.splice( i, 1 );
-							}
-						}
-					}
-				// semirandom strategy: randomly destroy zones based on zone stats
-				else if ( p.owner.ai.strat.zone_remodel == 'semirand' ) { 
-					let i = p.zones.length;
-					while ( i-- ) {
-						let chance = p.owner.ai.strat.zone_remodel_rand_chance - ( 3/p.zones[i].gf );
-						if ( p.zones[i].val < 0.1 ) { chance += 0.35 };
-						if ( p.zones[i].insuf ) { chance += 0.65 };
-						if ( Math.random() <= chance && p.zones[i].type != 'government' ) { 
-							p.zoned -= p.zones[i].size;
-							p.zones.splice( i, 1 );
-							}
-						}
-					}
-				// recycle strategy: completely rezones planet, recycling any that match.
-				else if ( p.owner.ai.strat.zone_remodel == 'recycle' ) { 
-					// make a copy of the existing zone list
-					let oldlist = p.zones.filter( z => !(z.perma || z.type=='government' || z.type=='special') );
-					// keep these ones from being deleted
-					let goodies = p.zones.filter( z => z.perma || z.type=='government' || z.type=='special' );
-					// clean slate and rezone
-					p.zones.splice( 0, p.zones.length, ...goodies );
-					p.zoned = 0;
-					this.ZonePlanet(p);
-					// loop through the lists and find matching pairs to transfer progress
-					for ( let old_z of oldlist ) {
-						for ( let z of p.zones ) {
-							if ( old_z.key == z.key && !z.val ) { 
-								z.val = old_z.val;
-								break;
-								}
-							}
-						}
-					}
-				this.ZonePlanet(p);
-				}
+			// else if ( (app.game.turn_num - p.established) % p.owner.ai.strat.zone_remodel_freq == 0 )  {
+			// 	// wipe strategy: just reset the entire planet every few years
+			// 	if ( p.owner.ai.strat.zone_remodel == 'wipe' ) {
+			// 		let i = p.zones.length;
+			// 		while ( i-- ) {
+			// 			if ( p.zones[i].type != 'government' ) { 
+			// 				p.zoned -= p.zones[i].size;
+			// 				p.zones.splice( i, 1 );
+			// 				}
+			// 			}
+			// 		}
+			// 	// random strategy: randomly destroy zones
+			// 	else if ( p.owner.ai.strat.zone_remodel == 'rand' ) { 
+			// 		let i = p.zones.length;
+			// 		while ( i-- ) {
+			// 			if ( Math.random() <= p.owner.ai.strat.zone_remodel_rand_chance && p.zones[i].type != 'government' ) { 
+			// 				p.zoned -= p.zones[i].size;
+			// 				p.zones.splice( i, 1 );
+			// 				}
+			// 			}
+			// 		}
+			// 	// semirandom strategy: randomly destroy zones based on zone stats
+			// 	else if ( p.owner.ai.strat.zone_remodel == 'semirand' ) { 
+			// 		let i = p.zones.length;
+			// 		while ( i-- ) {
+			// 			let chance = p.owner.ai.strat.zone_remodel_rand_chance - ( 3/p.zones[i].gf );
+			// 			if ( p.zones[i].val < 0.1 ) { chance += 0.35 };
+			// 			if ( p.zones[i].insuf ) { chance += 0.65 };
+			// 			if ( Math.random() <= chance && p.zones[i].type != 'government' ) { 
+			// 				p.zoned -= p.zones[i].size;
+			// 				p.zones.splice( i, 1 );
+			// 				}
+			// 			}
+			// 		}
+			// 	// recycle strategy: completely rezones planet, recycling any that match.
+			// 	else if ( p.owner.ai.strat.zone_remodel == 'recycle' ) { 
+			// 		// make a copy of the existing zone list
+			// 		let oldlist = p.zones.filter( z => !(z.perma || z.type=='government' || z.type=='special') );
+			// 		// keep these ones from being deleted
+			// 		let goodies = p.zones.filter( z => z.perma || z.type=='government' || z.type=='special' );
+			// 		// clean slate and rezone
+			// 		p.zones.splice( 0, p.zones.length, ...goodies );
+			// 		p.zoned = 0;
+			// 		this.ZonePlanet(p);
+			// 		// loop through the lists and find matching pairs to transfer progress
+			// 		for ( let old_z of oldlist ) {
+			// 			for ( let z of p.zones ) {
+			// 				if ( old_z.key == z.key && !z.val ) { 
+			// 					z.val = old_z.val;
+			// 					break;
+			// 					}
+			// 				}
+			// 			}
+			// 		}
+			// 	this.ZonePlanet(p);
+			// 	}
 			}
 		// TODO: we may want to rezone planets if we are running very low on resources or money.
 				
@@ -1299,7 +1299,7 @@ export class AIPlanetsObjective extends AIObjective {
 		let actual = {};
 		for ( let z of p.zones ) { 
 			if ( z.type == 'government' ) { continue; }
-			actual[z.type] = (actual[z.type]||0) + (z.size / (p.size-1)); // factor out civ capital
+			actual[z.type] = (actual[z.type]||0) + (z.sect / (p.size-1)); // factor out civ capital
 			}
 		// sort the neediest of the bunch
 		let need = [];

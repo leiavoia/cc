@@ -266,33 +266,27 @@ export let Techs = {
 		},
 	ADAPTATION2: {
 		name: "Advanced Terraforming",
-		desc: '<b>+1 Adaptation</b>.',
-		tags: ['biology'],
-		onComplete( civ ) { civ.race.env.adaptation += 1; } /* TODO: hibitation tech should not affect the civ's race directly */
-		},
-	ADAPTATION3: {
-		name: "Superior Terraforming",
 		desc: '<b>+2 Adaptation</b>.',
 		tags: ['biology'],
 		onComplete( civ ) { civ.race.env.adaptation += 2; } /* TODO: hibitation tech should not affect the civ's race directly */
 		},
+	ADAPTATION3: {
+		name: "Superior Terraforming",
+		desc: '<b>+3 Adaptation</b>.',
+		tags: ['biology'],
+		onComplete( civ ) { civ.race.env.adaptation += 3; } /* TODO: hibitation tech should not affect the civ's race directly */
+		},
 	ADAPTATION4: {
 		name: "Ultra Terraforming",
-		desc: '<b>+4 Adaptation</b>.',
+		desc: '<b>+3 Adaptation</b>.',
 		tags: ['biology'],
-		onComplete( civ ) { civ.race.env.adaptation += 4; } /* TODO: hibitation tech should not affect the civ's race directly */
+		onComplete( civ ) { civ.race.env.adaptation += 3; } /* TODO: hibitation tech should not affect the civ's race directly */
 		},
 	ADAPTATION5: {
 		name: "Perfect Terraforming",
-		desc: '<b>+4 Adaptation</b>.',
+		desc: '<b>+6 Adaptation</b>.',
 		tags: ['biology'],
-		onComplete( civ ) { civ.race.env.adaptation += 4; } /* TODO: hibitation tech should not affect the civ's race directly */
-		},
-	ADAPTATION6: {
-		name: "Ultimate Terraforming",
-		desc: '<b>+4 Adaptation</b>.',
-		tags: ['biology'],
-		onComplete( civ ) { civ.race.env.adaptation += 4; } /* TODO: hibitation tech should not affect the civ's race directly */
+		onComplete( civ ) { civ.race.env.adaptation += 6; } /* TODO: hibitation tech should not affect the civ's race directly */
 		},
 		
 	XENOCOMM1: {
@@ -377,94 +371,94 @@ export let TechNodes = {
 		
 	// ZONES ---------\/-----------------------------
 	
-	ZONE_HOUSING0B: {
-		rp: 5,
-		},
-	ZONE_HOUSING1A: {
-		rp: 10,
-		},
-	ZONE_HOUSING1B: {
-		rp: 25,
-		requires: ['ZONE_HOUSING1A'], 
-		},
-	ZONE_HOUSING2A: {
-		rp: 50,
-		requires: ['ZONE_HOUSING1A'], 
-		},
-	ZONE_HOUSING2B: {
-		rp: 100,
-		requires: ['ZONE_HOUSING2A'], 
-		},
-	ZONE_HOUSING3A: {
-		rp: 250,
-		requires: ['ZONE_HOUSING2A'], 
-		},
-	ZONE_HOUSING3B: {
-		rp: 400,
-		requires: ['ZONE_HOUSING3A'], 
-		},
-	ZONE_HOUSING4A: {
-		rp: 800,
-		requires: ['ZONE_HOUSING3A'], 
-		},
+	// ZONE_HOUSING0B: {
+	// 	rp: 5,
+	// 	},
+	// ZONE_HOUSING1A: {
+	// 	rp: 10,
+	// 	},
+	// ZONE_HOUSING1B: {
+	// 	rp: 25,
+	// 	requires: ['ZONE_HOUSING1A'], 
+	// 	},
+	// ZONE_HOUSING2A: {
+	// 	rp: 50,
+	// 	requires: ['ZONE_HOUSING1A'], 
+	// 	},
+	// ZONE_HOUSING2B: {
+	// 	rp: 100,
+	// 	requires: ['ZONE_HOUSING2A'], 
+	// 	},
+	// ZONE_HOUSING3A: {
+	// 	rp: 250,
+	// 	requires: ['ZONE_HOUSING2A'], 
+	// 	},
+	// ZONE_HOUSING3B: {
+	// 	rp: 400,
+	// 	requires: ['ZONE_HOUSING3A'], 
+	// 	},
+	// ZONE_HOUSING4A: {
+	// 	rp: 800,
+	// 	requires: ['ZONE_HOUSING3A'], 
+	// 	},
 		
-	ZONE_MINE0B: {
-		rp: 75,
-		},
-	ZONE_MINE0C: {
-		rp: 50,
-		},
+	// ZONE_MINE0B: {
+	// 	rp: 75,
+	// 	},
+	// ZONE_MINE0C: {
+	// 	rp: 50,
+	// 	},
 	ZONE_MINE1A: {
 		rp: 200,
 		},
-	ZONE_MINE1B: {
-		rp: 550,
-		requires: ['ZONE_MINE1A'], 
-		},
-	ZONE_MINE1C: {
-		rp: 400,
-		requires: ['ZONE_MINE1A'], 
-		},
+	// ZONE_MINE1B: {
+	// 	rp: 550,
+	// 	requires: ['ZONE_MINE1A'], 
+	// 	},
+	// ZONE_MINE1C: {
+	// 	rp: 400,
+	// 	requires: ['ZONE_MINE1A'], 
+	// 	},
 	ZONE_MINE2A: {
 		rp: 800,
 		requires: ['ZONE_MINE1A'], 
 		},
-	ZONE_MINE2B: {
-		rp: 1400,
-		requires: ['ZONE_MINE2A'], 
-		},
-	ZONE_MINE2C: {
-		rp: 1000,
-		requires: ['ZONE_MINE2A'], 
-		},
+	// ZONE_MINE2B: {
+	// 	rp: 1400,
+	// 	requires: ['ZONE_MINE2A'], 
+	// 	},
+	// ZONE_MINE2C: {
+	// 	rp: 1000,
+	// 	requires: ['ZONE_MINE2A'], 
+	// 	},
 		
-	ZONE_RES1: {
-		rp: 40,
-		},
-	ZONE_RES2: {
-		rp: 100,
-		requires: ['ZONE_RES1'], 
-		},
-	ZONE_RES3: {
-		rp: 400,
-		requires: ['ZONE_RES2'], 
-		},
+	// ZONE_RES1: {
+	// 	rp: 40,
+	// 	},
+	// ZONE_RES2: {
+	// 	rp: 100,
+	// 	requires: ['ZONE_RES1'], 
+	// 	},
+	// ZONE_RES3: {
+	// 	rp: 400,
+	// 	requires: ['ZONE_RES2'], 
+	// 	},
 	
-	ZONE_SHIP1: {
-		rp: 40,
-		},
-	ZONE_SHIP2: {
-		rp: 100,
-		requires: ['ZONE_SHIP1'], 
-		},
-	ZONE_SHIP3: {
-		rp: 300,
-		requires: ['ZONE_SHIP2'], 
-		},
-	ZONE_SHIP4: {
-		rp: 900,
-		requires: ['ZONE_SHIP3'], 
-		},
+	// ZONE_SHIP1: {
+	// 	rp: 40,
+	// 	},
+	// ZONE_SHIP2: {
+	// 	rp: 100,
+	// 	requires: ['ZONE_SHIP1'], 
+	// 	},
+	// ZONE_SHIP3: {
+	// 	rp: 300,
+	// 	requires: ['ZONE_SHIP2'], 
+	// 	},
+	// ZONE_SHIP4: {
+	// 	rp: 900,
+	// 	requires: ['ZONE_SHIP3'], 
+	// 	},
 	
 					
 	// SHIP ENGINES --------------\/-------------
@@ -541,7 +535,7 @@ export let TechNodes = {
 		requires: [], 
 		},
 	ADAPTATION2: { 
-		rp: 150,
+		rp: 210,
 		requires: ['ADAPTATION1'], 
 		},
 	ADAPTATION3: { 
@@ -549,16 +543,12 @@ export let TechNodes = {
 		requires: ['ADAPTATION2'], 
 		},
 	ADAPTATION4: { 
-		rp: 2000,
+		rp: 2400,
 		requires: ['ADAPTATION3'], 
 		},
 	ADAPTATION5: { 
-		rp: 6500,
-		requires: ['ADAPTATION3'], 
-		},
-	ADAPTATION6: { 
-		rp: 200000,
-		requires: ['ADAPTATION3'], 
+		rp: 9500,
+		requires: ['ADAPTATION4'], 
 		},
 		
 	XENOCOMM1: { 

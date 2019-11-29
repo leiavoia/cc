@@ -318,7 +318,7 @@ export default class Game {
 					for ( let k in p.output_rec ) { p.output_rec[k] = 0; }
 					for ( let k in p.resource_rec ) { p.resource_rec[k] = 0; }
 					p.acct_ledger.splice(0, p.acct_ledger.length); // clear accounting records
-					for ( let z of p.zones ) { z.Do(p); }							
+					p.DoZoning();						
 					p.DoProduction();
 					p.GrowEconomy();
 					p.UpdateMorale();

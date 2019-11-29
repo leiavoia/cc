@@ -283,8 +283,8 @@ export default class Planet {
 	// returns true on success, false on failure
 	AddZone( key ) {
 		let o = new Zone(key);
-		if ( o.size > this.size - this.zoned ) { return false; }
-		this.zoned += o.size;
+		if ( o.sect > this.sect - this.zoned ) { return false; }
+		this.zoned += o.sect;
 		// some zones are "instant" and do not grow to size.
 		if ( !o.gf ) { o.val = 1; }
 		this.zones.push(o);
@@ -299,7 +299,7 @@ export default class Planet {
 		if ( i >= 0 ) {
 			// some zones are permanent and cannot be removed 
 			if ( this.zones[i].perma && !force ) { return false; }
-			this.zoned -= this.zones[i].size;
+			this.zoned -= this.zones[i].sect;
 			this.zones.splice( i, 1 );
 			// TODO recalc stats
 			return true;
@@ -441,12 +441,16 @@ export default class Planet {
 		}
 		
   	// returns an integer value which may be negative
-	Adaptation( race ) { 
+	Adaptation( race ) {
+		if ( !race && !this.owner ) { return 0; }
+		if ( !race && this.owner ) { race = this.owner.race; }
 		return -( (Math.abs( this.atm - race.env.atm ) + Math.abs( this.temp - race.env.temp )  + Math.abs( this.grav - race.env.grav ) ) )
 	 		+ race.env.adaptation;
 		}
   	// returns true if the planet can be settled by the race
 	Habitable( race ) { 
+		if ( !race && !this.owner ) { return false; }
+		if ( !race && this.owner ) { race = this.owner.race; }
 		return -( (Math.abs( this.atm - race.env.atm ) + Math.abs( this.temp - race.env.temp )  + Math.abs( this.grav - race.env.grav ) ) )
 	 		+ race.env.adaptation 
 	 		> 0;	
@@ -874,6 +878,27 @@ export default class Planet {
 		return null;
 		}
 		
+	DoZoning() { 
+		// then do mergers, if any. find all eligible zones for merging:
+		const adaptation = this.Adaptation();
+		let zones = this.zones.filter( z => z.val===1 && z.sect < z.maxsect && z.sect < adaptation ).sort( (a,b) => b.sect - a.sect );
+		while ( zones.length ) { 
+			let zone = zones.shift(); // start with the biggest one
+			// find the smallest eligible mate
+			let maxsect = Math.min( zone.maxsect, adaptation ) - zone.sect;
+			let mate = zones.filter( z => z.key===zone.key && z.sect <= maxsect  ).sort( (a,b) => b.sect - a.sect ).pop();
+			if ( mate ) {
+				// calculate the new value of the zone with its newly increased size
+				mate.MergeInto(zone);
+				// remove mate from main zones list
+				zones.splice( zones.indexOf(mate), 1 );
+				this.zones.splice( this.zones.indexOf(mate), 1 );
+				}
+			}
+		// zones all produce stuff 
+		for ( let z of this.zones ) { z.Do(this); }
+		}
+	
 	// This completely zones the planet. Can be used for AI or automation settings
 	ZonePlanet() {
 		let ai = new AIPlanetsObjective();

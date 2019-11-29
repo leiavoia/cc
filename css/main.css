@@ -2205,6 +2205,9 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 .planet .zones.micro {
 	margin: 0.5em 0 0.5em 0;
 	}
+.planet .zones.micro DIV {
+	cursor: inherit;
+	}
 .planet .zones.micro .zone {
 	height: 10px;
 	max-width: 6px;
@@ -2262,8 +2265,10 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	background-color: rgba(255,255,255,0.35);
 	position:absolute;
 	}	
-.planet .zone.pct0 { opacity: 0.5; }
-.planet .zone.pct0:after { top: 100%; }
+.planet .zone.pct0, 
+.planet .zone.pct00 { opacity: 0.5; }
+.planet .zone.pct0:after, 
+.planet .zone.pct00:after { top: 100%; }
 .planet .zone.pct10:after { top: 90%; }
 .planet .zone.pct20:after { top: 80%; }
 .planet .zone.pct30:after { top: 70%; }
