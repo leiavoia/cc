@@ -162,10 +162,20 @@ export class PlanetDetailPane {
 			this.planet.AddZone( this.zone_to_add.key ); 
 			}
 		}
-	RemoveZone() {
+	TrimZone() {
 		if ( this.sel_zone ) { 
-			this.planet.RemoveZone( this.sel_zone ); 
-			this.sel_zone = null;
+			let i = this.planet.zones.indexOf( this.sel_zone );
+			this.planet.TrimZone( this.sel_zone ); 
+			if ( !this.sel_zone.sect ) {
+				// move to next zone
+				if ( i >= 0 && this.planet.zones.length ) {
+					if ( i === this.planet.zones.length ) { i--; }
+					this.sel_zone = this.planet.zones[i];
+					}
+				else {	
+					this.sel_zone = null;
+					}
+				}
 			}
 		}
 	BuildQueueMoveItemUp( index ) {

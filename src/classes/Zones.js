@@ -117,16 +117,21 @@ export class Zone {
 		return this.resource_estm;
 		}	
 				
-	// zone's value (0..1) multiplied by the zone's size when stacked ( factorial(size) )
-	StackedValue() {
-		return this.val * this.size;
-		}
-		
 	MergeInto( z ) { 
-		let v = this.StackedValue() + z.StackedValue();
+		let v = (this.val * this.size) + (z.val * z.size);
 		z.sect += this.sect;
 		z.size = FastFactorial( z.sect );	
 		z.val = v / z.size;
+		}
+				
+	Trim() { 
+		if ( this.sect > 1 ) { 
+			let v = this.val * this.size;
+			this.sect--;
+			this.size = FastFactorial( this.sect );	
+			// remove code below if you do NOT want to preserve overall infrastructure developed:
+			// this.val = Math.max( 1, v / this.size );
+			}
 		}
 	
 	};

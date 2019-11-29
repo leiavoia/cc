@@ -307,6 +307,24 @@ export default class Planet {
 		return false;
 		}
 		
+	// removes 1 sector from the zone's sector size.
+	// returns true on success, false on failure.
+	// `force` will trim permanent zones.
+	TrimZone( z, force = false ) {
+		// some zones are permanent and cannot be removed 
+		if ( z.perma && !force ) { return false; }
+		if ( z.sect > 1 ) {
+			z.Trim(); 
+			this.zoned--;
+			}
+		else { 
+			this.RemoveZone( z, force );
+			z.sect = 0; // signal to outside
+			}
+		// TODO recalc stats
+		return true;
+		}
+		
 	ProduceBuildQueueItem( item ) {
 		// ships
 		if ( item.type == 'ship' ) { 

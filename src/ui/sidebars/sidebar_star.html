@@ -36,7 +36,7 @@
 						</div>
 						<div class="zones micro" if.bind="p.owner && (p.owner.is_player || app.options.see_all)">
 							<template containerless repeat.for="z of p.zones">
-								<div repeat.for="s of z.sect" click.delegate="ClickZone(z)"
+								<div repeat.for="s of z.sect"
 									class="zone clickable ${z==sel_zone?'hilite':''} ${z.type} ${z.key} 
 									${z.sect==1 ? 'only' : ( s==0 ? 'start' : (s==z.sect-1 ? 'end' : 'mid') ) }
 									">

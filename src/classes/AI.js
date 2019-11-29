@@ -1332,7 +1332,7 @@ export class AIPlanetsObjective extends AIObjective {
 				let ztype = need[0];
 				// find all zones that fit in the space left, with some room for splurging
 				let maxsize = Math.min( Math.ceil(need[1] * p.size * 1.5 ), p.size - p.zoned );
-				let candidates = zones_avail.filter( z => z.type == ztype && z.size <= maxsize );
+				let candidates = zones_avail.filter( z => z.type == ztype && z.minsect <= maxsize );
 				// if choosing a mining zone, make sure we have those resources available
 				if ( ztype == 'mining' ) { 
 					candidates = candidates.filter( z => {
@@ -1356,7 +1356,7 @@ export class AIPlanetsObjective extends AIObjective {
 				// Size is a fast general approx of technical improvement which is usually what we want.
 				// (a,b) => Object.values(a.outputs).sum() - Object.values(b.outputs).sum()
 				else if ( candidates.length ) { 
-					let zone = candidates.sort( (a,b) => a.size - b.size ).pop();
+					let zone = candidates.sort( (a,b) => a.maxsect - b.maxsect ).pop();
 					p.AddZone(zone.key);
 					break;
 					}

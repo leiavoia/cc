@@ -86,7 +86,7 @@
 					<p class="name">${sel_zone.name}</p>
 					<p class="type">${sel_zone.type}</p>
 					<p class="desc">${sel_zone.desc}</p>
-					<p class="stats resources">	
+					<p class="stats resources">
 						Size: <b>${sel_zone.size}</b>, 
 						Sectors: <b>${sel_zone.sect}</b>
 						<br/>
@@ -104,7 +104,7 @@
 				<div>
 					<div class="zone ${sel_zone.type} ${sel_zone.level} ${sel_zone.key} only"></div>
 					<div class="button_rack button_rack_fill">
-						<button class="bad" click.delegate="RemoveZone()" if.bind="!sel_zone.perma">DEMOLISH</button>
+						<button class="bad" click.delegate="TrimZone()" if.bind="!sel_zone.perma">${sel_zone.sect==1 ? 'DEMOLISH' : 'TRIM'}</button>
 					</div>
 				</div>
 			</div>
