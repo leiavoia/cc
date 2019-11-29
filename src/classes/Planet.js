@@ -62,8 +62,6 @@ export default class Planet {
 	acct_total = {}; // totalled values of acct_ledger. This includes stuff not in resource_rec and output_rec
 	acct_hist = []; 
 	
-	zone_hab_mod = 1.0; // precalculated HabitationBonus() to avoid calling millions of times each turn.
-	
 	tax_rate = 0.2;
 	spending = 1.0;
 	// max spending may be modable with technology improvements. 
@@ -444,16 +442,14 @@ export default class Planet {
 		
   	// returns an integer value which may be negative
 	Adaptation( race ) { 
-		return -( 
-			(Math.abs( this.atm - race.env.atm ) + Math.abs( this.temp - race.env.temp ) + Math.abs( this.grav - race.env.grav )  )
-	 		- race.env.adaptation 
-	 		) ;
+		return -( (Math.abs( this.atm - race.env.atm ) + Math.abs( this.temp - race.env.temp )  + Math.abs( this.grav - race.env.grav ) ) )
+	 		+ race.env.adaptation;
 		}
   	// returns true if the planet can be settled by the race
 	Habitable( race ) { 
-		return ( (Math.abs( this.atm - race.env.atm ) + Math.abs( this.temp - race.env.temp )  + Math.abs( this.grav - race.env.grav ) )
-	 		- race.env.adaptation 
-	 		) <= race.env.habitation;	
+		return -( (Math.abs( this.atm - race.env.atm ) + Math.abs( this.temp - race.env.temp )  + Math.abs( this.grav - race.env.grav ) ) )
+	 		+ race.env.adaptation 
+	 		> 0;	
 		}
 	HabitationBonus( race ) { 
 		let x = this.Adaptation( race );
@@ -463,15 +459,6 @@ export default class Planet {
 		if ( x < 0 ) { return utils.Clamp( x*0.2, -0.9, 0 ); }
 		else if ( x > 0 ) { return utils.Clamp( x*0.1, 0, 1.0 ); }
 		return 0;
-		}
-	RecalcZoneHabMod() { 
-		if ( !this.owner ) { return; } 
-		// zone_hab_mod is a cost modifier, so values <1.0 represent cost SAVINGS:
-		// +25% for each negative, -15% for each positive
-		let x = this.Adaptation( this.owner.race );
-		if ( x < 0 ) this.zone_hab_mod = 1 + -x*0.25;
-		else if ( x > 0 ) this.zone_hab_mod = utils.Clamp( 1-x*0.15, 0.1, 1.0 );
-		else this.zone_hab_mod = 1.0;
 		}
 	@computedFrom('total_pop','tax_rate','econ.PCI')
 	get tax() { 
@@ -614,7 +601,7 @@ export default class Planet {
 			};
 		// environment
 		factors.env = {
-			fx: 1 + this.HabitationBonus( this.owner.race ),
+			fx: this.Adaptation( this.owner.race ),
 			weight: 5.0
 			};
 		// crowding (sigmoid function)
@@ -678,11 +665,9 @@ export default class Planet {
 		// popmax is actually our current infrastructure level from Housing zones.
 		// This means that if Housing zones are removed or underfunded, infrastructure
 		// crumbles and we can have more pops than popmax (causing unhappiness).
-		this.maxpop = this.popmax_contrib + this.size;
-		this.popmax_contrib = 0;
-		// environment reduces popmax
-		this.maxpop *= 1 + this.HabitationBonus( this.owner.race );
+		this.maxpop = this.popmax_contrib + this.size + this.Adaptation( this.owner.race );
 		this.maxpop = this.mods.Apply( this.maxpop, 'maxpop' );
+		this.popmax_contrib = 0;
 		// growth rate is square root of difference between max pop and current pop, divided by 60.
 		let diff = this.maxpop - this.total_pop; 
 		let divisor = 60.0; // 
@@ -762,8 +747,8 @@ export default class Planet {
 		this.econ.GDP = 0;
 		this.econ.PCI = this.base_PCI + this.bonus_PCI;
 		this.econ.GF = 1.0;
-		this.RecalcZoneHabMod();
-		this.maxpop = this.size * ( 1 + this.HabitationBonus( this.owner.race ) );
+		this.maxpop = this.size + this.Adaptation( this.owner.race );
+		this.maxpop = this.mods.Apply( this.maxpop, 'maxpop' );
 		if ( !this.zones.length ) { 
 			if ( !owner.planets.length ) { 
 				this.AddZone( 'CIVCAPITOL', 1 ); 
@@ -805,7 +790,6 @@ export default class Planet {
 		this.acct_ledger = [];
 		this.acct_total = {};
 		this.acct_hist = []; 
-		this.zone_hab_mod = 1.0; 
 		if ( !keep_pop ) { 
 			this.total_pop = 0;
 			this.settled = false;

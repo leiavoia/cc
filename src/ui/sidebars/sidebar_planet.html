@@ -37,8 +37,8 @@
 				<span class="pop" if.bind="planet.owner">${planet.total_pop|ceil} / ${planet.maxpop|ceil}<br/><span class="pop">POPULATION</span></span>
 				<span class="size">${planet.size}<br/><span class="size">SIZE</span></span>
 				<span class="en">${planet.energy}<br/><span class="en">ENERGY</span></span>			
-				<span class="${habitable ? (habitat < 0 ? 'alert' : 'good') : 'bad'}">	
-					${(habitat >= 0 ? '+' : '')}${habitat}<br /> 
+				<span class="${habitable ? 'good' : 'bad'}">	
+					${(adaptation > 0 ? '+' : '')}${adaptation}<br /> 
 					<span class="">${habitable ? "HABITABILITY" : "UNINHABITABLE"}</span>
 				</span>
 				<!-- <span if.bind="planet.owner">
@@ -89,7 +89,7 @@
 					<p class="stats resources">	
 						Size: <b>${sel_zone.size}</b>
 						<br/>
-						Matures In: <b>${(app.game.turn_num*0) + (1-sel_zone.val) / (1/(sel_zone.gf * planet.zone_hab_mod)) | ceil} turns</b> &nbsp;
+						Matures In: <b>${(app.game.turn_num*0) + (1-sel_zone.val) / (1/(sel_zone.gf)) | ceil} turns</b> &nbsp;
 						<br/>
 						<!-- could also use zone.resource_rec data here -->
 						Costs: <span class="${k=='$'?'cash':k}" repeat.for="k of sel_zone.resource_estm|props">${sel_zone.resource_estm[k]|round:1}</span>
@@ -121,7 +121,7 @@
 						<p class="desc">${zone_to_add.desc}</p>
 						<p class="stats resources">	
 							Size: <b>${zone_to_add.size}</b><br/>
-							Matures In: <b>${zone_to_add.gf * planet.zone_hab_mod | ceil} turns</b> &nbsp;
+							Matures In: <b>${zone_to_add.gf | ceil} turns</b> &nbsp;
 							<br/>
 							Costs: <span class="${k=='$'?'cash':k}" repeat.for="k of zone_to_add.inputs|props">${zone_to_add.inputs[k]|round:1}</span>
 							<br/>

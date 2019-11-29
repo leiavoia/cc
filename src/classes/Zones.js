@@ -47,9 +47,7 @@ export class Zone {
 		let amount_receiving = ( this.val + Math.min( planet.energy/this.gf, 1.0 - this.val ) ) * ratio;
 		// reduce resources of civ
 		for ( let k of Object.keys(this.inputs) ) {
-			// NOTE: planet environmental effects are applied here to +/- resources costs, 
-			// but not to the work formula itself. Costs change but work stays the same.
-			let amount = this.inputs[k] * this.size * amount_receiving * planet.zone_hab_mod;
+			let amount = this.inputs[k] * this.size * amount_receiving;
 			this.resource_rec[k] = amount;
 			planet.resource_rec[k] += amount; // assume it gets zero'd out before this function is called
 			planet.acct_total[k] = (planet.acct_total[k] || 0 ) - amount;
@@ -101,7 +99,7 @@ export class Zone {
 		
 	EstimateResources( planet ) { 
 		// ideally we want enough resources to do our job and grow the maximum allowed amount.
-		let amount_requesting = planet.zone_hab_mod * planet.spending * ( this.val + Math.min( planet.energy/this.gf, 1.0 - this.val ) );
+		let amount_requesting = planet.spending * ( this.val + Math.min( planet.energy/this.gf, 1.0 - this.val ) );
 		for ( let k of Object.keys(this.inputs) ) {
 			this.resource_estm[k] = this.inputs[k] * this.size * amount_requesting;
 		}

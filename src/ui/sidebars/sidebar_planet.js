@@ -43,9 +43,8 @@ export class PlanetDetailPane {
 		// elements (the sidebar) and binding its data. 
 		// Sniff the "planet" to make sure it really is such.
 		if ( planet && 'size' in planet ) { 
-			this.habitat = planet.Adaptation( this.app.game.myciv.race );
+			this.adaptation = planet.Adaptation( this.app.game.myciv.race );
 			this.habitable = planet.Habitable( this.app.game.myciv.race );
-			this.habitat_bonus = planet.HabitationBonus( this.app.game.myciv.race );
 			this.playerHasLocalFleet = planet.star.PlayerHasLocalFleet;
 			this.CompileBuildQueueItemList();
 			this.ground_units = planet.ListUniqueGroundUnits(); // Map
