@@ -371,9 +371,9 @@ export let TechNodes = {
 		
 	// ZONES ---------\/-----------------------------
 	
-	// ZONE_HOUSING0B: {
-	// 	rp: 5,
-	// 	},
+	ZONE_HOUSING0B: {
+		rp: 250,
+		},
 	// ZONE_HOUSING1A: {
 	// 	rp: 10,
 	// 	},

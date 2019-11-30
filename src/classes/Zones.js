@@ -51,10 +51,10 @@ export class Zone {
 			planet.energy / ( this.gf * (this.size / this.sect ) ), 
 			1.0 - this.val 
 			);
-		let amount_receiving = ( this.val + growth ) * ratio;
+		let ratio_receiving = ( this.val + growth ) * ratio;
 		// reduce resources of civ
 		for ( let k of Object.keys(this.inputs) ) {
-			let amount = this.inputs[k] * this.size * amount_receiving;
+			let amount = this.inputs[k] * this.size * ratio_receiving;
 			this.resource_rec[k] = amount;
 			planet.resource_rec[k] += amount; // assume it gets zero'd out before this function is called
 			planet.acct_total[k] = (planet.acct_total[k] || 0 ) - amount;
@@ -63,14 +63,14 @@ export class Zone {
 			planet.owner.resource_spent[k] += amount;
 			}
 		// output
-		let work = amount_receiving;
+		let work = ratio_receiving;
 		// EXCEPTION: for housing zones, the "work" is the current zone value itself.
 		// This represents housing availability current being provided for by the zone.
 		if ( this.type == 'housing' ) { work = this.val; }
 		this.Output( planet, work, accounting );
 		planet.acct_ledger.push( accounting );
 		// grow or shrink depending on our funding
-		let diff = amount_receiving - this.val;
+		let diff = ratio_receiving - this.val;
 		this.val += (diff >= 0) ? planet.mods.Apply(diff * planet.spending, 'zone_growth') : (diff * (1/this.gf) * 2);
 		this.val = this.val.clamp(0,1);
 		// if we shrank, warn player
@@ -104,15 +104,15 @@ export class Zone {
 			}
 		}
 		
-	EstimateResources( planet ) { 
+	EstimateResources( planet ) {
 		// ideally we want enough resources to do our job and grow the maximum allowed amount.
 		const growth = Math.min( 
 			planet.energy / ( this.gf * (this.size / this.sect ) ), 
 			1.0 - this.val 
 			);
-		let amount_requesting = planet.spending * growth;
+		let ratio_requesting = planet.spending * ( this.val + growth );
 		for ( let k of Object.keys(this.inputs) ) {
-			this.resource_estm[k] = this.inputs[k] * this.size * amount_requesting;
+			this.resource_estm[k] = this.inputs[k] * this.size * ratio_requesting;
 		}
 		return this.resource_estm;
 		}	
@@ -129,8 +129,18 @@ export class Zone {
 			let v = this.val * this.size;
 			this.sect--;
 			this.size = FastFactorial( this.sect );	
-			// remove code below if you do NOT want to preserve overall infrastructure developed:
+			// uncomment if you want to preserve developed infrastructure:
 			// this.val = Math.max( 1, v / this.size );
+			}
+		}
+				
+	Grow( n ) {
+		n = Math.min( n, this.maxsect - this.sect );
+		if ( n > 0 ) { 
+			let v = this.val * this.size;
+			this.sect += n;
+			this.size = FastFactorial( this.sect );	
+			this.val = Math.max( 1, v / this.size );
 			}
 		}
 	
@@ -236,15 +246,17 @@ export const ZoneList = {
 		maxsect:8,
 		gf: 10
 		},
-	// HOUSING0B: {
-	// 	name: 'High Density Settlement',
-	// 	type: 'housing',
-	// 	desc: 'Improved higher density housing requires more metal but less cash.',
-	// 	inputs: { o: 1, s: 1, m: 2 },
-	// 	outputs: { hou: 6 },
-	// 	sect: 2,
-	// 	gf: 15
-	// 	},
+	HOUSING0B: {
+		name: 'High-Density Housing',
+		type: 'housing',
+		desc: 'Improved higher density housing requires more metal but less cash.',
+		inputs: { o: 2, s: 2, m: 1 },
+		outputs: { hou: 2 },
+		sect: 2,
+		minsect:2,
+		maxsect:12,
+		gf: 20
+		},
 	// HOUSING1A: {
 	// 	name: 'City',
 	// 	type: 'housing',

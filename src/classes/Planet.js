@@ -280,16 +280,16 @@ export default class Planet {
 		return planet;
 		}
 								
-	// returns true on success, false on failure
+	// returns zone on success, false on failure
 	AddZone( key ) {
 		let o = new Zone(key);
-		if ( o.sect > this.sect - this.zoned ) { return false; }
+		if ( o.minsect > this.size - this.zoned ) { return false; }
 		this.zoned += o.sect;
 		// some zones are "instant" and do not grow to size.
 		if ( !o.gf ) { o.val = 1; }
 		this.zones.push(o);
 		this.zones.sort( (a,b) => a.type=='government' ? -1 : (a.type > b.type) );
-		return true;
+		return o;
 		}
 	
 	// returns true on success, false on failure.

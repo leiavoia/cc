@@ -105,39 +105,9 @@
 					<div class="zone ${sel_zone.type} ${sel_zone.level} ${sel_zone.key} only"></div>
 					<div class="button_rack button_rack_fill">
 						<button class="bad" click.delegate="TrimZone()" if.bind="!sel_zone.perma">${sel_zone.sect==1 ? 'DEMOLISH' : 'TRIM'}</button>
+						<button class="alt" click.delegate="OpenZonePane(sel_zone)" if.bind="sel_zone_upgrade_avail">UPGRADE</button>
 					</div>
 				</div>
-			</div>
-			
-			<!-- add-zone selection detail -->
-			<div class="wrapper" if.bind="planet.owner && zone_to_add && show_add_zone_panel && planet.size - planet.zoned > 0">
-				<select value.bind="zone_to_add" class="select-css" style="width:100%; margin-bottom:1em;">
-					<option repeat.for="z of app.game.myciv.avail_zones" model.bind="z"
-						disabled.bind="z.sect > (planet.size - planet.zoned)"
-						class="${z.type}"
-						>${z.type|uppercaseFirst}: ${z.name}</option>
-				</select>	
-				<div class="zone_detail ${zone_to_add.sect <= (planet.size - planet.zoned) ? 'available' : 'unavailable'}">
-					<div>
-						<p class="name">${zone_to_add.name}</p>
-						<p class="type">${zone_to_add.type}</p>
-						<p class="desc">${zone_to_add.desc}</p>
-						<p class="stats resources">	
-							Sectors: <b>${zone_to_add.minsect}-${zone_to_add.maxsect}</b><br/>
-							Matures In: <b>${zone_to_add.gf | ceil} turns</b> &nbsp;
-							<br/>
-							Costs: <span class="${k=='$'?'cash':k}" repeat.for="k of zone_to_add.inputs|props">${zone_to_add.inputs[k]|round:1}</span>
-							<br/>
-							Output: <span class="${k=='$'?'cash':k}" repeat.for="k of zone_to_add.outputs|props">${zone_to_add.outputs[k]|round:1}</span>
-						</p>
-					</div>
-					<div>
-						<div class="zone ${zone_to_add.type} ${zone_to_add.key} only"></div>
-						<div class="button_rack button_rack_fill " if.bind="zone_to_add.sect <= planet.size - planet.zoned">
-							<button click.delegate="AddZone()">ADD</button>
-						</div>
-					</div>
-				</div>	
 			</div>
 			
 			<!-- Colony Data -->

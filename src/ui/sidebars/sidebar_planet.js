@@ -16,6 +16,7 @@ export class PlanetDetailPane {
 		this.sel_build_item = null;
 		this.turn_subscription = Signals.Listen('turn', data => this.planetChanged() );
 		this.sel_zone = null;
+		this.sel_zone_upgrade_avail = false;
 		this.show_add_zone_panel = false;
 		this.zone_to_add = null;
 		this.ground_units = this.planet.ListUniqueGroundUnits(); // Map
@@ -49,8 +50,13 @@ export class PlanetDetailPane {
 			this.CompileBuildQueueItemList();
 			this.ground_units = planet.ListUniqueGroundUnits(); // Map
 			// if a zone was selected for viewing, make sure still exists
-			if ( this.sel_zone && !planet.zones.contains(this.sel_zone) ) {
-				this.sel_zone = null;
+			if ( this.sel_zone ) { 
+				if ( !planet.zones.contains(this.sel_zone) ) {
+					this.sel_zone = null;
+					}
+				else {
+					this.CheckIfSelectedZoneHasUpgrades();
+					}
 				}
 			}
 		}
@@ -131,7 +137,23 @@ export class PlanetDetailPane {
 		}
 		
 	OpenDetailsPane() { 
-		this.app.SwitchMainPanel( 'planetinfo', this.planet );
+		this.app.SwitchMainPanel( 'planetinfo', this.planet, null, false, false );
+		}
+		
+	OpenZonePane( z = null ) { 
+		this.app.SwitchMainPanel( 'zone', this.planet, {zone:z}, false, false);
+		}
+		
+	CheckIfSelectedZoneHasUpgrades() {
+		if ( this.sel_zone.perma ) { 
+			this.sel_zone_upgrade_avail = false;
+			return;
+			}
+		this.sel_zone_upgrade_avail = this.app.game.myciv.avail_zones.filter( z => 
+			z.type == this.sel_zone.type 
+			&& z.key != this.sel_zone.key 
+			&& z.minsect <= this.sel_zone.sect
+			).length > 0;
 		}
 		
 	ToggleStagingPoint() { 
@@ -144,18 +166,23 @@ export class PlanetDetailPane {
 			}
 		else {
 			this.sel_zone = z;
+			this.CheckIfSelectedZoneHasUpgrades();
 			}
 		this.show_add_zone_panel = false;
+		this.app.CloseMainPanel();
 		}
 	ClearSelectedZone( match=null ) {
 		if ( !match || match == this.sel_zone ) { 
 			this.sel_zone = null;	
 			}
 		}	
-	ClickEmptyZone() { 
+	ClickEmptyZone() {
+		this.app.CloseMainPanel();
+		this.OpenZonePane();
 		this.sel_zone = null;
-		this.show_add_zone_panel = !this.show_add_zone_panel;
-		this.zone_to_add = this.planet.owner.avail_zones[0];
+		this.show_add_zone_panel = false; // KILLME
+		// this.show_add_zone_panel = !this.show_add_zone_panel;
+		// this.zone_to_add = this.planet.owner.avail_zones[0];
 		}
 	AddZone() {
 		if ( this.zone_to_add ) { 
