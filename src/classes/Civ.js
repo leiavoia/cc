@@ -631,8 +631,8 @@ export default class Civ {
 	// marks civ as "dead" and cleans up.
 	Kill() { 
 		this.alive = false;
-		for ( let f of this.fleets ) { f.Kill(); }
-		for ( let p of this.planets ) { p.Reset(); }
+		while ( this.fleets.length ) { this.fleets[0].Kill(); }
+		while ( this.planets.length ) { this.planets[0].Reset(false); }
 		this.ai.objectives = [];
 		this.ai.completed = [];
 		this.empire_box = {x1:0,x2:0,y1:0,y2:0};
