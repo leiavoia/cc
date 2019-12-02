@@ -426,6 +426,15 @@ body,html {
 #layout_ui_visor .sci { color: #3CF; }
 #layout_ui_visor .planets { color: #C92; }
 
+#layout_ui_visor .critical { 
+	border: 3px solid #D11; 
+	border-width: 0 0 3px 0;
+}
+#layout_ui_visor .warning { 
+	border: 3px solid rgb(255, 255, 0); 
+	border-width: 0 0 3px 0;
+	}
+
 #layout_ui_main.hidden { visibility:hidden; }
 #layout_ui_main.visible { visibility:visible; }
 #layout_ui_main.setup { 
@@ -1947,11 +1956,28 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 .resources .v:before { content:'⬢'; }
 .resources .y:before { content:'⬢'; }
 .resources .cash:before { content:'$'; }
-.resources .labor:before { content:'🔨'; }
-.resources .ship:before { content:'🚀'; }
-.resources .def:before { content:'🛡'; }
-.resources .res:before { content:'💡'; }
-.resources .hou:before { content:'🏠'; } /*⌂*/
+
+/* pseudo-resources for zone outputs use tagicon styles found later */
+/* .resources .labor:before,
+.resources .ship:before,
+.resources .def:before,
+.resources .res:before,
+.resources .esp:before,
+.resources .gov:before,
+.resources .hou:before {
+	content: '';
+	display: inline-block;
+	background: url(../img/icons/svg/boxwire.svg) 50% 50% no-repeat;
+	background-size:0.85em 0.85em !important;
+	height: 1.25em;
+	width: 1.25em;
+	margin: 0 0.25em 0 0 ;
+	padding: 0.2em;
+	vertical-align: middle;
+	background-color: rgb(18, 168, 228);
+	border-radius: 0.25em;
+	box-sizing:border-box;
+	}  */
 /* .resources .esp:before { content:'🔨'; } */
 /* .resources .gov:before { content:'🔨'; } */
 
@@ -1987,7 +2013,7 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	background-size: 22px 22px !important;
 	cursor: help;
 	overflow:hidden;
-	transition: opacity 0.35s;
+	/* transition: opacity 0.35s; */
 	}
 .planet .zone.empty {
 	border: 1px solid #333;
@@ -3569,7 +3595,14 @@ DIV.annoyometer .nub {
 #tech_pane #completed.techlist P { margin-left: 2rem; }
 
 .tagicon::before,
-.tagicons SPAN::before {
+.tagicons SPAN::before,
+.resources .labor:before,
+.resources .ship:before,
+.resources .def:before,
+.resources .res:before,
+.resources .esp:before,
+.resources .gov:before,
+.resources .hou:before {
 	content: '';
 	display: inline-block;
 	background: url(../img/icons/svg/boxwire.svg) 50% 50% no-repeat;
@@ -3585,6 +3618,7 @@ DIV.annoyometer .nub {
 	box-sizing:border-box;
 }
 
+.resources .hou:before,
 .tagicon.housing::before {
 	background-color: #4cb0e9;
 	background-image: url(../img/icons/svg/city.svg);
@@ -3601,6 +3635,7 @@ DIV.annoyometer .nub {
 	background-color: #14A;
 	background-image: url(../img/icons/svg/tool.svg);
 	}
+.resources .def:before,
 .tagicon.military::before {
 	background-color: #98543D;
 	background-image: url(../img/icons/svg/game.svg);
@@ -3621,6 +3656,7 @@ DIV.annoyometer .nub {
 	background-color: #968270;
 	background-image: url(../img/icons/svg/talkbubble.svg);
 	}
+.resources .esp:before,
 .tagicon.espionage::before {
 	background-color: #6c13b3;
 	background-image: url(../img/icons/svg/medical.svg);
@@ -3641,12 +3677,10 @@ DIV.annoyometer .nub {
 	background-color: #00b9b9;
 	background-image: url(../img/icons/svg/shield.svg);
 	}
-	
 .tagicon.special::before {
 	background-color: #AA509F;
 	background-image: url(../img/icons/svg/decoration.svg);
 	}
-	
 .tagicon.beam::before {
 	background-color: #cf0080;
 	background-image: url(../img/icons/svg/prism02.svg);
@@ -3695,6 +3729,7 @@ DIV.annoyometer .nub {
 	background-color: #86674d;
 	background-image: url(../img/icons/svg/circle01.svg);
 	}
+.resources .res:before,
 .tagicon.research::before {
 	background-color: #126eb9;
 	background-image: url(../img/icons/svg/tool.svg);
@@ -3715,6 +3750,7 @@ DIV.annoyometer .nub {
 	background-color: #b41b1b;
 	background-image: url(../img/icons/svg/star.svg);
 	}
+.tagicon.planet::before,
 .tagicon.colonize::before {
 	background-color: #158b0b;
 	background-image: url(../img/icons/svg/planet01.svg);
@@ -3723,7 +3759,22 @@ DIV.annoyometer .nub {
 	background-color: #e97c00;
 	background-image: url(../img/icons/svg/robot.svg);
 	}
-	
+.resources .labor:before,
+.tagicon.labor::before {
+	background-color: #e97c00;
+	background-image: url(../img/icons/svg/hammer.svg);
+	}
+.resources .gov:before,
+.tagicon.gov::before,
+.tagicon.government::before {
+	background-color: #e97c00;
+	background-image: url(../img/icons/svg/building.svg);
+	}
+.resources .ship::before,
+.tagicon.ship::before {
+	background-color: #D11;
+	background-image: url(../img/icons/svg/rocket.svg);
+	}	
 
 
 	

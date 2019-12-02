@@ -91,12 +91,16 @@
 						Sectors: <b>${sel_zone.sect}</b>
 						<br/>
 						<template containless if.bind="sel_zone.val < 1">
-							Matures In: <b>${ (app.game.turn_num*0) + ( sel_zone.gf * ( ( sel_zone.size * (1-sel_zone.val) ) / sel_zone.sect ) ) | ceil} turns</b> &nbsp;
+							Matures In: <b>${ (app.game.turn_num*0) + ( sel_zone.gf * (1-sel_zone.val) * ( sel_zone.size / sel_zone.sect ) ) | ceil} turns</b> &nbsp;
 							<br/>
 						</template>
 						<!-- could also use zone.resource_rec data here -->
-						Costs: <span class="${k=='$'?'cash':k}" repeat.for="k of sel_zone.resource_estm|props">${sel_zone.resource_estm[k]|round:1}</span>
+						Costs: <span class="${k=='$'?'cash':k}" repeat.for="k of sel_zone.resource_rec|props">${sel_zone.resource_rec[k]|round:1}</span>
 						<br/>
+						<template containerless if.bind="sel_zone.insuf">
+							<i style="color: #D11;">Needed:</i> <span class="${k=='$'?'cash':k}" repeat.for="k of sel_zone.resource_estm|props">${sel_zone.resource_estm[k]|round:1}</span>
+							<br/>
+						</template>
 						Output: <span class="${k=='$'?'cash':k}" repeat.for="k of sel_zone.output_rec|props">${sel_zone.output_rec[k]|round:1}</span>
 					</p>
 					<p if.bind="sel_zone.insuf" class="nag bad">⚠️ Zone in Decline</p>
@@ -111,22 +115,19 @@
 			</div>
 			
 			<!-- Colony Data -->
-			<div class="data wrapper resources" if.bind="planet.owner">
-				<span class="${k=='$'?'cash':k}" repeat.for="k of ['$','o','s','m','r','g','b','c','v','y','ship','res','def','hou']"
+			<div class="data wrapper resources" if.bind="planet.owner" click.delegate="OpenDetailsPane()">
+				<span class="${k=='$'?'cash':k}" repeat.for="k of ['$','o','r','c', 'hou','s','g','y',  'res','m','b','v', 'ship','def']"
 					style="width: 23%; margin: 0.5%; padding: 0.5%; border-radius:2px; display: inline-block; height:0.8em;line-height:0.8em;">
-					<!-- ${k|uppercase}: -->
-					<b style="color:#D11;" if.bind="planet.resource_rec[k] > 0">-${planet.resource_rec[k]|ceil}</b>
-					<b style="color:#AEA;" if.bind="planet.output_rec[k] > 0">+${planet.output_rec[k]|ceil}</b>
-				</span>
-				<span class="" style="width: 23%; margin: 0.5%; padding: 0.5%; border-radius:2px; display: inline-block; height:0.8em;line-height:0.8em;">
-					TAX: <b style="color:#AEA;">+${planet.econ.tax_rev|ceil}</b>
-				</span>				
-				<span class="" style="width: 23%; margin: 0.5%; padding: 0.5%; border-radius:2px; display: inline-block; height:0.8em;line-height:0.8em;">
+					<b class="${planet.acct_total[k] > 0.001 ? 'good' : (planet.acct_total[k] < 0.001 ? 'bad' : 'zero')}">${planet.acct_total[k]|ceil}</b>
+					<!-- <b style="color:#D11;" if.bind="planet.resource_rec[k] > 0">-${planet.resource_rec[k]|ceil}</b> -->
+					<!-- <b style="color:#AEA;" if.bind="planet.output_rec[k] > 0">+${planet.output_rec[k]|ceil}</b> -->
+				</span>			
+				<!-- <span class="" style="width: 23%; margin: 0.5%; padding: 0.5%; border-radius:2px; display: inline-block; height:0.8em;line-height:0.8em;">
 					GDP: <b>${planet.econ.GDP|round:1}</b>
 				</span>				
 				<span class="" style="width: 23%; margin: 0.5%; padding: 0.5%; border-radius:2px; display: inline-block; height:0.8em;line-height:0.8em;">
-					PCI: <b>${planet.econ.PCI|round:1}</b><!-- ➞ <b>${planet.econ.target_PCI|round:1}</b> -->
-				</span>				
+					PCI: <b>${planet.econ.PCI|round:1}</b> ➞ <b>${planet.econ.target_PCI|round:1}</b>
+				</span>				 -->
 				<!-- <span class="" style="width: 23%; margin: 0.5%; padding: 0.5%; border-radius:2px; display: inline-block; height:0.8em;line-height:0.8em;">
 					Morale: <b>${planet.morale|percent}%</b>
 				</span> -->

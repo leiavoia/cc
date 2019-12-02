@@ -16,6 +16,8 @@
 						<th>Income</th>
 						<th>Expense</th>
 						<th>Net</th>
+						<th>Zone Need</th>
+						<th>Sup/Dmd</th>
 					</tr>				
 					<tr repeat.for="k of resource_keys|props">
 						<th>
@@ -26,6 +28,8 @@
 						<td class="${!app.game.myciv.resource_income[k] ? 'zero' : 'good'}">${app.game.myciv.resource_income[k]|round}</td>
 						<td class="${!app.game.myciv.resource_spent[k] ? 'zero' : 'bad'}">${app.game.myciv.resource_spent[k]|round}</td>
 						<td class="${!(app.game.myciv.resource_income[k] - app.game.myciv.resource_spent[k]) ? 'zero' : ( app.game.myciv.resource_income[k] - app.game.myciv.resource_spent[k] < 0 ? 'bad' : 'good')}">${app.game.myciv.resource_income[k] - app.game.myciv.resource_spent[k]|round}</td>
+						<td>${app.game.myciv.resource_estm[k]|round}</td>
+						<td class="${app.game.myciv.resource_supply[k] < 10 && app.game.myciv.resource_supply[k] !== 1 ? 'hilite' : ''}">${app.game.myciv.resource_supply[k]|round:2}</td>						
 					</tr>
 				</table>
 			</div>
