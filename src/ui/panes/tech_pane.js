@@ -13,7 +13,9 @@ export class TechPane {
 		this.app = data.app;
 		this.mode = 'available';
 		this.turn_subscription = Signals.Listen( 'turn', data => this.UpdateData() );
-		this.featured_node = this.app.game.myciv.tech.current_project.node;
+		this.featured_node = this.app.game.myciv.tech.current_project
+			? this.app.game.myciv.tech.current_project.node
+			: null ;
 		// create flat lists for aurelia to cycle through.
 		// This way we can sort and filter in the UI
 		this.nodes_avail = [];
@@ -40,7 +42,9 @@ export class TechPane {
 		
 	ClickAvailableTech( node ) {
 		this.app.game.myciv.SelectResearchProject(node.node.key);
-		this.featured_node = this.app.game.myciv.tech.current_project.node;
+		this.featured_node = this.app.game.myciv.tech.current_project
+			? this.app.game.myciv.tech.current_project.node
+			: null ;
 		}
 		
 	ChangeMode( mode ) { 
