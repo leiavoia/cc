@@ -372,95 +372,48 @@ export let TechNodes = {
 	// ZONES ---------\/-----------------------------
 	
 	ZONE_HOUSING0B: {
-		rp: 250,
+		rp: 150,
 		},
-	// ZONE_HOUSING1A: {
-	// 	rp: 10,
-	// 	},
-	// ZONE_HOUSING1B: {
-	// 	rp: 25,
-	// 	requires: ['ZONE_HOUSING1A'], 
-	// 	},
-	// ZONE_HOUSING2A: {
-	// 	rp: 50,
-	// 	requires: ['ZONE_HOUSING1A'], 
-	// 	},
-	// ZONE_HOUSING2B: {
-	// 	rp: 100,
-	// 	requires: ['ZONE_HOUSING2A'], 
-	// 	},
-	// ZONE_HOUSING3A: {
-	// 	rp: 250,
-	// 	requires: ['ZONE_HOUSING2A'], 
-	// 	},
-	// ZONE_HOUSING3B: {
-	// 	rp: 400,
-	// 	requires: ['ZONE_HOUSING3A'], 
-	// 	},
-	// ZONE_HOUSING4A: {
-	// 	rp: 800,
-	// 	requires: ['ZONE_HOUSING3A'], 
-	// 	},
-		
-	// ZONE_MINE0B: {
-	// 	rp: 75,
-	// 	},
-	// ZONE_MINE0C: {
-	// 	rp: 50,
-	// 	},
+	ZONE_HOUSING1A: {
+		rp: 400,
+		requires: ['ZONE_HOUSING0B','MINE1A'], 
+		},
+	ZONE_HOUSING2A: {
+		rp: 1200,
+		requires: ['ZONE_HOUSING1A','MINE2A'], 
+		},		
+
 	ZONE_MINE1A: {
 		rp: 200,
 		},
-	// ZONE_MINE1B: {
-	// 	rp: 550,
-	// 	requires: ['ZONE_MINE1A'], 
-	// 	},
-	// ZONE_MINE1C: {
-	// 	rp: 400,
-	// 	requires: ['ZONE_MINE1A'], 
-	// 	},
 	ZONE_MINE2A: {
 		rp: 800,
 		requires: ['ZONE_MINE1A'], 
 		},
-	// ZONE_MINE2B: {
-	// 	rp: 1400,
-	// 	requires: ['ZONE_MINE2A'], 
-	// 	},
-	// ZONE_MINE2C: {
-	// 	rp: 1000,
-	// 	requires: ['ZONE_MINE2A'], 
-	// 	},
 		
-	// ZONE_RES1: {
-	// 	rp: 40,
-	// 	},
-	// ZONE_RES2: {
-	// 	rp: 100,
-	// 	requires: ['ZONE_RES1'], 
-	// 	},
-	// ZONE_RES3: {
-	// 	rp: 400,
-	// 	requires: ['ZONE_RES2'], 
-	// 	},
+	ZONE_RES1: {
+		rp: 500,
+		requires: ['ZONE_MINE1A'],
+		},
+	ZONE_RES2: {
+		rp: 1400,
+		requires: ['ZONE_RES1','ZONE_MINE2A'], 
+		},
 	
-	// ZONE_SHIP1: {
-	// 	rp: 40,
-	// 	},
-	// ZONE_SHIP2: {
-	// 	rp: 100,
-	// 	requires: ['ZONE_SHIP1'], 
-	// 	},
-	// ZONE_SHIP3: {
-	// 	rp: 300,
-	// 	requires: ['ZONE_SHIP2'], 
-	// 	},
-	// ZONE_SHIP4: {
-	// 	rp: 900,
-	// 	requires: ['ZONE_SHIP3'], 
-	// 	},
-	
-					
+	ZONE_SHIP1: {
+		rp: 600,
+		requires: ['ZONE_MINE1A'],
+		},
+	ZONE_SHIP2: {
+		rp: 1600,
+		requires: ['ZONE_SHIP1','ZONE_MINE2A'], 
+		},
+
+	ZONE_MIL1: {
+		rp: 1300,
+		requires: ['ZONE_MINE2A'],
+		},
+			
 	// SHIP ENGINES --------------\/-------------
 	
 	FLEETSPEED1: { 

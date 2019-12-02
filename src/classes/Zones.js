@@ -205,24 +205,26 @@ export const ZoneList = {
 		type: 'government',
 		desc: 'Provides bonuses for your home planet.',
 		inputs: {},
-		outputs: { hou: 20 }, // TODO Do() something special instead
+		outputs: { hou: 20 },
 		sect: 2,
 		minsect:2,
 		maxsect: 2,
 		gf: 0, // instant
-		perma: true
+		perma: true,
+		tier: 0
 		},
 	PLANETCAPITOL: {
 		name: 'Planetary Capitol',
 		type: 'government',
 		desc: 'Provides basic services to new colonies',
-		inputs: { $: 20 },
-		outputs: { hou: 5 },
+		inputs: { $: 50 },
+		outputs: { hou: 10 },
 		sect: 1,
 		minsect:1,
 		maxsect:1,
 		gf: 0, // instant
-		perma: true
+		perma: true,
+		tier: 0
 		},
 	GOV01: {
 		name: 'Government Office',
@@ -232,6 +234,7 @@ export const ZoneList = {
 		sect: 1,
 		minsect:1,
 		maxsect:1,
+		tier: 0
 		},		
 		
 	// ------[ HOUSING ]-----------------\/------------------------
@@ -240,86 +243,49 @@ export const ZoneList = {
 		type: 'housing',
 		desc: 'Provides basic civil services, allowing population to grow.',
 		inputs: { o: 1, s: 1, m: 1 },
-		outputs: { hou: 1 },
+		outputs: { hou: 2 },
 		sect: 1,
 		minsect:1,
 		maxsect:8,
-		gf: 10
+		gf: 10,
+		tier: 0
 		},
 	HOUSING0B: {
 		name: 'High-Density Housing',
 		type: 'housing',
 		desc: 'Improved higher density housing requires more metal but less cash.',
 		inputs: { o: 2, s: 2, m: 1 },
-		outputs: { hou: 2 },
+		outputs: { hou: 4 },
 		sect: 2,
 		minsect:2,
 		maxsect:12,
-		gf: 20
+		gf: 20,
+		tier: 1
 		},
-	// HOUSING1A: {
-	// 	name: 'City',
-	// 	type: 'housing',
-	// 	desc: 'Cities house more population than settlements, but require added resources.',
-	// 	inputs: { o: 1.5, s: 1.5, m: 1.5 },
-	// 	outputs: { hou: 8 },
-	// 	sect: 2,
-	// 	gf: 20
-	// 	},
-	// HOUSING1B: {
-	// 	name: 'High Density City',
-	// 	type: 'housing',
-	// 	desc: 'Efficiently planned cities build upward instead of outward, but require Redium.',
-	// 	inputs: { o: 1, s: 1, m: 1, r:1 },
-	// 	outputs: { hou: 11 },
-	// 	sect: 2,
-	// 	gf: 30
-	// 	},
-	// HOUSING2A: {
-	// 	name: 'Metropolis',
-	// 	type: 'housing',
-	// 	desc: 'A metropolis is expensive to maintain but greatly increases maximum population.',
-	// 	inputs: { o: 2, s: 2, m: 2, b: 1 },
-	// 	outputs: { hou: 12 },
-	// 	sect: 4,
-	// 	gf: 30
-	// 	},
-	// HOUSING2B: {
-	// 	name: 'High Density Metropolis',
-	// 	type: 'housing',
-	// 	desc: 'AI-planned metropolii makes efficient use of limited space.',
-	// 	inputs: { o: 2, s: 2, m: 2, b: 2, r:1 },
-	// 	outputs: { hou: 16 },
-	// 	sect: 4,
-	// 	gf: 40
-	// 	},
-	// HOUSING3A: {
-	// 	name: 'Megalopolis',
-	// 	type: 'housing',
-	// 	desc: 'A thriving region that maximizes population.',
-	// 	inputs: { o: 2.5, s: 2.5, m: 2.5, c: 2 },
-	// 	outputs: { hou: 20 },
-	// 	sect: 8,
-	// 	gf: 40
-	// 	},
-	// HOUSING3B: {
-	// 	name: 'Megalopolis',
-	// 	type: 'housing',
-	// 	desc: 'A thriving region that maximizes population.',
-	// 	inputs: { o: 2.5, s: 2.5, m: 2.5, c: 3, v: 3 },
-	// 	outputs: { hou: 26 },
-	// 	sect: 8,
-	// 	gf: 50
-	// 	},
-	// HOUSING4A: {
-	// 	name: 'Ecumenopolis',
-	// 	type: 'housing',
-	// 	desc: 'A planet-spanning city is the ultimate housing development.',
-	// 	inputs: { o: 4, s: 4, m: 4, c: 2, v: 2 },
-	// 	outputs: { hou: 40 },
-	// 	sect: 12,
-	// 	gf: 60
-	// 	},
+	HOUSING1A: {
+		name: 'Metropolis',
+		type: 'housing',
+		desc: 'A metropolis is expensive to maintain but greatly increases maximum population.',
+		inputs: { o: 2, s: 2, m: 2, g:1 },
+		outputs: { hou: 7 },
+		sect: 4,
+		minsect:4,
+		maxsect:16,
+		gf: 30,
+		tier: 2
+		},
+	HOUSING2A: {
+		name: 'Megalopolis',
+		type: 'housing',
+		desc: 'A thriving region that maximizes population.',
+		inputs: { o: 2, s: 2, m: 2, g:2, y:2 },
+		outputs: { hou: 10 },
+		sect: 8,
+		minsect:8,
+		maxsect:20,
+		gf: 50,
+		tier: 3
+		},
 		
 	// ------[ MINING ]-----------------\/--------------------------
 	MINE0A: {
@@ -331,26 +297,9 @@ export const ZoneList = {
 		sect: 1,
 		minsect:1,
 		maxsect:8,
-		gf: 15
+		gf: 15,
+		tier: 0
 		},
-	// MINE0B: {
-	// 	name: 'Basic Resource Nano-Cluster',
-	// 	type: 'mining',
-	// 	desc: 'Next generation mining operations are more expensive but improve output with a smaller footprint.',
-	// 	inputs: { $: 15 },
-	// 	outputs: { o: 3, s: 3, m: 3 },
-	// 	sect: 2,
-	// 	gf: 30
-	// 	},
-	// MINE0C: {
-	// 	name: 'Basic Resource Mega-Cluster',
-	// 	type: 'mining',
-	// 	desc: 'Cost effective, high yield mining if you can make space for it.',
-	// 	inputs: { $: 5 },
-	// 	outputs: { o: 5, s: 5, m: 5 },
-	// 	sect: 8,
-	// 	gf: 50
-	// 	},
 	MINE1A: {
 		name: 'Xeno Resource Processor',
 		type: 'mining',
@@ -360,26 +309,9 @@ export const ZoneList = {
 		sect: 1,
 		minsect:1,
 		maxsect:8,
-		gf: 15
+		gf: 15,
+		tier: 1
 		},
-	// MINE1B: {
-	// 	name: 'Xeno Resource Nano-Cluster',
-	// 	type: 'mining',
-	// 	desc: 'Improved output on Redium, Verdagen, and Bluetonium mining.',
-	// 	inputs: { $: 25, o: 1 },
-	// 	outputs: { r: 3, g: 3, b: 3 },
-	// 	sect: 2,
-	// 	gf: 35
-	// 	},
-	// MINE1C: {
-	// 	name: 'Xeno Resource Mega-Cluster',
-	// 	type: 'mining',
-	// 	desc: 'Cost effective, high yield mining of Redium, Verdagen, and Bluetonium.',
-	// 	inputs: { $: 10, o: 1 },
-	// 	outputs: { r: 5, g: 5, b: 5 },
-	// 	sect: 8,
-	// 	gf: 50
-	// 	},
 	MINE2A: {
 		name: 'Exotic Resource Processor',
 		type: 'mining',
@@ -389,26 +321,9 @@ export const ZoneList = {
 		sect: 1,
 		minsect:1,
 		maxsect:8,
-		gf: 15
+		gf: 15,
+		tier: 2
 		},
-	// MINE2B: {
-	// 	name: 'Exotic Resource Nano-Cluster',
-	// 	type: 'mining',
-	// 	desc: 'Improved output on Cyanite, Yellowtron, and Violetronium mining.',
-	// 	inputs: { $: 30, r: 1 },
-	// 	outputs: { c: 3, y: 3, v: 3 },
-	// 	sect: 2,
-	// 	gf: 35
-	// 	},
-	// MINE2C: {
-	// 	name: 'Exotic Resource Mega-Cluster',
-	// 	type: 'mining',
-	// 	desc: 'Cost effective, high yield mining of Cyanite, Yellowtron, and Violetronium.',
-	// 	inputs: { $: 15, r: 1 },
-	// 	outputs: { c: 5, y: 5, v: 5 },
-	// 	sect: 8,
-	// 	gf: 60
-	// 	},
 		
 	// ------[ RESEARCH ]-----------------\/------------------------
 	RES0: {
@@ -420,35 +335,33 @@ export const ZoneList = {
 		sect: 1,
 		minsect:1,
 		maxsect:8,
-		gf: 20
+		gf: 20,
+		tier: 0
 	},
-	// RES1: {
-	// 	name: 'Research Center',
-	// 	type: 'research',
-	// 	desc: 'Adds to scientific research projects.',
-	// 	inputs: { $: 15 },
-	// 	outputs: { res: 10 },
-	// 	sect: 2,
-	// 	gf: 15
-	// },
-	// RES2: {
-	// 	name: 'Research Complex',
-	// 	type: 'research',
-	// 	desc: 'Adds to scientific research projects.',
-	// 	inputs: { $: 15, g: 2 },
-	// 	outputs: { res: 15 },
-	// 	sect: 3,
-	// 	gf: 20
-	// },
-	// RES3: {
-	// 	name: 'Research Network',
-	// 	type: 'research',
-	// 	desc: 'Adds to scientific research projects.',
-	// 	inputs: { $: 20, g: 2, y: 1 },
-	// 	outputs: { res: 25 },
-	// 	sect: 5,
-	// 	gf: 30
-	// },
+	RES1: {
+		name: 'Research Complex',
+		type: 'research',
+		desc: 'Adds to scientific research projects.',
+		inputs: { $: 15, b: 2 },
+		outputs: { res: 15 },
+		sect: 2,
+		minsect:2,
+		maxsect:12,
+		gf: 35,
+		tier: 1
+	},
+	RES2: {
+		name: 'Research Network',
+		type: 'research',
+		desc: 'Adds to scientific research projects.',
+		inputs: { $: 20, b: 2, c: 1 },
+		outputs: { res: 25 },
+		sect:4,
+		minsect:4,
+		maxsect:16,
+		gf: 50,
+		tier: 2
+	},
 	
 	
 	// ------[ ECONOMIC ]-----------------\/------------------------
@@ -461,12 +374,13 @@ export const ZoneList = {
 		sect: 1,
 		minsect:1,
 		maxsect:4,
-		gf: 15
+		gf: 15,
+		tier: 0
 	},
 	
 	// ------[ SHIP BUILDING / STARDOCK ]-----------------\/---------
 	SHIP0: {
-		name: 'Basic Stardock',
+		name: 'Shipyard',
 		type: 'stardock',
 		desc: 'Allows planet to build fighter-scale spacecraft.',
 		inputs: { $: 5, m: 5, o: 1 },
@@ -474,44 +388,33 @@ export const ZoneList = {
 		sect: 1,
 		minsect:1,
 		maxsect:8,
-		gf: 20
+		gf: 30,
+		tier: 0
 	},
-	// SHIP1: {
-	// 	name: 'Orbital Shipyard',
-	// 	type: 'stardock',
-	// 	desc: 'Allows planet to build cruiser-scale spacecraft.',
-	// 	inputs: { $: 8, m: 5, o: 1 },
-	// 	outputs: { ship: 30 },
-	// 	sect: 2,
-	// 	gf: 15
-	// },
-	// SHIP2: {
-	// 	name: 'Orbital Foundry',
-	// 	type: 'stardock',
-	// 	desc: 'Allows planet to build destroyer-scale spacecraft.',
-	// 	inputs: { $: 10, m: 3, b: 2 },
-	// 	outputs: { ship: 50 },
-	// 	sect: 4,
-	// 	gf: 20
-	// },
-	// SHIP3: {
-	// 	name: 'Naval Mega-Factory',
-	// 	type: 'stardock',
-	// 	desc: 'Allows planet to build battleship-scale spacecraft.',
-	// 	inputs: { $: 15, m: 2, b: 2, c: 1 },
-	// 	outputs: { ship: 80 },
-	// 	sect: 8,
-	// 	gf: 30
-	// },
-	// SHIP4: {
-	// 	name: 'Naval Giga-Factory',
-	// 	type: 'stardock',
-	// 	desc: 'Allows planet to build dreadnought-scale spacecraft.',
-	// 	inputs: { $: 20, m: 2, b: 5, c: 2 },
-	// 	outputs: { ship: 150 },
-	// 	sect: 12,
-	// 	gf: 40
-	// },
+	SHIP1: {
+		name: 'Orbital Foundry',
+		type: 'stardock',
+		desc: 'Allows planet to build destroyer-scale spacecraft.',
+		inputs: { $: 10, m: 3, r: 2 },
+		outputs: { ship: 50 },
+		sect: 2,
+		minsect:2,
+		maxsect:12,
+		gf: 40,
+		tier: 1
+	},
+	SHIP2: {
+		name: 'Naval Mega-Factory',
+		type: 'stardock',
+		desc: 'Allows planet to build battleship-scale spacecraft.',
+		inputs: { $: 15, m: 2, r: 2, v: 1 },
+		outputs: { ship: 80 },
+		sect: 4,
+		minsect:4,
+		maxsect:16,
+		gf: 50,
+		tier: 2
+	},
 		
 	// ------[ ESPIONAGE ]-----------------\/------------------------
 	SPY0: {
@@ -523,7 +426,8 @@ export const ZoneList = {
 		sect: 1,
 		minsect:1,
 		maxsect:8,
-		gf: 15
+		gf: 15,
+		tier: 0
 		},
 		
 	// ------[ MILITARY ]-----------------\/------------------------
@@ -534,9 +438,22 @@ export const ZoneList = {
 		inputs: { $: 8 },
 		outputs: { def: 10 },
 		sect: 1,
-		minsect:1,
+		minsect:2,
 		maxsect:8,
-		gf: 10
+		gf: 15,
+		tier: 0
+		},
+	MIL1: {
+		name: 'Military Fortress',
+		type: 'military',
+		desc: 'Allows troops to be trained.',
+		inputs: { $: 16, g:1, b:1, c:1 },
+		outputs: { def: 30 },
+		sect: 4,
+		minsect:4,
+		maxsect:12,
+		gf: 25,
+		tier: 1
 		},
 		
 	// ------[ SPECIALS ]-----------------\/------------------------
@@ -548,7 +465,8 @@ export const ZoneList = {
 		sect: 1,
 		minsect:1,
 		maxsect:1,
-		gf: 10
+		gf: 10,
+		tier: 0
 		},
 	};
 
@@ -557,10 +475,11 @@ for ( let k in ZoneList ) {
 	ZoneList[k].type = ZoneList[k].type || 'housing';
 	ZoneList[k].desc = ZoneList[k].desc || 'missing description';
 	ZoneList[k].name = ZoneList[k].name || 'UNKNOWN';
-	ZoneList[k].sect = ZoneList[k].sect || 1;
+	ZoneList[k].tier = ZoneList[k].tier || 1;
 	ZoneList[k].minsect = ZoneList[k].minsect || 1;
 	ZoneList[k].maxsect = ZoneList[k].maxsect || 1;
 	ZoneList[k].size = ZoneList[k].minsect || 1;
+	ZoneList[k].sect = ZoneList[k].minsect || 1;
 	ZoneList[k].gf = ZoneList[k].gf || 10;
 	ZoneList[k].inputs = ZoneList[k].inputs || {};
 	ZoneList[k].outputs = ZoneList[k].outputs || {};

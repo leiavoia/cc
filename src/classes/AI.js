@@ -1002,65 +1002,61 @@ export class AIPlanetsObjective extends AIObjective {
 			if ( p.zoned < p.size ) { 
 				this.ZonePlanet(p);
 				}
-			// remodeling
-			// else if ( (app.game.turn_num - p.established) % p.owner.ai.strat.zone_remodel_freq == 0 )  {
-			// 	// wipe strategy: just reset the entire planet every few years
-			// 	if ( p.owner.ai.strat.zone_remodel == 'wipe' ) {
-			// 		let i = p.zones.length;
-			// 		while ( i-- ) {
-			// 			if ( p.zones[i].type != 'government' ) { 
-			// 				p.zoned -= p.zones[i].size;
-			// 				p.zones.splice( i, 1 );
-			// 				}
-			// 			}
-			// 		}
-			// 	// random strategy: randomly destroy zones
-			// 	else if ( p.owner.ai.strat.zone_remodel == 'rand' ) { 
-			// 		let i = p.zones.length;
-			// 		while ( i-- ) {
-			// 			if ( Math.random() <= p.owner.ai.strat.zone_remodel_rand_chance && p.zones[i].type != 'government' ) { 
-			// 				p.zoned -= p.zones[i].size;
-			// 				p.zones.splice( i, 1 );
-			// 				}
-			// 			}
-			// 		}
-			// 	// semirandom strategy: randomly destroy zones based on zone stats
-			// 	else if ( p.owner.ai.strat.zone_remodel == 'semirand' ) { 
-			// 		let i = p.zones.length;
-			// 		while ( i-- ) {
-			// 			let chance = p.owner.ai.strat.zone_remodel_rand_chance - ( 3/p.zones[i].gf );
-			// 			if ( p.zones[i].val < 0.1 ) { chance += 0.35 };
-			// 			if ( p.zones[i].insuf ) { chance += 0.65 };
-			// 			if ( Math.random() <= chance && p.zones[i].type != 'government' ) { 
-			// 				p.zoned -= p.zones[i].size;
-			// 				p.zones.splice( i, 1 );
-			// 				}
-			// 			}
-			// 		}
-			// 	// recycle strategy: completely rezones planet, recycling any that match.
-			// 	else if ( p.owner.ai.strat.zone_remodel == 'recycle' ) { 
-			// 		// make a copy of the existing zone list
-			// 		let oldlist = p.zones.filter( z => !(z.perma || z.type=='government' || z.type=='special') );
-			// 		// keep these ones from being deleted
-			// 		let goodies = p.zones.filter( z => z.perma || z.type=='government' || z.type=='special' );
-			// 		// clean slate and rezone
-			// 		p.zones.splice( 0, p.zones.length, ...goodies );
-			// 		p.zoned = 0;
-			// 		this.ZonePlanet(p);
-			// 		// loop through the lists and find matching pairs to transfer progress
-			// 		for ( let old_z of oldlist ) {
-			// 			for ( let z of p.zones ) {
-			// 				if ( old_z.key == z.key && !z.val ) { 
-			// 					z.val = old_z.val;
-			// 					break;
-			// 					}
-			// 				}
-			// 			}
-			// 		}
-			// 	this.ZonePlanet(p);
-			// 	}
+			// remodeling / upgrades
+			else if ( (app.game.turn_num - p.established) % p.owner.ai.strat.zone_remodel_freq == 0 )  {
+				// see if we can upgrade something
+				outerloop:
+				for ( let zone of p.zones ) { 
+					// ignore mining zones. they are targetted to specific resources
+					if ( zone.type == 'mining' ) { continue; }
+					// find what zones are available to upgrade to 
+					let upgrade = civ.avail_zones.filter( z => 
+						z.type == zone.type 
+						&& z.key != zone.key 
+						&& z.minsect <= zone.sect
+						&& z.tier > zone.tier // AI marker to help it upgrade, not downgrade
+						)
+					// that wont bankrupt us
+					.filter( z => {
+						for ( let k in z.inputs ) {
+							if ( civ.resources[k] <= 0 || civ.resource_supply[k] < 1.0 ) { return false; }
+							}	
+						return true;
+						} )
+					// best of show
+					.sort( (a,b) => b.tier - a.tier ).pop();
+					if ( !upgrade ) { continue; } 
+					// can we afford it?
+					// NOTE: we subject the AI to the same punishment costs of upgrading as the
+					// human player, but may change based on difficulty level in the future.
+					const inf = zone.size * zone.val;
+					const punishment = 4; // [!]MAGICNUMBER
+					let costs = {};
+					for ( let k in upgrade.inputs ) {
+						costs[k] = Math.ceil( upgrade.inputs[k] * inf * punishment );
+						}	
+					for ( let k in costs ) {
+						if ( costs[k] > civ.resources[k] ) {
+							break outerloop; // can't afford it :-(
+							}
+						}
+					// pay up
+					for ( let k in costs ) {
+						civ.resources[k] -= costs[k];
+						}
+					// swap the zone itself
+					let v = zone.val;
+					let sect = zone.sect;
+					p.RemoveZone( zone );
+					let newzone = p.AddZone(upgrade.key);
+					newzone.Grow( sect - newzone.minsect );
+					newzone.val = v;
+					p.zoned += sect - newzone.minsect;
+					}
+				}				
 			}
-		// TODO: we may want to rezone planets if we are running very low on resources or money.
+			
+		// TODO: we may want to delete or downgrade planets if we are running very low on resources or money.
 				
 		// what is our average combat ship milval?
 		let combat_bps = civ.ship_blueprints.filter( bp => bp.role == 'combat' );
