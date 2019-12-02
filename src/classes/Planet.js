@@ -313,7 +313,7 @@ export default class Planet {
 	TrimZone( z, force = false ) {
 		// some zones are permanent and cannot be removed 
 		if ( z.perma && !force ) { return false; }
-		if ( z.sect > 1 ) {
+		if ( z.sect > z.minsect ) {
 			z.Trim(); 
 			this.zoned--;
 			}
@@ -897,7 +897,7 @@ export default class Planet {
 		}
 		
 	DoZoning() { 
-		// then do mergers, if any. find all eligible zones for merging:
+		// do mergers, if any. find all eligible zones for merging:
 		const adaptation = this.Adaptation();
 		let zones = this.zones.filter( z => z.val===1 && z.sect < z.maxsect && z.sect < adaptation ).sort( (a,b) => b.sect - a.sect );
 		while ( zones.length ) { 

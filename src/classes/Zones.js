@@ -125,7 +125,7 @@ export class Zone {
 		}
 				
 	Trim() { 
-		if ( this.sect > 1 ) { 
+		if ( this.sect > this.minsect ) { 
 			let v = this.val * this.size;
 			this.sect--;
 			this.size = FastFactorial( this.sect );	
