@@ -488,7 +488,7 @@ evenly space headers and body elements
 	margin-left: 0;
 	}
 #layout_ui_main .pane.flex MAIN > * > *:first-child {
-	margin-top: 0;
+	/* margin-top: 0; */
 	}
 #layout_ui_main .pane.flex MAIN > .fill {
 	flex: 1 1 100%;
@@ -1676,8 +1676,8 @@ invisible when unexplored, dim when explored */
 		);*/
 	}
 
-#layout_ui_side .planet .cost > SPAN { margin-right: 0.55em; }
-#layout_ui_side .zone_detail .resources > SPAN { margin-right: 0.55em; }
+.planet .cost > SPAN { margin-right: 0.55em; }
+.zone_detail .resources > SPAN { margin-right: 0.55em; }
 
 #layout_ui_side > .planet > IMG {
 	float:right;
@@ -1987,6 +1987,7 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	background-size: 22px 22px !important;
 	cursor: help;
 	overflow:hidden;
+	transition: opacity 0.35s;
 	}
 .planet .zone.empty {
 	border: 1px solid #333;
@@ -2041,7 +2042,7 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 .planet .zone.CIVCAPITOL { background-image: url(../img/icons/svg/building22.svg); }
 .planet .zone.PLANETCAPITOL { background-image: url(../img/icons/svg/capitol01.svg); }
 /* .planet .zone.HOUSING0A { background-image: url(../img/icons/svg/city.svg); } */
-/* .planet .zone.HOUSING0B { background-image: url(../img/icons/svg/city.svg); } */
+.planet .zone.HOUSING0B { background-image: url(../img/icons/svg/city.svg); }
 .planet .zone.HOUSING1A { background-image: url(../img/icons/svg/city.svg); }
 .planet .zone.HOUSING1B { background-image: url(../img/icons/svg/city.svg); }
 .planet .zone.HOUSING2A { background-image: url(../img/icons/svg/city08.svg); }
@@ -2205,6 +2206,9 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 .planet .zones.micro {
 	margin: 0.5em 0 0.5em 0;
 	}
+.planet .zones.micro DIV {
+	cursor: inherit;
+	}
 .planet .zones.micro .zone {
 	height: 10px;
 	max-width: 6px;
@@ -2262,8 +2266,10 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	background-color: rgba(255,255,255,0.35);
 	position:absolute;
 	}	
-.planet .zone.pct0 { opacity: 0.5; }
-.planet .zone.pct0:after { top: 100%; }
+.planet .zone.pct0, 
+.planet .zone.pct00 { opacity: 0.5; }
+.planet .zone.pct0:after, 
+.planet .zone.pct00:after { top: 100%; }
 .planet .zone.pct10:after { top: 90%; }
 .planet .zone.pct20:after { top: 80%; }
 .planet .zone.pct30:after { top: 70%; }
@@ -2940,9 +2946,39 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 #planetinfo_pane .resources > SPAN { margin-right: 0.55em; }
 
 	
+#zone_pane MAIN > DIV {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-between;
+	align-content: flex-start;
+	margin: 0 -0.5em !important;
+	}
 	
-	
-	
+#zone_pane .zone_detail {
+	background: #141414;
+	border-radius: 0.5em;
+	padding: 0.5em 1em;
+	flex: 1 1 25%;
+	box-sizing: border-box;
+	margin: 0.5em;
+	min-width: 300px;
+	}
+#zone_pane .zone_detail:hover {
+	background: #333;
+	cursor: cell;
+	}
+#zone_pane .zone_detail.disabled {
+	background: #440F0F;
+	cursor: not-allowed;
+	}
+#zone_pane .zone_detail.disabled:hover {
+	background: #720e0e;
+	cursor: not-allowed;
+	}
+
+
+
+		
 /* FLEET SIDEBAR */
 #layout_ui_side .fleet {
 	height: 100%;

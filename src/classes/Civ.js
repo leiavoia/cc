@@ -33,7 +33,6 @@ export default class Civ {
 			temp: 2,
 			grav: 2,
 			adaptation: 1, // levels to shift the habitability scale
-			habitation: 1 // maximum bad planet we can settle
 			},
 		is_monster: false, // true for space monsters. changes some UI formating.
 		};
@@ -341,7 +340,6 @@ export default class Civ {
 	EstimateResources() {
 		for ( let k in this.resource_estm ) { this.resource_estm[k] = 0; }
 		for ( let p of this.planets ) { 
-			p.RecalcZoneHabMod();
 			for ( let z of p.zones ) { 
 				let estm = z.EstimateResources(p);
 				for ( let k of Object.keys(estm) ) { 

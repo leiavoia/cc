@@ -1,0 +1,38 @@
+<template>
+	<div id="zone_pane" class="pane flex">
+		<header>
+			<p style="float:right; margin: 0;"><button click.delegate="ClosePanel()" class="button big bad marginless">CLOSE</button></p>
+			<h1>${zone ? 'Upgrade Zone' : 'Add Zones'}</h1>
+		</header>
+		<main class="planet" if.bind="planet.owner">
+			<p class="bad bold big centered" if.bind="!zones.length">No upgrades available.</p>
+			<div class="">
+				<div class="zone_detail ${z.type} ${!zone || eligible_zones[$index] ? '' : 'disabled'}" repeat.for="z of zones" click.delegate="ClickZone(z)">
+					<div>
+						<p class="name">${z.name}</p>
+						<p class="type">${z.type}</p>
+						<p class="desc">${z.desc}</p>
+						<p class="stats resources">	
+							Sectors: <b>${z.minsect}-${z.maxsect}</b><br/>
+							Matures In: <b>${z.gf | ceil} turns</b> &nbsp;
+							<br/>
+							Costs: <span class="${k=='$'?'cash':k}" repeat.for="k of z.inputs|props">${z.inputs[k]|round:1}</span>
+							<br/>
+							Output: <span class="${k=='$'?'cash':k}" repeat.for="k of z.outputs|props">${z.outputs[k]|round:1}</span>
+						</p>
+						<p class="resources big bold" if.bind="zone">
+							COST TO UPGRADE:
+							<span class="${k=='$'?'cash':k}" repeat.for="k of upgrade_costs[$index]|props">${upgrade_costs[$parent.$index][k]}</span>
+						</p>
+						<p if.bind="zone && !eligible_zones[$index]" class="big bold bad">
+							Not enough resources.
+						</p>
+					</div>
+					<div>
+						<div class="zone ${z.type} ${z.key} only"></div>
+					</div>
+				</div>	
+			</div>
+		</main>
+	</div>
+</template>

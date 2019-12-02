@@ -115,14 +115,14 @@ export class App {
 		
 		window.document.title = `Constellation Control v.${this.version}`;
 		this.LoadOptions();
-		// close-tab confirmation
-		if ( !this.options.soak ) { 
-			window.onbeforeunload = function (e) {
-				e = e || window.event;
-				if (e) { e.returnValue = 'Close your game?'; } // IE, FF<4.0
-				return 'Close your game?'; // For Safari
-				};
-			}
+		// // close-tab confirmation
+		// if ( !this.options.soak ) { 
+		// 	window.onbeforeunload = function (e) {
+		// 		e = e || window.event;
+		// 		if (e) { e.returnValue = 'Close your game?'; } // IE, FF<4.0
+		// 		return 'Close your game?'; // For Safari
+		// 		};
+		// 	}
 		// debug shortcut
 		if ( this.options.debug ) {
 			this.game = new Game(this);
@@ -226,7 +226,7 @@ export class App {
 		
 		}
 	// exclusive means to hide all UI elements to trap the user in the screen.
-	SwitchMainPanel( mode, obj = null, data = null, exclusive = false ) {
+	SwitchMainPanel( mode, obj = null, data = null, exclusive = false, close_sidebar = true ) {
 		// toggle effect
 		if ( mode == this.main_panel_mode && obj == this.main_panel_obj ) { 
 			this.CloseMainPanel();
@@ -234,9 +234,7 @@ export class App {
 			}
 		else {
 			// close the sidebar in most cases
-			if ( mode != 'planets' && mode != 'planetinfo' ) { 
-				this.CloseSideBar();
-				}
+			if ( close_sidebar ) { this.CloseSideBar(); }
 			// null out data to prevent cross-screen data contamination during transition
 			this.main_panel_mode = null;
 			this.main_panel_obj = null;

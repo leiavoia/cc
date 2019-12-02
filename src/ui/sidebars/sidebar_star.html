@@ -23,8 +23,8 @@
 						<div class="size" style="margin: 0; padding: 0;">
 							<span class="size">${p.size}<br/><span class="size">SIZE</span></span>							
 							<span class="en">${p.energy}x<br/><span class="en">ENERGY</span></span>
-							<span class="${calc_vals[p.id].hab ? (calc_vals[p.id].adapt < 0 ? 'alert' : 'good') : 'bad'}">
-								${(calc_vals[p.id].adapt >= 0) ? '+' : ''}${calc_vals[p.id].adapt}<br/>
+							<span class="${calc_vals[p.id].hab ? 'good' : 'bad'}">
+								${(calc_vals[p.id].adapt > 0) ? '+' : ''}${calc_vals[p.id].adapt}<br/>
 								<span class="">ENV</span>
 							</span>
 							<span class="pop" if.bind="p.owner">${p.total_pop|round}<br/><span class="pop">POP</span></span>
@@ -36,9 +36,9 @@
 						</div>
 						<div class="zones micro" if.bind="p.owner && (p.owner.is_player || app.options.see_all)">
 							<template containerless repeat.for="z of p.zones">
-								<div repeat.for="s of z.size" click.delegate="ClickZone(z)"
+								<div repeat.for="s of z.sect"
 									class="zone clickable ${z==sel_zone?'hilite':''} ${z.type} ${z.key} 
-									${z.size==1 ? 'only' : ( s==0 ? 'start' : (s==z.size-1 ? 'end' : 'mid') ) }
+									${z.sect==1 ? 'only' : ( s==0 ? 'start' : (s==z.sect-1 ? 'end' : 'mid') ) }
 									">
 								</div>
 							</template>

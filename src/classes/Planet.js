@@ -62,8 +62,6 @@ export default class Planet {
 	acct_total = {}; // totalled values of acct_ledger. This includes stuff not in resource_rec and output_rec
 	acct_hist = []; 
 	
-	zone_hab_mod = 1.0; // precalculated HabitationBonus() to avoid calling millions of times each turn.
-	
 	tax_rate = 0.2;
 	spending = 1.0;
 	// max spending may be modable with technology improvements. 
@@ -282,16 +280,16 @@ export default class Planet {
 		return planet;
 		}
 								
-	// returns true on success, false on failure
+	// returns zone on success, false on failure
 	AddZone( key ) {
 		let o = new Zone(key);
-		if ( o.size > this.size - this.zoned ) { return false; }
-		this.zoned += o.size;
+		if ( o.minsect > this.size - this.zoned ) { return false; }
+		this.zoned += o.sect;
 		// some zones are "instant" and do not grow to size.
 		if ( !o.gf ) { o.val = 1; }
 		this.zones.push(o);
 		this.zones.sort( (a,b) => a.type=='government' ? -1 : (a.type > b.type) );
-		return true;
+		return o;
 		}
 	
 	// returns true on success, false on failure.
@@ -301,12 +299,30 @@ export default class Planet {
 		if ( i >= 0 ) {
 			// some zones are permanent and cannot be removed 
 			if ( this.zones[i].perma && !force ) { return false; }
-			this.zoned -= this.zones[i].size;
+			this.zoned -= this.zones[i].sect;
 			this.zones.splice( i, 1 );
 			// TODO recalc stats
 			return true;
 			}
 		return false;
+		}
+		
+	// removes 1 sector from the zone's sector size.
+	// returns true on success, false on failure.
+	// `force` will trim permanent zones.
+	TrimZone( z, force = false ) {
+		// some zones are permanent and cannot be removed 
+		if ( z.perma && !force ) { return false; }
+		if ( z.sect > z.minsect ) {
+			z.Trim(); 
+			this.zoned--;
+			}
+		else { 
+			this.RemoveZone( z, force );
+			z.sect = 0; // signal to outside
+			}
+		// TODO recalc stats
+		return true;
 		}
 		
 	ProduceBuildQueueItem( item ) {
@@ -443,17 +459,19 @@ export default class Planet {
 		}
 		
   	// returns an integer value which may be negative
-	Adaptation( race ) { 
-		return -( 
-			(Math.abs( this.atm - race.env.atm ) + Math.abs( this.temp - race.env.temp ) + Math.abs( this.grav - race.env.grav )  )
-	 		- race.env.adaptation 
-	 		) ;
+	Adaptation( race ) {
+		if ( !race && !this.owner ) { return 0; }
+		if ( !race && this.owner ) { race = this.owner.race; }
+		return -( (Math.abs( this.atm - race.env.atm ) + Math.abs( this.temp - race.env.temp )  + Math.abs( this.grav - race.env.grav ) ) )
+	 		+ race.env.adaptation;
 		}
   	// returns true if the planet can be settled by the race
 	Habitable( race ) { 
-		return ( (Math.abs( this.atm - race.env.atm ) + Math.abs( this.temp - race.env.temp )  + Math.abs( this.grav - race.env.grav ) )
-	 		- race.env.adaptation 
-	 		) <= race.env.habitation;	
+		if ( !race && !this.owner ) { return false; }
+		if ( !race && this.owner ) { race = this.owner.race; }
+		return -( (Math.abs( this.atm - race.env.atm ) + Math.abs( this.temp - race.env.temp )  + Math.abs( this.grav - race.env.grav ) ) )
+	 		+ race.env.adaptation 
+	 		> 0;	
 		}
 	HabitationBonus( race ) { 
 		let x = this.Adaptation( race );
@@ -463,15 +481,6 @@ export default class Planet {
 		if ( x < 0 ) { return utils.Clamp( x*0.2, -0.9, 0 ); }
 		else if ( x > 0 ) { return utils.Clamp( x*0.1, 0, 1.0 ); }
 		return 0;
-		}
-	RecalcZoneHabMod() { 
-		if ( !this.owner ) { return; } 
-		// zone_hab_mod is a cost modifier, so values <1.0 represent cost SAVINGS:
-		// +25% for each negative, -15% for each positive
-		let x = this.Adaptation( this.owner.race );
-		if ( x < 0 ) this.zone_hab_mod = 1 + -x*0.25;
-		else if ( x > 0 ) this.zone_hab_mod = utils.Clamp( 1-x*0.15, 0.1, 1.0 );
-		else this.zone_hab_mod = 1.0;
 		}
 	@computedFrom('total_pop','tax_rate','econ.PCI')
 	get tax() { 
@@ -614,7 +623,7 @@ export default class Planet {
 			};
 		// environment
 		factors.env = {
-			fx: 1 + this.HabitationBonus( this.owner.race ),
+			fx: this.Adaptation( this.owner.race ),
 			weight: 5.0
 			};
 		// crowding (sigmoid function)
@@ -678,11 +687,9 @@ export default class Planet {
 		// popmax is actually our current infrastructure level from Housing zones.
 		// This means that if Housing zones are removed or underfunded, infrastructure
 		// crumbles and we can have more pops than popmax (causing unhappiness).
-		this.maxpop = this.popmax_contrib + this.size;
-		this.popmax_contrib = 0;
-		// environment reduces popmax
-		this.maxpop *= 1 + this.HabitationBonus( this.owner.race );
+		this.maxpop = this.popmax_contrib + this.size + this.Adaptation( this.owner.race );
 		this.maxpop = this.mods.Apply( this.maxpop, 'maxpop' );
+		this.popmax_contrib = 0;
 		// growth rate is square root of difference between max pop and current pop, divided by 60.
 		let diff = this.maxpop - this.total_pop; 
 		let divisor = 60.0; // 
@@ -762,8 +769,8 @@ export default class Planet {
 		this.econ.GDP = 0;
 		this.econ.PCI = this.base_PCI + this.bonus_PCI;
 		this.econ.GF = 1.0;
-		this.RecalcZoneHabMod();
-		this.maxpop = this.size * ( 1 + this.HabitationBonus( this.owner.race ) );
+		this.maxpop = this.size + this.Adaptation( this.owner.race );
+		this.maxpop = this.mods.Apply( this.maxpop, 'maxpop' );
 		if ( !this.zones.length ) { 
 			if ( !owner.planets.length ) { 
 				this.AddZone( 'CIVCAPITOL', 1 ); 
@@ -805,7 +812,6 @@ export default class Planet {
 		this.acct_ledger = [];
 		this.acct_total = {};
 		this.acct_hist = []; 
-		this.zone_hab_mod = 1.0; 
 		if ( !keep_pop ) { 
 			this.total_pop = 0;
 			this.settled = false;
@@ -890,6 +896,27 @@ export default class Planet {
 		return null;
 		}
 		
+	DoZoning() { 
+		// do mergers, if any. find all eligible zones for merging:
+		const adaptation = this.Adaptation();
+		let zones = this.zones.filter( z => z.val===1 && z.sect < z.maxsect && z.sect < adaptation ).sort( (a,b) => b.sect - a.sect );
+		while ( zones.length ) { 
+			let zone = zones.shift(); // start with the biggest one
+			// find the smallest eligible mate
+			let maxsect = Math.min( zone.maxsect, adaptation ) - zone.sect;
+			let mate = zones.filter( z => z.key===zone.key && z.sect <= maxsect  ).sort( (a,b) => b.sect - a.sect ).pop();
+			if ( mate ) {
+				// calculate the new value of the zone with its newly increased size
+				mate.MergeInto(zone);
+				// remove mate from main zones list
+				zones.splice( zones.indexOf(mate), 1 );
+				this.zones.splice( this.zones.indexOf(mate), 1 );
+				}
+			}
+		// zones all produce stuff 
+		for ( let z of this.zones ) { z.Do(this); }
+		}
+	
 	// This completely zones the planet. Can be used for AI or automation settings
 	ZonePlanet() {
 		let ai = new AIPlanetsObjective();

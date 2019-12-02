@@ -258,31 +258,6 @@ export let Techs = {
 		onComplete( civ ) { civ.ship_range = 3500; civ.RecalcEmpireBox(); }
 		},
 		
-	HABITATION1: {
-		name: "Improved Habitation",
-		desc: '<b>+1 Habitation</b>. Living on alien planets can be difficult and expensive. These new habitation techniques will allow us to colonize even more hostile planets. With further refinements, we can live just about anywhere.',
-		tags: ['biology'],
-		onComplete( civ ) { civ.race.env.habitation += 1; } /* TODO: hibitation tech should not affect the civ's race directly */
-		},
-	HABITATION2: {
-		name: "Advanced Habitation",
-		desc: '<b>+1 Habitation</b>. Breakthroughs in engineering and materials science has given us the ability to settle on particularly ugly planets. They are ugly now, but someday they will be wonderful.',
-		tags: ['biology'],
-		onComplete( civ ) { civ.race.env.habitation += 1; } /* TODO: hibitation tech should not affect the civ's race directly */
-		},
-	HABITATION3: {
-		name: "Superior Habitation",
-		desc: '<b>+1 Habitation</b>. Living on alient planets is easy with new pre-fabricated, self-assembling shelters. It\'s still a dismal life, but it\'s one less colony our neighbors will get.',
-		tags: ['biology'],
-		onComplete( civ ) { civ.race.env.habitation += 1; } /* TODO: hibitation tech should not affect the civ's race directly */
-		},
-	HABITATION4: {
-		name: "Ultimate Habitation",
-		desc: '<b>+5 Habitation</b>. Ultimate xeno-engineering technologies mean we can live virtually anywhere in the galaxy.',
-		tags: ['biology'],
-		onComplete( civ ) { civ.race.env.habitation += 5; } /* TODO: hibitation tech should not affect the civ's race directly */
-		},
-		
 	ADAPTATION1: {
 		name: "Basic Terraforming",
 		desc: '<b>+1 Adaptation</b>.',
@@ -291,21 +266,27 @@ export let Techs = {
 		},
 	ADAPTATION2: {
 		name: "Advanced Terraforming",
-		desc: '<b>+1 Adaptation</b>.',
-		tags: ['biology'],
-		onComplete( civ ) { civ.race.env.adaptation += 1; } /* TODO: hibitation tech should not affect the civ's race directly */
-		},
-	ADAPTATION3: {
-		name: "Superior Terraforming",
-		desc: '<b>+1 Adaptation</b>.',
-		tags: ['biology'],
-		onComplete( civ ) { civ.race.env.adaptation += 1; } /* TODO: hibitation tech should not affect the civ's race directly */
-		},
-	ADAPTATION4: {
-		name: "Ultimate Terraforming",
 		desc: '<b>+2 Adaptation</b>.',
 		tags: ['biology'],
 		onComplete( civ ) { civ.race.env.adaptation += 2; } /* TODO: hibitation tech should not affect the civ's race directly */
+		},
+	ADAPTATION3: {
+		name: "Superior Terraforming",
+		desc: '<b>+3 Adaptation</b>.',
+		tags: ['biology'],
+		onComplete( civ ) { civ.race.env.adaptation += 3; } /* TODO: hibitation tech should not affect the civ's race directly */
+		},
+	ADAPTATION4: {
+		name: "Ultra Terraforming",
+		desc: '<b>+3 Adaptation</b>.',
+		tags: ['biology'],
+		onComplete( civ ) { civ.race.env.adaptation += 3; } /* TODO: hibitation tech should not affect the civ's race directly */
+		},
+	ADAPTATION5: {
+		name: "Perfect Terraforming",
+		desc: '<b>+6 Adaptation</b>.',
+		tags: ['biology'],
+		onComplete( civ ) { civ.race.env.adaptation += 6; } /* TODO: hibitation tech should not affect the civ's race directly */
 		},
 		
 	XENOCOMM1: {
@@ -391,95 +372,48 @@ export let TechNodes = {
 	// ZONES ---------\/-----------------------------
 	
 	ZONE_HOUSING0B: {
-		rp: 5,
+		rp: 150,
 		},
 	ZONE_HOUSING1A: {
-		rp: 10,
-		},
-	ZONE_HOUSING1B: {
-		rp: 25,
-		requires: ['ZONE_HOUSING1A'], 
+		rp: 400,
+		requires: ['ZONE_HOUSING0B','MINE1A'], 
 		},
 	ZONE_HOUSING2A: {
-		rp: 50,
-		requires: ['ZONE_HOUSING1A'], 
-		},
-	ZONE_HOUSING2B: {
-		rp: 100,
-		requires: ['ZONE_HOUSING2A'], 
-		},
-	ZONE_HOUSING3A: {
-		rp: 250,
-		requires: ['ZONE_HOUSING2A'], 
-		},
-	ZONE_HOUSING3B: {
-		rp: 400,
-		requires: ['ZONE_HOUSING3A'], 
-		},
-	ZONE_HOUSING4A: {
-		rp: 800,
-		requires: ['ZONE_HOUSING3A'], 
-		},
-		
-	ZONE_MINE0B: {
-		rp: 75,
-		},
-	ZONE_MINE0C: {
-		rp: 50,
-		},
+		rp: 1200,
+		requires: ['ZONE_HOUSING1A','MINE2A'], 
+		},		
+
 	ZONE_MINE1A: {
 		rp: 200,
-		},
-	ZONE_MINE1B: {
-		rp: 550,
-		requires: ['ZONE_MINE1A'], 
-		},
-	ZONE_MINE1C: {
-		rp: 400,
-		requires: ['ZONE_MINE1A'], 
 		},
 	ZONE_MINE2A: {
 		rp: 800,
 		requires: ['ZONE_MINE1A'], 
 		},
-	ZONE_MINE2B: {
-		rp: 1400,
-		requires: ['ZONE_MINE2A'], 
-		},
-	ZONE_MINE2C: {
-		rp: 1000,
-		requires: ['ZONE_MINE2A'], 
-		},
 		
 	ZONE_RES1: {
-		rp: 40,
+		rp: 500,
+		requires: ['ZONE_MINE1A'],
 		},
 	ZONE_RES2: {
-		rp: 100,
-		requires: ['ZONE_RES1'], 
-		},
-	ZONE_RES3: {
-		rp: 400,
-		requires: ['ZONE_RES2'], 
+		rp: 1400,
+		requires: ['ZONE_RES1','ZONE_MINE2A'], 
 		},
 	
 	ZONE_SHIP1: {
-		rp: 40,
+		rp: 600,
+		requires: ['ZONE_MINE1A'],
 		},
 	ZONE_SHIP2: {
-		rp: 100,
-		requires: ['ZONE_SHIP1'], 
+		rp: 1600,
+		requires: ['ZONE_SHIP1','ZONE_MINE2A'], 
 		},
-	ZONE_SHIP3: {
-		rp: 300,
-		requires: ['ZONE_SHIP2'], 
+
+	ZONE_MIL1: {
+		rp: 1300,
+		requires: ['ZONE_MINE2A'],
 		},
-	ZONE_SHIP4: {
-		rp: 900,
-		requires: ['ZONE_SHIP3'], 
-		},
-	
-					
+			
 	// SHIP ENGINES --------------\/-------------
 	
 	FLEETSPEED1: { 
@@ -549,39 +483,25 @@ export let TechNodes = {
 		requires: ['HULL6'], 
 		},
 		
-	HABITATION1: { 
+	ADAPTATION1: { 
 		rp: 30,
 		requires: [], 
 		},
-	HABITATION2: { 
-		rp: 120,
-		requires: ['HABITATION1'], 
-		yields: ['HABITATION2'],
-		},
-	HABITATION3: { 
-		rp: 220,
-		requires: ['HABITATION2'], 
-		},
-	HABITATION4: { 
-		rp: 1200,
-		requires: ['HABITATION3'], 
-		},
-		
-	ADAPTATION1: { 
-		rp: 140,
-		requires: [], 
-		},
 	ADAPTATION2: { 
-		rp: 480,
+		rp: 210,
 		requires: ['ADAPTATION1'], 
 		},
 	ADAPTATION3: { 
-		rp: 900,
+		rp: 600,
 		requires: ['ADAPTATION2'], 
 		},
 	ADAPTATION4: { 
-		rp: 1800,
+		rp: 2400,
 		requires: ['ADAPTATION3'], 
+		},
+	ADAPTATION5: { 
+		rp: 9500,
+		requires: ['ADAPTATION4'], 
 		},
 		
 	XENOCOMM1: { 
