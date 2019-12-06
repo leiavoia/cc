@@ -18,6 +18,7 @@ export class FleetDetailPane {
 	playerHasLocalFleet = false;
 	ship_grid_packing = 1; // controls density of ships on UI. [1,2,4,9,16,25,36]
 	show_defenses = false;
+	sel_ship = null; // ship to focus on in stats box. triggered by onmouseenter
 	@bindable fleet = null;
 	app = null;
 
@@ -134,6 +135,9 @@ export class FleetDetailPane {
 			this.Recalc();
 			this.IndicateRange();
 			}
+		}
+	ClickInfo() {
+		this.app.SwitchMainPanel('fleet',this.fleet,null,false,false);
 		}
 	GetHealthClass(ship) {
 		let pct = ship.hull / ship.bp.hull;
@@ -326,6 +330,7 @@ export class FleetDetailPane {
 	ClickClose() {
 		this.StopCaptureStarClicks();
 		this.app.CloseSideBar();
+		this.app.CloseMainPanel();
 		this.app.options.show_range = false;
 		}
 	ClickAttack() {

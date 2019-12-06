@@ -1,15 +1,16 @@
-<template>
-<!--	<require from="./converters/percent"></require>
-	<require from="./converters/round"></require>-->
+<template containerless>
+	
 	<!-- FLEET DISPLAY MODE -->
 	<div class="fleet" if.bind="mode == 'fleet'">
+
 		<h2 css="color: ${fleet.owner.color};">${fleet.owner.name} Fleet #${fleet.id}</h2>
 		
 		<p style="font-size: 150%;" class="big" if.bind="fleet.mission">On Mission. Back in [${fleet.mission.time}] turns.</p>
 		
 		<p class="big topless" if.bind="!fleet.mission">
-			<span if.bind="fleet.star">@${fleet.star.name}</span>
-			<span if.bind="fleet.dest && (app.options.see_all || fleet.owner.is_player)">
+			<span if.bind="fleet.star" class="clickable" click.delegate="app.FocusMap(fleet.star)">@${fleet.star.name}</span>
+			<span if.bind="fleet.dest && (app.options.see_all || fleet.owner.is_player)" 
+				class="clickable" click.delegate="app.FocusMap(fleet.dest)">
 				<span>➠</span> ${fleet.dest.name}
 				<span class="bold" style="color: #FF9F00;">
 					${fleet.dest_line_length / fleet.speed | ceil} turn${(fleet.dest_line_length / fleet.speed <= 1) ? '' : 's' }
@@ -70,33 +71,35 @@
 			</p>
 			
 			<!-- Fleet Actions -->
-			<p class="button_rack fill" style="margin-bottom: 0.25em;">
+			<p class="button_rack fill marginless">
 				<button click.delegate="ClickMove()" class="${can_send==2 ? (waiting_for_starclick ? 'bad' : '') : 'ghost'}">${waiting_for_starclick ? 'WHERE?' : 'MOVE'}</button>
 				<button click.delegate="ClickAttack()" class="${fleet.fp_remaining && fleet.star && fleet.star.fleets.length > 1 && !waiting_for_starclick ? '' : 'ghost'}">ATTACK</button>
 				<button click.delegate="ClickInvade()" class="${can_invade==2 && !waiting_for_starclick ? '' : 'ghost'}" >INVADE</button>
 			</p>
-			<p class="button_rack fill topless">
+			<p class="button_rack fill topless" >
 				<button click.delegate="ClickColonize()" class="${can_colonize==2 && !waiting_for_starclick ? '' : 'ghost'}">COLONIZE</button>
 				<button click.delegate="ClickChooseMission()" class="${can_research==2 && !waiting_for_starclick ? '' : 'ghost'}">MISSION</button>
 				<button click.delegate="ClickTransferTroops()" class="${(can_pickup_troops || can_drop_troops) && !waiting_for_starclick ? '' : 'ghost'}" >TROOPS</button>
-				<!-- <button click.delegate="ClickBomb()" class="${can_bomb==2 ? '' : 'ghost'}">BOMBARD</button> -->
 			</p>
 			
 			<!-- Ship Selection --> 
-			<p class="button_rack button_rack_fill" if.bind="fleet.owner.is_player">
-				<button click.delegate="ClickClose()" class="cool" >CLOSE</button>
+			<p class="button_rack fill topless" if.bind="fleet.owner.is_player" >
 				<button click.delegate="SelectAll()" class="cool ${num_selected==fleet.ships.length ? 'ghost' : ''}">ALL</button>
 				<button click.delegate="SelectNone()" class="cool ${num_selected ? '' : 'ghost'}">NONE</button>
-				<button click.delegate="SelectInvert()" class="cool ${num_selected ? '' : 'ghost'}">INVERT</button>
-				<button click.delegate="ClickScrap()" class="cool ${num_selected ? '' : 'ghost'}" >SCRAP</button>
-<!-- 					<span>${num_selected}/${fleet.ships.length}</span> -->
+				<button click.delegate="SelectInvert()" class="cool">INVERT</button>
+				<button click.delegate="ClickInfo()" class="cool" >INFO</button>
+				<button click.delegate="ClickClose()" class="cool" >CLOSE</button>
+				<!-- <button click.delegate="ClickScrap()" class="cool ${num_selected ? '' : 'ghost'}" >SCRAP</button> -->
 			</p>
 		</template>
 		 
 		<!-- ship list for player view -->
 		<div if.bind="fleet.owner.is_player || app.options.see_all"
 			class="shipgrid ${app.options.ship_scaling ? 'dynasize' : ''} pack_${ship_grid_packing}x">
-			<div class="ship ${ship.selected ? 'selected' : ''} health_${ship.health_class} size_${ship.bp.sizeclass}" click.delegate="SelectShip(ship)" repeat.for="ship of fleet.ships" >
+			<div class="ship ${ship.selected ? 'selected' : ''} health_${ship.health_class} size_${ship.bp.sizeclass}" 
+				click.delegate="SelectShip(ship)" 
+				repeat.for="ship of fleet.ships" 
+				>
 				<p class=" top">
 					<span>${ship.bp.colonize ? '🅲' : ''} ${ship.bp.research ? '🆁' : ''}</span>
 					<span>${'🟊'.repeat(ship.xplevel)}</span>

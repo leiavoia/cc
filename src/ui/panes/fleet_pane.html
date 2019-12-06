@@ -1,0 +1,87 @@
+<template>
+	<div id="fleet_pane" class="pane flex">
+		<header>
+			<p style="float:right; margin: 0;"><button click.delegate="ClosePanel()" class="button big bad marginless">CLOSE</button></p>
+			<h1>Fleet #${fleet.id}</h1>
+		</header>
+		<main class="">
+			<div >
+				<div repeat.for="[bp,count] of bps" class="item" click.delegate="app.SwitchMainPanel('shipdes',null,{bp})">
+					<h2 style="float:right; margin: 0 0 0 1em;"><span>${count}</span></h2>
+					<h2>${bp.name}</h2>
+					<img src.one-time="bp.img" />
+					<table class="tight headers_right pretty">
+						<tr>
+							<th>Mass</th>	
+							<td>${bp.mass}</td>
+							<th>Size Class</th>	
+							<td>${bp.sizeclass}</td>
+						</tr>
+						<tr>
+							<th>Hull</th>	
+							<td>${bp.hull}</td>
+							<th>Units Built</th>	
+							<td>${bp.num_built}</td>
+						</tr>
+						<tr>
+							<th>Armor</th>	
+							<td>${bp.armor}</td>
+							<th>Discount</th>	
+							<td>${bp.bulk_discount|percent}%</td>
+						</tr>
+						<tr>
+							<th>Shielding</th>	
+							<td>${bp.shield}</td>
+							<th>Research Capacity</th>	
+							<td>${bp.research}</td>
+						</tr>
+						<tr>
+							<th>Firepower</th>	
+							<td>${bp.fp}</td>
+							<th>Can Colonize</th>	
+							<td>${bp.colonize ? 'YES' : 'NO'}</td>
+						</tr>
+						<tr>
+							<th>Map Speed</th>	
+							<td>${bp.speed}</td>
+							<th>Carrier</th>	
+							<td>${bp.troopcap ? 'YES' : 'NO'}</td>
+						</tr>
+						<tr>
+							<th>Combat Speed</th>	
+							<td>${bp.combatspeed}</td>
+							<th>AI Value</th>	
+							<td>${bp.milval}</td>
+						</tr>
+					</table>
+					
+					<table if.bind="bp.weapons.length" class="pretty">
+						<tr repeat.for="w of bp.weapons">
+							<td><span class="tagicon weapon ${w.type}"></span></td>
+							<th>${w.name}</th>
+							<td>x${w.qty}</td>
+							<td>${w.mindmg}-${w.maxdmg}</td>
+							<td>${w.shots} shots</td>
+						</tr>
+					</table>
+										
+					<table if.bind="bp.comps.length" class="pretty">
+						<tr repeat.for="c of bp.comps">
+							<td><span class="tagicon comp ${c.type}"></span></td>
+							<th>${c.name}</th>
+							<td>
+								<p class="subtext">
+									<span repeat.for="m of c.mods">${m.toString()}</span>
+								</p>
+							</td>
+						</tr>
+					</table>
+													
+				</div>
+				<!-- hacks to make nice single item rows -->
+				<div class="item" style="visibility:hidden;"></div>
+				<div class="item" style="visibility:hidden;"></div>
+			</div>
+		</main>
+	</div>
+</template>

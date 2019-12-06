@@ -548,6 +548,9 @@ where each item has an icon and some text data.
 	padding: 0.25em;
 	object-fit: contain;
 	}
+.iconlist .item IMG.right {
+	order: 2;
+	} 
 .iconlist .item > .info { 
 	box-sizing: border-box;
 	flex: 7;
@@ -2977,7 +2980,7 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	flex-flow: row wrap;
 	justify-content: space-between;
 	align-content: flex-start;
-	margin: 0 -0.5em !important;
+	margin: 0 0 0 -0.5em !important;
 	}
 	
 #zone_pane .zone_detail {
@@ -3003,7 +3006,44 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	}
 
 
-
+#fleet_pane MAIN > DIV {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-between;
+	align-content: flex-start;
+	margin: 0 0 0 -0.5em !important;
+	box-sizing: border-box;
+	}
+	
+#fleet_pane .item {
+	/* background: #141414; */
+	border: 5px #11436B outset;
+	background: #103F65;
+	border-radius: 0.5em;
+	padding: 0.5em 1em;
+	flex: 1 1 35%;
+	box-sizing: border-box;
+	margin: 0.5em;
+	min-width: 380px;
+	}
+#fleet_pane IMG {
+	max-width: 8em;
+	max-height: 12em;
+	object-position: top;
+	object-fit:contain;
+	float: right;
+	margin: 1em 0 1em 1em;
+	}
+#fleet_pane .item H2 SPAN {
+	color: #AEA;
+	}
+#fleet_pane .subtext { line-height: 1em; margin: 0; padding: 0; }
+#fleet_pane .subtext SPAN { margin-right:0.75em; }
+#fleet_pane .item:hover {
+	background: #115a96;
+	cursor: pointer;
+	}		
+		
 		
 /* FLEET SIDEBAR */
 #layout_ui_side .fleet {
@@ -4100,6 +4140,9 @@ DIV.annoyometer .nub {
 	}
 
 #layout_ui_content.active #fleets_pane {
+	background: rgba(0,0,0,0.7);
+	}
+#layout_ui_content.active #fleet_pane {
 	background: rgba(0,0,0,0.7);
 	}
 	
