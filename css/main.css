@@ -2997,12 +2997,13 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	cursor: cell;
 	}
 #zone_pane .zone_detail.disabled {
-	background: #440F0F;
+	opacity: 0.25;
 	cursor: not-allowed;
 	}
 #zone_pane .zone_detail.disabled:hover {
-	background: #720e0e;
+	background: #141414;
 	cursor: not-allowed;
+	pointer-events: none;
 	}
 
 
