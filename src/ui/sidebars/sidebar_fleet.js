@@ -18,7 +18,8 @@ export class FleetDetailPane {
 	playerHasLocalFleet = false;
 	ship_grid_packing = 1; // controls density of ships on UI. [1,2,4,9,16,25,36]
 	show_defenses = false;
-	sel_ship = null; // ship to focus on in stats box. triggered by onmouseenter
+	last_click_index = 0; // index of last clicked shipped. Needed for shift-click selections.
+	
 	@bindable fleet = null;
 	app = null;
 
@@ -129,9 +130,20 @@ export class FleetDetailPane {
 			this.Recalc();
 			}
 		}
-	SelectShip(ship) {
-		if ( this.fleet.owner.is_player ) { 
-			ship.selected = !ship.selected;
+	ClickShip( ship, event ) {
+		this.last_click_index = this.last_click_index.clamp( 0, this.fleet.ships.length-1 );
+		if ( this.fleet.owner.is_player ) {
+			// if the SHIFT key was on, select entire line
+			let i = this.fleet.ships.indexOf(ship);
+			if ( event.shiftKey ) {
+				let from = Math.min(i,this.last_click_index); 
+				let to = Math.max(i,this.last_click_index); 
+				for ( let j = from; j <= to; j++ ) {
+					this.fleet.ships[j].selected = true;
+					}
+				}
+			else { ship.selected = !ship.selected; }
+			this.last_click_index = i;
 			this.Recalc();
 			this.IndicateRange();
 			}
@@ -442,7 +454,7 @@ export class FleetDetailPane {
 			// automatically select the first friendly planet as a move target,
 			// and deselect all other friendly planets
 			for ( let p of this.fleet.star.planets ) { 
-				if ( p.owner.is_player ) { 
+				if ( p.owner && p.owner.is_player ) { 
 					this.selected_planet = p;
 					}
 				}

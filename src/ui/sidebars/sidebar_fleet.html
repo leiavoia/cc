@@ -97,7 +97,7 @@
 		<div if.bind="fleet.owner.is_player || app.options.see_all"
 			class="shipgrid ${app.options.ship_scaling ? 'dynasize' : ''} pack_${ship_grid_packing}x">
 			<div class="ship ${ship.selected ? 'selected' : ''} health_${ship.health_class} size_${ship.bp.sizeclass}" 
-				click.delegate="SelectShip(ship)" 
+				click.delegate="ClickShip(ship,$event)" 
 				repeat.for="ship of fleet.ships" 
 				>
 				<p class=" top">
