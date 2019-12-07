@@ -872,7 +872,7 @@ export class AIOffenseObjective extends AIObjective {
 				let ships = f.ships.filter( s => s.bp.troopcap && !s.troops.length );
 				if ( ships.length ) { 
 					let dest = ClosestStarTo( f.star.xpos, f.star.ypos, troop_stars, true );
-					if ( dest != f.star ) { 
+					if ( dest && dest != f.star ) { 
 						let newfleet = f.Split( ships, dest ); 
 						const ttl = utils.Clamp( Math.ceil( (civ.empire_box.x2 - civ.empire_box.x1 ) / civ.max_ship_speed )+2, 6, 25 );
 						const m = new AIPickupTroopsObjective( dest, newfleet, ttl, 0 );
