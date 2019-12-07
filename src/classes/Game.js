@@ -643,10 +643,11 @@ export default class Game {
 			this.ProcessUIQueue();		
 			}
 		// if player is the defender, present mandatory battle
-		else if ( sc.defender.owner.is_player ) { 
+		else if ( sc.defender.owner.is_player ) {
+			let ods = Math.round( 100 * ( sc.defender.milval / ( sc.defender.milval + sc.attacker.milval ) ) );
 			this.app.ShowDialog(
 				`Attack on ${sc.defender.star.name}`,
-				sc.label,
+				`<p class="centered">${sc.label}</p><p class="centered">Odds of Winning: <b>${ods}%</b></p>`,
 				// buttons
 				[
 					{ 
@@ -706,8 +707,8 @@ export default class Game {
 		// if player is the defender, present mandatory battle
 		else if ( c.planet.owner.is_player ) { 
 			this.app.ShowDialog(
-				`Attack on ${c.planet.star.name}`,
-				c.label,
+				`Invasion of ${c.planet.star.name}`,
+				`<p class="centered">${c.label}</p>`,
 				// buttons
 				[
 					{ 

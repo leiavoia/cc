@@ -118,6 +118,8 @@ export default class Fleet {
 		this.troops = 0;
 		this.troopcap = 0;
 		this.milval = 0;
+		this.health = 0;
+		this.healthmax = 0;
 		for ( let ship of this.ships ) { 
 			// check if there are colony ships
 			if ( ship.bp.colonize ) { this.colonize = true; }

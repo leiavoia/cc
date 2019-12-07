@@ -1,14 +1,18 @@
 <template>
 	<div id="combat_pane" class="pane" if.bind="combatdata && combat">
 		<div class="planet atm${combat.planet.atm} tmp${combat.planet.temp}" 
-			css="background-size: ${combat.planet.size * 0.35}% auto; "
+			css="background-size: ${combat.planet.size * 2.5}% auto; "
 			if.bind="combat.planet"	
 		></div>
 		
 		<div id="center-column" class="ui">
 			<div class="column-header">
-				<h2>Combat at<br/>${combat.planet ? combat.planet.name : combatdata.defender.star.name}</h2>
+				<require from="../../resources/elements/VersusBar"></require>
+				<versus-bar v1.bind="player_team.fleet.health - (combat.stats[player_team.label].total_dmg_in||0)" 
+					v2.bind="nonplayer_team.fleet.health - (combat.stats[nonplayer_team.label].total_dmg_in||0)" ></versus-bar>
+				<h2 if.bind="!combat.status && !turn">Combat at<br/>${combat.planet ? combat.planet.name : combatdata.defender.star.name}</h2>
 				<h1 if.bind="combat.status">${combat.status}</h1>
+				<p if.bind="combat.status == 'STALEMATE!'" class="bad big bold fadeRepeat">Weapons Exhausted</p>
 				<h3 if.bind="!combat.status && turn">Round ${turn}</h3>
 			</div>
 			<div class="controlpanel">
@@ -121,9 +125,8 @@
 					</tr>
 				</table>					
 			</div>
-			<div class="log">
+			<!-- <div class="log">
 				<table if.bind="combat.log.length" class="pure-table full tight borderless">
-					<!-- ship:this, target:ship, weapon:weapon, hull:0, armor:0, shield:0, missed:false, killed:false -->
 					<tr>
 						<th>Attacker</th>
 						<th>Defender</th>
@@ -146,7 +149,7 @@
 						</td>
 					</tr>
 				</table>
-			</div>
+			</div> -->
 		</div>
 		
 

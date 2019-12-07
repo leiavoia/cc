@@ -25,7 +25,8 @@ export default class ShipCombat {
 				strategy: 'normal', 
 				ships_retreated: 0, 
 				retreating: false,
-				status: null
+				status: null,
+				odds: 1
 				},
 			{ 
 				label: 'DEFENDER', 
@@ -36,7 +37,8 @@ export default class ShipCombat {
 				strategy: 'normal', 
 				ships_retreated: 0, 
 				retreating: false,
-				status: null
+				status: null,
+				odds: 1
 				},
 			];
 		// handy crosslinks
@@ -56,6 +58,7 @@ export default class ShipCombat {
 		// set up combat queue
 		this.PreloadQueue(this.teams);
 		this.winner = null; // will be set to a team.label if victory
+		this.CalcOdds();
 		}
 		
 	SortTargets( team ) {
@@ -316,7 +319,9 @@ export default class ShipCombat {
 				attacks_made:0,
 				attacks_received:0,
 				attacks_missed:0,
-				attacks_dodged:0
+				attacks_dodged:0,
+				milval_killed:0,
+				milval_lost:0
 				};
 			this.stats = {};
 			this.stats[this.teams[0].label] = Object.assign({}, blank);
@@ -329,10 +334,13 @@ export default class ShipCombat {
 				teamdata.hull_dmg_out += x.hull;
 				teamdata.armor_dmg_out += x.armor;
 				teamdata.shield_dmg_out += x.shield;
-				teamdata.total_dmg_out += x.hull + x.armor + x.shield;
+				teamdata.total_dmg_out += x.hull + x.armor;
 				teamdata.attacks_made++;
 				if ( x.missed ) { teamdata.attacks_missed++; } 
-				if ( x.killed ) { teamdata.kills++; } 
+				if ( x.killed ) { 
+					teamdata.kills++; 
+					teamdata.milval_killed += x.target.bp.milval; 
+					} 
 				}
 			});
 		// swap records
@@ -353,6 +361,14 @@ export default class ShipCombat {
 		t1.attacks_received = t0.attacks_made;
 		t0.attacks_dodged = t1.attacks_missed;
 		t1.attacks_dodged = t0.attacks_missed;
+		t0.milval_lost = t1.milval_killed;
+		t1.milval_lost = t0.milval_killed;
 		}
 		
+	CalcOdds() {
+		// calculate the odds
+		this.teams[0].odds = this.teams[0].fleet.milval / ( this.teams[0].firepower + this.teams[1].fleet.milval ) ;
+		this.teams[1].odds = this.teams[1].fleet.milval / ( this.teams[0].firepower + this.teams[1].fleet.milval ) ;
+		}
+				
 	};
