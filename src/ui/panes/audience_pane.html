@@ -1,6 +1,5 @@
-<template>
-	<div id="audience_pane" class="pane">
-	
+<template containerless>
+	<div id="audience_pane" class="pane" if.bind="civ">
 	
 		<div id="audience_them" css="border-color: rgb( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]} ); 
 		background-color: rgba( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]}, 0.55 );">

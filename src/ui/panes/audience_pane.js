@@ -32,6 +32,11 @@ export class AudiencePane {
 		this.data = data.data;
 		
 		const acct = this.civ.diplo.contacts.get(this.app.game.myciv);
+		if ( !acct ) {
+			console.warn('No acct on audience pane', data);
+			this.app.CloseMainPanel();
+			return false;
+			}
 		this.comm = acct.comm;
 		this.their_text = '';
 		this.our_text = '';

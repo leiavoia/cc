@@ -1249,7 +1249,7 @@ export default class Civ {
 				// Propose trade for planet in exchange for not going to war.
 				let message = `In a unanimous vote, we have decided this galaxy is too small for the both of us. The time for your extermination has arrived.`;
 				acct.attspan = 0; // silent treatment
-				App.instance.game.QueueAudience( this, {message} );
+				App.instance.game.QueueAudience( civ, {message} );
 				}					
 			}						
 		}
