@@ -439,7 +439,7 @@ body,html {
 #layout_ui_main.visible { visibility:visible; }
 #layout_ui_main.setup { 
 	visibility:visible;
-	background: #000 url(../img/map/bg/spacebg_031.jpg) 50% 50% no-repeat;
+	background: #000 url(../img/map/bg/spacebg_044.jpg) 50% 50% no-repeat;
 	pointer-events: auto; /* capture click events */
 	background-size: cover;
 	}
@@ -1645,11 +1645,15 @@ invisible when unexplored, dim when explored */
 	/* overflow:auto; */
 	}
 	
-#layout_ui_side > .planet .wrapper {
+#layout_ui_side .wrapper {
 	padding: 0.5em;
 	margin: 1em 0 1em 0;
 	background-color: rgba(255,255,255,0.08);
 	border-radius: 8px;
+	}
+	
+#layout_ui_side > .planet .wrapper {
+	background-color: rgba(255,255,255,0.08);
 	}
 	
 #layout_ui_side > .planet NAV {
@@ -3920,16 +3924,16 @@ DIV.annoyometer .nub {
 	overflow-y: auto;
 	}
 #combat_pane .controlpanel {
-	flex: 1 1 ;
+	flex: 3 1 30%;
 	text-align:center;
 	}
 #combat_pane .log {
-	flex: 10 1 ;
+	flex: 30 1 70%; /* silly spacing prevents jitter on ship detail hover */
 	overflow-y: auto;
 	text-align:center;
 	}
 #combat_pane .statsbox {
-	flex: 2 2;
+	flex: 2 2 20%;
 	overflow-y: auto;
 	min-height: 12em;
 	text-align:center;
@@ -3985,7 +3989,7 @@ DIV.annoyometer .nub {
 	padding: 3em;
 	}
 	
-#setup_pane .pane {	
+#setup_pane .window {	
 	background: rgba(0,0,0,0.6);
 	border: 1px #222 outset;
 	border-radius: 1em;
@@ -3996,7 +4000,7 @@ DIV.annoyometer .nub {
 	font-size: 1.5rem;
 	}
 #setup_pane .option {
-	font-size: 200%;
+	font-size: 150%;
 	margin: 1em 0;
 	display: flex;
 	flex-flow: row nowrap;

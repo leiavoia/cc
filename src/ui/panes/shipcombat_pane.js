@@ -15,6 +15,7 @@ export class ShipCombatPane {
 		this.player_team = null;
 		this.nonplayer_team = null;
 		this.ship_grid_packing = 1; // controls density of ships on UI. [1,2,4,9,16,25,36]
+		this.sel_ship = null; // appears in the focus box
 	    }
 	   
 	activate(data) {
@@ -29,11 +30,14 @@ export class ShipCombatPane {
 		
 	onChangeCombatdata() { 
 		if ( this.combatdata ) { 
+			this.sel_ship = null;
 			this.combat = new ShipCombat( this.combatdata.attacker, this.combatdata.defender, this.combatdata.planet );
 			this.turn = 0;		
 			// deselect all ships
 			for ( let ship of this.combatdata.attacker.ships ) { ship.selected = false; }			
 			for ( let ship of this.combatdata.defender.ships ) { ship.selected = false; }
+			this.combatdata.attacker.SortShips();
+			this.combatdata.defender.SortShips();
 			// which team is the human playing?
 			this.player_team = this.combat.teams[0].fleet.owner.is_player ? this.combat.teams[0] : this.combat.teams[1];
 			this.nonplayer_team = this.combat.teams[0].fleet.owner.is_player ? this.combat.teams[1] : this.combat.teams[0];
@@ -42,7 +46,7 @@ export class ShipCombatPane {
 			// calculate ideal ship packing
 			let num_ships = Math.max( this.combatdata.attacker.ships.length, this.combatdata.defender.ships.length );
 			this.ship_grid_packing = 1;
-			while ( num_ships/26 > this.ship_grid_packing * this.ship_grid_packing ) { 
+			while ( num_ships/22 > this.ship_grid_packing * this.ship_grid_packing ) { 
 				this.ship_grid_packing++;
 				}
 			if ( this.ship_grid_packing > 36 ) { this.ship_grid_packing = 6; } // lets be sane	
@@ -56,9 +60,11 @@ export class ShipCombatPane {
 			ship.selected = !ship.selected;
 			// sort targets only between turns
 			}
+		this.sel_ship = ( this.sel_ship === ship ) ? null : ship;
 		}
 		
 	ClosePanel() {
+		this.sel_ship = null;
 		// finish up the battles
 		this.FinishCombat();
 		this.combat.End(); // cleanup
@@ -80,6 +86,7 @@ export class ShipCombatPane {
 		}
 
 	FinishCombat() { 
+		this.sel_ship = null;
 		if ( !this.combat.status ) { 
 			this.processing = false;
 			this.last_turnlog = null; // ends hiliting
@@ -89,6 +96,7 @@ export class ShipCombatPane {
 		}
 
 	Retreat() { 
+		this.sel_ship = null;
 		if ( !this.combat.status && !this.player_team.retreating ) { 
 			this.combat.RetreatTeam(this.player_team);
 			this.PlayTurn(10000000000);
@@ -119,6 +127,7 @@ export class ShipCombatPane {
 		}
 		
 	PlayTurn( manual_turn_delta = 0 ) { 
+		this.sel_ship = null;
 		if ( this.combat && !this.processing ) {
 			this.processing = true;
 			// resort in case player did any target selection

@@ -33,7 +33,7 @@ export class ShipDesignPane {
 		// listen for hotkeys
 		window.addEventListener('keypress', this.keypressCallback, false);
 		// user may ask for a specific blueprint to focus on when opening window (from Fleet Pane).
-		if ( 'data' in data && 'bp' in data.data ) { 
+		if ( data && data.data && data.data.bp ) { 
 			this.bp = data.data.bp;
 			}
 		}

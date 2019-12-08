@@ -42,7 +42,7 @@
 					</p>
 				</template>
 			</div>
-			<div class="statsbox">
+			<div class="statsbox" if.bind="!sel_ship">
 				<!--		
 				losses:0,
 				kills:0,
@@ -150,6 +150,55 @@
 					</tr>
 				</table>
 			</div> -->
+			
+			<div class="log">
+				<div class="offset" if.bind="sel_ship">
+					<h2 class="tagicons" style="text-align:left;">
+						${sel_ship.bp.name}
+						<span class="tagicon attack" if.bind="sel_ship.bp.fp"></span>
+						<span class="tagicon research" if.bind="sel_ship.bp.research"></span>
+						<span class="tagicon invade" if.bind="sel_ship.bp.troopcap"></span>
+						<span class="tagicon colonize" if.bind="sel_ship.bp.colonize"></span>
+					</h2>
+					<table class="tight headers_right pretty">
+						<tr>
+							<th>Hull</th>	
+							<td>${sel_ship.bp.hull}</td>
+							<th>AI Value</th>	
+							<td>${sel_ship.bp.milval}</td>
+						</tr>
+						<tr>
+							<th>Armor</th>	
+							<td>${sel_ship.bp.armor}</td>
+							<th>Firepower</th>	
+							<td>${sel_ship.bp.fp}</td>
+						</tr>
+						<tr>
+							<th>Shielding</th>	
+							<td>${sel_ship.bp.shield}</td>
+							<th>Combat Speed</th>	
+							<td>${sel_ship.bp.combatspeed}</td>
+						</tr>
+					</table>
+					<table if.bind="sel_ship.bp.weapons.length" class="pretty">
+						<tr repeat.for="w of sel_ship.bp.weapons">
+							<td><span class="tagicon weapon ${w.type}"></span></td>
+							<th>${w.name}</th>
+							<td>x${w.qty}</td>
+							<td>${w.mindmg}-${w.maxdmg}</td>
+							<td>${w.shots} shots</td>
+						</tr>
+					</table>
+					<table if.bind="sel_ship.bp.comps.length" class="pretty">
+						<tr repeat.for="c of sel_ship.bp.comps">
+							<td><span class="tagicon comp ${c.type}"></span></td>
+							<th>${c.name}</th>
+						</tr>
+					</table>								
+				</div>	
+			</div>
+			
+				
 		</div>
 		
 
@@ -176,7 +225,9 @@
 						${ship == last_turnlog.ship || ship == last_turnlog.target ? 'hilite' : ''}
 						size_${ship.bp.sizeclass}
 						"
-						click.delegate="ClickShip(ship,team)" 
+						click.delegate="ClickShip(ship,team)"
+						mouseover.delegate="sel_ship = ship"
+						mouseout.delegate="sel_ship = null"
 						repeat.for="ship of team.fleet.ships" 
 						>
 						<p class="infobar top"><span>${'🟊'.repeat(ship.xplevel)}</span><span>&nbsp;<span if.bind="ship.bp.shield">${ship.bp.shield}</span></span></p>

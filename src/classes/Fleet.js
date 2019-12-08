@@ -581,8 +581,8 @@ export default class Fleet {
 		
 	SortShips() { 
 		this.ships.sort( (a,b) => {
-			if ( a.bp.fp > b.bp.fp ) { return -1; }
-			else if ( a.bp.fp < b.bp.fp ) { return 1; }
+			if ( a.bp.milval > b.bp.milval ) { return -1; }
+			else if ( a.bp.milval < b.bp.milval ) { return 1; }
 			else if ( a.colonize && !b.colonize ) { return -1; }
 			else if ( !a.colonize && b.colonize ) { return 1; }
 			else if ( a.troops.length && !b.troops.length ) { return -1; }

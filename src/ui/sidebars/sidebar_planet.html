@@ -3,7 +3,7 @@
 	<div class="planet atm${planet.atm} tmp${planet.temp} grav${planet.grav}" css="min-height:${(planet.size)|idealplanetsize}px; background-size: auto ${(planet.size)|idealplanetsize}px; background-position: 50% -${planet.size/2}px ;"><!-- calc(100% + ${planet.size}px) -->
 		
 		<p class="button_rack button_rack_fill small">
-			<button click.delegate="OpenDetailsPane()">INFO</button>
+			<button click.delegate="OpenDetailsPane()" class="${planet.owner===app.game.myciv ? '' : 'ghost'}">INFO</button>
 			<button click.delegate="PressStarButton()">STAR</button>
 			<button click.delegate="PressPrevPlanetButton()">◀</button>
 			<button click.delegate="PressNextPlanetButton()">▶</button>

@@ -102,6 +102,7 @@ export class FleetDetailPane {
 			this.CaptureStarClicks();
 			}
 		this.IndicateRange();
+		this.fleet.SortShips();
 		}
 	PlanetSizeCSS( planet ) {
 		let size = Math.min( 75, Math.round( Math.pow(planet.size-3,0.45)*16 ) );
