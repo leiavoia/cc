@@ -1,7 +1,7 @@
 <template containerless>
 	
 	<!-- FLEET DISPLAY MODE -->
-	<div class="fleet" if.bind="fleet && mode == 'fleet'">
+	<div class="fleet" if.bind="fleet && mode == 'fleet' && !fleet.killme && fleet.ships.length">
 
 		<h2 css="color: ${fleet.owner.color};">${fleet.owner.name} Fleet #${fleet.id}</h2>
 		
@@ -60,8 +60,8 @@
 		</p>
 			
 		<!-- enemy fleet attack option --> 
-		<p class="button_rack button_rack_fill" if.bind="!fleet.owner.is_player && fleet.star && playerHasLocalFleet">
-			<button class="alt" click.delegate="AttackTargetWithLocalFleet()">ATTACK</button>
+		<p class="button_rack button_rack_fill bottomless" if.bind="!fleet.owner.is_player && fleet.star && local_fleet">
+			<button class="${local_fleet.fp_remaining ? 'alt' : 'ghost'}" click.delegate="AttackTargetWithLocalFleet()">ATTACK</button>
 		</p>
 		
 		<!-- show fleet actions if not on a deep space mission -->
@@ -299,6 +299,9 @@
 						<span css="color: ${p.ui_color}; font-weight:bold;">${p.name}</span>
 						<br/>
 						<span style="color: #999">Odds: <b>${CalculateChanceOfGroundVictory(p) * 100 | round}%</b></span>
+						<i class="bad" if.bind="p.OwnerFleet() && p.OwnerFleet().milval"><br/>Defending fleet in orbit</i>
+						<span class="bad bold" if.bind="!p.Habitable(fleet.owner.race)"><br/>Uninhabitable</span>
+						<span class="good bold" if.bind="!p.troops.length"><br/>No ground forces!</span>
 					</p>
 					<div repeat.for="[bp,count] of p.ListUniqueGroundUnits()" style="display:inline-block;">
 						<img src.bind="bp.img" title.bind="bp.name"

@@ -5,21 +5,14 @@ import * as Signals from '../../util/signals';
 export class PlanetDetailPane {
 
 	constructor() { 
-		this.playerHasLocalFleet = false;
-		this.build_queue_items = [];
+		this.local_fleet = null;
+		this.turn_subscription = Signals.Listen('turn', data => this.planetChanged() );
 		}
 		
 	activate(data) {
 		this.app = data.app;
 		this.planet = data.obj;
 		this.planetChanged( this.planet );
-		this.sel_build_item = null;
-		this.turn_subscription = Signals.Listen('turn', data => this.planetChanged() );
-		this.sel_zone = null;
-		this.sel_zone_upgrade_avail = false;
-		this.show_add_zone_panel = false;
-		this.zone_to_add = null;
-		this.ground_units = this.planet.ListUniqueGroundUnits(); // Map
 		}
 		
 	unbind() { 	
@@ -36,8 +29,16 @@ export class PlanetDetailPane {
 		];
 		
 	// update some calculated values whenever planet changes
-	planetChanged( planet ) { 
+	planetChanged( planet ) {
 		if ( !planet ) { planet = this.planet; }			
+		this.build_queue_items = [];
+		this.local_fleet = null;
+		this.sel_build_item = null;
+		this.sel_zone = null;
+		this.sel_zone_upgrade_avail = false;
+		this.show_add_zone_panel = false;
+		this.zone_to_add = null;
+		this.ground_units = this.planet.ListUniqueGroundUnits(); // Map		
 		// NOTE 1: Numbers displayed are from the point of view of the
 		// race of the player, NOT the owner of the planet
 		// NOTE 2: Aurelia has race conditions with switching dynamic 
@@ -46,7 +47,7 @@ export class PlanetDetailPane {
 		if ( planet && 'size' in planet ) { 
 			this.adaptation = planet.Adaptation( this.app.game.myciv.race );
 			this.habitable = planet.Habitable( this.app.game.myciv.race );
-			this.playerHasLocalFleet = planet.star.PlayerHasLocalFleet;
+			this.local_fleet = planet.star.FleetFor( this.app.game.myciv );
 			this.CompileBuildQueueItemList();
 			this.ground_units = planet.ListUniqueGroundUnits(); // Map
 			// if a zone was selected for viewing, make sure still exists
@@ -234,47 +235,52 @@ export class PlanetDetailPane {
 			this.planet.AddBuildQueueMakeworkProject( this.sel_build_item.bp.type );
 			}
 		}
+	ColonizePlanet() {
+		if ( !this.planet || this.planet.settled || this.planet.owner || !this.local_fleet
+			|| !this.planet.Habitable(this.local_fleet.owner.race) ) { return false; }
+		let ship = this.local_fleet.GetFirstColonyShip();
+		if ( ship ) { 
+			this.planet.Settle( this.local_fleet.owner );
+			this.local_fleet.RemoveShip( ship );
+			if ( !this.local_fleet.ships.length ) { 
+				this.local_fleet.Kill();
+				}
+			else {
+				this.local_fleet.FireOnUpdate();
+				}
+			this.app.CloseSideBar();
+			this.app.SwitchMainPanel('colonize',this.planet);
+			}		
+		}
 	// for clicking attack planet with a local player fleet
 	AttackTargetWithLocalFleet() { 
-		if ( !this.planet.settled || this.planet.owner.is_player || !this.planet.star.PlayerHasLocalFleet ) { return false; } 
-		// TODO: check if we have treaties, etc. in the future
-		// find my local fleet
-		let myfleet = null;
-		for ( let f of this.planet.star.fleets ) { 
-			if ( f.owner.is_player ) {
-				myfleet = f; 
-				break;
+		if ( !this.planet.settled || this.planet.owner.is_player || !this.local_fleet || !this.local_fleet.fp_remaining ) { return false; }
+		// do this no matter what
+		let cb = () => {	
+			// figure out if we can attack the planet directly 
+			// or if we have to battle a fleet as well
+			let enemy_fleet = this.planet.OwnerFleet();
+			// Design note: if we check for enemy fleet remaining firepower,
+			// that would let a ground invasion fleet bypass the defending fleet
+			// by simply occupying them until they run out of guns to shoot with.
+			// This is realistic, but leads to gamey circumvention we dont want.
+			// Defending fleet must be completely annihilated.
+			if ( enemy_fleet && enemy_fleet.fp /*&& enemy_fleet.fp_remaining*/ ) {		
+				this.app.game.QueueShipCombat( this.local_fleet, enemy_fleet, this.planet );
 				}
-			}
-		if ( !myfleet ) { return false; } 	
-		// now figure out if we can attack the planet directly 
-		// or if we have to battle a fleet as well
-		let enemy_fleet = null;
-		for ( let f of this.planet.star.fleets ) { 
-			if ( f.owner == this.planet.owner ) {
-				enemy_fleet = f; 
-				break;
-				}
-			}	
-		// Design note: if we check for enemy fleet remaining firepower,
-		// that would let a ground invasion fleet bypass the defending fleet
-		// by simply occupying them until they run out of guns to shoot with.
-		// This is realistic, but leads to gamey circumvention we dont want.
-		// Defending fleet must be completely annihilated.
-		if ( enemy_fleet /*&& enemy_fleet.fp_remaining*/ ) {
-			// our fleet needs something to fight with
-			if ( !myfleet.fp_remaining ) {
-				this.app.ShowDialog( 'No Firepower Remaining', 'There is a defending fleet and we have nothing to fight them with. Weapons reload at the start of each turn.' );
-				return false;
-				}			
-			else { 
-				this.app.game.QueueShipCombat( myfleet, enemy_fleet, this.planet );
-				this.app.game.ProcessUIQueue();
-				}
-			}
-		else {
-			this.app.game.QueueGroundCombat( myfleet, this.planet );
+			else { this.app.game.QueueGroundCombat( this.local_fleet, this.planet ); }
 			this.app.game.ProcessUIQueue();
+			};
+		// check treaties and warn player
+		const contact = this.local_fleet.owner.diplo.contacts.get(this.planet.owner);
+		let warn = !this.planet.owner.race.is_monster && contact && !contact.treaties.has('WAR');
+		if ( warn ) {
+			this.app.ShowDialog(
+				`Attack ${this.planet.owner.name}?`,
+				`<p>Attacking the ${this.planet.owner.name} may cause a diplomatic kerfuffle. Are you sure?</p>`,
+				[ { text: "Attack!", class: "alt", cb: cb }, { text: "Never Mind...", class: "bad", cb: null }, ]
+				);			
 			}
+		else { cb(); }
 		}		
 	}

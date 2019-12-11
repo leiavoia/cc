@@ -28,7 +28,19 @@ export class ShipCombatPane {
 		this.onChangeCombatdata();
 		}
 		
-	onChangeCombatdata() { 
+	onChangeCombatdata() {
+		// reset everything
+		this.combat = null;
+		this.processing = false;
+		this.last_turnlog = { attacker: null, defender:null };
+		this.turn = 0;
+		this.winner = '';
+		this.player_target_priority = 'size_desc';
+		this.player_team = null;
+		this.nonplayer_team = null;
+		this.ship_grid_packing = 1;
+		this.sel_ship = null;
+		// new setup
 		if ( this.combatdata ) { 
 			this.sel_ship = null;
 			this.combat = new ShipCombat( this.combatdata.attacker, this.combatdata.defender, this.combatdata.planet );
@@ -74,15 +86,15 @@ export class ShipCombatPane {
 			&& this.combat.winner == 'ATTACKER' 
 			&& ( this.combatdata.attacker.owner.is_player || this.combatdata.attacker.AIWantToInvadePlanet(this.combat.planet) )
 			) {
-			this.app.game.LaunchPlayerGroundCombat({
-				attacker:this.combatdata.attacker, 
-				planet:this.combat.planet
-				});
+			// NOTE: queue combat instead of switching directly to it in case player wants to skip.
+			this.app.game.QueueGroundCombat(
+				this.combatdata.attacker, 
+				this.combat.planet,
+				'front'
+				);
 			}
 		// tell game this battle is over and continue with other battles
-		else {
-			this.app.CloseMainPanel(); // triggers additional UI Queue items
-			}
+		this.app.CloseMainPanel(); // triggers additional UI Queue items
 		}
 
 	FinishCombat() { 

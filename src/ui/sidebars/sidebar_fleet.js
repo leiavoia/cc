@@ -15,7 +15,7 @@ export class FleetDetailPane {
 	starclick_subsc = null;
 	waiting_for_starclick = false; // usually for move orders
 	turn_subscription = null;
-	playerHasLocalFleet = false;
+	local_fleet = false;
 	ship_grid_packing = 1; // controls density of ships on UI. [1,2,4,9,16,25,36]
 	show_defenses = false;
 	last_click_index = 0; // index of last clicked shipped. Needed for shift-click selections.
@@ -81,6 +81,7 @@ export class FleetDetailPane {
 		 
 	// aurelia automatic function called when fleet object gets changed
 	fleetChanged( new_fleet, old_fleet ) {
+		this.local_fleet = null;
 		if ( new_fleet instanceof Fleet ) { 
 			new_fleet.SetOnUpdate( () => this.UpdateStats() );
 			if ( new_fleet.owner.is_player ) { 
@@ -116,7 +117,7 @@ export class FleetDetailPane {
 			this.app.SwitchSideBar( this.fleet.merged_with );
 			}
 		// fleet will have killme flag if it needs to be treated as deleted
-		else if ( this.fleet.killme === true || !this.fleet.owner.alive ) { 
+		else if ( this.fleet.killme === true || !this.fleet.owner.alive || !this.fleet.ships.length ) { 
 			this.fleet.SetOnUpdate(null);
 			this.app.CloseSideBar();
 			this.app.options.show_range = false;
@@ -213,7 +214,7 @@ export class FleetDetailPane {
 			}
 		}
 	Recalc() { 
-		this.playerHasLocalFleet = this.fleet.star && this.fleet.star.PlayerHasLocalFleet;
+		this.local_fleet = this.fleet.star && this.fleet.star.FleetFor( this.app.game.myciv );
 
 		// calculate ideal ship packing for UI
 		let num_ships = this.fleet.ships.length;
@@ -244,7 +245,9 @@ export class FleetDetailPane {
 					}
 				else if ( p.owner && !p.owner.is_player ) { 
 					this.can_bomb = 0; 
-					this.can_invade = 0;
+					if ( p.Habitable( this.fleet.owner.race ) ) { 
+						this.can_invade = 0;
+						}
 					}
 				else if ( p.owner && p.owner.is_player ) {
 					this.can_drop_troops = 0;
@@ -352,56 +355,47 @@ export class FleetDetailPane {
 			this.IndicateRange();
 			}
 		}
-	// for clicking attack target from player fleet
-	SelectAttackTarget( target ) {
-		// TODO: check if we have treaties, etc. in the future
+	AttackFleet( attacker, defender ) {
 		// Check to see if there is a planet to defend. 
 		// It's stupid for a fleet to offer itself in combat if
 		// it can hide behind a planet that may assist in combat
 		let planet = null;
 		for ( let p of this.fleet.star.planets ) {
-			if ( target.owner == p.owner ) { 
+			if ( defender.owner == p.owner ) { 
 				planet = p;
 				break;
 				}
 			}
-		this.app.game.QueueShipCombat( this.fleet, target, planet );
-		this.app.game.ProcessUIQueue();
+		// do this no matter what:		
+		let cb = () => {		
+			this.app.game.QueueShipCombat( attacker, defender, planet );
+			this.app.game.ProcessUIQueue();
+			};
+		// check treaties and warn player
+		const contact = attacker.owner.diplo.contacts.get(defender.owner);
+		let warn = !defender.owner.race.is_monster && contact && !contact.treaties.has('WAR');
+		if ( warn ) {
+			this.app.ShowDialog(
+				`Attack ${defender.owner.name}?`,
+				`<p>Attacking the ${defender.owner.name} may cause a diplomatic kerfuffle. Are you sure?</p>`,
+				[ { text: "Attack!", class: "alt", cb: cb }, { text: "Never Mind...", class: "bad", cb: null }, ]
+				);			
+			}
+		else { cb(); }		
+		}
+		
+	// for clicking attack target from player fleet
+	SelectAttackTarget( target ) {
+		this.AttackFleet( this.fleet, target );
+		}
+	// for clicking attack fleet from star with a local player fleet
+	AttackTargetWithLocalFleet() { 
+		if ( !this.fleet || !this.fleet.star || !this.local_fleet || !this.local_fleet.fp_remaining ) { return false; } 
+		this.AttackFleet( this.local_fleet, this.fleet );
 		}
 	ClickCancelChooseAttackTarget() {
 		this.mode = 'fleet';
 		this.IndicateRange();
-		}
-	// for clicking attack fleet from star with a local player fleet
-	AttackTargetWithLocalFleet() { 
-		if ( !this.fleet || !this.fleet.star ) { return false; } 
-		// TODO: check if we have treaties, etc. in the future
-		// find my local fleet
-		let myfleet = null;
-		for ( let f of this.fleet.star.fleets ) { 
-			if ( f.owner.is_player ) {
-				myfleet = f; 
-				break;
-				}
-			}
-		if ( !myfleet ) { return false; } 
-		// our fleet needs something to fight with
-		if ( !myfleet.fp_remaining ) {
-			this.app.ShowDialog( 'No Firepower Remaining', 'Weapons reload at the start of each turn.' );
-			return false;
-			}
-		// Check to see if there is a planet to defend. 
-		// It's stupid for a fleet to offer itself in combat if
-		// it can hide behind a planet that may assist in combat
-		let planet = null;
-		for ( let p of this.fleet.star.planets ) {
-			if ( this.fleet.owner == p.owner ) { 
-				planet = p;
-				break;
-				}
-			}		
-		this.app.game.QueueShipCombat( myfleet, this.fleet, planet );
-		this.app.game.ProcessUIQueue();
 		}
 	ClickCancel() {
 		// revert to move-fleet mode
@@ -431,8 +425,26 @@ export class FleetDetailPane {
 			}
 		}
 	ClickPlanetToInvade(p) { 
-		this.app.game.QueueGroundCombat( this.fleet, p );
-		this.app.game.ProcessUIQueue();	
+		if ( !p.owner || p.owner == this.fleet.owner || !p.Habitable(this.fleet.owner.race) ) { return false; }
+		// do this no matter what
+		let cb = () => {
+			// if the planet has a defending fleet, switch to ship combat
+			let f = p.OwnerFleet();
+			if ( f && f.fp ) { this.app.game.QueueShipCombat( this.fleet, f, p ); }
+			else { this.app.game.QueueGroundCombat( this.fleet, p ); }
+			this.app.game.ProcessUIQueue();
+			};
+		// check treaties and warn player
+		const contact = this.fleet.owner.diplo.contacts.get(p.owner);
+		let warn = !p.owner.race.is_monster && contact && !contact.treaties.has('WAR');
+		if ( warn ) {
+			this.app.ShowDialog(
+				`Attack ${p.owner.name}?`,
+				`<p>Attacking the ${p.owner.name} may cause a diplomatic kerfuffle. Are you sure?</p>`,
+				[ { text: "Attack!", class: "alt", cb: cb }, { text: "Never Mind...", class: "bad", cb: null }, ]
+				);			
+			}
+		else { cb(); }
 		}
 	CalculateChanceOfGroundVictory( p ) { 
 		let trooplist = this.fleet.ListGroundUnits();
@@ -440,7 +452,7 @@ export class FleetDetailPane {
 		let our_avg = trooplist.length ? (trooplist.reduce( f, 0 ) / trooplist.length) : 0;
 		let their_avg = p.troops.length ? (p.troops.reduce( f, 0 ) / p.troops.length) : 0;
 		let total = our_avg + their_avg;
-		return total ? ( our_avg / total ) : 1; 
+		return total ? ( our_avg / total ) : 1;
 		}
 		
 	// closes the troop transfer subscreen

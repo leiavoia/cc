@@ -271,9 +271,15 @@ export class App {
 			this.CurrentState().ToggleAutoPlay();
 			}
 		this.modal = { header, content, buttons };
-		if ( !buttons ) { // default OK button to close dialog
+		if ( !buttons || !Array.isArray(buttons) ) { // default OK button to close dialog
 		   this.modal.buttons = [{ text: 'OK', cb: (()=>this.CloseDialog()) }];
 		   }
+		// null callbacks also close panel
+		for ( let b of this.modal.buttons ) { 
+			if ( !('cb' in b) || !b.cb || typeof(b.cb) !== 'function' ) {
+				b.cb = ()=>this.CloseDialog();
+				}
+			}
 		}
 	CloseDialog() {
 		this.modal = null;

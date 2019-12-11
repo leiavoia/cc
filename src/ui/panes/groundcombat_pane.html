@@ -15,7 +15,7 @@
 				<template if.bind="!combat.status" containerless>
 				
 					<!-- purchase better odds slider -->
-					<template containerless if.bind="app.game.myciv.resources.$ > 0 && !processing">
+					<template containerless if.bind="app.game.myciv.resources.$ > 0 && !processing && combat.teams[0].units.length && combat.teams[1].units.length">
 						<p class="bold bottomless"> Improve your chance of victory: </p>
 						<p class="marginless">
 							<input type="range" min="0" max.bind="app.game.myciv.resources.$" value.bind="oddscost_slider" id="odds_slider" style="width:100%;" />

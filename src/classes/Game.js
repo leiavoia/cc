@@ -501,6 +501,13 @@ export default class Game {
 	// `data` is whatever the civ is wanting to discuss, which isnt programmed yet.
 	// currently only takes `data.offer` for trade offers and `data.message` for raw text.
 	QueueAudience( civ, data ) {
+		// first flush out any existing audiences with the same civ.
+		// we dont want embarassing multiple audiences in one turn.
+		for ( let i = this.audiences.length-1; i >= 0; i-- ) { 
+			if ( this.audiences[i].civ == civ ) {
+				this.audiences.splice( i, 1 );
+				} 
+			}
 		this.audiences.push({ civ, data, label: `${civ.name} audience` });	
 		}
 		
@@ -510,10 +517,12 @@ export default class Game {
 			});	
 		}
 		
-	QueueGroundCombat( attacker, planet ) {
-		this.groundcombats.push({ attacker, planet,
-			label: `${attacker.owner.name} attacks planet ${planet.name}`
-			});	
+	QueueGroundCombat( attacker, planet, end = 'back' ) {
+		let data = { attacker, planet,
+			label: `${attacker.owner.name} invades planet ${planet.name}`
+			};
+		if ( end === 'back' ) { this.groundcombats.push(data); }	
+		else { this.groundcombats.unshift(data); }	
 		}
 		
 	FindShipCombats() {

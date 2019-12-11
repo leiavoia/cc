@@ -420,6 +420,8 @@ export default class Fleet {
 		}
 	
 	AIWantToAttackFleet( fleet ) {
+		// what are we supposed to use? harsh language?
+		if ( !this.fp_remaining ) { return false; } 
 		// ai intercept mission? fight to the death
 		if ( this.ai && this.ai.target == fleet ) { return true; }
 		// space monsters always attack; its what they live for
@@ -428,6 +430,7 @@ export default class Fleet {
 		const contact = this.owner.diplo.contacts.get(fleet.owner);
 		if ( contact && contact.treaties.has('NON_AGGRESSION') ) { return false; }		
 		if ( contact && contact.treaties.has('ALLIANCE') ) { return false; }		
+		if ( contact && contact.treaties.has('CEASEFIRE') ) { return false; }		
 		// at war
 		if ( contact && contact.treaties.has('WAR') ) {
 			return this.fp_remaining >= fleet.fp_remaining;
@@ -455,6 +458,13 @@ export default class Fleet {
 	    
 	// invade a specific planet?
 	AIWantToInvadePlanet( planet ) {
+		// check treaties
+		// NOTE: leaving this here for reference, but we want AI to break treaties 
+		// for element of surprise. If this feels too random, we can put it back in.
+		// const contact = this.owner.diplo.contacts.get(planet.owner);
+		// if ( contact && contact.treaties.has('ALLIANCE') ) { return false; }		
+		// if ( contact && contact.treaties.has('NON_AGGRESSION') ) { return false; }		
+		// if ( contact && contact.treaties.has('CEASEFIRE') ) { return false; }
 		// see: AI::AI_TroopsNeededToInvade
 		let invasion_pow = Math.ceil( planet.troops.length * (1.25 - this.owner.ai.strat.risk * 0.5) ) || 1;
 		return this.ai 

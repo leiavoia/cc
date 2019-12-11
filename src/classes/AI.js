@@ -791,7 +791,7 @@ export class AIOffenseObjective extends AIObjective {
 			if ( civ == c || c.race.is_monster ) { continue; }
 			// diplo status is important, but we wont write off something 
 			// really juicy just because we're "friends"
-			for ( let p of c.planets ) { 
+			for ( let p of c.planets.filter( p => p.Habitable(civ.race) ) ) { 
 				let score = p.ValueTo(civ);
 				if ( score ) { // must be habitable at least
 					//
@@ -802,6 +802,7 @@ export class AIOffenseObjective extends AIObjective {
 					const contact = civ.diplo.contacts.get(c);
 					if ( contact && contact.treaties.has('WAR') ) { score *= 3; }
 					else if ( contact && contact.treaties.has('ALLIANCE') ) { score *= 0.05 * civ.ai.strat.posture; }
+					else if ( contact && contact.treaties.has('CEASEFIRE') ) { score *= 0.65 * civ.ai.strat.posture; }
 					else if ( contact && contact.treaties.has('NON_AGGRESSION') ) { score *= 0.5 * civ.ai.strat.posture; }
 					else if ( contact ) { score *= (1.5 - contact.lovenub) * (0.5 + civ.ai.strat.posture); }
 					// defended?
@@ -820,6 +821,11 @@ export class AIOffenseObjective extends AIObjective {
 						}
 					// we already have a foothold there?
 					if ( p.star.accts.has(civ) ) { score *= 1.5; }
+					// already have troops available?
+					let localfleet = p.star.FleetFor( civ );
+					if ( localfleet && localfleet.milval && localfleet.troops ) { score *= 1.25; }
+					if ( localfleet && localfleet.troops > p.troops.length && contact && contact.treaties.has('WAR') ) { score *= 2.0; }
+					if ( localfleet && localfleet.troops && !p.troops.length && contact && contact.treaties.has('WAR') ) { score *= 100.0; }
 					// likelyhood of getting our butts kicked
 					score *= ( civ.ai.total_milval / p.owner.ai.total_milval ) * (1+civ.ai.strat.risk);
 					score = Math.max( 0.1, score ); // hack to avoid negatives until we refactor scoring system
@@ -1577,6 +1583,21 @@ export class AIInvadeObjective extends AIObjective {
 		// planet acquired
 		if ( this.target.owner == civ ) { 
 			this.note = '!!! Invasion success !!!';
+			// you know... while we're here...
+			let other_targets = this.target.star.planets.filter( p => 
+				p != this.target 
+				&& p.owner != civ
+				&& p.Habitable(civ.race) 
+				&& !p.troops.length
+				&& ( !p.OwnerFleet() || !p.OwnerFleet().milval )
+				);
+			for ( let p of other_targets ) { 
+				const contact = civ.diplo.contacts.get(p.owner);
+				if ( contact && contact.treaties.has('WAR') ) { 
+					app.game.QueueGroundCombat( this.fleet, p ); // free smack!
+					this.note += ' | picked up ' + p.name + ' for free!';
+					}
+				}
 			return true;
 			}
 		// sometimes our poor little invasion fleet gets confused due to fleet mergers

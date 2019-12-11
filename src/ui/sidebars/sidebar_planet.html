@@ -13,8 +13,13 @@
 		</p>
 						
 		<!-- enemy fleet attack option --> 
-		<p class="button_rack button_rack_fill" if.bind="planet.settled && !planet.owner.is_player && playerHasLocalFleet">
-			<button class="alt" click.delegate="AttackTargetWithLocalFleet()">ATTACK</button>
+		<p class="button_rack button_rack_fill" if.bind="planet.settled && !planet.owner.is_player && local_fleet && planet.Habitable(local_fleet.owner.race)">
+			<button class="${local_fleet.fp_remaining ? 'alt' : 'ghost'}" click.delegate="AttackTargetWithLocalFleet()">ATTACK</button>
+		</p>
+						
+		<!-- colonize planet option --> 
+		<p class="button_rack button_rack_fill" if.bind="!planet.settled && !planet.owner && local_fleet && local_fleet.colonize">
+			<button class="${planet.Habitable(local_fleet.owner.race) ? 'alt' : 'ghost'}" click.delegate="ColonizePlanet()">COLONIZE</button>
 		</p>
 		
 		<!-- NOTE: using one-time binding to avoid brief moment when the 

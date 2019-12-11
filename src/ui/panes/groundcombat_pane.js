@@ -41,7 +41,19 @@ export class GroundCombatPane {
 		this.onChangeCombatdata();
 		}
 		
-	onChangeCombatdata() { 
+	onChangeCombatdata() {
+		// reset data
+		this.combat = null;
+		this.processing = false;
+		this.last_turnlog = { attacker: null, defender:null };
+		this.winner = '';
+		this.player_team = null;
+		this.player_won = false;
+		this.finished = false;
+		this.odds = 0; // improved odds
+		this.oddscost = 0; // cost of improved odds. connected to slider
+	    this.oddscost_slider = 0;		
+		// load new data
 		if ( this.combatdata ) { 
 			this.combat = new GroundCombat( this.combatdata.attacker, this.combatdata.planet );
 			// which team is the human playing?
@@ -89,8 +101,8 @@ export class GroundCombatPane {
 				else {
 					this.app.AddNote( 'bad', `Colony at ${this.combatdata.planet.name} has been lost.` );
 					}
-				this.app.game.CheckForCivDeath();
 				}
+			this.app.game.CheckForCivDeath();
 			}
 		}
 
