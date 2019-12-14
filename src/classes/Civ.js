@@ -1200,12 +1200,12 @@ export default class Civ {
 					}
 				}
 			// declare war?
-			if ( acct.lovenub == 0 ) { 
+			if ( acct.lovenub <= 0 ) { 
 				this.CreateTreaty( 'WAR', civ );
 				}
 			// scold the player for attacking us, or make formal declaration of war
 			if ( civ.is_player || this.is_player ) { 
-				acct.attspan -= (acct.lovenub == 0) ? 1.0 : 0.5; // silent treatment
+				acct.attspan -= (acct.lovenub <= 0) ? 1.0 : 0.5; // silent treatment
 				acct.attspan = Math.max(acct.attspan,0);
 				let starname = shipcombat.planet ? shipcombat.planet.star.name : null;
 				if ( !starname && shipcombat.teams[0].fleet.star ) { starname = shipcombat.teams[0].fleet.star.name; }
@@ -1213,7 +1213,7 @@ export default class Civ {
 				// we attacked them
 				let message = '';
 				if ( civ.is_player ) {
-					if ( acct.lovenub == 0 ) {
+					if ( acct.lovenub <= 0 ) {
 						message = `Your attack on ${starname} was unfortunate... <i>for you</i>. Now your suffering will be legendary. To war!`;
 						}
 					else {
@@ -1222,7 +1222,7 @@ export default class Civ {
 					App.instance.game.QueueAudience( this, {message} );
 					}
 				// they attacked us and it led to war. surprise!
-				else if ( acct.lovenub == 0 ) {
+				else if ( acct.lovenub <= 0 ) {
 					message = `Now the game has truly begun. We will accept your surrender any time.`;
 					App.instance.game.QueueAudience( civ, {message} );
 					}
