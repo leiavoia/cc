@@ -124,6 +124,18 @@ export default class Anom {
 		a.order = utils.RandomInt( 0, 100 );
 		return a;
 		}
+		
+	// copied from Star
+	FleetFor( civ ) { 
+		for ( let f of this.fleets ) { 
+			if ( f.owner == civ ) { 
+				if ( !f.killme && !f.mission && !f.merged_with ) { return f; }
+				else { return null; }
+				}
+			}
+		return null;
+		}
+		
 	}
 
 let anom_list = {

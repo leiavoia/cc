@@ -238,7 +238,7 @@ export class PlanetDetailPane {
 	ColonizePlanet() {
 		if ( !this.planet || this.planet.settled || this.planet.owner || !this.local_fleet
 			|| !this.planet.Habitable(this.local_fleet.owner.race) ) { return false; }
-		let ship = this.local_fleet.GetFirstColonyShip();
+		let ship = this.local_fleet.ships.find( s => s.bp.colonize );
 		if ( ship ) { 
 			this.planet.Settle( this.local_fleet.owner );
 			this.local_fleet.RemoveShip( ship );
