@@ -8,28 +8,16 @@ export class Zone {
 			}
 		// regular constructor
 		else {  
-			this.key = key;
-			// Category of zone - determines UI colors and symbols.
-			// One of: ['special','housing','research','military','espionage','government','stardock','mining']
-			this.type = 'housing';
-			// how many sectors the zone currently occupies
-			this.sect = 1;
-			this.minsect = 1;
-			this.maxsect = 1;
-			this.size = 1; // factorial size based on sectors
-			// Growth Factor - turns required to mature.
-			// Modified by a planet's energy level when calculating growth.
-			this.gf = 10;
+			Object.assign( this, ZoneList[key] );
 			// inputs and outputs are normalized per-sector and are
 			// multiplied by the zone's stacked-size when calculating activity
+			this.sect = this.minsect || 1;
+			this.size = FastFactorial( this.sect );
 			this.val = 0;
 			this.insuf = false;
-			this.inputs = {};
-			this.outputs = {};
 			this.output_rec = {}
 			this.resource_rec = {};
 			this.resource_estm = {}; // we may want this some day, but saves memory if we dont
-			Object.assign( this, ZoneList[key] );
 			}
 		for ( let k in this.outputs ) { this.output_rec[k]=0; } ; // prepopulate keys
 		for ( let k in this.inputs ) { this.resource_rec[k]=0; } ; // prepopulate keys
@@ -206,7 +194,6 @@ export const ZoneList = {
 		desc: 'Provides bonuses for your home planet.',
 		inputs: {},
 		outputs: { hou: 20 },
-		sect: 2,
 		minsect:2,
 		maxsect: 2,
 		gf: 0, // instant
@@ -219,7 +206,6 @@ export const ZoneList = {
 		desc: 'Provides basic services to new colonies',
 		inputs: { $: 50 },
 		outputs: { hou: 10 },
-		sect: 1,
 		minsect:1,
 		maxsect:1,
 		gf: 0, // instant
@@ -231,7 +217,6 @@ export const ZoneList = {
 		type: 'government',
 		desc: 'Increases beaurocracy.',
 		inputs: { $: 10 },
-		sect: 1,
 		minsect:1,
 		maxsect:1,
 		tier: 0
@@ -244,7 +229,6 @@ export const ZoneList = {
 		desc: 'Provides basic civil services, allowing population to grow.',
 		inputs: { o: 1, s: 1, m: 1 },
 		outputs: { hou: 2 },
-		sect: 1,
 		minsect:1,
 		maxsect:8,
 		gf: 10,
@@ -256,7 +240,6 @@ export const ZoneList = {
 		desc: 'Improved higher density housing requires more metal but less cash.',
 		inputs: { o: 2, s: 2, m: 1 },
 		outputs: { hou: 4 },
-		sect: 2,
 		minsect:2,
 		maxsect:12,
 		gf: 20,
@@ -268,7 +251,6 @@ export const ZoneList = {
 		desc: 'A metropolis is expensive to maintain but greatly increases maximum population.',
 		inputs: { o: 2, s: 2, m: 2, g:1 },
 		outputs: { hou: 7 },
-		sect: 4,
 		minsect:4,
 		maxsect:16,
 		gf: 30,
@@ -280,7 +262,6 @@ export const ZoneList = {
 		desc: 'A thriving region that maximizes population.',
 		inputs: { o: 2, s: 2, m: 2, g:2, y:2 },
 		outputs: { hou: 10 },
-		sect: 8,
 		minsect:8,
 		maxsect:20,
 		gf: 50,
@@ -294,7 +275,6 @@ export const ZoneList = {
 		desc: 'Entry-level mining operation that can process local metals, silicates, and organic materials.',
 		inputs: { $: 10 },
 		outputs: { o: 2, s: 2, m: 2 },
-		sect: 1,
 		minsect:1,
 		maxsect:8,
 		gf: 15,
@@ -306,7 +286,6 @@ export const ZoneList = {
 		desc: 'Mines Redium, Verdagen, and Bluetonium.',
 		inputs: { $: 15 },
 		outputs: { r: 2, g: 2, b: 2 },
-		sect: 1,
 		minsect:1,
 		maxsect:8,
 		gf: 15,
@@ -318,7 +297,6 @@ export const ZoneList = {
 		desc: 'Mines Cyanite, Yellotron, and Violetronium.',
 		inputs: { $: 20 },
 		outputs: { c: 2, y: 2, v: 2 },
-		sect: 1,
 		minsect:1,
 		maxsect:8,
 		gf: 15,
@@ -332,7 +310,6 @@ export const ZoneList = {
 		desc: 'Adds to scientific research projects.',
 		inputs: { $: 10 },
 		outputs: { res: 5 },
-		sect: 1,
 		minsect:1,
 		maxsect:8,
 		gf: 20,
@@ -344,7 +321,6 @@ export const ZoneList = {
 		desc: 'Adds to scientific research projects.',
 		inputs: { $: 15, b: 2 },
 		outputs: { res: 15 },
-		sect: 2,
 		minsect:2,
 		maxsect:12,
 		gf: 35,
@@ -356,7 +332,6 @@ export const ZoneList = {
 		desc: 'Adds to scientific research projects.',
 		inputs: { $: 20, b: 2, c: 1 },
 		outputs: { res: 25 },
-		sect:4,
 		minsect:4,
 		maxsect:16,
 		gf: 50,
@@ -371,7 +346,6 @@ export const ZoneList = {
 		desc: 'Helps the local economy, boosting tax income.',
 		inputs: { $: 10 },
 		outputs: { $: 20 },
-		sect: 1,
 		minsect:1,
 		maxsect:4,
 		gf: 15,
@@ -385,7 +359,6 @@ export const ZoneList = {
 		desc: 'Allows planet to build fighter-scale spacecraft.',
 		inputs: { $: 5, m: 5, o: 1 },
 		outputs: { ship: 15 },
-		sect: 1,
 		minsect:1,
 		maxsect:8,
 		gf: 30,
@@ -397,7 +370,6 @@ export const ZoneList = {
 		desc: 'Allows planet to build destroyer-scale spacecraft.',
 		inputs: { $: 10, m: 3, r: 2 },
 		outputs: { ship: 50 },
-		sect: 2,
 		minsect:2,
 		maxsect:12,
 		gf: 40,
@@ -409,7 +381,6 @@ export const ZoneList = {
 		desc: 'Allows planet to build battleship-scale spacecraft.',
 		inputs: { $: 15, m: 2, r: 2, v: 1 },
 		outputs: { ship: 80 },
-		sect: 4,
 		minsect:4,
 		maxsect:16,
 		gf: 50,
@@ -423,7 +394,6 @@ export const ZoneList = {
 		desc: 'Allows us to launch espionage campaigns.',
 		inputs: { $: 10 },
 		outputs: { esp: 1 },
-		sect: 1,
 		minsect:1,
 		maxsect:8,
 		gf: 15,
@@ -437,7 +407,6 @@ export const ZoneList = {
 		desc: 'Allows troops to be trained.',
 		inputs: { $: 8 },
 		outputs: { def: 10 },
-		sect: 1,
 		minsect:2,
 		maxsect:8,
 		gf: 15,
@@ -449,7 +418,6 @@ export const ZoneList = {
 		desc: 'Allows troops to be trained.',
 		inputs: { $: 16, g:1, b:1, c:1 },
 		outputs: { def: 30 },
-		sect: 4,
 		minsect:4,
 		maxsect:12,
 		gf: 25,
@@ -462,7 +430,6 @@ export const ZoneList = {
 		type: 'special',
 		desc: 'Placeholder for your hopes and dreams.',
 		inputs: {},
-		sect: 1,
 		minsect:1,
 		maxsect:1,
 		gf: 10,
@@ -478,8 +445,6 @@ for ( let k in ZoneList ) {
 	ZoneList[k].tier = ZoneList[k].tier || 1;
 	ZoneList[k].minsect = ZoneList[k].minsect || 1;
 	ZoneList[k].maxsect = ZoneList[k].maxsect || 1;
-	ZoneList[k].size = ZoneList[k].minsect || 1;
-	ZoneList[k].sect = ZoneList[k].minsect || 1;
 	ZoneList[k].gf = ZoneList[k].gf || 10;
 	ZoneList[k].inputs = ZoneList[k].inputs || {};
 	ZoneList[k].outputs = ZoneList[k].outputs || {};

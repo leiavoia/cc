@@ -118,7 +118,9 @@ export default class Planet {
 		obj.mods = this.mods.toJSON();
 		obj.zones = this.zones.map( x => ({
 			key:x.key, 
-			val:x.val, 
+			val:x.val,
+			sect:x.sect,
+			size:x.size,
 			insuf:x.insuf,
 			output_rec:x.output_rec, 
 			resource_rec:x.resource_rec,
