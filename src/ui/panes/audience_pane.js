@@ -26,7 +26,8 @@ export class AudiencePane {
 	// data.message will present a custom greeting.
 	// data.offer is a pre-meditated trade offer the AI is presenting to the player.
 	activate(data) {
-		if ( !data || !data.app || !data.obj || !data.obj.diplo || !data.obj.alive ) return false; 
+		if ( this.civ || !data || !data.app || !data.obj || !data.obj.diplo || !data.obj.alive ) return false; 
+		
 		this.app = data.app;
 		this.civ = data.obj;
 		this.data = data.data;
@@ -62,6 +63,11 @@ export class AudiencePane {
 			}
 		}
 		
+	// this helps with repeat-activation problems
+	determineActivationStrategy() {
+		return "replace";
+		}
+				
 	CreateTradeItemLists() { 
 		this.our_trade_items = this.app.game.myciv.AI_ListItemsForTrade( this.civ );
 		this.their_trade_items = this.civ.AI_ListItemsForTrade( this.app.game.myciv );

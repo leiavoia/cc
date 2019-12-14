@@ -35,41 +35,47 @@ export class GroundCombatPane {
 			}
 		}
 		
+	// technical note: Aurelia may in some cases send multiple calls to activate()
+	// with the same data, so we need to guard against doing stuff twice.
+	// see: https://github.com/aurelia/templating-resources/issues/323
 	activate(data) {
-		this.app = data.app;
-		this.combatdata = data.obj;
-		this.onChangeCombatdata();
-		}
-		
-	onChangeCombatdata() {
-		// reset data
-		this.combat = null;
-		this.processing = false;
-		this.last_turnlog = { attacker: null, defender:null };
-		this.winner = '';
-		this.player_team = null;
-		this.player_won = false;
-		this.finished = false;
-		this.odds = 0; // improved odds
-		this.oddscost = 0; // cost of improved odds. connected to slider
-	    this.oddscost_slider = 0;		
-		// load new data
-		if ( this.combatdata ) { 
-			this.combat = new GroundCombat( this.combatdata.attacker, this.combatdata.planet );
-			// which team is the human playing?
-			this.player_team = this.combat.teams[0].fleet.owner.is_player ? this.combat.teams[0] : this.combat.teams[1];
-			// make labels
-			this.combat.teams.forEach( team => { 
-				team.modlist_labels = [];
-				for ( let m of team.mods.Query('ground_roll',true) ) { 
-					team.modlist_labels.push( m.toDisplay(1) );
+		if ( this.combatdata != data.obj ) {
+			this.app = data.app;
+			this.combatdata = data.obj;
+			if ( this.combatdata ) { 
+				// reset data
+				this.combat = null;
+				this.processing = false;
+				this.last_turnlog = { attacker: null, defender:null };
+				this.winner = '';
+				this.player_team = null;
+				this.player_won = false;
+				this.finished = false;
+				this.odds = 0; // improved odds
+				this.oddscost = 0; // cost of improved odds. connected to slider
+				this.oddscost_slider = 0;		
+				// load new data
+				this.combat = new GroundCombat( this.combatdata.attacker, this.combatdata.planet );
+				// which team is the human playing?
+				this.player_team = this.combat.teams[0].fleet.owner.is_player ? this.combat.teams[0] : this.combat.teams[1];
+				// make labels
+				this.combat.teams.forEach( team => { 
+					team.modlist_labels = [];
+					for ( let m of team.mods.Query('ground_roll',true) ) { 
+						team.modlist_labels.push( m.toDisplay(1) );
+						}
+					} );
+				// if the defender has no defenses, end combat now
+				if ( !this.combat.teams[1].planet.troops.length ) { 
+					this.FinishCombat();
 					}
-				} );
-			// if the defender has no defenses, end combat now
-			if ( !this.combat.teams[1].planet.troops.length ) { 
-				this.FinishCombat();
 				}
 			}
+		}
+		
+	// this helps with repeat-activation problems
+	determineActivationStrategy() {
+		return "replace";
 		}
 		
 	ClosePanel() {
@@ -80,30 +86,28 @@ export class GroundCombatPane {
 
 	FinishCombat() { 
 		if ( this.finished ) { return; }
-		else  { 
-			this.finished = true;
-			if ( !this.combat.status ) { 
-				this.processing = false;
-				this.combat.Run(false); // drain the queue
-				}
-			this.last_turnlog = null; // ends hiliting
-			this.FormatResolutionLabel();
-			// note successfull invasions
-			if ( this.combat.winner == 'ATTACKER' && this.app.options.notify.combat ) { 
-				if ( this.combatdata.attacker.owner.is_player ) { 
-					this.app.AddNote(
-						'good',
-						`Victory at ${this.combatdata.planet.name}!`,
-						`Our invasion was a success. You may inspect the new planet.`,
-						() => this.app.SwitchSideBar( this.combatdata.planet )
-						);
-					}
-				else {
-					this.app.AddNote( 'bad', `Colony at ${this.combatdata.planet.name} has been lost.` );
-					}
-				}
-			this.app.game.CheckForCivDeath();
+		this.finished = true;
+		if ( !this.combat.status ) { 
+			this.processing = false;
+			this.combat.Run(false); // drain the queue
 			}
+		this.last_turnlog = null; // ends hiliting
+		this.FormatResolutionLabel();
+		// note successfull invasions
+		if ( this.combat.winner == 'ATTACKER' && this.app.options.notify.combat ) { 
+			if ( this.combatdata.attacker.owner.is_player ) { 
+				this.app.AddNote(
+					'good',
+					`Victory at ${this.combatdata.planet.name}!`,
+					`Our invasion was a success. You may inspect the new planet.`,
+					() => this.app.SwitchSideBar( this.combatdata.planet )
+					);
+				}
+			else {
+				this.app.AddNote( 'bad', `Colony at ${this.combatdata.planet.name} has been lost.` );
+				}
+			}
+		this.app.game.CheckForCivDeath();
 		}
 
 	ChangeTargetPriority( p ) { 

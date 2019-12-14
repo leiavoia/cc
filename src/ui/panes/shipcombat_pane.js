@@ -19,30 +19,27 @@ export class ShipCombatPane {
 	    }
 	   
 	activate(data) {
-		this.app = data.app;
-		this.combatdata = data.obj;
-		this.onChangeCombatdata();
-		}
-		
-	bind() { 
-		this.onChangeCombatdata();
+		if ( this.combatdata != data.obj ) {
+			this.app = data.app;
+			this.combatdata = data.obj;
+			this.onChangeCombatdata();
+			}
 		}
 		
 	onChangeCombatdata() {
-		// reset everything
-		this.combat = null;
-		this.processing = false;
-		this.last_turnlog = { attacker: null, defender:null };
-		this.turn = 0;
-		this.winner = '';
-		this.player_target_priority = 'size_desc';
-		this.player_team = null;
-		this.nonplayer_team = null;
-		this.ship_grid_packing = 1;
-		this.sel_ship = null;
-		// new setup
 		if ( this.combatdata ) { 
+			// reset everything
+			this.combat = null;
+			this.processing = false;
+			this.last_turnlog = { attacker: null, defender:null };
+			this.turn = 0;
+			this.winner = '';
+			this.player_target_priority = 'size_desc';
+			this.player_team = null;
+			this.nonplayer_team = null;
+			this.ship_grid_packing = 1;
 			this.sel_ship = null;
+			// new setup
 			this.combat = new ShipCombat( this.combatdata.attacker, this.combatdata.defender, this.combatdata.planet );
 			this.turn = 0;		
 			// deselect all ships
@@ -66,6 +63,11 @@ export class ShipCombatPane {
 			}
 		}
 		
+	// this helps with repeat-activation problems
+	determineActivationStrategy() {
+		return "replace";
+		}
+				
 	ClickShip( ship, team ) { 
 		// only click enemy ships between turns
 		if ( !this.processing && team != this.player_team ) { 
