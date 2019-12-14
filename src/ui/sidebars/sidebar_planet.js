@@ -100,15 +100,8 @@ export class PlanetDetailPane {
 		
 	PressNextPlanetButton() { 
 		let planets = this.planet.star.planets;
-		let i = 0;
-		// find me in the array
-		for ( var my_index=0; my_index < planets.length; my_index++ ) {
-			if ( planets[my_index].id == this.planet.id ) { break; }
-			}
-		// find the next planet
-		if ( my_index + 1 < planets.length ) { i = my_index + 1; }
-		// first in the list
-		else if ( my_index > 0 ) { i = 0; }
+		let i = planets.indexOf(this.planet) + 1;
+		if ( i >= planets.length ) { i = 0; }
 		this.app.SwitchSideBar( planets[i] );
 		if ( this.app.main_panel_mode == "planetinfo" ) { 
 			this.app.SwitchMainPanel( "planetinfo", planets[i] );
@@ -117,21 +110,21 @@ export class PlanetDetailPane {
 
 	PressPrevPlanetButton() { 
 		let planets = this.planet.star.planets;
-		let i = 0;
-		// find me in the array
-		for ( var my_index=0; my_index < planets.length; my_index++ ) {
-			if ( planets[my_index].id == this.planet.id ) { break; }
-			}
-		// find the prev planet
-		if ( my_index - 1 >= 0 ) { i = my_index - 1; }
-		// last in the list
-		else if ( planets.length - 1 > 0 ) { i = planets.length - 1; }
+		let i = planets.indexOf(this.planet) - 1;
+		if ( i < 0 ) { i = planets.length-1; }
 		this.app.SwitchSideBar( planets[i] );
 		if ( this.app.main_panel_mode == "planetinfo" ) { 
 			this.app.SwitchMainPanel( "planetinfo", planets[i] );
 			}
 		}
-
+		
+	PressLocalFleetButton() { 
+		if ( this.local_fleet ) { 
+			this.app.SwitchSideBar( this.local_fleet );
+			this.app.CloseMainPanel();
+			}
+		}
+		
 	PressStarButton() { 
 		this.app.SwitchSideBar( this.planet.star );
 		this.app.CloseMainPanel();

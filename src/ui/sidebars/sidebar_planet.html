@@ -5,23 +5,14 @@
 		<p class="button_rack button_rack_fill small">
 			<button click.delegate="OpenDetailsPane()" class="${planet.owner===app.game.myciv ? '' : 'ghost'}">INFO</button>
 			<button click.delegate="PressStarButton()">STAR</button>
+			<button click.delegate="PressLocalFleetButton()" class="${local_fleet ? '' : 'ghost'}">FLEET</button>
 			<button click.delegate="PressPrevPlanetButton()">◀</button>
 			<button click.delegate="PressNextPlanetButton()">▶</button>
 			<button if.bind="planet.owner == app.game.myciv"
 				click.delegate="ToggleStagingPoint()" 
 					class="${planet.star.accts.get(planet.owner).ai.staging_pt ? 'alt' : ''}">✜STAGING</button>
 		</p>
-						
-		<!-- enemy fleet attack option --> 
-		<p class="button_rack button_rack_fill" if.bind="planet.settled && !planet.owner.is_player && local_fleet && planet.Habitable(local_fleet.owner.race)">
-			<button class="${local_fleet.fp_remaining ? 'alt' : 'ghost'}" click.delegate="AttackTargetWithLocalFleet()">ATTACK</button>
-		</p>
-						
-		<!-- colonize planet option --> 
-		<p class="button_rack button_rack_fill" if.bind="!planet.settled && !planet.owner && local_fleet && local_fleet.colonize">
-			<button class="${planet.Habitable(local_fleet.owner.race) ? 'alt' : 'ghost'}" click.delegate="ColonizePlanet()">COLONIZE</button>
-		</p>
-		
+
 		<!-- NOTE: using one-time binding to avoid brief moment when the 
 		object is undefined and browser tries to ask server for 'undefined' -->
 <!-- 		<img if.bind="planet.owner" class="flag" src.bind="planet.owner.flag_img" /> -->
@@ -59,7 +50,17 @@
 				<span repeat.for="a of planet.physattrs" title.bind="a.desc">★${a.name} </span>
 			</div>
 		</div> 
-		
+					
+		<!-- attack option --> 
+		<p class="button_rack button_rack_fill" if.bind="planet.settled && !planet.owner.is_player && local_fleet && planet.Habitable(local_fleet.owner.race)">
+			<button class="${local_fleet.fp_remaining || local_fleet.troops ? 'alt' : 'ghost'}" click.delegate="AttackTargetWithLocalFleet()">ATTACK</button>
+		</p>
+						
+		<!-- colonize planet option --> 
+		<p class="button_rack button_rack_fill" if.bind="!planet.settled && !planet.owner && local_fleet && local_fleet.colonize">
+			<button class="${planet.Habitable(local_fleet.owner.race) ? 'alt' : 'ghost'}" click.delegate="ColonizePlanet()">COLONIZE</button>
+		</p>
+				
 		<template containerless if.bind="app.options.see_all || planet.owner == app.game.myciv">
 			
 			<!-- Spending Levels -->
