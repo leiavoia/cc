@@ -20,6 +20,7 @@ export class ZonePane {
 				z.type == this.zone.type 
 				&& z.key != this.zone.key 
 				&& z.minsect <= this.zone.sect
+				&& this.NotAUselessMiningZone(z)
 				);
 			// create a parallel array that has the cost to upgrade the zones
 			const inf = this.zone.size * this.zone.val;
@@ -44,7 +45,7 @@ export class ZonePane {
 				}
 			} 
 		else { // addition mode
-			this.zones = this.app.game.myciv.avail_zones;
+			this.zones = this.app.game.myciv.avail_zones.filter( z => this.NotAUselessMiningZone(z) );
 			}
 		}
 		
@@ -78,6 +79,22 @@ export class ZonePane {
 		
 	ClosePanel() {
 		this.app.CloseMainPanel();
+		}
+		
+	// filter function for use with array.filter()
+	NotAUselessMiningZone( z ) {
+		// If z is a mining zone, the output is modified by local resource availabilty.
+		// However it is also possible to synthesize new resources as outputs that
+		// do NOT depend on local natural availability. If mining zones synthesize new
+		// outputs instead of converting resources, find `zone.synth: true`
+		if ( z.type != 'mining' ) { return true; }
+		if ( z.hasOwnProperty('synth') && z.synth ) { return true; }
+		for ( let type of Object.keys(z.outputs) ) {
+			if ( this.planet.resources.hasOwnProperty(type) && this.planet.resources[type] > 0 ) {
+				return true;
+				}
+			}
+		return false;
 		}
 		
 	}

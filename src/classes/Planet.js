@@ -383,7 +383,7 @@ export default class Planet {
 		}
 		
 	AddBuildQueueShipBlueprint( bp ) { 
-		if ( !this.output_rec.ship ) { return false; }
+		// if ( !this.output_rec.ship ) { return false; }
 		let item = {
 			type: 'ship',
 			obj: bp,
@@ -399,7 +399,7 @@ export default class Planet {
 		}
 		
 	AddBuildQueueGroundUnitBlueprint( bp ) { 
-		if ( !this.output_rec.def ) { return false; }
+		// if ( !this.output_rec.def ) { return false; }
 		let item = {
 			type: 'groundunit',
 			obj: bp,

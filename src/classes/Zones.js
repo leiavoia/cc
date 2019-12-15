@@ -74,7 +74,7 @@ export class Zone {
 					// However it is also possible to synthesize new resources as outputs that
 					// do NOT depend on local natural availability. If mining zones synthesize new
 					// outputs instead of converting resources, add `zone.synth: true`
-					if ( planet.resources.hasOwnProperty(type) ) {
+					if ( planet.resources.hasOwnProperty(type) && planet.resources[type] > 0 ) {
 						if ( !this.hasOwnProperty('synth') || !this.synth ) {
 							amount *= planet.resources[type];
 							}
