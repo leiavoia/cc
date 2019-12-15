@@ -140,9 +140,8 @@ export default class GroundCombat {
 			if ( this.teams[0].status == 'victory' ) { 
 				this.teams[1].planet.BeConqueredBy( this.teams[0].fleet.owner );
 				// TODO: land all troops?
+				// possibly make this a setting
 				}
-		
-			// TODO: capture of planet may anihilate the civ
 			}
 			
 		return turnlogs;

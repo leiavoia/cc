@@ -535,7 +535,12 @@ export default class Game {
 						star.fleets[fleet_b].AIWantToAttackFleet(star.fleets[fleet_a]) 
 						) {
 						// NOTE: fleet may want to attack planet, not just the fleet
-						this.QueueShipCombat( star.fleets[fleet_a], star.fleets[fleet_b], null );
+						// NOTE 2: defender should get the chance to select a planet to hide behind
+						// 	if the attacker does not choose any.
+						// If the attacker (fleet_a) is the player, skip. Players initiate all combat manually.
+						if ( !star.fleets[fleet_a].owner.is_player || this.app.options.soak ) {
+							this.QueueShipCombat( star.fleets[fleet_a], star.fleets[fleet_b], null );
+							}
 						}
 					}
 				}
@@ -569,9 +574,10 @@ export default class Game {
 		for ( let star of this.galaxy.stars ) {
 			if ( star.fleets.length && star.planets.length ) { 
 				for ( let fleet of star.fleets ) { 
+					// If the attacker is the player, skip. Players initiate all combat manually.
 					if ( (this.app.options.soak || !fleet.owner.is_player) && fleet.troops && !fleet.mission && !fleet.killme ) { 
 						for ( let planet of star.planets ) { 
-							if ( planet.owner != fleet.owner ) { 
+							if ( planet.owner != fleet.owner ) {
 								if ( fleet.AIWantToInvadePlanet(planet) && (!planet.OwnerFleet() || !planet.OwnerFleet().milval) ) {
 									// console.log(`GC: ${fleet.owner.name} wants to invade ${planet.name}`);
 									this.QueueGroundCombat( fleet, planet );
