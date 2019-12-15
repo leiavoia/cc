@@ -785,6 +785,8 @@ export default class Game {
     	}
     	
 	LaunchAudience( audience ) {
+		// no audiences if can't communicate
+		if ( this.game.myciv.CommOverlapWith( audience.civ ) <= 0 ) { return false; }
 		if ( this.autoplay ) { 
 			clearInterval( this.autoplay );
 			this.autoplay = false;
