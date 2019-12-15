@@ -501,6 +501,7 @@ export default class Game {
 	// `data` is whatever the civ is wanting to discuss, which isnt programmed yet.
 	// currently only takes `data.offer` for trade offers and `data.message` for raw text.
 	QueueAudience( civ, data ) {
+		if ( this.app.options.soak ) { return false; }
 		// first flush out any existing audiences with the same civ.
 		// we dont want embarassing multiple audiences in one turn.
 		for ( let i = this.audiences.length-1; i >= 0; i-- ) { 
