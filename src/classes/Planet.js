@@ -501,8 +501,10 @@ export default class Planet {
 	@computedFrom('tax_rate')	
 	get slider_taxrate() { return this.tax_rate; }
 	
+	// returns a list of items built
 	DoProduction( ) { 
-		if ( !this.prod_q.length ) { return; } 
+		if ( !this.prod_q.length ) { return false; }
+		let items_built = [];
 		// produce as many items in the queue as we can 
 		let ship_labor_avail = this.output_rec.ship;
 		let def_labor_avail = this.output_rec.def;
@@ -576,6 +578,7 @@ export default class Planet {
 				// did something get built?
 				if ( item.pct >= 0.99999 ) { // slop room
 					this.ProduceBuildQueueItem( item );
+					items_built.push(item);
 					// reset
 					item.pct = 0;
 					item.turns_left = '-';
@@ -599,6 +602,7 @@ export default class Planet {
 					}
 				}
 			}
+		return items_built;
 		}
 		
   	UpdateMorale() {

@@ -58,5 +58,11 @@
 		<p><button click.delegate="app.ToggleNotification('combat')" class="${app.options.notify.combat ? 'alt' : 'cool'}">
 			Ground combat resolution
 		</button></p>
+		<p><button click.delegate="app.ToggleNotification('colony_ship_arrived')" class="${app.options.notify.colony_ship_arrived ? 'alt' : 'cool'}">
+			Colony ship arrived
+		</button></p>
+		<p><button click.delegate="app.ToggleNotification('build_queue')" class="${app.options.notify.build_queue ? 'alt' : 'cool'}">
+			Build queue item completed
+		</button></p>
 	</div>
 </template>

@@ -58,7 +58,9 @@ export class App {
 			lost_contact: true,
 			research: false,
 			combat: true,
-			anom: true
+			anom: true,
+			colony_ship_arrived: true,
+			build_queue: true
 			},
 		setup: { 
 			AIs: 5,

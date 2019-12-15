@@ -319,7 +319,18 @@ export default class Game {
 					for ( let k in p.resource_rec ) { p.resource_rec[k] = 0; }
 					p.acct_ledger.splice(0, p.acct_ledger.length); // clear accounting records
 					p.DoZoning();						
-					p.DoProduction();
+					let items_built = p.DoProduction();
+					if ( p.owner.is_player && !this.app.options.soak && this.app.options.notify.build_queue && items_built && items_built.length ) {
+						items_built = items_built.unique().filter( i => i.type != 'makework' );
+						for ( let item of items_built ) {
+							this.app.AddNote(
+								'neutral',
+								`${item.name}`,
+								`${item.name} completed at ${p.name}`,
+								() => { this.app.FocusMap(p); this.app.SwitchSideBar(p); }
+								);							
+						}
+					}
 					p.GrowEconomy();
 					p.UpdateMorale();
 					p.GrowPop();
@@ -365,9 +376,20 @@ export default class Game {
 			let f = this.galaxy.fleets[i];
 			if ( f.MoveFleet() ) {
 				// if the fleet arrived, mark the star as explored to help the UI
-				if ( f.owner == this.myciv && f.star && !f.dest && !f.star.explored ) {
+				if ( f.owner.is_player && f.star && !f.dest && !f.star.explored ) {
 					if ( this.app.options.soak ) { f.star.explored = true; }
 					else { this.new_explored_star_queue.push(f); }
+					}
+				// notice to player if fleet has colony ship and there is colonizable planet
+				if ( f.owner.is_player && !this.app.options.soak && this.app.options.notify.colony_ship_arrived && f.colonize && f.star && !f.dest ) {
+					if ( f.star.planets.filter( s => s.Habitable(f.owner.race) ).length ) {
+						this.app.AddNote(
+							'neutral',
+							`Settle ${f.star.name}?`,
+							`Colony ships have arrived at ${f.star.name}, ready to settle down at your command.`,
+							() => { this.app.FocusMap(f.star); this.app.SwitchSideBar(f.star); }
+							);						
+						}
 					}
 				}
 			};
