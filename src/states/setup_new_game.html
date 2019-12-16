@@ -3,12 +3,16 @@
 	<div id="layout_ui_main" class="setup">
 		
 		<div id="setup_pane">
+			<p class="button_rack" style="float:right; padding: 0; margin: 0;" >
+				<!-- <button class="button big ${mode == 'game' ? '' : 'cool'}" click.trigger="ChangePanel('game')">Game Setup</button> -->
+				<button class="big ${mode == 'galaxy' ? '' : 'cool'}" click.trigger="ChangePanel('galaxy')">Galaxy</button>
+				<button class="big ${mode == 'ui' ? '' : 'cool'}" click.trigger="ChangePanel('ui')">UI</button>
+				<button class="big ${mode == 'race' ? '' : 'cool'}" click.trigger="ChangePanel('race')">Race</button>
+				<button class="big bad" click.delegate="CancelSetup()">CANCEL</button>				
+				<button class="big alt" click.delegate="ConfirmSetup()">MAKE IT SO</button>
+			</p>
 			<h1>New Game</h2>
-<!--			<p class="button_rack">
-				<a href="#" class="button big ${show_pane == 'game' ? '' : 'cool'}" click.trigger="ChangePanel('game')">Game Setup</a>
-				<a href="#" class="button big ${show_pane == 'galaxy' ? '' : 'cool'}" click.trigger="ChangePanel('galaxy')">Galaxy Setup</a>
-				<a href="#" class="button big ${show_pane == 'race' ? '' : 'cool'} ghost" click.trigger="ChangePanel('race')">Race Setup</a>
-			</p>-->
+			
 <!--			<div id="game_setup_pane" class="pane" show.bind="show_pane == 'game'">
 				<div class="option">
 					<label for="diff">Difficulty</label>
@@ -46,7 +50,7 @@
 				</div>
 			</div>-->
 			
-			<div id="galaxy_setup_pane" class="window" show.bind="show_pane == 'galaxy'">
+			<div id="galaxy_setup_pane" class="window" show.bind="mode == 'galaxy'">
 				
 				<div class="option">
 					<button class="${app.options.setup.galaxy_size_randomize ? 'alt' : ''}" 
@@ -100,36 +104,108 @@
 						class="${app.options.setup.AIs_randomize ? 'disabled' : ''}" /> 
 					<output show.bind="!app.options.setup.AIs_randomize">${app.options.setup.AIs}</output>
 					<output show.bind="app.options.setup.AIs_randomize" class="random">Random</output>
-				</div>	
-				
+				</div>
 			</div>
 			
-<!--			<div id="race_setup_pane" class="pane" show.bind="show_pane == 'race'">
+			<div id="ui_setup_pane" class="window" show.bind="mode == 'ui'">
+				
 				<div class="option">
-					<h2>Organism</h2>
-				</div>
-				<div class="option">
-					<h2>Environment</h2>
-				</div>
-				<div class="option">
-					<h2>Domain</h2>
-				</div>
-				<div class="option">
-					<h2>Balance</h2>
-				</div>
-				<div class="option">
-					<h2>Attributes</h2>
-				</div>
-				<div class="option">
-					
+					<label for="civ_name">Civilization Name</label>
+					<input id="civ_name" type="input" value.bind="app.options.setup.civ_name" /> 
 				</div>
 				
-			</div>-->
+				<div class="option">
+					<label for="leader_name">Leader Name</label>
+					<input id="leader_name" type="input" value.bind="app.options.setup.leader_name" /> 
+				</div>
+				
+				<div class="option">
+					<label for="homestar">Home Star</label>
+					<input id="homestar" type="input" value.bind="app.options.setup.homestar" /> 
+				</div>
+				
+				<div class="option">
+					<label for="homeworld">Home Planet</label>
+					<input id="homeworld" type="input" value.bind="app.options.setup.homeworld" /> 
+				</div>
+				
+				<div class="option">
+					<label></label>
+					<h2 css="font-size: 100%; padding: 0.25em 3em; display:inline-block; 
+						text-shadow: 0.1em 0.1em 0.1em rgba(0,0,0,1); 
+						background: linear-gradient( to right, 
+						rgba( ${color_r}, ${color_g}, ${color_b}, 0 ) 0%,
+						rgba( ${color_r}, ${color_g}, ${color_b}, 1 ) 20%,
+						rgba( ${color_r}, ${color_g}, ${color_b}, 1 ) 80%,
+						rgba( ${color_r}, ${color_g}, ${color_b}, 0 ) 100%
+						);
+					">Map Color</h2>
+					&nbsp;
+					&nbsp;
+					<svg class="icon" css="margin-top: 0.25em; color: rgb(${color_r}, ${color_g}, ${color_b})"><use xlink:href="#icon-nature"></use></svg>
+					&nbsp;
+					&nbsp;
+					<svg class="icon" css="margin-top: 0.25em; color: rgb(${color_r}, ${color_g}, ${color_b})"><use xlink:href="#icon-transport"></use></svg>
+					&nbsp;
+					&nbsp;
+					<svg class="icon" css="vertical-align:middle; text-align:center; padding: 2px; margin-top: 0.125em; color: rgb(${color_r}, ${color_g}, ${color_b}); border: 2px solid rgb(${color_r}, ${color_g}, ${color_b}); border-radius: 0.25em; background: #000;"><use xlink:href="#icon-transport"></use></svg>
+				</div>
+				
+				<div class="option colorpicker">
+					<label for="color_r" style="color: #D11;">Red</label>
+					<input id="color_r" type="range" min="0" max="255" step="1" value.bind="color_r" /> 
+				</div>
+				
+				<div class="option colorpicker">
+					<label for="color_g" style="color: rgb(17, 221, 51);">Green</label>
+					<input id="color_g" type="range" min="0" max="255" step="1" value.bind="color_g" /> 
+				</div>
+				
+				<div class="option colorpicker">
+					<label for="color_b" style="color: #477fd4;">Blue</label>
+					<input id="color_b" type="range" min="0" max="255" step="1" value.bind="color_b" /> 
+				</div>
+			</div>
 			
-			<p class="button_rack right">
-				<a href="#" class="big" click.delegate="ConfirmSetup()">MAKE IT SO</a>
-				<a href="#" class="big bad" click.delegate="CancelSetup()">CANCEL</a>
-			</p>
+			<div id="race_setup_pane" class="window" show.bind="mode == 'race'">
+				<h2 class="tmp${app.options.setup.race_temp} atm${app.options.setup.race_atm}" style="margin-bottom: 0.5em">
+					Habitat:&nbsp;
+					<span class="env_label">${EnvDisplayName( app.options.setup.race_atm, app.options.setup.race_temp, app.options.setup.race_grav )}</span>
+				</h2>
+				<div style="display:flex;">
+					<div style="flex: 8 1 75%;">
+						<div class="option">
+							<label for="temp">Temperature</label>
+							<input id="temp" type="range" min="0" max="4" step="1" value.bind="app.options.setup.race_temp" /> 
+						</div>
+						<div class="option">
+							<label for="atm">Atmosphere</label>
+							<input id="atm" type="range" min="0" max="4" step="1" value.bind="app.options.setup.race_atm" /> 
+						</div>
+						<div class="option">
+							<label for="grav">Gravity</label>
+							<input id="grav" type="range" min="0" max="4" step="1" value.bind="app.options.setup.race_grav" /> 
+						</div>
+						<div class="option">
+							<label for="grav">Adaptation</label>
+							<input id="grav" type="range" min="1" max="3" step="1" value.bind="app.options.setup.race_adapt" /> 
+						</div>
+					</div>
+					<div class="" style="flex: 1 1 auto; margin-left: 1em;">
+						<div class="planet grav${app.options.setup.race_grav} tmp${app.options.setup.race_temp} atm${app.options.setup.race_atm}" style="height: 200px; width: 200px; background-size: contain;"></div>
+					</div>
+					<div class="planet adapt${app.options.setup.race_adapt} grav${app.options.setup.race_grav} tmp${app.options.setup.race_temp} atm${app.options.setup.race_atm}" style="flex: 1 1 auto; margin-left: 2em; background: none;">
+						<div class="env_box" style="height: 200px; width: 200px;">
+							<div class="target">
+								<div class="grav"></div>
+								<div class="a a1"></div>
+								<div class="a a2"></div>
+								<div class="a a3"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 			
 		</div>
 		

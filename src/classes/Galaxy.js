@@ -258,49 +258,15 @@ export default class Galaxy {
 		this.stats.planets = 0;
 		for ( let s of this.stars ) { this.stats.planets += s.planets.length; }
 		}
-					
-	ThreatDemo( num_civs=2 ) {
-
-		this.MakeCivs( num_civs );
-		
-		// find stars with planets
-		let stars = [];
-		for ( let s of this.stars ) { 
-			if ( s.planets.length ) { 
-				stars.push(s);
-				}
-			}
-		// settle some planets
-		stars.shuffle();
-		for ( let c of this.civs ) { 
-			// homeworld
-			let s = stars.pop();
-			let p = s.planets[0];
-			this.ForcePlanetEnvToMatchRace( p, c ); 
-			p.resources.o = 3;
-			p.resources.s = 3;
-			p.resources.m = 3;
-			p.size = 20;
-			p.Settle( c );
-			if ( c.is_player ) { s.explored = true; }
-			else { p.ZonePlanet(); }
-			this.AssignStartingFleet( c, s );
-			c.homeworld = p;
-			}
-		
-		return this.civs[0].homeworld.star;
-		}	
-			
+				
 	ForcePlanetEnvToMatchRace( p, civ ) { 
 		p.atm = civ.race.env.atm;
 		p.temp = civ.race.env.temp;
 		p.grav = civ.race.env.grav;
 		}
 		
-	AddExploreDemo( num_civs=1 ) {
-
+	AddStandardSetup( num_civs=1 ) {
 		this.MakeCivs( num_civs );
-		
 		// settle some planets
 		let star_i = this.stars.length-1;
 		this.stars.shuffle();
@@ -315,6 +281,7 @@ export default class Galaxy {
 					p.resources.m = 3;
 					p.size = 20;
 					p.Settle( c );
+					p.total_pop = 10;
 					if ( c.is_player ) { s.explored = true; }
 					else { p.ZonePlanet(); }
 					this.AssignStartingFleet( c, s );
@@ -325,7 +292,6 @@ export default class Galaxy {
 				star_i--;
 				}
 			}
-		
 		return this.civs[0].homeworld.star;
 		}	
 		
@@ -337,57 +303,16 @@ export default class Galaxy {
 		this.historical_civs = [...this.civs];
 		}
 		
-	AssignHomeWorlds() { 
-		for ( let s of this.stars ) { 
-			for ( let p of s.planets ) { 
-				let i = utils.RandomInt( 0, this.civs.length-1 );
-				if ( i != this.civs.length ) { 
-					this.ForcePlanetEnvToMatchRace( p, this.civs[i] );
-					p.resources.o = 3;
-					p.resources.s = 3;
-					p.resources.m = 3;
-					p.size = 20;
-					p.Settle( this.civs[i] );
-					}
-				}
-			}
-		}
-		
 	AssignStartingFleet( owner, star ) { 
 		let f = new Fleet( owner, star );
 		f.ships = [
 			new Ship( owner.ship_blueprints[0] ),
 			new Ship( owner.ship_blueprints[1] ),
 			new Ship( owner.ship_blueprints[1] ),
-			// new Ship( owner.ship_blueprints[2] )
 			];
-		// for ( let i = 0; i < 2; i++ ) { 
-		// 	let ship = owner.ship_blueprints[2].Make();
-		// 	ship.troops.push( 
-		// 		owner.groundunit_blueprints[0].Make()
-		// 		);
-		// 	f.ships.push( ship );
-		// 	}
 		f.ReevaluateStats();
 		f.SortShips();
 		return f;
 		}
 		
-	CreateRandomFleet( owner, star ) { 
-		let f = new Fleet( owner, star );
-		for ( let i = 0, max = utils.RandomInt(2,12); i < max; i++ ) { 
-			let which = utils.RandomInt(0,owner.ship_blueprints.length-1);
-			let ship = owner.ship_blueprints[which].Make();
-			// add ground units
-			if ( which == 2 ) { 
-				ship.troops.push( 
-					owner.groundunit_blueprints[0].Make()
-					);
-				}
-			f.ships.push( ship );
-			}
-		f.ReevaluateStats();	
-		f.SortShips();
-		return f;
-		}
 	}

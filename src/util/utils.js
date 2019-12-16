@@ -127,6 +127,47 @@ export function HexToDec( n ) {
 	return parseInt(n, 16);
 	}
 
+
+// converts "#000000" -> "rgb(x,y,z)"
+export function HexColorToRGB( hex ) {
+	hex = hex.replace('#','').trim();
+	let str = 'rgb(';
+	str += HexToDec(hex.substr(0,2)) + ',';
+	str += HexToDec(hex.substr(2,2)) + ',';
+	str += HexToDec(hex.substr(4,2)) + ')';
+	return str;
+	}
+	
+// converts "#000000" -> [x,y,z]
+export function HexColorToRGBArray( hex ) {
+	hex = hex.replace('#','').trim();
+	let arr = [
+		HexToDec(hex.substr(0,2)),
+		HexToDec(hex.substr(2,2)),
+		HexToDec(hex.substr(4,2)),
+		]
+	return arr;
+	}
+	
+// converts [x,y,z] -> "#000000"
+export function RGBArrayToHexColor( arr ) {
+	let str = '#' +
+		DecToHex(arr[0]) +
+		DecToHex(arr[1]) +
+		DecToHex(arr[2]) ;
+	return str;
+	}
+	
+// converts "rgb(x,y,z)" -> "#000000"
+export function RGBToHexColor( rgb ) {
+	let matches = rgb.match(/(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+	let str = '#';
+	str += DecToHex( matches[1] || 1 );
+	str += DecToHex( matches[2] || 1 );
+	str += DecToHex( matches[3] || 1 );
+	return str;
+	}
+	
 // DJB2 hash - https://gist.github.com/eplawless/52813b1d8ad9af510d85
 export function hash(str) {
 // 	let len = str.length;

@@ -1,11 +1,10 @@
 import Galaxy from './Galaxy';
-import Star from './Star';
-import Planet from './Planet';
 import Fleet from './Fleet';
 import * as utils from '../util/utils';
 import * as Signals from '../util/signals';
 import FastPriorityQueue from 'fastpriorityqueue';
 import EventLibrary from './EventLibrary';
+import Civ from './Civ';
 import ShipCombat from './ShipCombat';
 import GroundCombat from './GroundCombat';
 import {VictoryRecipes,VictoryIngredients} from './VictoryRecipes';
@@ -253,13 +252,50 @@ export default class Game {
 		this.galaxy = new Galaxy();
 		this.galaxy.Make( galaxy_size, density, age, crazy );
 		
-		// TODO: change AddExploreDemo to something more robust when code matures.
-		this.app.hilite_star = this.galaxy.AddExploreDemo( AIs + 1 );
+		// this adds a standard game setup. However, this would also be a good place
+		// to add alternate setups for faster debugging, perhaps based on query string params.
+		this.app.hilite_star = this.galaxy.AddStandardSetup( AIs + 1 );
 		
+		// we override the first civ in the list with our user-defined settings.
+		this.SetMyCiv( this.galaxy.civs[0] );
+		this.myciv.name = this.app.options.setup.civ_name || 'Human';
+		this.myciv.leader_name = this.app.options.setup.leader_name || 'Dear Leader';
+		this.myciv.color_rgb = this.app.options.setup.color.map( c => parseInt(c) ) || [0,128,0];
+		this.myciv.color = utils.RGBArrayToHexColor(this.myciv.color_rgb);
+		// make sure the player's color does not conflict with AI colors
+		for ( let c of this.galaxy.civs ) { 
+			if ( c == this.myciv ) { continue; } 
+			let diff = Math.sqrt ( 
+				Math.pow( Math.abs( c.color_rgb[0] - this.myciv.color_rgb[0] ), 2 ) +
+				Math.pow( Math.abs( c.color_rgb[1] - this.myciv.color_rgb[1] ), 2 ) +
+				Math.pow( Math.abs( c.color_rgb[2] - this.myciv.color_rgb[2] ), 2 )
+				);
+			if ( diff < 80 ) {
+				c.color_rgb = Civ.PickNextStandardColor();
+				c.color = utils.RGBArrayToHexColor(c.color_rgb);
+				c.homeworld.star.UpdateOwnershipTitleColorCSS();				
+				} 
+			}
+		this.myciv.race.env.atm = this.app.options.setup.race_atm || 2;
+		this.myciv.race.env.temp = this.app.options.setup.race_temp || 2;
+		this.myciv.race.env.grav = this.app.options.setup.race_grav || 2;
+		this.myciv.race.env.adaptation = this.app.options.setup.race_adapt || 1;
+		let homeworld = this.myciv.planets[0];
+		homeworld.name = this.app.options.setup.homeworld || 'Earth'
+		homeworld.atm = this.app.options.setup.race_atm || 2;
+		homeworld.temp = this.app.options.setup.race_temp || 2;
+		homeworld.grav = this.app.options.setup.race_grav || 2;
+		homeworld.energy = 1;
+		homeworld.star.name = this.app.options.setup.homestar || 'Sol';
+		homeworld.star.UpdateOwnershipTitleColorCSS();
+		for ( let i=1; i < homeworld.star.planets.length; i++ ) {
+			homeworld.star.planets[i].name = homeworld.star.name + ' ' + utils.Romanize(i+1);
+			}
+			
 		// TODO: difficulty level: when assigning homeworlds, give player more or less
 		// room, and better or worse position as defined by the natural score of all
 		// planets within a "starting circle", then sort star systems by their totals.
-		this.SetMyCiv( this.galaxy.civs[0] );
+		
 		this.RecalcStarRanges();
 		this.RecalcFleetRanges();
 		this.RecalcCivContactRange();

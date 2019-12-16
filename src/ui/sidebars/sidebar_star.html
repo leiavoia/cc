@@ -14,7 +14,7 @@
 				<div class="planet atm${p.atm} tmp${p.temp} grav${p.grav}" css.one-time="PlanetSizeCSS(p)">
 					<img if.bind="p.owner" class="flag" src.bind="p.owner.flag_img" style="border:1px solid #666;" />
 					<!--<div class="env_box"> <div class="target"></div> </div>-->	
-					<h3 css="color: ${p.ui_color};">${p.name}</h3>
+					<h3 css="color: ${p.owner ? p.owner.color : 'inherit'};">${p.name}</h3>
 					<p class="env_label" style="font-size: 80%; text-align:left; float:none; width: 100%">${p.gravDisplayName}  ${p.envDisplayName}</p>
 					<div class="physattrs marginless" style="font-size: 80%; color: #999;">
 						<span repeat.for="a of p.physattrs" title.bind="a.desc">★${a.name} </span>

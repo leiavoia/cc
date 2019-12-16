@@ -21,7 +21,7 @@ export default class Civ {
 	id = false;
 	
 	name = 'RACE';
-	name_plural = 'RACITES';
+	leader_name = 'Dear Leader';
 	
 	is_player = false; // set to true to indicate who the human is
 	alive = true; // dead indicates civ is out of play
@@ -375,6 +375,7 @@ export default class Civ {
 	// well-chosen colors for other races:
 	static StandardColors() {
 		if ( !Civ.colors ) { 
+			Civ.next_standard_color_index = -1;
 			Civ.colors = [
 				[128, 0, 0], 		// maroon
 				[45, 130, 220], 	// blue
@@ -420,10 +421,10 @@ export default class Civ {
 		
 	static PickNextStandardColor() {
 		let colors = Civ.StandardColors();
-		if ( Civ.total_civs < colors.length ) { 
-			return colors[ Civ.total_civs ];
+		if ( ++Civ.next_standard_color_index >= colors.length ) {
+			Civ.next_standard_color_index = 0;
 			}
-		else { return [255,255,255]; } // default white
+ 		return colors[ Civ.total_civs ];
 		}
 		
 	static IncTotalNumCivs( reset=false ) {
@@ -443,7 +444,6 @@ export default class Civ {
 		// regular constructor
 		else {
 			this.name = ( name || RandomName() ).uppercaseFirst();
-			this.name_plural = this.name + 's';
 			Civ.IncTotalNumCivs();
 			this.id = utils.UUID();
 			// internal flag roster picks unique flags for each race

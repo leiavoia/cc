@@ -81,7 +81,7 @@
 			css="left:${star.xpos & oneTime}px; top:${star.ypos & oneTime}px;">
 			<h2 css="${star.ownership_title_css}" >${star.name}</h2>
 			<div if.bind="star.planets.length" class="planet_list"><!--  && (star.explored || app.options.see_all) -->
-				<a href="#" click.trigger="app.SwitchSideBar(p,$event)" repeat.for="p of star.planets" class="${p.settled ? 'settled' : ''}" css="color: ${p.ui_color};"><svg class="icon icon-nature"><use xlink:href="#icon-nature"></use></svg></a>
+				<a href="#" click.trigger="app.SwitchSideBar(p,$event)" repeat.for="p of star.planets" class="${p.settled ? 'settled' : ''}" css="color: ${p.owner ? p.owner.color : 'inherit'};"><svg class="icon icon-nature"><use xlink:href="#icon-nature"></use></svg></a>
 			</div>
 			<div if.bind="star.fleets.length" class="fleet_list">
 				<span class="clickable" repeat.for="f of star.fleets" click.trigger="app.SwitchSideBar(f,$event)" css="left:${f.xpos}px; top:${f.ypos}px; color: ${f.owner.color}; border-color: ${f.owner.color};">

@@ -16,7 +16,6 @@ export default class Planet {
 	
 	// UI and DATA ---------------------------------------
 	id = null;
-	ui_color = 'inherit'; // this way you can set defaults in CSS and override inline
 	star = null;
 	established = 0; // turn planet was settled or conquered
 	explored = false; // does what?
@@ -718,7 +717,7 @@ export default class Planet {
 		['Bleak',		'Barren',	'Polar',		'Frozen',	'Iceball'], //	COLD
 		['Dead',		'Glacial',	'Mountainous',	'Tundra',	'Arctic'],
 		['Dune',		'Steppe',	'Temperate',	'Jungle',	'Ocean'],
-		['Wasteland',	'Desert',	'Arid',			'Swamp',	'Vaporous'], // volatile would also work here
+		['Wasteland',	'Desert',	'Arid',			'Swamp',	'Volatile'],
 		['Inferno',		'Scorched',	'Parched',		'Torrid',	'Venutian'] //	HOT	
 		]; }
 	static GravNames() {
@@ -807,7 +806,6 @@ export default class Planet {
 				this.owner.AI_RemoveStagingPoint(this.star);
 				this.owner.RecalcEmpireBox();
 				}
-			this.ui_color = 'rgb(255,255,255)';
 			this.mods.parent = null;
 			this.owner = null;
 			}
@@ -866,7 +864,6 @@ export default class Planet {
 			this.star.AddAccount( this.owner ); 
 			}
 		this.owner.RecalcEmpireBox();	
-		this.ui_color = `rgb( ${this.owner.color_rgb[0]}, ${this.owner.color_rgb[1]}, ${this.owner.color_rgb[2]} )` ;
 		this.mods.parent = this.owner.mods;
 		this.ship_dest = this.owner.is_player ? null : '@';
 		// homeworlds are AI staging points by default

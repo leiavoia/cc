@@ -77,6 +77,15 @@ export class App {
 			events_randomize: false, 
 			crazy: 0.3,
 			crazy_randomize: false,
+			leader_name: 'Dear Leader',
+			civ_name: 'Human',
+			homeworld: 'Earth',
+			homestar: 'Sol',
+			color: [0,128,0],
+			race_atm: 2,
+			race_temp: 2,
+			race_grav: 2,
+			race_adapt: 1,
 			}
 		};
 	

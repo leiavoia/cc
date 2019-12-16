@@ -1573,15 +1573,6 @@ invisible when unexplored, dim when explored */
 	/* makes fleets scootch on next-turn-button */
 	transition: top 0.7s ease-out 0s, left 0.7s ease-out 0s;
 	}
-.fleet_en_route .icon {	
-	width: 22px;
-	height: 22px;
-	display:inline-block;
-	font-size: 22px;
-	line-height: 22px;
-	padding: 2px;
-/* 	filter: drop-shadow( 1px 1px 1px rgba(255,255,255,1) ); */
-	}
 .fleet_en_route .icon {
 	width: 22px;
 	height: 22px;
@@ -1730,7 +1721,7 @@ invisible when unexplored, dim when explored */
 	margin: 0.25em;
 	display: inline-block;
 	}
-#layout_ui_side .planet .phys P.env_label {
+.planet .phys P.env_label {
 	margin: 0 0 0.20em 0;
 	padding-top:0;
 /* 	text-align:right; */
@@ -1799,7 +1790,7 @@ invisible when unexplored, dim when explored */
 	font-style:italic;
 	}
 
-#layout_ui_side .planet .env_box {
+.planet .env_box {
 	width: 92px;
 	height: 92px;
 /* 	background: rgba(0,0,0,0.55); */
@@ -1810,7 +1801,7 @@ invisible when unexplored, dim when explored */
 	box-shadow: 3px 3px 2px black;
 	position:relative;
 	}
-#layout_ui_side .planet .env_box .target {
+.planet .env_box .target {
 	position:absolute;
 	width: 20%;
 	height: 20%;
@@ -1821,7 +1812,7 @@ invisible when unexplored, dim when explored */
 	border-radius: 2px;
 	z-index: 2;
 	}
-#layout_ui_side .planet .env_box .hab {
+.planet .env_box .hab {
 	position:absolute;
 	width: 100%;
 	height: 100%;
@@ -1832,36 +1823,35 @@ invisible when unexplored, dim when explored */
 	opacity: 0.35;
 	color: #AEA;
 	}
-#layout_ui_side .planet.grav1 .env_box .target { border-width: 3px; }
-#layout_ui_side .planet.grav2 .env_box .target { border-width: 5px; }
-#layout_ui_side .planet.grav3 .env_box .target { border-width: 7px; }
-#layout_ui_side .planet.grav4 .env_box .target { border-width: 10px; }
-	
-#layout_ui_side .planet.atm0.tmp0 .env_box .target { border-color: #444444; margin-left: 0%; margin-top: 0%; }
-#layout_ui_side .planet.atm1.tmp0 .env_box .target { border-color: #888888; margin-left: 20%; margin-top: 0%; }
-#layout_ui_side .planet.atm2.tmp0 .env_box .target { border-color: #DDDDDD; margin-left: 40%; margin-top: 0%; }
-#layout_ui_side .planet.atm3.tmp0 .env_box .target { border-color: #90C8F5; margin-left: 60%; margin-top: 0%; }
-#layout_ui_side .planet.atm4.tmp0 .env_box .target { border-color: #3976A8; margin-left: 80%; margin-top: 0%; }
-#layout_ui_side .planet.atm0.tmp1 .env_box .target { border-color: #CCA9A9; margin-left: 0%; margin-top: 20%; }
-#layout_ui_side .planet.atm1.tmp1 .env_box .target { border-color: #E9A8FF; margin-left: 20%; margin-top: 20%; }
-#layout_ui_side .planet.atm2.tmp1 .env_box .target { border-color: #9E6F3E; margin-left: 40%; margin-top: 20%; }
-#layout_ui_side .planet.atm3.tmp1 .env_box .target { border-color: #9FE5FC; margin-left: 60%; margin-top: 20%; }
-#layout_ui_side .planet.atm4.tmp1 .env_box .target { border-color: #BAD9DB; margin-left: 80%; margin-top: 20%; }
-#layout_ui_side .planet.atm0.tmp2 .env_box .target { border-color: #F5B3B3; margin-left: 0%; margin-top: 40%; }
-#layout_ui_side .planet.atm1.tmp2 .env_box .target { border-color: #B0B870; margin-left: 20%; margin-top: 40%; }
-#layout_ui_side .planet.atm2.tmp2 .env_box .target { border-color: #2CA10B; margin-left: 40%; margin-top: 40%; }
-#layout_ui_side .planet.atm3.tmp2 .env_box .target { border-color: #79D938; margin-left: 60%; margin-top: 40%; }
-#layout_ui_side .planet.atm4.tmp2 .env_box .target { border-color: #57BCFA; margin-left: 80%; margin-top: 40%; }
-#layout_ui_side .planet.atm0.tmp3 .env_box .target { border-color: #CF4242; margin-left: 0%; margin-top: 60%; }
-#layout_ui_side .planet.atm1.tmp3 .env_box .target { border-color: #E8DD97; margin-left: 20%; margin-top: 60%; }
-#layout_ui_side .planet.atm2.tmp3 .env_box .target { border-color: #F0D871; margin-left: 40%; margin-top: 60%; }
-#layout_ui_side .planet.atm3.tmp3 .env_box .target { border-color: #95DE47; margin-left: 60%; margin-top: 60%; }
-#layout_ui_side .planet.atm4.tmp3 .env_box .target { border-color: #E4F2B1; margin-left: 80%; margin-top: 60%; }
-#layout_ui_side .planet.atm0.tmp4 .env_box .target { border-color: #DD0000; margin-left: 0%; margin-top: 80%; }
-#layout_ui_side .planet.atm1.tmp4 .env_box .target { border-color: #DD4444; margin-left: 20%; margin-top: 80%; }
-#layout_ui_side .planet.atm2.tmp4 .env_box .target { border-color: #EE8888; margin-left: 40%; margin-top: 80%; }
-#layout_ui_side .planet.atm3.tmp4 .env_box .target { border-color: #FFBBBB; margin-left: 60%; margin-top: 80%; }
-#layout_ui_side .planet.atm4.tmp4 .env_box .target { border-color: #FFFF00; margin-left: 80%; margin-top: 80%; }
+.planet.grav1 .env_box .target { border-width: 3px; }
+.planet.grav2 .env_box .target { border-width: 5px; }
+.planet.grav3 .env_box .target { border-width: 7px; }
+.planet.grav4 .env_box .target { border-width: 10px; }
+.planet.atm0.tmp0 .env_box .target { border-color: #444444; margin-left: 0%; margin-top: 0%; }
+.planet.atm1.tmp0 .env_box .target { border-color: #888888; margin-left: 20%; margin-top: 0%; }
+.planet.atm2.tmp0 .env_box .target { border-color: #DDDDDD; margin-left: 40%; margin-top: 0%; }
+.planet.atm3.tmp0 .env_box .target { border-color: #90C8F5; margin-left: 60%; margin-top: 0%; }
+.planet.atm4.tmp0 .env_box .target { border-color: #3976A8; margin-left: 80%; margin-top: 0%; }
+.planet.atm0.tmp1 .env_box .target { border-color: #CCA9A9; margin-left: 0%; margin-top: 20%; }
+.planet.atm1.tmp1 .env_box .target { border-color: #E9A8FF; margin-left: 20%; margin-top: 20%; }
+.planet.atm2.tmp1 .env_box .target { border-color: #9E6F3E; margin-left: 40%; margin-top: 20%; }
+.planet.atm3.tmp1 .env_box .target { border-color: #9FE5FC; margin-left: 60%; margin-top: 20%; }
+.planet.atm4.tmp1 .env_box .target { border-color: #BAD9DB; margin-left: 80%; margin-top: 20%; }
+.planet.atm0.tmp2 .env_box .target { border-color: #F5B3B3; margin-left: 0%; margin-top: 40%; }
+.planet.atm1.tmp2 .env_box .target { border-color: #B0B870; margin-left: 20%; margin-top: 40%; }
+.planet.atm2.tmp2 .env_box .target { border-color: #2CA10B; margin-left: 40%; margin-top: 40%; }
+.planet.atm3.tmp2 .env_box .target { border-color: #79D938; margin-left: 60%; margin-top: 40%; }
+.planet.atm4.tmp2 .env_box .target { border-color: #57BCFA; margin-left: 80%; margin-top: 40%; }
+.planet.atm0.tmp3 .env_box .target { border-color: #CF4242; margin-left: 0%; margin-top: 60%; }
+.planet.atm1.tmp3 .env_box .target { border-color: #E8DD97; margin-left: 20%; margin-top: 60%; }
+.planet.atm2.tmp3 .env_box .target { border-color: #F0D871; margin-left: 40%; margin-top: 60%; }
+.planet.atm3.tmp3 .env_box .target { border-color: #95DE47; margin-left: 60%; margin-top: 60%; }
+.planet.atm4.tmp3 .env_box .target { border-color: #E4F2B1; margin-left: 80%; margin-top: 60%; }
+.planet.atm0.tmp4 .env_box .target { border-color: #DD0000; margin-left: 0%; margin-top: 80%; }
+.planet.atm1.tmp4 .env_box .target { border-color: #DD4444; margin-left: 20%; margin-top: 80%; }
+.planet.atm2.tmp4 .env_box .target { border-color: #EE8888; margin-left: 40%; margin-top: 80%; }
+.planet.atm3.tmp4 .env_box .target { border-color: #FFBBBB; margin-left: 60%; margin-top: 80%; }
+.planet.atm4.tmp4 .env_box .target { border-color: #FFFF00; margin-left: 80%; margin-top: 80%; }
 
 .atm0.tmp0 .env_label { color: #666666; }
 .atm1.tmp0 .env_label { color: #888888; }
@@ -2877,10 +2867,10 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	margin-top: 0.0em;
 	overflow:hidden;
 	}
-#layout_ui_side .star .planet.grav1 .env_box .target { border-width: 2px; }
-#layout_ui_side .star .planet.grav2 .env_box .target { border-width: 3px; }
-#layout_ui_side .star .planet.grav3 .env_box .target { border-width: 4px; }
-#layout_ui_side .star .planet.grav4 .env_box .target { border-width: 5px; }
+.star .planet.grav1 .env_box .target { border-width: 2px; }
+.star .planet.grav2 .env_box .target { border-width: 3px; }
+.star .planet.grav3 .env_box .target { border-width: 4px; }
+.star .planet.grav4 .env_box .target { border-width: 5px; }
 
 #layout_ui_side .star .planet P.env_label {
 /* 	width: 100px; */
@@ -4008,7 +3998,7 @@ DIV.annoyometer .nub {
 	
 #setup_pane LABEL {
 	flex: 1;
-	max-width: 15%;
+	max-width: 25%;
 	text-align: right;
 	margin-right: 1em;
 	font-weight: bold;
@@ -4039,23 +4029,75 @@ DIV.annoyometer .nub {
 	max-width: 10%;
 	margin: auto 0;
 	}	
-	
-#setup_pane #race_setup_pane {
-	display: flex;
-	flex-flow: row wrap;
+#setup_pane .planet .env_box {
+	background: 
+		linear-gradient( to right, 
+			rgba( 0, 0, 0, 1 ) 0%,
+			rgba( 0, 0, 0, 0 ) 50%,
+			rgba( 255, 255, 255, 0 ) 50%,
+			rgba( 255, 255, 255, 0.7 ) 100%
+			),
+		linear-gradient( to bottom, 
+			rgba( 0, 40, 200, 1.0 ) 0%,
+			rgba( 240, 240, 180, 1.0 ) 50%,
+			rgba( 200, 40, 10, 1.0 ) 100%
+			)
+		;
 	}
-#setup_pane #race_setup_pane .option {
-	flex: 1;
-	padding: 0;
-	margin: 0.5rem;
-	border: 1px solid green;
+#setup_pane .planet .env_box .target { border-width: 0 !important; }
+#setup_pane .planet .env_box .target .grav {
+	border-color: black;
+	border-style: ridge; 	
+	position:absolute;
+	width: 100%;
+	height: 100%;
+	border: 1px solid #000;
+	margin-left: 0;
+	margin-top: 0;
+	box-sizing: border-box; 
+	border-radius: 2px;
+	z-index: 5;
 	}
-#setup_pane #race_setup_pane H2 {
-	font-size: 1.5rem;
-	}
-	
-	
-	
+#setup_pane .planet.grav0 .env_box .target .grav { border-width: 2px; }
+#setup_pane .planet.grav1 .env_box .target .grav { border-width: 6px; }
+#setup_pane .planet.grav2 .env_box .target .grav { border-width: 10px; }
+#setup_pane .planet.grav3 .env_box .target .grav { border-width: 15px; }
+#setup_pane .planet.grav4 .env_box .target .grav { border-width: 19px; }
+
+.env_box .a { 
+	box-sizing: border-box; 
+	background: rgba(50,200,50,0.35);
+	border-radius: 0.1em;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	margin-left: 0;
+	margin-top: 0;
+	z-index: 2;
+	border: 1px solid #090;
+}
+.planet.adapt2 .env_box .a1 {
+	margin-left: -100%;
+	width: 300%;
+}
+.planet.adapt2 .env_box .a2 {
+	margin-top: -100%;
+	height: 300%;
+}
+.planet.adapt3 .env_box .a1 {
+	margin-left: -200%;
+	width: 500%;
+}
+.planet.adapt3 .env_box .a2 {
+	margin-top: -200%;
+	height: 500%;
+}
+.planet.adapt3 .env_box .a3 {
+	margin-top: -100%;
+	margin-left: -100%;
+	width: 300%;
+	height: 300%;
+}
 	
 /* VICTORY PANE */	
 #victory_pane #recipes > .desc {

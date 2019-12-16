@@ -162,7 +162,7 @@
 		<p style="font-weight:bold; color: #FAA;" >Choose a planet to colonize:</p>
 		<div repeat.for="p of fleet.star.planets" class="smallplanetbg hilite_wrapper smallplanetbg" if.bind="!p.owner && p.Habitable(fleet.owner.race)" click.delegate="ChoosePlanetToColonize(p)">
 			<div class="planet atm${p.atm} tmp${p.temp} grav${p.grav}" css.one-time="PlanetSizeCSS(p)">
-				<h3 css="color: ${p.ui_color};">${p.name}</h3>
+				<h3 css="color: ${p.owner ? p.owner.color : 'inherit'};">${p.name}</h3>
 				<p class="env_label" style="font-size: 80%; text-align:left; float:none; width: 100%">${p.gravDisplayName}  ${p.envDisplayName}</p>
 				<div class="physattrs marginless" style="font-size: 80%; color: #999;">
 					<span repeat.for="a of p.physattrs" title.bind="a.desc">★${a.name} </span>
@@ -235,7 +235,7 @@
 				click.delegate="ClickPlanetForTroops(p)"
 				>
 				<div class="planet atm${p.atm} tmp${p.temp}" css.one-time="PlanetSizeCSS(p)">
-					<p css="color: ${p.ui_color}; font-weight:bold;">${p.name}</p>
+					<p css="color: ${p.owner ? p.owner.color : 'inherit'}; font-weight:bold;">${p.name}</p>
 					<div class="trooplist">
 						<img src.bind="t.bp.img" title.bind="t.bp.name"
 							style="
@@ -292,7 +292,7 @@
 				>
 				<div class="planet atm${p.atm} tmp${p.temp}" css.one-time="PlanetSizeCSS(p)">
 					<p>
-						<span css="color: ${p.ui_color}; font-weight:bold;">${p.name}</span>
+						<span css="color: ${p.owner ? p.owner.color : 'inherit'}; font-weight:bold;">${p.name}</span>
 						<br/>
 						<span style="color: #999">Odds: <b>${CalculateChanceOfGroundVictory(p) * 100 | round}%</b></span>
 						<i class="bad" if.bind="p.OwnerFleet() && p.OwnerFleet().milval"><br/>Defending fleet in orbit</i>
