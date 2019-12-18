@@ -35,7 +35,6 @@ export class App {
 		show_xtreme_fleets: true,
 		show_staging_pts: true,
 		show_objectives: true, // debug only
-		show_empire_box: true, // debug only
 		show_threats: true, // debug only
 		ship_scaling: true,
 		xtreme_zoom_at: 0.25,

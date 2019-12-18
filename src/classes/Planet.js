@@ -336,12 +336,8 @@ export default class Planet {
 					ship.troops.push( this.troops.pop() );
 					}
 				}
-			// find my local fleet
-			let myfleet = this.OwnerFleet();
-			if ( !myfleet || this.ship_dest ) { 
-				myfleet = new Fleet( this.owner, this.star );
-				}
-			myfleet.AddShip( ship );
+			// find out where we will send the new ship
+			let dest = this;
 			if ( this.ship_dest ) { 
 				if ( typeof(this.ship_dest)==='object' ) { 
 					if ( this.ship_dest.accts.has(this.owner) ) { 
@@ -349,14 +345,13 @@ export default class Planet {
 						}
 					}
 				else if ( this.ship_dest == '@' ) { 
-					let closest = null;
 					let best_length = 100000000;
 					for ( let star of this.owner.ai.staging_pts ) { 
 						if ( star.accts.has(this.owner) ) { 
 							let dist = utils.DistanceBetween( star.xpos, star.ypos, this.star.xpos, this.star.ypos, true );
 							if ( dist < best_length ) { 
 								best_length = dist;
-								closest = star;
+								dest = star;
 								}
 							}
 						// remove from staging point list while we're here
@@ -364,11 +359,15 @@ export default class Planet {
 							this.owner.AI_RemoveStagingPoint(star);
 							}
 						}
-					if ( closest ) { 
-						myfleet.SetDest(closest);
-						}
 					}
 				}
+			// existing local fleet?
+			let myfleet = this.OwnerFleet();
+			if ( !myfleet || dest != this ) { 
+				myfleet = new Fleet( this.owner, this.star );
+				}
+			myfleet.AddShip( ship );
+			if ( dest != this ) { myfleet.SetDest(dest); }
 			}
 		// ground units
 		else if ( item.type == 'groundunit' ) { 
@@ -507,6 +506,7 @@ export default class Planet {
 		// produce as many items in the queue as we can 
 		let ship_labor_avail = this.output_rec.ship;
 		let def_labor_avail = this.output_rec.def;
+		if ( this.owner.is_player ) console.log(`ship labor avail: ${ship_labor_avail}`);
 		for ( let i = 0; i < this.prod_q.length; i++ ) {
 			// no labor to do any work
 			if ( ship_labor_avail + def_labor_avail <= 0 ) { break; }
@@ -585,8 +585,10 @@ export default class Planet {
 					if ( item.qty > 0 ) { item.qty -= 1; }
 					// pop from list if we reached zero
 					if ( item.qty == 0 ) {
-						this.prod_q.splice( i--, 1 ); // backsliding index
+						this.prod_q.splice( i, 1 );
 						}
+					// otherwise see if we can build even more stuff
+					else if ( ship_labor_avail || def_labor_avail ) { i--; }
 					}
 				// update the stats
 				else {

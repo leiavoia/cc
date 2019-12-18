@@ -42,10 +42,16 @@ export const Treaties = {
 		onTurn: function ( turn_num ) {
 			// slight benefit to relations: 
 			this.us.BumpLoveNub( this.them, 0.01 );
-			// check for recent aggressions
-				// setback in relations
-				// audience warning *tsk tsk*
-				// change status
+			},
+		Init: function() {
+			// no hard feelin's
+			for ( let i = this.us.ai.objectives.length-1; i >= 0; i-- ) { 
+				let o = this.us.ai.objectives[i];
+				if ( ['invade','intercept','berzerk','bombard'].contains(o.type) ) {
+					if ( 'fleet' in o && o.fleet ) { o.fleet.ai = null; }
+					this.us.ai.objectives.splice(i,1);
+					}
+				}
 			}
 		},
 	SURVEIL : { 

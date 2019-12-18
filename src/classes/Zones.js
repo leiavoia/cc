@@ -442,10 +442,10 @@ for ( let k in ZoneList ) {
 	ZoneList[k].type = ZoneList[k].type || 'housing';
 	ZoneList[k].desc = ZoneList[k].desc || 'missing description';
 	ZoneList[k].name = ZoneList[k].name || 'UNKNOWN';
-	ZoneList[k].tier = ZoneList[k].tier || 1;
+	ZoneList[k].tier = ZoneList[k].tier || 0;
 	ZoneList[k].minsect = ZoneList[k].minsect || 1;
 	ZoneList[k].maxsect = ZoneList[k].maxsect || 1;
-	ZoneList[k].gf = ZoneList[k].gf || 10;
+	ZoneList[k].gf = (ZoneList[k].gf >= 0 ? ZoneList[k].gf : 10); // zero allowed to indicate instant growth
 	ZoneList[k].inputs = ZoneList[k].inputs || {};
 	ZoneList[k].outputs = ZoneList[k].outputs || {};
 	}

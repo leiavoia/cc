@@ -4,13 +4,14 @@
 		
 		<p class="button_rack button_rack_fill small">
 			<button click.delegate="OpenDetailsPane()" class="${planet.owner===app.game.myciv ? '' : 'ghost'}">INFO</button>
-			<button click.delegate="PressStarButton()">STAR</button>
 			<button click.delegate="PressLocalFleetButton()" class="${local_fleet ? '' : 'ghost'}">FLEET</button>
+			<button click.delegate="PressStarButton()">STAR</button>
 			<button click.delegate="PressPrevPlanetButton()">◀</button>
 			<button click.delegate="PressNextPlanetButton()">▶</button>
-			<button if.bind="planet.owner == app.game.myciv"
-				click.delegate="ToggleStagingPoint()" 
-					class="${planet.star.accts.get(planet.owner).ai.staging_pt ? 'alt' : ''}">✜STAGING</button>
+			<button click.delegate="ToggleStagingPoint()" 
+				class=" ${ (planet.owner.is_player) 
+					? (planet.star.accts.get(planet.owner).ai.staging_pt ? 'alt' : '') 
+					: 'ghost' } ">✜STAGING</button>
 		</p>
 
 		<!-- NOTE: using one-time binding to avoid brief moment when the 

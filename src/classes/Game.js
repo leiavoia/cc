@@ -357,7 +357,7 @@ export default class Game {
 					p.DoZoning();						
 					let items_built = p.DoProduction();
 					if ( p.owner.is_player && !this.app.options.soak && this.app.options.notify.build_queue && items_built && items_built.length ) {
-						items_built = items_built.unique().filter( i => i.type != 'makework' );
+						items_built = items_built.filter( i => i.type != 'makework' ).unique();
 						for ( let item of items_built ) {
 							this.app.AddNote(
 								'neutral',
@@ -418,7 +418,7 @@ export default class Game {
 					}
 				// notice to player if fleet has colony ship and there is colonizable planet
 				if ( f.owner.is_player && !this.app.options.soak && this.app.options.notify.colony_ship_arrived && f.colonize && f.star && !f.dest ) {
-					if ( f.star.planets.filter( s => s.Habitable(f.owner.race) ).length ) {
+					if ( f.star.planets.filter( p => !p.owner && p.Habitable(f.owner.race) ).length ) {
 						this.app.AddNote(
 							'neutral',
 							`Settle ${f.star.name}?`,
@@ -541,10 +541,17 @@ export default class Game {
 				if ( this.app.options.notify.explore && f.star.objtype == 'star' ) { 
 					// count habitable systems
 					let goods = 0;
-					f.star.planets.forEach( (p) => {if (!p.owner && p.Habitable(f.owner.race)) { goods++; }} )
+					let occupied = 0;
+					for ( let p of f.star.planets ) {
+						if ( p.Habitable(f.owner.race) ) { 
+							goods++;
+							if ( p.owner ) { occupied++; }
+							}
+						};
 					let app = this.app; 
 					let star = f.star; // fleet may disappear leaving `f` == null
 					let note = `${goods ? goods : 'No'} habitable system${goods==1 ? '' : 's'} found.`;
+					if ( occupied ) { note += ` ${occupied} system${occupied==1 ? '' : 's'} is occupied by another civilization.`;  }
 					this.app.AddNote(
 						'neutral',
 						`Scouts Explore ${f.star.name}`,
@@ -822,7 +829,7 @@ export default class Game {
     	
 	LaunchAudience( audience ) {
 		// no audiences if can't communicate
-		if ( this.game.myciv.CommOverlapWith( audience.civ ) <= 0 ) { return false; }
+		if ( this.myciv.CommOverlapWith( audience.civ ) <= 0 ) { return false; }
 		if ( this.autoplay ) { 
 			clearInterval( this.autoplay );
 			this.autoplay = false;

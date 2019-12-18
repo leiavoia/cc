@@ -54,18 +54,6 @@
 					<div if.bind="!f.killme && !f.star" class="ai_caret threat" css="left:${f.xpos}px; top:${f.ypos}px; width:${v*5|sqrt}px; height:${v*5|sqrt}px;"></div>
 				</template>
 			</template>
-			<!-- empire fast-check range bounding boxes -->
-			<template containerless if.bind="app.options.show_empire_box">
-				<template containerless repeat.for="civ of app.game.galaxy.civs">
-					<div if.bind="civ.planets.length" class="empire_box" css="
-						left:${civ.empire_box.x1}px; 
-						top:${civ.empire_box.y1}px;
-						width: ${civ.empire_box.x2 - civ.empire_box.x1}px;
-						height: ${civ.empire_box.y2 - civ.empire_box.y1}px;
-						border-color:${civ.color};
-						"></div>
-				</template>
-			</template>
 		</template>
 		
 		<div id="the_caret" class="caret ${caret.class}" if.bind="caret.obj && caret.x && caret.y" css="left:${caret.x}px; top:${caret.y}px;"></div>
