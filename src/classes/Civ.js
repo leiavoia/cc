@@ -339,28 +339,44 @@ export default class Civ {
 	
 	EstimateResources() {
 		for ( let k in this.resource_estm ) { this.resource_estm[k] = 0; }
-		for ( let p of this.planets ) { 
+		for ( let p of this.planets ) {
+			let ship_labor = 0;
+			let def_labor = 0;
+			// estimate resources consumed by zone activity
 			for ( let z of p.zones ) { 
 				let estm = z.EstimateResources(p);
 				for ( let k of Object.keys(estm) ) { 
 					this.resource_estm[k] += estm[k]; 
 					}
+				ship_labor += (z.outputs.ship || 0) * z.size * z.val;
+				def_labor = (z.outputs.def || 0) * z.size * z.val;
+				}
+			// estimate resources consumed by ship and def production assuming
+			// that zones are 100% funded.
+			let ship_est = p.EstimateProduction('ship', ship_labor);
+			let def_est = p.EstimateProduction('def', def_labor);
+			for ( let e of [ship_est,def_est] ) {
+				for ( let k of Object.keys(e) ) { 
+					this.resource_estm[k] += e[k]; 
+					}
 				}
 			}
-		// TODO: we may consume resources from other sources than zones
-		// particularly with cash.
-		
+		// factor in non-zone sources of resource income (particularly cash).
+		// WARNING: because of taxes, this can go negative.
+		this.resource_estm.$ -= this.econ.income || 0; // tax income
+		this.resource_estm.$ += this.econ.ship_maint || 0;
+		this.resource_estm.$ += this.econ.troop_maint || 0;
 		// calc supply vs demand
 		for ( let k in this.resource_supply ) { 
 			this.resource_supply[k] = 
 				( this.resource_estm[k] && this.resources[k] )
-				? Math.max( 0, this.resources[k] / this.resource_estm[k] ) 
+				? Math.max( 0, this.resources[k] / ( this.resource_estm[k] > 0 ? this.resource_estm[k] : 1 ) ) 
 				: 1.0; 
 			}
 		}
 		
 	econ = {
-		income: 0,
+		income: 0, // tax rev
 		ship_maint: 0,
 		troop_maint: 0,
 		planet_maint: 0,
@@ -1286,6 +1302,7 @@ export default class Civ {
 	DoAccounting( app ) {
 		this.econ.ship_maint = 0;
 		this.econ.troop_maint = 0;
+		this.econ.income = 0;
 		for ( let k in this.econ.cat_spending ) { this.econ.cat_spending[k] = 0; }
 		for ( let k in this.econ.subcat_spending ) { this.econ.subcat_spending[k] = 0; }
 		for ( let p of this.planets ) {
@@ -1299,6 +1316,7 @@ export default class Civ {
 			p.acct_total.$ = (p.acct_total.$||0) + p.econ.tax_rev;
 			p.owner.resource_income.$ += p.econ.tax_rev;
 			p.owner.resources.$ += p.econ.tax_rev;
+			p.owner.econ.income += p.econ.tax_rev;
 			if ( app.options.graph_history ) {
 				p.RecordHistory();
 				}

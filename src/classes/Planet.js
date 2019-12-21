@@ -422,14 +422,15 @@ export default class Planet {
 					type: 'makework',
 					name: 'Trade Goods',
 					obj: 'tradegoods',
-					cost: { labor: 3 }, // "cost" in hammers
+					cost: { labor: 20 }, // "cost" in hammers
 					qty: -1, // default infinity
 					turns_left: '-',
 					pct: 0,
 					ProduceMe: function ( planet ) {
-						let amount = 10;
+						let amount = 20;
 						planet.econ.tradegoods += amount;
-						let row = planet.acct_ledger.filter( r => r.name=='Trade Goods' )[0];
+						let row = planet.acct_ledger.find( r => r.name=='Trade Goods' )
+							|| { name:'Trade Goods', type:'project', subcat:'makework' };
 						row.$ = (row.$||0) + amount;
 						planet.acct_total.$ = (planet.acct_total.$||0) + amount;
 						planet.owner.resource_income.$ += amount;
@@ -499,6 +500,67 @@ export default class Planet {
 	@computedFrom('tax_rate')	
 	get slider_taxrate() { return this.tax_rate; }
 	
+	EstimateProduction( labortype, labor_avail=0 ) {
+		let est = {};
+		if ( !this.prod_q.length ) { return est; }
+		
+		outerloop:
+		for ( let i = 0; i < this.prod_q.length; i++ ) {
+			
+			// no labor to do any work
+			if ( labor_avail <= 0 ) { break; }
+			let item = this.prod_q[i];
+			// each queue item also has a quantity
+			if ( !item.qty ) { continue; }
+			// not the droids we're looking for
+			if ( item.type != labortype && item.type != 'makework' ) { continue; }
+			
+			else {
+				
+				let item_qty = item.qty; // dont change the actual values
+				let item_pct = item.pct;
+				let safety = 50;
+				
+				while ( labor_avail > 0 && item_qty != 0 && --safety ) {
+				
+					// how much can i build next turn?
+					let maxpct = 1 - item_pct; // account for partially completed items
+					for ( let k in item.cost ) {
+						let resource_avail = ( k == 'labor' ) ? labor_avail : this.owner.resources[k];
+						maxpct = Math.min( maxpct, 1.0, resource_avail/item.cost[k] );
+						}
+					
+					// no work can be done; skip item
+					if ( maxpct <= 0 ) { break outerloop; }
+					
+					// calculate work to be done
+					item_pct += maxpct;
+					for ( let k in item.cost ) { 
+						if ( k == 'labor' ) { 
+							labor_avail -= maxpct * item.cost[k];
+							}
+						else { 
+							est[k] = (est[k]||0) + (maxpct * item.cost[k]);
+							}
+						}
+					
+					// did something get built?
+					if ( item_pct >= 0.99999 ) { // slop room
+						// items_built.push(item); // maybe?
+						// reset
+						item_pct = 0;
+						// decrement if they wanted more than one
+						if ( item_qty > 0 ) { item_qty -= 1; }
+						}
+						
+					// exhausted?
+					if ( labor_avail <= 0 ) { break outerloop; }
+					}
+				}
+			}
+		return est;
+		}
+			
 	// returns a list of items built
 	DoProduction( ) { 
 		if ( !this.prod_q.length ) { return false; }
@@ -506,7 +568,6 @@ export default class Planet {
 		// produce as many items in the queue as we can 
 		let ship_labor_avail = this.output_rec.ship;
 		let def_labor_avail = this.output_rec.def;
-		if ( this.owner.is_player ) console.log(`ship labor avail: ${ship_labor_avail}`);
 		for ( let i = 0; i < this.prod_q.length; i++ ) {
 			// no labor to do any work
 			if ( ship_labor_avail + def_labor_avail <= 0 ) { break; }
@@ -543,8 +604,11 @@ export default class Planet {
 				// accounting: each build item is a separate record,
 				// except makework projects which are combined into one record
 				let accounting = { name:item.name, type:'project', subcat:item.type };
+				let accounting_using_existing_record = false;
 				if ( item.type=='makework' ) { 
-					accounting = this.acct_ledger.filter( r => r.name==item.name ).shift() || accounting;
+					let old_rec = this.acct_ledger.find( r => r.name==item.name );
+					accounting = old_rec || accounting;
+					accounting_using_existing_record = !!old_rec;
 					}
 					
 				// do the work and decrement resources
@@ -572,7 +636,9 @@ export default class Planet {
 						this.acct_total[k] = (this.acct_total[k]||0) - total;
 						}
 					}
-				this.acct_ledger.push(accounting);
+				if ( !accounting_using_existing_record ) {
+					this.acct_ledger.push(accounting);
+					}
 				
 				// did something get built?
 				if ( item.pct >= 0.99999 ) { // slop room
