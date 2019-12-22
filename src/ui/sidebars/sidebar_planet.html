@@ -63,13 +63,7 @@
 		</p>
 				
 		<template containerless if.bind="app.options.see_all || planet.owner == app.game.myciv">
-			
-			<!-- Spending Levels -->
-			<div class="spending " if.bind="planet.owner">
-				<div class="t"><span>TAX</span><input type="range"  min="0" max="0.5" step="0.01" value.bind="planet.slider_taxrate" /><span>${planet.tax_rate | percent}%</span></div> 
-				<div class="th"><span>SPEND</span><input type="range" min="0" max.bind="planet.max_spending" step="0.01" value.bind="planet.slider_spending" /><span>${planet.spending | percent}%</span></div> 
-			</div>
-			
+
 			<!-- zoning -->
 			<div class="zones" if.bind="planet.owner">
 				<template containerless repeat.for="z of planet.zones">
@@ -98,7 +92,7 @@
 						Sectors: <b>${sel_zone.sect}</b>
 						<br/>
 						<template containless if.bind="sel_zone.val < 1">
-							Matures In: <b>${ (app.game.turn_num*0) + ( sel_zone.gf * (1-sel_zone.val) * ( sel_zone.size / sel_zone.sect ) ) | ceil} turns</b> &nbsp;
+							Matures In: <b>${ (app.game.turn_num*0) + ( planet.throttle_speed * sel_zone.gf * (1-sel_zone.val) * ( sel_zone.size / sel_zone.sect ) ) | ceil} turns</b> &nbsp;
 							<br/>
 						</template>
 						<!-- could also use zone.resource_rec data here -->
@@ -111,6 +105,7 @@
 						Output: <span class="${k=='$'?'cash':k}" repeat.for="k of sel_zone.output_rec|props">${sel_zone.output_rec[k]|round:1}</span>
 					</p>
 					<p if.bind="sel_zone.insuf" class="nag bad">⚠️ Zone in Decline</p>
+					<p if.bind="app.options.debug"><button click.delegate="sel_zone.log = sel_zone.log ? false : true" class="${sel_zone.log ? 'alt' : 'cool'}">LOG ME</button></p>
 				</div>
 				<div>
 					<div class="zone ${sel_zone.type} ${sel_zone.level} ${sel_zone.key} only"></div>
@@ -118,6 +113,27 @@
 						<button class="bad" click.delegate="TrimZone()" if.bind="!sel_zone.perma">${sel_zone.sect==sel_zone.minsect ? 'DEMOLISH' : 'TRIM'}</button>
 						<button class="alt" click.delegate="OpenZonePane(sel_zone)" if.bind="sel_zone_upgrade_avail">UPGRADE</button>
 					</div>
+				</div>
+			</div>
+			
+			<!-- Spending Levels -->
+			<div class="spending " if.bind="planet.owner">
+				<!-- <div class="t"><span>TAX</span><input type="range"  min="0" max="0.5" step="0.01" value.bind="planet.slider_taxrate" /><span>${planet.tax_rate | percent}%</span></div>  -->
+				<!-- <div class="th"><span>SPEND</span><input type="range" min="0" max.bind="planet.max_spending" step="0.01" value.bind="planet.slider_spending" /><span>${planet.spending | percent}%</span></div> -->
+				<p class="button_rack fill small">
+					<button click.delegate="planet.SetThrottle(0)" class="${planet.throttle_target==0 ? '' : 'cool'}">MISERLY</button>
+					<button click.delegate="planet.SetThrottle(0.25)" class="${planet.throttle_target==0.25 ? '' : 'cool'}">EFFICIENT</button>
+					<button click.delegate="planet.SetThrottle(0.5)" class="${planet.throttle_target==0.5 ? '' : 'cool'}">BALANCED</button>
+					<button click.delegate="planet.SetThrottle(0.75)" class="${planet.throttle_target==0.75 ? '' : 'cool'}">PRODUCTIVE</button>
+					<button click.delegate="planet.SetThrottle(1.0)" class="${planet.throttle_target==1 ? '' : 'cool'}">OVERDRIVE</button>
+				</p>
+				<div class="throttle_meter">
+					<div class="range" css="
+						left: ${planet.throttle &lt; planet.throttle_target ? planet.throttle : planet.throttle_target | percent}%;
+						width: ${planet.throttle - planet.throttle_target | abs | percent}%;
+						"></div>
+					<div class="at" css="left: ${planet.throttle |percent}%"></div>
+					<div class="target" css="left: ${planet.throttle_target | percent}%"></div>
 				</div>
 			</div>
 			

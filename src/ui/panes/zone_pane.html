@@ -15,11 +15,11 @@
 						<p class="desc">${z.desc}</p>
 						<p class="stats resources">	
 							Sectors: <b>${z.minsect}-${z.maxsect}</b><br/>
-							Matures In: <b>${z.gf | ceil} turns</b> &nbsp;
+							Matures In: <b>${z.gf * planet.throttle_speed | ceil} turns</b> &nbsp;
 							<br/>
-							Costs: <span class="${k=='$'?'cash':k}" repeat.for="k of z.inputs|props">${z.inputs[k]|round:1}</span>
+							Costs: <span class="${k=='$'?'cash':k}" repeat.for="k of z.inputs|props">${z.inputs[k] * planet.throttle_input|round:1}</span>
 							<br/>
-							Output: <span class="${k=='$'?'cash':k}" repeat.for="k of z.outputs|props">${z.outputs[k]|round:1}</span>
+							Output: <span class="${k=='$'?'cash':k}" repeat.for="k of z.outputs|props">${z.outputs[k] * planet.throttle_output|round:1}</span>
 						</p>
 						<p class="resources big bold" if.bind="zone">
 							COST TO UPGRADE:

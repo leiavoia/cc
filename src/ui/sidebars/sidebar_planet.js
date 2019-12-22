@@ -33,11 +33,6 @@ export class PlanetDetailPane {
 		if ( !planet ) { planet = this.planet; }			
 		this.build_queue_items = [];
 		this.local_fleet = null;
-		this.sel_build_item = null;
-		this.sel_zone = null;
-		this.sel_zone_upgrade_avail = false;
-		this.show_add_zone_panel = false;
-		this.zone_to_add = null;
 		this.ground_units = this.planet.ListUniqueGroundUnits(); // Map		
 		// NOTE 1: Numbers displayed are from the point of view of the
 		// race of the player, NOT the owner of the planet
@@ -59,6 +54,11 @@ export class PlanetDetailPane {
 					this.CheckIfSelectedZoneHasUpgrades();
 					}
 				}
+			}
+		else {
+			this.sel_build_item = null;
+			this.sel_zone = null;
+			this.sel_zone_upgrade_avail = false;
 			}
 		}
 		
@@ -162,7 +162,6 @@ export class PlanetDetailPane {
 			this.sel_zone = z;
 			this.CheckIfSelectedZoneHasUpgrades();
 			}
-		this.show_add_zone_panel = false;
 		this.app.CloseMainPanel();
 		}
 	ClearSelectedZone( match=null ) {
@@ -174,14 +173,6 @@ export class PlanetDetailPane {
 		this.app.CloseMainPanel();
 		this.OpenZonePane();
 		this.sel_zone = null;
-		this.show_add_zone_panel = false; // KILLME
-		// this.show_add_zone_panel = !this.show_add_zone_panel;
-		// this.zone_to_add = this.planet.owner.avail_zones[0];
-		}
-	AddZone() {
-		if ( this.zone_to_add ) { 
-			this.planet.AddZone( this.zone_to_add.key ); 
-			}
 		}
 	TrimZone() {
 		if ( this.sel_zone ) { 

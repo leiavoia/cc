@@ -24,25 +24,31 @@ export class Zone {
 		for ( let k in this.inputs ) { this.resource_estm[k]=0; } ; // prepopulate keys
 		}
 		
-	Do( planet ) { 
+	Do( planet ) {
+		
 		let accounting = { name:this.name, type:'zone', subcat:this.type }; // start acounting record for UI
+		
 		// evaluate our allotment of resources in case there is a global shortage
 		// ( you're only as good as your most limited resource )
 		let min_resource_ratio = 1.0;
 		for ( let k of Object.keys(this.inputs) ) {
 			min_resource_ratio = Math.min( planet.owner.resource_supply[k], min_resource_ratio, 1.0 );
 			}
-		// lack of funding or lack of resources determine how much work we can actually do
-		let ratio = min_resource_ratio * planet.spending; // game already took into account +/- spending levels
+			
+		// growth percentage that we want to increase zone value by, assuming resources permit.
 		// ideally we want enough resources to do our job and grow the maximum allowed amount.
-		const growth = Math.min( 
-			planet.energy / ( this.gf * (this.size / this.sect ) ), 
+		const growth_pct = Math.min( 
+			planet.mods.Apply(
+				(planet.throttle_speed * planet.energy ) / ( this.gf * (this.size / this.sect ) ),
+				'zone_growth'
+				), 
 			1.0 - this.val 
 			);
-		let ratio_receiving = ( this.val + growth ) * ratio;
+			
 		// reduce resources of civ
+		let funding_pct = ( this.val + growth_pct ) * min_resource_ratio;
 		for ( let k of Object.keys(this.inputs) ) {
-			let amount = this.inputs[k] * this.size * ratio_receiving;
+			let amount = this.inputs[k] * this.size * funding_pct * planet.throttle_input;
 			this.resource_rec[k] = amount;
 			planet.resource_rec[k] += amount; // assume it gets zero'd out before this function is called
 			planet.acct_total[k] = (planet.acct_total[k] || 0 ) - amount;
@@ -50,17 +56,30 @@ export class Zone {
 			planet.owner.resources[k] -= amount;
 			planet.owner.resource_spent[k] += amount;
 			}
+			
 		// output
-		let work = ratio_receiving;
+		let work = funding_pct * this.size * planet.throttle_output;
 		// EXCEPTION: for housing zones, the "work" is the current zone value itself.
 		// This represents housing availability current being provided for by the zone.
-		if ( this.type == 'housing' ) { work = this.val; }
+		if ( this.type == 'housing' ) { work = this.val * this.size * planet.throttle_output; }
 		this.Output( planet, work, accounting );
 		planet.acct_ledger.push( accounting );
+		
 		// grow or shrink depending on our funding
-		let diff = ratio_receiving - this.val;
-		this.val += (diff >= 0) ? planet.mods.Apply(diff * planet.spending, 'zone_growth') : (diff * (1/this.gf) * 2);
+		let diff = funding_pct - this.val;
+		
+		if ( this.log ) { console.log('Do()',
+			'min_resource_ratio:',min_resource_ratio,
+			'growth_pct:',growth_pct,
+			'funding_pct:',funding_pct,
+			'work:',work,
+			'this.val:',this.val,
+			'diff:',diff,
+			); }
+		
+		this.val += (diff >= 0) ? growth_pct : (diff * (1/this.gf) * 2);
 		this.val = this.val.clamp(0,1);
+		
 		// if we shrank, warn player
 		this.insuf = diff < 0;
 		}
@@ -69,7 +88,7 @@ export class Zone {
 		if ( work ) { 
 			for ( let type of Object.keys(this.outputs) ) {
 				if ( typeof(standard_outputs[type]) === 'function' ) {
-					let amount = this.outputs[type] * this.size * work;
+					let amount = this.outputs[type] * work;
 					// If this is a mining zone, the output is modified by local resource availabilty.
 					// However it is also possible to synthesize new resources as outputs that
 					// do NOT depend on local natural availability. If mining zones synthesize new
@@ -95,13 +114,14 @@ export class Zone {
 	EstimateResources( planet ) {
 		// ideally we want enough resources to do our job and grow the maximum allowed amount.
 		const growth = Math.min( 
-			planet.energy / ( this.gf * (this.size / this.sect ) ), 
+			(planet.throttle_speed * planet.energy) / ( this.gf * (this.size / this.sect ) ), 
 			1.0 - this.val 
 			);
-		let ratio_requesting = planet.spending * ( this.val + growth );
+		let ratio_requesting = planet.throttle_input * ( this.val + growth );
 		for ( let k of Object.keys(this.inputs) ) {
 			this.resource_estm[k] = this.inputs[k] * this.size * ratio_requesting;
 		}
+		if ( this.log ) { console.log('Estimate, growth:',growth,'ratio_requesting:',ratio_requesting); }
 		return this.resource_estm;
 		}	
 				

@@ -60,9 +60,16 @@ export default class Planet {
 	acct_ledger = []; // list of { name, ... optional resources types ... }
 	acct_total = {}; // totalled values of acct_ledger. This includes stuff not in resource_rec and output_rec
 	acct_hist = []; 
+	// throttling controls how resource input and output works for zones.
+	// throttling takes time shift between positions, handled by MoveThrottle().
+	throttle = 0.5; // where we are
+	throttle_target = 0.5; // where we want to be
+	throttle_speed = 1.0; // zone growth modifier
+	throttle_output = 1.0; // zone output modifier
+	throttle_input = 1.0; // zone resource consumption modifier
 	
 	tax_rate = 0.2;
-	spending = 1.0;
+	spending = 0.5;
 	// max spending may be modable with technology improvements. 
 	// zones support >100% spending values, but there is no 
 	// penalty or cost increase for going over 100% yet.
@@ -281,6 +288,27 @@ export default class Planet {
 		return planet;
 		}
 								
+	SetThrottle( v ) {
+		this.throttle_target = v.clamp(0,1);
+		}
+	
+	// call this every turn
+	MoveThrottle() {
+		if ( this.throttle_target == this.throttle ) { return; }
+		let diff = Math.min( 0.025, Math.abs( this.throttle_target - this.throttle ) );
+		this.throttle += this.throttle_target > this.throttle ? diff : -diff;
+		if ( this.throttle < 0.5 ) {
+			this.throttle_input = utils.MapToRange( this.throttle, 0, 0.5, 0.25, 1.0 );
+			this.throttle_output = utils.MapToRange( this.throttle, 0,  0.5, 0.5, 1.0 );
+			this.throttle_speed = utils.MapToRange( this.throttle, 0,  0.5, 0.5, 1.0 );
+			}
+		else {
+			this.throttle_input = utils.MapToRange( this.throttle,  0.5, 1, 1.0, 2.0 );
+			this.throttle_output = utils.MapToRange( this.throttle,  0.5, 1, 1.0, 1.5 );
+			this.throttle_speed = utils.MapToRange( this.throttle,  0.5, 1, 1.0, 1.5 );
+			}
+		}
+		
 	// returns zone on success, false on failure
 	AddZone( key ) {
 		let o = new Zone(key);
@@ -493,6 +521,7 @@ export default class Planet {
 		}
 	set slider_spending(x) { 
 		this.spending = parseFloat(x).clamp(0,this.max_spending);
+		this.SetThrottle(this.spending);
 		}
 	set slider_taxrate(x) { 
 		this.tax_rate = parseFloat(x);
@@ -967,7 +996,9 @@ export default class Planet {
 		return null;
 		}
 		
-	DoZoning() { 
+	DoZoning() {
+		// nudge the throttle towards its goal
+		this.MoveThrottle();
 		// do mergers, if any. find all eligible zones for merging:
 		const adaptation = this.Adaptation();
 		let zones = this.zones.filter( z => z.val===1 && z.sect < z.maxsect && z.sect < adaptation ).sort( (a,b) => b.sect - a.sect );

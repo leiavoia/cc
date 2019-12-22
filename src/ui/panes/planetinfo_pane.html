@@ -55,6 +55,13 @@
 				<select value.bind="planet.ship_dest">
 					<option repeat.for="option of ship_dest_opts" model.bind="option.value">${option.name}</option>
 				</select>
+				
+				<h2>Economy</h2>
+				<p>Throttle: ${planet.throttle + 0.5|percent}%</p>
+				<p>Productivity: ${planet.throttle_output|percent}%</p>
+				<p>Resource Consumption: ${planet.throttle_input|percent}%</p>
+				<p>Zone Growth Speed: ${planet.throttle_speed|percent}%</p>
+				
 			</div>
 			
 			<!-- <div class="content financial">
