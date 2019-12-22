@@ -104,7 +104,7 @@ export class PlanetDetailPane {
 		if ( i >= planets.length ) { i = 0; }
 		this.app.SwitchSideBar( planets[i] );
 		if ( this.app.main_panel_mode == "planetinfo" ) { 
-			this.app.SwitchMainPanel( "planetinfo", planets[i] );
+			this.app.SwitchMainPanel( "planetinfo", planets[i], null, false, false );
 			}		
 		}
 
@@ -114,7 +114,7 @@ export class PlanetDetailPane {
 		if ( i < 0 ) { i = planets.length-1; }
 		this.app.SwitchSideBar( planets[i] );
 		if ( this.app.main_panel_mode == "planetinfo" ) { 
-			this.app.SwitchMainPanel( "planetinfo", planets[i] );
+			this.app.SwitchMainPanel( "planetinfo", planets[i], null, false, false );
 			}
 		}
 		

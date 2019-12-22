@@ -1,13 +1,10 @@
 <template>
-<!--	<require from="./converters/percent"></require>
-	<require from="./converters/round"></require>-->
-
 	<div id="planetinfo_pane" class="pane flex">
 		<header>
 			<p style="float:right;"><a href="#"  click.delegate="ClosePanel()" class="button big bad">CLOSE</a></p>
 			<h1>${planet.name}</h1>
 		</header>
-			
+
 		<main class="" if.bind="planet.owner">
 			<div class="content data" style="min-width: 45%;">
 				<h2>Accounting</h2>
