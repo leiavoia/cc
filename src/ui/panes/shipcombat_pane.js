@@ -92,7 +92,8 @@ export class ShipCombatPane {
 			this.app.game.QueueGroundCombat(
 				this.combatdata.attacker, 
 				this.combat.planet,
-				'front'
+				'front', // next in queue
+				true // force prompt
 				);
 			}
 		// tell game this battle is over and continue with other battles

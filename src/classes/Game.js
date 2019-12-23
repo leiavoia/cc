@@ -577,15 +577,16 @@ export default class Game {
 		this.audiences.push({ civ, data, label: `${civ.name} audience` });	
 		}
 		
-	QueueShipCombat( attacker, defender, planet ) {
+	QueueShipCombat( attacker, defender, planet, force_prompt=false ) {
 		this.shipcombats.push({ attacker, defender, planet,
 			label: `${attacker.owner.name} attacks ${defender.owner.name} at ${attacker.star.name}`
 			});	
 		}
 		
-	QueueGroundCombat( attacker, planet, end = 'back' ) {
+	QueueGroundCombat( attacker, planet, end = 'back', force_prompt=false ) {
 		let data = { attacker, planet,
-			label: `${attacker.owner.name} invades planet ${planet.name}`
+			label: `${attacker.owner.name} invades planet ${planet.name}`,
+			prompt:force_prompt
 			};
 		if ( end === 'back' ) { this.groundcombats.push(data); }	
 		else { this.groundcombats.unshift(data); }	
@@ -786,7 +787,7 @@ export default class Game {
 			return;
 			}			
 		// if player is the defender, present mandatory battle
-		else if ( c.planet.owner.is_player ) { 
+		else if ( c.planet.owner.is_player || c.prompt ) { 
 			this.app.ShowDialog(
 				`Invasion of ${c.planet.star.name}`,
 				`<p class="centered">${c.label}</p>`,
