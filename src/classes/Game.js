@@ -276,15 +276,15 @@ export default class Game {
 				c.homeworld.star.UpdateOwnershipTitleColorCSS();				
 				} 
 			}
-		this.myciv.race.env.atm = this.app.options.setup.race_atm || 2;
-		this.myciv.race.env.temp = this.app.options.setup.race_temp || 2;
-		this.myciv.race.env.grav = this.app.options.setup.race_grav || 2;
-		this.myciv.race.env.adaptation = this.app.options.setup.race_adapt || 1;
+		this.myciv.race.env.atm = parseInt( this.app.options.setup.race_atm || 2 );
+		this.myciv.race.env.temp = parseInt( this.app.options.setup.race_temp || 2 );
+		this.myciv.race.env.grav = parseInt( this.app.options.setup.race_grav || 2 );
+		this.myciv.race.env.adaptation = parseInt( this.app.options.setup.race_adapt || 1 );
 		let homeworld = this.myciv.planets[0];
 		homeworld.name = this.app.options.setup.homeworld || 'Earth'
-		homeworld.atm = this.app.options.setup.race_atm || 2;
-		homeworld.temp = this.app.options.setup.race_temp || 2;
-		homeworld.grav = this.app.options.setup.race_grav || 2;
+		homeworld.atm = this.myciv.race.env.atm;
+		homeworld.temp = this.myciv.race.env.temp;
+		homeworld.grav = this.myciv.race.env.grav;
 		homeworld.energy = 1;
 		homeworld.star.name = this.app.options.setup.homestar || 'Sol';
 		homeworld.star.UpdateOwnershipTitleColorCSS();
