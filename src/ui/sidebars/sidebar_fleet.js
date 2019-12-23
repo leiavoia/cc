@@ -1,4 +1,5 @@
 import Fleet from '../../classes/Fleet';
+import GroundCombat from '../../classes/GroundCombat';
 import {bindable} from 'aurelia-framework';
 import * as Signals from '../../util/signals';
 
@@ -446,13 +447,9 @@ export class FleetDetailPane {
 			}
 		else { cb(); }
 		}
-	CalculateChanceOfGroundVictory( p ) { 
-		let trooplist = this.fleet.ListGroundUnits();
-		let f = ( a, b ) => a + ( b.bp.maxdmg * b.bp.hp );			
-		let our_avg = trooplist.length ? (trooplist.reduce( f, 0 ) / trooplist.length) : 0;
-		let their_avg = p.troops.length ? (p.troops.reduce( f, 0 ) / p.troops.length) : 0;
-		let total = our_avg + their_avg;
-		return total ? ( our_avg / total ) : 1;
+	CalculateChanceOfGroundVictory( p ) {
+		let gc = new GroundCombat( this.fleet, p );
+		return gc.teams[0].odds;
 		}
 		
 	// closes the troop transfer subscreen
