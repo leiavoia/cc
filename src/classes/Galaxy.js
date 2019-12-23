@@ -268,10 +268,10 @@ export default class Galaxy {
 	AddStandardSetup( num_civs=1 ) {
 		this.MakeCivs( num_civs );
 		// settle some planets
-		let star_i = this.stars.length-1;
+		let star_i = this.stars.length;
 		this.stars.shuffle();
 		for ( let c of this.civs ) { 
-			while ( star_i >= 0 ) { 
+			while ( --star_i >= 0 ) { 
 				let s = this.stars[star_i];
 				if ( s.planets.length ) { 
 					let p = s.planets[0];
@@ -286,12 +286,12 @@ export default class Galaxy {
 					else { p.ZonePlanet(); }
 					this.AssignStartingFleet( c, s );
 					c.homeworld = p;
-					star_i--;
 					break;
 					}
-				star_i--;
 				}
 			}
+		// no homeworld, no shoes, no service
+		this.civs = this.civs.filter( c => c.homeworld );
 		return this.civs[0].homeworld.star;
 		}	
 		
