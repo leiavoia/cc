@@ -270,7 +270,7 @@ export default class Game {
 				Math.pow( Math.abs( c.color_rgb[1] - this.myciv.color_rgb[1] ), 2 ) +
 				Math.pow( Math.abs( c.color_rgb[2] - this.myciv.color_rgb[2] ), 2 )
 				);
-			if ( diff < 80 ) {
+			if ( diff < 100 ) {
 				c.color_rgb = Civ.PickNextStandardColor();
 				c.color = utils.RGBArrayToHexColor(c.color_rgb);
 				c.homeworld.star.UpdateOwnershipTitleColorCSS();				
