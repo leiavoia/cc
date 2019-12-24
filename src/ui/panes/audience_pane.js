@@ -11,6 +11,7 @@ export class AudiencePane {
 		this.options = [];	
 		this.app = null;
 		this.civ = null;
+		this.acct = null; // diplomatic contact account
 		this.data = null; // extra data in case we need to set up a situation
 		this.on_exit = ''; // can be '' or 'diplo' or any other main panel 
 		// --------------------
@@ -32,19 +33,19 @@ export class AudiencePane {
 		this.civ = data.obj;
 		this.data = data.data;
 		
-		const acct = this.civ.diplo.contacts.get(this.app.game.myciv);
-		if ( !acct ) {
+		this.acct = this.civ.diplo.contacts.get(this.app.game.myciv);
+		if ( !this.acct ) {
 			this.app.CloseMainPanel();
 			return false;
 			}
-		this.comm = acct.comm;
+		this.comm = this.acct.comm;
 		this.their_text = '';
 		this.our_text = '';
 		this.GetResponse();
 		this.SetStandardOptions();
 		
 		// show anger if at war
-		if ( acct && acct.treaties.has('WAR') ) {
+		if ( this.acct && this.acct.treaties.has('WAR') ) {
 			this.mood = 'mad';
 			}			
 		// check for trade offers
@@ -163,9 +164,8 @@ export class AudiencePane {
 		this.their_text = null;
 		this.our_text = `<p>Which should we end?</p>`;
 		this.options = [];
-		const acct = this.civ.diplo.contacts.get(this.app.game.myciv);
-		if ( acct ) { 
-			for ( const [k,v] of acct.treaties ) { 
+		if ( this.acct ) { 
+			for ( const [k,v] of this.acct.treaties ) { 
 				this.options.push( { text:v.label, func: () => this.EndTreaty(k) } );
 				}
 			}	
@@ -181,16 +181,15 @@ export class AudiencePane {
 		}
 		
 	SetStandardOptions() { 
-		const acct = this.civ.diplo.contacts.get(this.app.game.myciv);
 		this.options = [];
-		if ( acct && this.comm > 0 ) { 
-			if ( acct.attspan >= 0.05 ) {
+		if ( this.acct && this.comm > 0 ) { 
+			if ( this.acct.attspan >= 0.05 ) {
 				this.options.push({ text:"Let's make a deal.", func: () => this.StartTradeOffer() });
 				}
-			if ( acct.treaties.size && !acct.treaties.has('WAR') ) {
+			if ( this.acct.treaties.size && !this.acct.treaties.has('WAR') ) {
 				this.options.push({ text:"End Treaty", func: () => this.ListTreatiesToEnd() });
 				}
-			if ( !acct.treaties.has('WAR') ) { 
+			if ( !this.acct.treaties.has('WAR') ) { 
 				this.options.push({ text:"Declare War", func: () => this.DeclareWar() });
 				}
 			}
@@ -284,10 +283,9 @@ export class AudiencePane {
 		}
 		
 	Exit() { 
-		const acct = this.civ.diplo.contacts.get(this.app.game.myciv);
-		if ( acct ) { // cost of audience 
-			acct.attspan -= 0.05;
-			if ( acct.attspan < 0 ) { acct.attspan = 0; }
+		if ( this.acct ) { // cost of audience 
+			this.acct.attspan -= 0.05;
+			if ( this.acct.attspan < 0 ) { this.acct.attspan = 0; }
 			}	
 		this.app.SwitchMainPanel( this.on_exit );
 		}

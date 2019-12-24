@@ -1,5 +1,5 @@
 <template containerless>
-	<div id="audience_pane" class="pane" if.bind="civ">
+	<div id="audience_pane" class="pane" if.bind="civ && acct">
 	
 		<div id="audience_them" css="border-color: rgb( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]} ); 
 		background-color: rgba( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]}, 0.55 );">
@@ -13,9 +13,9 @@
 				<button class="big" if.bind="!ambassador_present" click.delegate="StartMeeting()" >Audience</button>
 				<button class="big alt" if.bind="ambassador_present" click.delegate="Exit()" >Leave</button>
 			</p>
-			<div class="love_nub"><div class="nub" css="margin-left: calc(${civ.diplo.contacts.get(app.game.myciv).lovenub} * (100% - 6em));">${civ.diplo.contacts.get(app.game.myciv).lovenub|loveNub}</div></div>
+			<div class="love_nub"><div class="nub" css="margin-left: calc(${acct.lovenub} * (100% - 6em));">${acct.lovenub|loveNub}</div></div>
 			<p>
-				<progress style="width: 100%; height: 8px; margin: 2px 0; color: 181;" value.bind="civ.diplo.contacts.get(app.game.myciv).attspan"></progress>
+				<progress style="width: 100%; height: 8px; margin: 2px 0; color: 181;" value.bind="acct.attspan"></progress>
 				<br/>Attention Span
 			</p>
 			<div class="trade_item_list" if.bind="app.game.myciv.diplo.contacts.get(civ).treaties.size">
@@ -23,7 +23,7 @@
 					${treaty.label}
 				</div>
 			</div>
-			<p>
+			<p if.bind="app.options.debug">
 				Communication: ${comm | starRating : '5' : '★' : '' : 'None' }<br/>
 				Preferred Habitat: ${civ.race.env.atm} Atmosphere, ${civ.race.env.temp} Temperature, ${civ.race.env.grav} Gravity<br/>
 				Style: ${c.diplo.style|round:2}<br/>
@@ -55,7 +55,7 @@
 		<!-- CREATE OFFER -->
 		<div id="audience_us" class="createoffer" if.bind="ambassador_present && mode=='create_offer'">
 			<!-- annoyed - go away -->
-			<template if.bind="civ.diplo.contacts.get(app.game.myciv).attspan < 0.05" containerless>
+			<template if.bind="acct.attspan < 0.05" containerless>
 				<div id="speech_them" class="fadeIn" css="color: ${civ.color};">
 					<p><b style="font-weight:bold;">${civ.name} Ambassador:</b><p>
 					<div>
@@ -65,7 +65,7 @@
 				</div>
 			</template>
 			<!-- lets make a deal -->
-			<template if.bind="civ.diplo.contacts.get(app.game.myciv).attspan >= 0.05" containerless>
+			<template if.bind="acct.attspan >= 0.05" containerless>
 				<div>
 					<button class="right bad" click.delegate="ReturnToMainMenu()">CANCEL</button>
 					<h2>Create an Offer</h2>
@@ -159,7 +159,7 @@
 			<p class="button_rack">
 				<button click.delegate="AcceptOffer()" class="big">Accept</button>
 				<button click.delegate="DeclineOffer()" class="big bad">Decline</button>
-				<button click.delegate="CounterOffer()" class="big alt ${civ.diplo.contacts.get(app.game.myciv).attspan < 0.05 ? 'disabled' : ''}">Counter-Offer</button>
+				<button click.delegate="CounterOffer()" class="big alt ${acct.attspan < 0.05 ? 'disabled' : ''}">Counter-Offer</button>
 			</p>	
 		</div>
 		
