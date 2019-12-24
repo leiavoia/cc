@@ -627,7 +627,7 @@ export class AIDefenseObjective extends AIObjective {
 			// find all fleets that can help defend
 			let helpers = [];
 			for ( let f of civ.fleets ) { 
-				if ( !f.dest && f.fp && f.star && !f.killme && !f.mission ) { 
+				if ( !f.dest && f.fp && f.star && !f.killme && !f.mission && !f.ai ) { 
 					// don't peel off ships from high-value systems
 					// or systems already under significant threat
 					if ( f.star.objtype == 'star' ) {
@@ -813,12 +813,14 @@ export class AIOffenseObjective extends AIObjective {
 						let difficulty = defender.milval / civ.ai.total_milval;
 						score -= 30 * difficulty * (1-civ.ai.strat.risk);
 						}
+					else { score += 5; }
 					// ground forces to overcome?
 					if ( p.troops.length ) { 
 						// same problem here as with calculating ship strength
 						let difficulty = p.troops.length / civ.ai.total_troops;
 						score -= 30 * difficulty * (1-civ.ai.strat.risk);
 						}
+					else { score += 5; }
 					// we already have a foothold there?
 					if ( p.star.accts.has(civ) ) { score *= 1.5; }
 					// already have troops available?
@@ -1792,7 +1794,7 @@ export class AIInvadeObjective extends AIObjective {
 		if ( !star ) { return; }
 		// make a list of nearest systems and peel off reinforcements.
 		// we need reinforcements *fast*
-		let fleets = this.civ.AI_AvailableFleets( star, within_time ).filter( f => f.fp && f.MilvalAvailable() );
+		let fleets = this.civ.AI_AvailableFleets( star, within_time ).filter( f => !f.ai && f.fp && f.MilvalAvailable() );
 		if ( fleets.length ) { 
 			// time is of the essence
 			fleets.sort( (a,b) => { 

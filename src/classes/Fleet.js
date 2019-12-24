@@ -426,6 +426,14 @@ export default class Fleet {
 		if ( this.ai && this.ai.target == fleet ) { return true; }
 		// space monsters always attack; its what they live for
 		if ( this.owner.race.is_monster || fleet.owner.race.is_monster ) { return true; }
+		// before we check the diplomatic situation, we may be attempting a surprise attack.
+		// Check to see if we can take the fleet and planet before committing to diplomatic suicide.
+		if ( this.ai && this.ai.type == 'invade' && this.ai.target.star == this.star ) {
+			// can't handle planetary invasion
+			if ( !this.AIWantToInvadePlanet( this.ai.target ) ) { return false; }
+			// can't handle opposing fleet
+			return this.fp_remaining >= fleet.fp_remaining;
+			}
 		// check treaties
 		const contact = this.owner.diplo.contacts.get(fleet.owner);
 		if ( contact && contact.treaties.has('NON_AGGRESSION') ) { return false; }		
@@ -466,7 +474,7 @@ export default class Fleet {
 		// if ( contact && contact.treaties.has('NON_AGGRESSION') ) { return false; }		
 		// if ( contact && contact.treaties.has('CEASEFIRE') ) { return false; }
 		// see: AI::AI_TroopsNeededToInvade
-		let invasion_pow = Math.ceil( planet.troops.length * (1.25 - this.owner.ai.strat.risk * 0.5) ) || 1;
+		let invasion_pow = Math.ceil( planet.troops.length * (1.25 - this.owner.ai.strat.risk * 0.5) ) || 0;
 		return this.ai 
 			&& this.ai.type == 'invade'
 			&& this.ai.target == planet
