@@ -1104,6 +1104,30 @@ export class AIPlanetsObjective extends AIObjective {
 			// 		}
 			// 	}
 
+				
+			// checks to see if we have resources to build a blueprint for ship or groundunit	
+			let ShipICanActuallyBuild = bp => { 
+				for ( let k in bp.cost ) {
+					if ( civ.resource_supply[k] < 1.0 ) { return false; }
+					if ( civ.resources[k] < 1.0 ) { return false; }
+					}
+				return true;
+				}
+				
+			// purge unbuildable items
+			if ( p.prod_q.length > 1 ) { 
+				for ( let i=p.prod_q.length-1; i >= 0; i-- ) { 
+					if ( p.prod_q[i].type=='ship' || p.prod_q[i].type=='groundunit' ) {
+						for ( let k in p.prod_q[i].obj.cost ) {
+							if ( civ.resources[k] < 1 ) { 
+								p.prod_q.splice(i,1);
+								break;
+								}
+							}
+						}
+					}
+				}
+				
 			// in order to decide what to build here,
 			// we create a custom weighting function based 
 			// on current supply and demand and then pick something
@@ -1135,7 +1159,10 @@ export class AIPlanetsObjective extends AIObjective {
 				let picker = new RandomPicker(weights);
 				return picker.Pick();
 				};
-				
+			
+			let max_ship_labor = p.output_rec['ship'];
+			let max_def_labor = p.output_rec['def'];
+			
 			if ( p.prod_q.length <= 2 ) { // dont overload the queue
 				let thing_to_build = RollForBuildItem();
 				if ( thing_to_build ) { 
@@ -1143,7 +1170,7 @@ export class AIPlanetsObjective extends AIObjective {
 						case 'colony_ships' : { 
 							for ( let bp of civ.ship_blueprints ) { 
 								if ( bp.colonize ) { 
-									p.AddBuildQueueShipBlueprint( bp );
+									p.AddBuildQueueShipBlueprint( bp, Math.ceil( ( max_ship_labor / bp.cost.labor ) ) );
 									civ.ai.needs.colony_ships--;
 									break;
 									}
@@ -1154,18 +1181,19 @@ export class AIPlanetsObjective extends AIObjective {
 							// find the best combat blueprint appropriate for civ planet. 
 							// TODO: AI build preferance algorithm goes here ;-)
 							if ( combat_bps.length ) { 
-								let bp = combat_bps[ utils.RandomInt(0, combat_bps.length-1) ];
-								p.AddBuildQueueShipBlueprint( bp );
-								civ.ai.needs.combat_ships -= bp.milval;
+								let bp = combat_bps.filter(ShipICanActuallyBuild).pickRandom();
+								if ( bp ) { 
+									p.AddBuildQueueShipBlueprint( bp, Math.ceil( ( max_ship_labor / bp.cost.labor ) ) );
+									civ.ai.needs.combat_ships -= bp.milval;
+									}
 								}					
 							break;
 							}
 						case 'troop_ships' : { 
 							// find the best combat blueprint for troopships
-							let bps = civ.ship_blueprints.filter( bp => bp.role=='carrier' );
-							if ( bps.length ) { 
-								let bp = bps[ utils.RandomInt(0, bps.length-1) ];
-								p.AddBuildQueueShipBlueprint( bp );
+							let bp = civ.ship_blueprints.filter( bp => bp.role=='carrier' ).filter(ShipICanActuallyBuild).pickRandom();
+							if ( bp ) { 
+								p.AddBuildQueueShipBlueprint( bp, Math.ceil( ( max_ship_labor / bp.cost.labor ) ) );
 								civ.ai.needs.troop_ships--;
 								}					
 							break;
@@ -1173,26 +1201,26 @@ export class AIPlanetsObjective extends AIObjective {
 						case 'troops' : { 
 							// find the best troop blueprint
 							if ( civ.groundunit_blueprints.length ) { 
-								let bp = civ.groundunit_blueprints[civ.groundunit_blueprints.length-1];
-								p.AddBuildQueueGroundUnitBlueprint( bp );
-								civ.ai.needs.troops--;
+								let bp = civ.groundunit_blueprints.filter(ShipICanActuallyBuild).pickRandom();
+								if ( bp ) { 
+									p.AddBuildQueueGroundUnitBlueprint( bp, Math.ceil( ( bp.cost.labor / max_def_labor || 1000000 ) ) );
+									civ.ai.needs.troops--;
+									}
 								}						
 							break;
 							}
 						case 'research_ships' : { 
-							let bps = civ.ship_blueprints.filter( bp => bp.role=='research' );
-							if ( bps.length ) { 
-								let bp = bps[ utils.RandomInt(0, bps.length-1) ];
-								p.AddBuildQueueShipBlueprint( bp );
+							let bp = civ.ship_blueprints.filter( bp => bp.role=='research' ).filter(ShipICanActuallyBuild).pickRandom();
+							if ( bp ) { 
+								p.AddBuildQueueShipBlueprint( bp, Math.ceil( ( max_ship_labor / bp.cost.labor ) ) );
 								civ.ai.needs.research_ships--;
 								}					
 							break;
 							}
 						case 'scout_ships' : { 
-							let bps = civ.ship_blueprints.filter( bp => bp.role=='scout' );
-							if ( bps.length ) { 
-								let bp = bps[ utils.RandomInt(0, bps.length-1) ];
-								p.AddBuildQueueShipBlueprint( bp );
+							let bp = civ.ship_blueprints.filter( bp => bp.role=='scout' ).filter(ShipICanActuallyBuild).pickRandom();
+							if ( bp ) { 
+								p.AddBuildQueueShipBlueprint( bp, Math.ceil( ( max_ship_labor / bp.cost.labor ) ) );
 								civ.ai.needs.scout_ships--;
 								}					
 							break;

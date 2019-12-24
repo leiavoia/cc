@@ -408,14 +408,14 @@ export default class Planet {
 			}
 		}
 		
-	AddBuildQueueShipBlueprint( bp ) { 
-		// if ( !this.output_rec.ship ) { return false; }
+	AddBuildQueueShipBlueprint( bp, qty =1 ) { 
+		qty = utils.Clamp( qty, 1, 5 );
 		let item = {
 			type: 'ship',
 			obj: bp,
 			name: bp.name,
 			cost: bp.cost,
-			qty: 1,
+			qty: qty,
 			turns_left: ( Math.min( 999, Math.ceil( bp.cost.labor/(this.output_rec.ship||0.001) ) ) || '-'),
 			pct: 0
 			};
@@ -424,14 +424,14 @@ export default class Planet {
 		return true;
 		}
 		
-	AddBuildQueueGroundUnitBlueprint( bp ) { 
-		// if ( !this.output_rec.def ) { return false; }
+	AddBuildQueueGroundUnitBlueprint( bp, qty = 1 ) { 
+		qty = utils.Clamp( qty, 1, 5 );
 		let item = {
 			type: 'groundunit',
 			obj: bp,
 			name: bp.name,
 			cost: bp.cost,
-			qty: 1,
+			qty: qty,
 			turns_left: ( Math.min( 999, Math.ceil( bp.cost.labor/(this.output_rec.def||0.001) ) ) || '-'),
 			pct: 0
 			};
