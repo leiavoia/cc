@@ -165,17 +165,17 @@ let anom_list = {
 		onComplete: function (fleet) { 
 			// find the next biology or engineering tech available
 			let best_node = null;
-			let max_rp = 4 * (fleet.owner.tech.current_project ? fleet.owner.tech.current_project.node.rp : 200);
-			for ( let [k,n] of fleet.owner.tech.nodes_avail ) {
-				if ( n.node.tags.contains('biology') || n.node.tags.contains('engineering') ) {
-					if ( ( !best_node || n.node.rp < best_node.rp ) && n.node.rp <= max_rp ) { 
-						best_node = n.node;
+			let max_rp = 4 * (fleet.owner.tech.avail.length ? fleet.owner.tech.avail[0].node.rp : 200);
+			for ( let t of fleet.owner.tech.avail ) {
+				if ( t.node.tags.contains('biology') || t.node.tags.contains('engineering') ) {
+					if ( ( !best_node || t.node.rp < best_node.node.rp ) && t.node.rp <= max_rp ) { 
+						best_node = t;
 						}
 					}
 				}
 			if ( best_node ) {
 				fleet.owner.CompleteTechNode( best_node );
-				this.post_desc += ` Studying the ship and its contents has taught us <b>${best_node.name}</b> technology.`;
+				this.post_desc += ` Studying the ship and its contents has taught us <b>${best_node.node.name}</b> technology.`;
 				}
 			else {
 				this.post_desc += ` However, there was nothing to learn from this curiosity.`;
@@ -199,18 +199,18 @@ let anom_list = {
 		onComplete: function (fleet) {
 			// find the next propulsion or armor or shield or weapon tech available
 			let best_node = null;
-			let max_rp = 2 * (fleet.owner.tech.current_project ? fleet.owner.tech.current_project.node.rp : 200);
-			for ( let [k,n] of fleet.owner.tech.nodes_avail ) {
-				if ( n.node.tags.contains('propulsion') || n.node.tags.contains('armor') 
-					|| n.node.tags.contains('weapon') || n.node.tags.contains('shield') ) {
-					if ( ( !best_node || n.node.rp < best_node.rp ) && n.node.rp <= max_rp ) { 
-						best_node = n.node;
+			let max_rp = 4 * (fleet.owner.tech.avail.length ? fleet.owner.tech.avail[0].node.rp : 200);
+			for ( let t of fleet.owner.tech.avail ) {
+				if ( t.node.tags.contains('propulsion') || t.node.tags.contains('armor') 
+					|| t.node.tags.contains('weapon') || t.node.tags.contains('shield') ) {
+					if ( ( !best_node || t.node.rp < best_node.node.rp ) && t.node.rp <= max_rp ) { 
+						best_node = t;
 						}
 					}
 				}
 			if ( best_node ) {
 				fleet.owner.CompleteTechNode( best_node );
-				this.post_desc += ` Studying the probe has taught us <b>${best_node.name}</b> technology.`;
+				this.post_desc += ` Studying the probe has taught us <b>${best_node.node.name}</b> technology.`;
 				}
 			else {
 				this.post_desc += ` However, there was nothing to learn.`;

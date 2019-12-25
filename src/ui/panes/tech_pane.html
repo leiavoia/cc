@@ -2,8 +2,8 @@
 	<div id="tech_pane" class="pane flex">
 		<header>
 			<p class="button_rack marginless" style="float:right;">
-				<button click.delegate="ChangeMode('available')" class="big ${mode=='available'?'alt':'cool'}">AVAILABLE</button>
-				<button click.delegate="ChangeMode('completed')" class="big ${mode=='completed'?'alt':'cool'}">COMPLETED</button>
+				<button click.delegate="ChangeMode('available')" class="big ${mode=='available'?'alt':'cool'}" if.bind="tech_compl.length">AVAILABLE</button>
+				<button click.delegate="ChangeMode('completed')" class="big ${mode=='completed'?'alt':'cool'}" if.bind="tech_compl.length">COMPLETED</button>
 				<button click.delegate="ClosePanel()" class="big bad">CLOSE</button>
 			</p>
 			<h1>Research</h1>
@@ -13,55 +13,60 @@
 			<div id="available" class="offset techlist" if.bind="mode=='available'">
 				<p class="marginless" style="float:right"><b class="good">${app.game.myciv.research_income||0|round} RP</b> /turn</p>
 				<h2>Available</h2>
-				<p if.bind="!nodes_avail.length" class="bold center">No projects available</p>
+				<p if.bind="!app.game.myciv.tech.avail.length" class="bold center">No projects available</p>
 				<div 
-					repeat.for="n of nodes_avail" 
-					class="${n == app.game.myciv.tech.current_project ? 'hilite' : ''}"
-					click.delegate="ClickAvailableTech(n)"
+					repeat.for="t of tech_avail" 
+					class="${t == featured_node ? 'hilite' : ''}"
+					click.delegate="ClickAvailableTech(t)"
 					>
 					<div class="tagicons">
-						<span class="tagicon ${n.node.tags[0]}"></span>
+						<span class="tagicon ${t.node.tags[0]}"></span>
 					</div>
-					<p>${n.node.name}</p>
+					<span class="button_rack">
+						<button class="cool" click.delegate="MoveTechDown(t)" title="Move Down (CTRL-Down)">▼</button>
+						<button class="cool" click.delegate="MoveTechUp(t)" title="Move Up (CTRL-Up)">▲</button>
+						<button class="cool" click.delegate="MoveTechFirst(t)" title="Top Priority (SHIFT-Up)">🔝</button>
+					</span>
+					<p>${t.node.name}</p>
 					<p class="subtext">
 						<!-- if researching, show turns remaining -->
 						<span if.bind="app.game.myciv.research_income">
-							<b if.bind="n.rp">
-								${(n.node.rp - n.rp) / app.game.myciv.research_income | ceil}
+							<b if.bind="t.rp">
+								${(t.node.rp - t.rp) / app.game.myciv.research_income | ceil}
 							</b>
 							<!-- otherwise show turns estimated -->
 							<b else>
-								${n.node.rp / app.game.myciv.research_income | ceil}
+								${t.node.rp / app.game.myciv.research_income | ceil}
 							</b> Turns  &nbsp;&nbsp; 
 						</span>
-						<b>${n.node.rp|round}</b> RP  &nbsp;&nbsp; 
+						<b>${t.node.rp|round}</b> RP  &nbsp;&nbsp; 
 					</p>
-					<progress value="${n.rp}" max="${n.node.rp}" if.bind="n.rp"></progress>
+					<progress value="${t.rp}" max="${t.node.rp}" if.bind="t.rp"></progress>
 				</div>
 			</div>
 			
 			<div id="completed" class="offset techlist" if.bind="mode=='completed'">
 				<h2>Completed</h2>
-				<div repeat.for="n of nodes_compl" click.delegate="ClickCompletedTech(n)" class="${n == featured_node ? 'hilite' :''}">
+				<div repeat.for="t of tech_compl" click.delegate="ClickCompletedTech(t)" class="${t == featured_node ? 'hilite' :''}">
 					<div class="tagicons">
-						<span class="tagicon ${n.tags[0]}"></span>
+						<span class="tagicon ${t.node.tags[0]}"></span>
 					</div>
-					<p>${n.name}</p>
+					<p>${t.node.name}</p>
 				</div>
 			</div>
 			
 			<div id="featured" class="offset" if.bind="featured_node">
-				<h2>${featured_node.name}</h2> 
+				<h2>${featured_node.node.name}</h2> 
 				<p class="tagicons">
-					<span repeat.for="t of featured_node.tags" class="tagicon ${t}">${t|uppercaseFirst}</span>
+					<span repeat.for="t of featured_node.node.tags" class="tagicon ${t}">${t|uppercaseFirst}</span>
 				</p>
-				<p class="desc bold good">${featured_node.rp} RP</p>
-				<!-- <img src.bind="featured_node.img" /> -->
-				<div class="desc" innerhtml.bind="featured_node.desc"></div>
-				<template containerless if.bind="featured_node.yields.length > 1">
+				<p class="desc bold good">${featured_node.node.rp} RP</p>
+				<!-- <img src.bind="featured_node.node.img" /> -->
+				<div class="desc" innerhtml.bind="featured_node.node.desc"></div>
+				<template containerless if.bind="featured_node.node.yields.length > 1">
 					<p>Provides:</p>
 					<ul>
-						<li repeat.for="yield of featured_node.yields"> 
+						<li repeat.for="yield of featured_node.node.yields"> 
 							<b>${Techs[yield].name}</b>
 							${app.options.debug ? ('('+yield+')') : ''}
 							<br/>
@@ -69,11 +74,12 @@
 						</li>
 					</ul>
 				</template>
+				<p class="desc" if.bind="featured_node.source"><i>Acquired from the <b>${featured_node.source.name}</b></i></p>
 				<!-- "requires" section isnt necessary for player because because they can't see it unless its already unlocked -->
-				<template containerless if.bind="app.options.debug && featured_node.requires.length">
+				<template containerless if.bind="app.options.debug && featured_node.node.requires.length">
 					<p>Requires:</p>
 					<ul>
-						<li repeat.for="req of featured_node.requires">
+						<li repeat.for="req of featured_node.node.requires">
 							<b>${TechNodes[req].name}</b>
 							${app.options.debug ? ('('+req+')') : ''}
 						</li>

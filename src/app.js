@@ -428,6 +428,7 @@ export class App {
 		let newgame = null;
 		// rehydrate all objects
 		for ( let k in catalog ) {
+			if ( k == 'version' ) { continue; }
 			switch ( catalog[k]._classname ) {
 				case 'Game' : { catalog[k] = new Game(this,catalog[k]); newgame = catalog[k]; break; }
 				case 'Galaxy' : { catalog[k] = new Galaxy(catalog[k]); break; }
@@ -440,7 +441,7 @@ export class App {
 				case 'GroundUnit' : { catalog[k] = new GroundUnit(catalog[k]); break; }
 				case 'ShipBlueprint' : { catalog[k] = new ShipBlueprint(catalog[k]); break; }
 				case 'Ship' : { catalog[k] = new Ship(catalog[k]); break; }
-				default : { console.warn('Unhandled object type in LoadGame: ' + catalog[k]._classname ); }
+				default : { console.warn('Unhandled object type in LoadGame: ' + catalog[k]._classname); }
 				}
 			}
 		if ( newgame ) { 

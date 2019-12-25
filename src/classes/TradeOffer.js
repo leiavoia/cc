@@ -91,7 +91,7 @@ export default class TradeOffer {
 		for ( let i of items ) { 
 			switch ( i.type ) {
 				case 'technode': {
-					to.CompleteTechNode( i.obj, from, false );
+					to.CompleteTechNode( {node:i.obj, rp:i.obj.rp}, from, false );
 					break;
 					}
 				case 'cash': {

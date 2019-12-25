@@ -163,9 +163,9 @@
 					<span show.bind="app.game.myciv.resource_income[k] || app.game.myciv.resource_spent[k]" css="font-size: 80%; ${app.game.myciv.resource_income[k] - app.game.myciv.resource_spent[k] > 0 ? 'vertical-align:top;' : ''}">${app.game.myciv.resource_income[k] - app.game.myciv.resource_spent[k] > 0 ? '+' : ''}${app.game.myciv.resource_income[k] - app.game.myciv.resource_spent[k]|floor}</span></span>
 			</div>
 			<span class="sci tagicon research ">+${app.game.myciv.research_income|round:0}</span>
-			<span class="sci clickable" if.bind="app.game.myciv.tech.current_project" click.delegate="app.SwitchMainPanel('tech')">
-				${( app.game.myciv.tech.current_project.rp / app.game.myciv.tech.current_project.node.rp) | percent}% of 	
-				${app.game.myciv.tech.current_project.node.name}  
+			<span class="sci clickable" if.bind="app.game.myciv.tech.avail.length" click.delegate="app.SwitchMainPanel('tech')">
+				${(app.game.turn_num*0) + ( app.game.myciv.tech.avail[0].rp / app.game.myciv.tech.avail[0].node.rp) | percent}% of 	
+				${(app.game.turn_num?'':'') + app.game.myciv.tech.avail[0].node.name}  
 			</span>
 			<span if.bind="app.options.debug">ADAPT: ${app.game.myciv.race.env.adaptation}</span>
 			<span if.bind="app.options.debug">MAXSPD: ${app.game.myciv.max_ship_speed}</span>

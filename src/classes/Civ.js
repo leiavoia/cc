@@ -186,108 +186,100 @@ export default class Civ {
 	research_income = 0; // calculated per turn
 	
 	tech = {
-		techs: new Map(), // techkey => Tech
-		nodes_avail: new Map(), // nodekey => { node: TechNode, rp: 0 }
-		nodes_compl: new Map(), // nodekey => TechNode // [!]FIXME needs metadata to hold 'source'
-		current_project: null
+		techs: [], // links to items in the master Techs list
+		avail: [], // { node: <TechNode>, rp: <research point committed> }
+		avail_keys: {}, /// TechNode.key => bool
+		compl: [], // { node: <TechNode>, rp: <research point committed>, source: <civ_id or null> }
+		compl_keys: {}, /// TechNode.key => bool
+		Current() { return this.avail.length ? this.avail[0] : null; }
 		};
 		
 	// set the civ up with starting technology roster
 	InitResearch() { 
 		for ( let key in Tech.TechNodes ) { 
 			if ( !Tech.TechNodes[key].requires.length && !Tech.TechNodes[key].rp ) { 
-				this.CompleteTechNode( Tech.TechNodes[key], null, false );
+				this.CompleteTechNode( { node:Tech.TechNodes[key], rp:0, source:null}, null, false );
 				}
 			}
 		this.RecalcAvailableTechNodes();
-		this.AI_ChooseNextResearchProject();
-		}
-		
-	SelectResearchProject( key ) {
-		if ( this.tech.nodes_avail.has(key) ) { 
-			this.tech.current_project = this.tech.nodes_avail.get(key);
-			}
-		}
-		
-	AI_ChooseNextResearchProject() { 
-		if ( !this.tech.current_project && this.tech.nodes_avail.size ) { 
-			// TODO: AI personality will influence tech selection.
-			let SortFunc = (a,b) => a.node.rp - b.node.rp;
-			this.tech.current_project = 
-				Array.from( this.tech.nodes_avail.values() )
-				.sort(SortFunc).shift();
-			}	
 		}
 		
 	RecalcAvailableTechNodes() {
 		nodescannerloop:
 		for ( let key in Tech.TechNodes ) { 
 			// if it isn't in either of our lists ...
-			if ( !this.tech.nodes_avail.has(key) && !this.tech.nodes_compl.has(key) ) { 
+			if ( !this.tech.avail_keys[key] && !this.tech.compl_keys[key] ) { 
 				// check the prerequisites against our completed nodes
 				let t = Tech.TechNodes[key];
 				if ( t.requires && t.requires.length ) { 
 					for ( let req of t.requires ) { 
-						if ( !this.tech.nodes_compl.has(req) ) { 
+						if ( !this.tech.compl_keys[req] ) { 
 							continue nodescannerloop;
 							}
 						}
 					}
 				// all prerequisites met. add the node to available list
-				this.tech.nodes_avail.set( key, { node: t, rp: 0 } );
+				this.tech.avail.push( { node: t, rp: 0 } );
+				this.tech.avail_keys[key] = true;
 				}
+			}
+		// sort project list
+		if ( !this.is_player || ( App.instance.options.soak && App.instance.options.ai ) ) {
+			// TODO: sort according to AI preference
+			let SortFunc = (a,b) => a.node.rp - b.node.rp;
+			this.tech.avail.sort(SortFunc);
 			}
 		}
 		
 	DoResearch( app ) { 
 		let income = this.research_income;
 		this.research = this.research_income; // add to total for record keeping
-		// pick something to work on if i dont already have one
-		this.AI_ChooseNextResearchProject();
 		let sanity_counter = 0;
-		while ( income > 0.001 && this.tech.current_project && ++sanity_counter < 5 ) { 
-			let rp_applied = Math.min( income, this.tech.current_project.node.rp - this.tech.current_project.rp );
+		while ( income > 0.001 && this.tech.avail.length && ++sanity_counter < 5 ) { 
+			let rp_applied = Math.min( income, this.tech.avail[0].node.rp - this.tech.avail[0].rp );
 			income -= rp_applied;
-			this.tech.current_project.rp += rp_applied;
+			this.tech.avail[0].rp += rp_applied;
 			// project completed?
-			if ( this.tech.current_project.rp >= this.tech.current_project.node.rp ) { 					
+			if ( this.tech.avail[0].rp >= this.tech.avail[0].node.rp ) { 					
 				// wrap it up
-				let cp = this.tech.current_project;
-				this.CompleteTechNode( cp.node );
+				let cp = this.tech.avail[0];
+				this.CompleteTechNode( cp );
 				// share this tech with our alliance members
 				for ( let [civ,acct] of this.diplo.contacts ) { 
 					if ( acct.treaties.has('TECH_ALLIANCE') ) { 
-						civ.CompleteTechNode( cp.node, this, true );
+						civ.CompleteTechNode( cp, this, true );
 						}
 					}
 				}
 			}
 		}
 		
-	CompleteTechNode( node, source_civ = null, notify_player = true ) {
+	CompleteTechNode( tech /* entire data structure from tech.avail */, source_civ = null, notify_player = true ) {
 		// make note of source to handle tech-brokering agreements
-		node.source = source_civ; // /!\BUG!!! - SHARED DATA WITH ALL CIVS
+		tech.source = source_civ;
 		// dispurse any techs
-		if ( node.yields.length ) { 
-			for ( let t of node.yields ) { 
-				this.tech.techs.set(t,Tech.Techs[t]);
+		if ( tech.node.yields.length ) { 
+			for ( let t of tech.node.yields ) { 
+				this.tech.techs.push(Tech.Techs[t]);
 				Tech.Techs[t].onComplete( this ); // run callback
 				}
 			}
 		// move node into the completed pile
-		this.tech.nodes_compl.set(node.key, node );
-		this.tech.nodes_avail.delete(node.key);
-		this.RecalcAvailableTechNodes();
-		if ( this.tech.current_project && this.tech.current_project.node == node ) { 
-			this.tech.current_project = null;
-			this.AI_ChooseNextResearchProject();			
+		this.tech.compl.push( tech );
+		this.tech.compl_keys[tech.node.key] = true;
+		// remove from available pile
+		let i = this.tech.avail.findIndex( t => t.node.key == tech.node.key );
+		if ( i > -1 ) { 
+			this.tech.avail.splice( i, 1 );
+			delete( this.tech.avail_keys[tech.node.key] );
 			}
+		this.RecalcAvailableTechNodes();
 		// note to player
 		if ( notify_player && App.instance.game.myciv == this && App.instance.options.notify.research ) { 
 			App.instance.AddNote(
 				'good',
-				`${node.name} completed.`,
-				`Research on "${node.name}" has been completed`,
+				`${tech.node.name} completed.`,
+				`Research on "${tech.node.name}" has been completed`,
 				function(){App.instance.SwitchMainPanel('tech');}
 				);
 			}			
@@ -505,14 +497,9 @@ export default class Civ {
 			obj.diplo.contacts[ k.id ] = contact;
 			}
 		obj.tech = Object.assign( {}, this.tech ); // dont overwrite original object
-		obj.tech.techs = Array.from( this.tech.techs.keys() );	
-		obj.tech.nodes_avail = Array.from( this.tech.nodes_avail, ([k,v]) => [k,v.rp] );	
-		// completed technodes sometimes have a 'source' we need to keep track of,
-		// but this currently has a bug we need to fix later. Ideally, nodes_compl
-		// should not be a direct link to the TechNode, but instead should carry
-		// some metadata (including the source)
-		obj.tech.nodes_compl = Array.from( this.tech.nodes_compl.keys() ); // [!]FIXME	
-		obj.tech.current_project = this.tech.current_project ? this.tech.current_project.node.key : null;
+		obj.tech.techs = this.tech.techs.map( t => t.key );	
+		obj.tech.avail = this.tech.avail.map( t => ({key:t.key, rp:t.rp}) );
+		obj.tech.compl = this.tech.compl.map( t => ({key:t.key, rp:t.rp, source:(t.source ? t.source.id : null)}) );
 		obj.ai = this.ai.toJSON();
 		// optionally remove stat history to save space
 		if ( !App.instance.options.graph_history ) { 
@@ -562,25 +549,9 @@ export default class Civ {
 			}		
 		this.diplo.contacts = contacts;
 		// techs
-		let techs = new Map();
-		for ( let t of this.tech.techs ) {
-			techs.set( t, Tech.Techs[t] );
-			}
-		this.tech.techs = techs;	
-		let nodes_avail = new Map();
-		for ( let i of this.tech.nodes_avail ) {
-			nodes_avail.set( i[0], { node: Tech.TechNodes[i[0]], rp: i[1] } );
-			// while we're here ...
-			if ( this.tech.current_project === i[0] ) { 
-				this.tech.current_project = nodes_avail.get(i[0]);
-				}
-			}
-		this.tech.nodes_avail = nodes_avail;		
-		let nodes_compl = new Map();
-		for ( let i of this.tech.nodes_compl ) {
-			nodes_compl.set( i, Tech.TechNodes[i] );
-			}
-		this.tech.nodes_compl = nodes_compl;
+		this.tech.techs = this.tech.techs.map( t => Tech.Techs[t.key] );
+		this.tech.avail = this.tech.avail.map( t => ({ node: Tech.TechNodes[t.key], rp:t.rp }) );
+		this.tech.compl = this.tech.compl.map( t => ({ node: Tech.TechNodes[t.key], rp:t.rp, source:(t.source?catalog[t.source]:null) }) );
 		}
 						
 	static Random( difficulty = 0.5 ) {
@@ -688,8 +659,8 @@ export default class Civ {
 		
 		// tech level
 		let tech_score = 0;
-		for ( let t of this.tech.nodes_compl.values() ) { 
-			tech_score += t.rp;
+		for ( let t of this.tech.compl ) { 
+			tech_score += t.node.rp;
 			}
 			
 		this.power_score = Math.round( 
@@ -714,7 +685,7 @@ export default class Civ {
 		this.stat_history.push({
 			research: Math.round(this.research),
 			research_income: Math.round(this.research_income),
-			techs: this.tech.nodes_compl.size, 
+			techs: this.tech.compl.length, 
 			power: this.power_score,
 			ships,
 			milval, 
@@ -916,12 +887,12 @@ export default class Civ {
 				score *= Math.pow( ( i.obj.rp / (this.research_income || 10)), 0.3 );
 				// how does this compare to my overall tech situation?
 				let avg_rp = 0;
-				if ( this.tech.nodes_compl.size ) { 
+				if ( this.tech.compl.length ) { 
 					let total_rp = 0;
-					for ( let n of this.tech.nodes_compl.values() ) { 
+					for ( let n of this.tech.compl ) { 
 						total_rp += n.rp;
 						}
-					avg_rp = total_rp / this.tech.nodes_compl.size;
+					avg_rp = total_rp / this.tech.compl.length;
 					score *= ( i.obj.rp / avg_rp );
 					}
 				// cheaper if tech brokering agreement in effect
@@ -1079,26 +1050,26 @@ export default class Civ {
 		// TECH
 		// calculate partner's average tech
 		let avg_rp = 1; // avoid divide by zero
-		if ( civ.tech.nodes_compl.size ) { 
+		if ( civ.tech.compl.length ) { 
 			let total_rp = 0;
-			for ( let n of civ.tech.nodes_compl.values() ) { 
+			for ( let n of civ.tech.compl ) { 
 				total_rp += n.rp;
 				}
-			avg_rp = total_rp / civ.tech.nodes_compl.size;
+			avg_rp = total_rp / civ.tech.compl.length;
 			}
-		for ( let [key,node] of this.tech.nodes_compl ) { 
+		for ( let t of this.tech.compl ) { 
 			// trading partner already has this? 
-			if ( civ.tech.nodes_compl.has(key) ) { continue; }
+			if ( civ.tech.compl_keys[t.node.key] ) { continue; }
 			// tech brokering agreement in effect?
-			if ( 'source' in node && node.source ) {
-				let acct = this.diplo.contacts.get( node.source );
+			if ( 'source' in t && t.source ) {
+				let acct = this.diplo.contacts.get( t.source );
 				if ( acct && acct.treaties.has('TECH_BROKERING') ) {
 					continue;
 					}
 				}
 			// advanced tech requires better communication
-			const avail = utils.Clamp(node.rp / (avg_rp*2), 0, 10) < comm * 2;
-			items.push({ type:'technode', obj:node, label:node.name, avail });
+			const avail = utils.Clamp(t.node.rp / (avg_rp*2), 0, 10) < comm * 3;
+			items.push({ type:'technode', obj:t.node, label:t.node.name, avail });
 			}
 		
 		// PLANETS

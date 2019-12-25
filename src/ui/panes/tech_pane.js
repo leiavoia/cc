@@ -4,30 +4,39 @@ import * as Signals from '../../util/signals';
 export class TechPane {
 
 	constructor() {
+		this.keypressCallback = (e) => this.KeyPress(e);
 		// makes global objects available to template
 		this.Techs = Techs;
 		this.TechNodes = TechNodes;
+		// these are shadow arrays that we can sort and filter for the UI
+		this.tech_avail = [];
+		this.tech_compl = [];
 		}
 
 	activate(data) {
 		this.app = data.app;
 		this.mode = 'available';
 		this.turn_subscription = Signals.Listen( 'turn', data => this.UpdateData() );
-		this.featured_node = this.app.game.myciv.tech.current_project
-			? this.app.game.myciv.tech.current_project.node
-			: null ;
-		// create flat lists for aurelia to cycle through.
-		// This way we can sort and filter in the UI
-		this.nodes_avail = [];
-		this.nodes_compl = [];
+		// listen for hotkeys
+		window.addEventListener('keydown', this.keypressCallback, false);		
 		this.UpdateData();
 		}
 		
+	bind() {
+		this.UpdateData();
+		}
+		
+	unbind() { 
+		// stop listening for hotkeys
+		window.removeEventListener('keydown', this.keypressCallback);
+		this.turn_subscription.dispose();
+		}
+		
 	UpdateData() {
-		this.nodes_avail = Array.from( this.app.game.myciv.tech.nodes_avail.values() ).sort( (a,b) => a.node.rp - b.node.rp );
-		this.nodes_compl = Array.from( this.app.game.myciv.tech.nodes_compl.values() ).filter( n => !n.hidden ).reverse();
+		this.tech_avail = this.app.game.myciv.tech.avail; // reference
+		this.tech_compl = this.app.game.myciv.tech.compl.map( x => x ).filter( x => !x.node.hidden ).reverse();
 		if ( this.mode == 'available' ) { 
-			this.featured_node = this.app.game.myciv.tech.current_project ? this.app.game.myciv.tech.current_project.node : null;
+			this.featured_node = this.tech_avail.length ? this.tech_avail[0] : null;
 			}
 		}
 		
@@ -41,24 +50,99 @@ export class TechPane {
 		}
 		
 	ClickAvailableTech( node ) {
-		this.app.game.myciv.SelectResearchProject(node.node.key);
-		this.featured_node = this.app.game.myciv.tech.current_project
-			? this.app.game.myciv.tech.current_project.node
-			: null ;
+		this.featured_node = node;
+		}
+		
+	MoveTechUp( t ) {
+		let avail = this.app.game.myciv.tech.avail;
+		let i = avail.indexOf(t);
+		if ( i > 0 ) {
+			let temp = avail[i-1];
+			avail.splice( i-1, 2, t, temp );
+			}
+		}
+		
+	MoveTechDown( t ) {
+		let avail = this.app.game.myciv.tech.avail;
+		let i = avail.indexOf(t);
+		if ( i > -1 && i < avail.length-1 ) {
+			let temp = avail[i+1];
+			avail.splice( i, 2, temp, t );
+			}
+		}
+		
+	MoveTechFirst( t ) {
+		let avail = this.app.game.myciv.tech.avail;
+		let i = avail.indexOf(t);
+		if ( i > 0 ) {
+			avail.splice( i, 1 );
+			avail.splice( 0, 0, t );
+			}
+		}
+		
+	MoveTechLast( t ) {
+		let avail = this.app.game.myciv.tech.avail;
+		let i = avail.indexOf(t);
+		if ( i >= 0 ) {
+			avail.splice( i, 1 );
+			avail.push( t );
+			}
 		}
 		
 	ChangeMode( mode ) { 
 		this.mode = mode=='available' ? mode : 'completed' ;
 		if ( this.mode == 'available' ) { 
-			this.featured_node = this.app.game.myciv.tech.current_project ? this.app.game.myciv.tech.current_project.node : null;
+			this.featured_node = this.tech_avail.length ? this.tech_avail[0] : null;
 			}
 		else {
-			this.featured_node = this.nodes_compl.length ? this.nodes_compl[ this.nodes_compl.length-1 ] : null;
+			this.featured_node = this.tech_compl.length ? this.tech_compl[ this.tech_compl.length-1 ] : null;
 			}
 		}
 		
-	unbind() { 
-		this.turn_subscription.dispose();
-		}
+	KeyPress( event ) {
+		let avail = this.tech_avail;
+		switch ( event.key ) { 
+			case 'Escape': {
+				this.ClosePanel();
+				event.preventDefault();
+				return false;
+				}
+			case 'ArrowLeft':
+			case 'ArrowUp': {
+				// find item in avail list
+				let i = this.tech_avail.indexOf(this.featured_node);
+				if ( i > 0 && i < this.tech_avail.length ) {
+					if ( event.ctrlKey ) { 
+						this.MoveTechUp(this.tech_avail[i]);
+						}
+					else if ( event.shiftKey ) { 
+						this.MoveTechFirst(this.tech_avail[i]);
+						}
+					else {
+						this.featured_node = this.tech_avail[i-1]; 
+						}
+					}
+				event.preventDefault();
+				return false;
+				}
+			case 'ArrowRight':
+			case 'ArrowDown': {
+				let i = this.tech_avail.indexOf(this.featured_node);
+				if ( i >= 0 && i < this.tech_avail.length ) {
+					if ( event.ctrlKey ) { 
+						this.MoveTechDown(this.tech_avail[i]);
+						}
+					else if ( event.shiftKey ) { 
+						this.MoveTechLast(this.tech_avail[i]);
+						}
+					else {
+						this.featured_node = this.tech_avail[i+1]; 
+						}
+					}
+				event.preventDefault();
+				return false;
+				}
+			}
+		}		
 				
 	}

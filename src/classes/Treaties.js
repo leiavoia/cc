@@ -154,17 +154,17 @@ export const Treaties = {
 		Init: function() {
 			let SwapFunc = function ( civ1, civ2 ) { 
 				// trade all techs between civs
-				for ( let [key,node] of civ1.tech.nodes_compl ) { 
+				for ( let t of civ1.tech.compl ) { 
 					// trading partner already has this? 
-					if ( civ2.tech.nodes_compl.has(key) ) { continue; }
+					if ( civ2.tech.compl_keys[t.node.key] ) { continue; }
 					// tech brokering agreement in effect?
-					if ( 'source' in node && node.source ) {
-						const acct = civ1.diplo.contacts.get( node.source );
+					if ( 'source' in t && t.source ) {
+						const acct = civ1.diplo.contacts.get( t.source );
 						if ( acct && acct.treaties.has('TECH_BROKERING') ) {
 							continue;
 							}
 						}
-					civ2.CompleteTechNode( node, civ1, false );
+					civ2.CompleteTechNode( t, civ1, false );
 					}
 				}
 			SwapFunc( this.us, this.them );

@@ -3595,6 +3595,20 @@ DIV.annoyometer .nub {
 	margin: 0 0.25em 0.25em 0;
 	padding:0;
 }
+#tech_pane .techlist .button_rack {
+	float:right;
+	clear:right;
+	/* font-size: 2.25rem; */
+	/* height:1em; */
+	/* width: 1em; */
+	margin: 0 0 0.25em 0.25em;
+	padding:0;
+	display:none;
+}
+#tech_pane .techlist .hilite .button_rack {
+/* #tech_pane .techlist > DIV:hover .button_rack { */
+	display:block;
+}
 
 #tech_pane #featured .tagicons { font-size: 1.5rem; }
 #tech_pane #completed.techlist .tagicons { font-size: 1.25rem; }
