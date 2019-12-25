@@ -1,12 +1,13 @@
 <template containerless>
 	<div id="tech_pane" class="pane flex">
 		<header>
-			<p class="button_rack marginless" style="float:right;">
+			<p class="button_rack marginless" style="float:right; z-index: 10">
 				<button click.delegate="ChangeMode('available')" class="big ${mode=='available'?'alt':'cool'}" if.bind="tech_compl.length">AVAILABLE</button>
 				<button click.delegate="ChangeMode('completed')" class="big ${mode=='completed'?'alt':'cool'}" if.bind="tech_compl.length">COMPLETED</button>
 				<button click.delegate="ClosePanel()" class="big bad">CLOSE</button>
 			</p>
-			<h1>Research</h1>
+			<h1 if.bind="!announce">Research</h1>
+			<h1 if.bind="announce" class="good slideInLeft fadeIn" style="pointer-events:none;">${announce_title ? announce_title : 'Breakthrough!'}</h1>
 		</header>
 		
 		<main>
@@ -55,7 +56,8 @@
 				</div>
 			</div>
 			
-			<div id="featured" class="offset" if.bind="featured_node">
+			<div id="featured" class="offset ${announce == featured_node ? 'hilite fadeIn' : ''}" if.bind="featured_node">
+				<p if.bind="announce_msg" class="good biggest topless">${announce_msg}</p>
 				<h2>${featured_node.node.name}</h2> 
 				<p class="tagicons">
 					<span repeat.for="t of featured_node.node.tags" class="tagicon ${t}">${t|uppercaseFirst}</span>

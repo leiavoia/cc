@@ -275,14 +275,21 @@ export default class Civ {
 			}
 		this.RecalcAvailableTechNodes();
 		// note to player
-		if ( notify_player && App.instance.game.myciv == this && App.instance.options.notify.research ) { 
-			App.instance.AddNote(
-				'good',
-				`${tech.node.name} completed.`,
-				`Research on "${tech.node.name}" has been completed`,
-				function(){App.instance.SwitchMainPanel('tech');}
-				);
-			}			
+		if ( notify_player && App.instance.game.myciv == this ) { 
+			// full blown announcement
+			if ( App.instance.options.notify.research_announce ) { 
+				App.instance.game.QueueTechAnnouncement(tech, 'Scientists make a new discovery!');
+				}
+			// regular notice
+			if ( App.instance.options.notify.research ) { 
+				App.instance.AddNote(
+					'good',
+					`${tech.node.name} completed.`,
+					`Research on "${tech.node.name}" has been completed`,
+					function(){App.instance.SwitchMainPanel('tech');}
+					);
+				}
+			}
 		}
 		
 	gov_type = 'feudal';

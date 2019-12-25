@@ -24,6 +24,7 @@ export default class Game {
 	shipcombats = [];
 	groundcombats = [];
 	audiences = [];
+	tech_announcements = []; // { tech, msg }
 	victory_recipes = [];	
 	victory_achieved = false;
 	top10civs = []; // for AI / UI fun
@@ -577,6 +578,13 @@ export default class Game {
 		this.audiences.push({ civ, data, label: `${civ.name} audience` });	
 		}
 		
+	// `tech` is an item from the civ.tech.compl list.
+	// `msg` is optional in case you steal something or win something.
+	QueueTechAnnouncement( tech, msg=null, title=null ) {
+		if ( this.app.options.soak ) { return false; }
+		this.tech_announcements.push({ tech, msg, title });	
+		}
+		
 	QueueShipCombat( attacker, defender, planet, force_prompt=false ) {
 		this.shipcombats.push({ attacker, defender, planet,
 			label: `${attacker.owner.name} attacks ${defender.owner.name} at ${attacker.star.name}`
@@ -687,6 +695,7 @@ export default class Game {
 		if ( this.shipcombats.length ) { this.PresentNextPlayerShipCombat(); }
 		else if ( this.groundcombats.length ) { this.PresentNextPlayerGroundCombat(); }
 		else if ( this.audiences.length ) { this.PresentNextAudience(); }
+		else if ( this.tech_announcements.length ) { this.PresentNextTechAnnouncement(); }
 		else { 
 			this.ProcessNewlyExploredStars();
 			this.CheckForCivDeath();
@@ -814,6 +823,23 @@ export default class Game {
 		// if player is the attacker, launch directly to attack screen
 		else if ( c.attacker.owner.is_player ) { 
 			this.LaunchPlayerGroundCombat(c);
+			}
+    	}
+    
+    PresentNextTechAnnouncement() { 
+ 		if ( !this.tech_announcements.length ) { return false; }
+		let a = this.tech_announcements.shift();
+		// croaked or soaked
+		if ( this.app.options.soak || !this.myciv.alive ) { 
+			this.ProcessUIQueue(); 
+			return false;
+			}
+		else {
+			if ( this.autoplay ) {
+				clearInterval( this.autoplay );
+				this.autoplay = false;
+				}
+			this.app.SwitchMainPanel( 'tech', a.tech, {announce_msg: a.msg, announce_title: a.title} ); // true = exclusive UI			
 			}
     	}
     

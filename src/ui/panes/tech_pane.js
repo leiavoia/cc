@@ -4,6 +4,9 @@ import * as Signals from '../../util/signals';
 export class TechPane {
 
 	constructor() {
+		this.announce = null;
+		this.announce_msg = null;
+		this.announce_title = null;
 		this.keypressCallback = (e) => this.KeyPress(e);
 		// makes global objects available to template
 		this.Techs = Techs;
@@ -13,6 +16,13 @@ export class TechPane {
 		this.tech_compl = [];
 		}
 
+	// to "announce" a new tech discovery, send the info in `data.obj` param:
+	// data.obj: <tech from civ.tech.compl list>
+	// include optional message in the optional `data.data` param
+	// data.data: {
+	//	announce_msg: <optional string>
+	//	announce_title: <optional string>
+	//	}
 	activate(data) {
 		this.app = data.app;
 		this.mode = 'available';
@@ -20,10 +30,24 @@ export class TechPane {
 		// listen for hotkeys
 		window.addEventListener('keydown', this.keypressCallback, false);		
 		this.UpdateData();
+		// discover announcement
+		if ( data.obj ) {
+			let i = this.app.game.myciv.tech.compl.indexOf(data.obj);
+			if ( i >= 0 ) {
+				this.announce = data.obj;
+				this.featured_node = data.obj;
+				if ( data.data && data.data.announce_msg ) { 
+					this.announce_msg = data.data.announce_msg;
+					}
+				if ( data.data && data.data.announce_title ) { 
+					this.announce_title = data.data.announce_title;
+					}
+				}
+			}
 		}
 		
 	bind() {
-		this.UpdateData();
+		// this.UpdateData();
 		}
 		
 	unbind() { 
@@ -33,6 +57,8 @@ export class TechPane {
 		}
 		
 	UpdateData() {
+		this.announce = null;
+		this.announce_msg = null;
 		this.tech_avail = this.app.game.myciv.tech.avail; // reference
 		this.tech_compl = this.app.game.myciv.tech.compl.map( x => x ).filter( x => !x.node.hidden ).reverse();
 		if ( this.mode == 'available' ) { 
@@ -47,10 +73,16 @@ export class TechPane {
 		
 	ClickCompletedTech( node ) { 
 		this.featured_node = node;
+		this.announce = null;
+		this.announce_msg = null;
+		this.announce_title = null;
 		}
 		
 	ClickAvailableTech( node ) {
 		this.featured_node = node;
+		this.announce = null;
+		this.announce_msg = null;
+		this.announce_title = null;
 		}
 		
 	MoveTechUp( t ) {
@@ -97,6 +129,9 @@ export class TechPane {
 		else {
 			this.featured_node = this.tech_compl.length ? this.tech_compl[ this.tech_compl.length-1 ] : null;
 			}
+		this.announce = null;
+		this.announce_msg = null;
+		this.announce_title = null;			
 		}
 		
 	KeyPress( event ) {

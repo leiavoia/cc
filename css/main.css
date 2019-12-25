@@ -779,6 +779,10 @@ h1 { font-size: 300%; }
 h2 { font-size: 150%; }
 h3 { font-size: 135%; }
 
+@media screen and (max-width: 1025px) {
+	h1 { font-size: 225%; }
+}
+
 A {color:white;}
 
 TD,TH { padding: 0.2em; text-align:left; }
@@ -844,6 +848,9 @@ TABLE.env TD.ideal {
 .strike, .strikeout { text-decoration: line-through; }
 .small { font-size: 80%; }
 .big { font-size: 120%; }
+.bigger { font-size: 150%; }
+.biggest { font-size: 200%; }
+.biggester { font-size: 300%; }
 
 .pretty TD { color: #4BA5CC; }
 
@@ -1007,8 +1014,12 @@ DIV.offset {
 	margin: 1em;
 	flex: 1 1;
 	background: rgb( 17, 67, 107);
-	background: rgba( 17, 67, 107, 0.95);
+	/* background: rgba( 17, 67, 107, 0.95); */
 /* 	background: rgba( 0,0,0, 0.65); */
+	}
+DIV.offset.hilite {
+	border-color: #346b97;
+	background: #346b97;
 	}
 DIV.offset.transp {	
 	background: rgba(0,0,0,0.6);

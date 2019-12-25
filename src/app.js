@@ -56,6 +56,7 @@ export class App {
 			contact: true,
 			lost_contact: true,
 			research: false,
+			research_announce: false,
 			combat: true,
 			anom: true,
 			colony_ship_arrived: true,

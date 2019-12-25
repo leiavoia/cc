@@ -50,7 +50,10 @@
 			Civilization contact lost
 		</button></p>
 		<p><button click.delegate="app.ToggleNotification('research')" class="${app.options.notify.research ? 'alt' : 'cool'}">
-			Technology researched
+			Technology acquired (notice)
+		</button></p>
+		<p><button click.delegate="app.ToggleNotification('research_announce')" class="${app.options.notify.research_announce ? 'alt' : 'cool'}">
+			Technology acquired (anouncement)
 		</button></p>
 		<p><button click.delegate="app.ToggleNotification('anom')" class="${app.options.notify.anom ? 'alt' : 'cool'}">
 			Anomaly researched
