@@ -175,6 +175,8 @@ export class App {
 					// using object.assign lets us slip in new settings over time
 					this.options = Object.assign(this.options,json);
 					}
+				// nofx defaults to off; this is mainly for debug
+				this.options.nofx = false;
 				}
 			}
 		catch ( ex ) {

@@ -1403,6 +1403,7 @@ SELECT:disabled:hover, SELECT[aria-disabled=true] {
 	/* makes fleets scootch on next-turn-button */
 	transition: top 0.7s ease-out 0s, left 0.7s ease-out 0s;	
 	}
+.nofx #the_caret,
 .xtreme_zoom #the_caret {
 	box-sizing: border-box;
 	width: 250px;
