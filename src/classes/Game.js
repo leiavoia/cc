@@ -417,7 +417,7 @@ export default class Game {
 					else { this.new_explored_star_queue.push(f); }
 					}
 				// notice to player if fleet has colony ship and there is colonizable planet
-				if ( f.owner.is_player && !this.app.options.soak && this.app.options.notify.colony_ship_arrived && f.colonize && f.star && !f.dest ) {
+				if ( f.owner.is_player && !this.app.options.soak && this.app.options.notify.colony_ship_arrived && f.colonize && f.star && !f.dest && 'planets' in f.star &&  f.star.planets.length ) {
 					if ( f.star.planets.filter( p => !p.owner && p.Habitable(f.owner.race) ).length ) {
 						this.app.AddNote(
 							'neutral',
