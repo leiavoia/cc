@@ -924,21 +924,44 @@ button, .button_rack A, A.button {
 	padding: 0.25em 0.5em;
 	text-decoration:none;
 	}
+button:hover, .button_rack A:hover, A.button:hover {
+	background-color: #6cbee0;
+	}
+button:hover:active, .button_rack A:hover:active, A.button:hover:active {
+	background-color: #2f6c86;
+	}
+button.alt, A.button.alt, .button_rack A.alt,
 button.good, A.button.good, .button_rack A.good {
 	background-color: #54B848;
 	color: #FFF;
+	}
+button.alt:hover, A.button.alt:hover, .button_rack A.alt:hover,
+button.good:hover, A.button.good:hover, .button_rack A.good:hover {
+	background-color: #59cf4c;
+	}
+button.alt:hover:active, A.button.alt:hover:active, .button_rack A.alt:hover:active,
+button.good:hover:active, A.button.good:hover:active, .button_rack A.good:hover:active {
+	background-color: #2d7924;
 	}
 button.bad, A.button.bad, .button_rack A.bad {
 	background-color: #c74d67;
 	color: #FFF;
 	}
-button.alt, A.button.alt, .button_rack A.alt {
-	background-color: #54B848;
-	color: #FFF;
+button.bad:hover, A.button.bad:hover, .button_rack A.bad:hover {
+	background-color: #e4718a;
+	}
+button.bad:hover:active, A.button.bad:hover:active, .button_rack A.bad:hover:active {
+	background-color: #9b2a43;
 	}
 button.cool, .button_rack A.cool, A.button.cool {
 	background-color: #999;
 	color: #FFF;
+	}
+button.cool:hover, .button_rack A.cool:hover, A.button.cool:hover {
+	background-color: #BBB;
+	}
+button.cool:hover:active, .button_rack A.cool:hover:active, A.button.cool:hover:active {
+	background-color: #444;
 	}
 button.active, .button_rack A.active, A.button.active {
 	text-shadow: 1px 1px 1px #000;
