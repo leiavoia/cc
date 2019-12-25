@@ -17,8 +17,10 @@
 		<!-- NOTE: using one-time binding to avoid brief moment when the 
 		object is undefined and browser tries to ask server for 'undefined' -->
 <!-- 		<img if.bind="planet.owner" class="flag" src.bind="planet.owner.flag_img" /> -->
-		<h2 if.bind="planet.owner" css="
-		background-image: linear-gradient( to right, 
+		<h2 if.bind="planet.owner && !editing_name" 
+			click.delegate="StartEditName()" class="clickable"
+			css="
+			background-image: linear-gradient( to right, 
 			rgba(${planet.owner.color_rgb[0]},${planet.owner.color_rgb[1]},${planet.owner.color_rgb[2]},0) 0%     ,
 			rgba(${planet.owner.color_rgb[0]},${planet.owner.color_rgb[1]},${planet.owner.color_rgb[2]},1) 25%    ,
 			rgba(${planet.owner.color_rgb[0]},${planet.owner.color_rgb[1]},${planet.owner.color_rgb[2]},1) 75%    ,
@@ -26,6 +28,10 @@
 			);
 		">${planet.name}</h2>
 		<h2 if.bind="!planet.owner">${planet.name}</h2>
+		<form submit.delegate="StopEditName()" if.bind="editing_name" class="big">
+			<input type="text" value.bind="planet.name" style="width:80%" maxsize="30" />
+			<button type="submit">OK</button>
+		</form>
 		<div class="phys">
 	
 			<p class="env_label">${planet.gravDisplayName} ${planet.envDisplayName}</p>

@@ -5,11 +5,11 @@
 			<p class="desc">${star.colorDesc}</p>
 		</template>
 		<template if.bind="star.explored || app.options.see_all">
-			<h2 if.bind="!editing_name" click.delegate="ToggleNameEdit()">${star.name}</h2>
-			<p if.bind="editing_name" >
-				<input type="text" value.bind="star.name" />
-				<a href="" click.delegate="ToggleNameEdit()">OK</a>
-			</p>
+			<h2 if.bind="!editing_name" click.delegate="StartEditName()" class="clickable">${star.name}</h2>
+			<form submit.delegate="StopEditName()" if.bind="editing_name" class="big">
+				<input type="text" value.bind="star.name" style="width:80%" maxsize="30" />
+				<button type="submit">OK</button>
+			</form>
 			<div class="hilite_wrapper smallplanetbg" repeat.for="p of star.planets"  click.delegate="app.SwitchSideBar(p)">
 				<div class="planet atm${p.atm} tmp${p.temp} grav${p.grav}" css.one-time="PlanetSizeCSS(p)">
 					<img if.bind="p.owner" class="flag" src.bind="p.owner.flag_img" style="border:1px solid #666;" />

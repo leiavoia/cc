@@ -43,7 +43,19 @@ export class StarDetailPane {
 		return `background-size: ${size}px; background-position: ${pos}px 0%`;
 		}
 		
-	ToggleNameEdit() { 
-		this.editing_name = !this.editing_name;
+	StartEditName() {
+		this.editing_name = true;
+		this.old_name = this.star.name;
 		}
+		
+	StopEditName() {
+		this.star.name = this.star.name || 'Some Star';
+		for ( let p of this.star.planets ) {
+			p.name = p.name.replace( this.old_name, this.star.name );
+			}
+		this.old_name = null;	
+		this.editing_name = false;
+		return false;
+		}
+		
 	}

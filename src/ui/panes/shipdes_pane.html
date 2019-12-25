@@ -38,8 +38,12 @@
 					<br/>
 					<img src.bind="bp.img" class="zoomzoom" style="width: 100%; min-width: 100px;"/>
 				</div>
-				<h2>${bp.name}</h2>
-				
+				<h2 if.bind="!editing_name" class="clickable" click.delegate="StartEditName()">${bp.name}</h2>
+				<form submit.delegate="StopEditName()" if.bind="editing_name" class="big">
+					<input type="text" value.bind="bp.name" style="width:12em" maxsize="30" />
+					<button type="submit">OK</button>
+				</form>				
+			
 				<table class="wide headers_right pretty">
 					<tr>
 						<th>Mass</th>	

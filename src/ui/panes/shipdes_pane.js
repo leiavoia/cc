@@ -11,6 +11,7 @@ export class ShipDesignPane {
 	 	this.max_hull_size = 0;
 	 	this.scrap_delete_all = false;
 	 	this.scrap_remove_from_queues = false;
+		this.editing_name = false;
 		this.force_update_shim = 0; // workaround for bug. increment to force aurelia to update some stuff.
 		// key click events
 		this.keypressCallback = (e) => { this.KeyPress(e); };
@@ -23,6 +24,7 @@ export class ShipDesignPane {
 	 		this.bp = this.bps[0];
 	 		}
 		this.max_hull_size = this.app.game.myciv.max_hull_size;
+		this.editing_name = false;
 		// HACK FOR DEVELOPMENT - Ship images
 		this.avail_imgs = [];
 		for ( let i=1; i < 35; i++ ) { 
@@ -41,6 +43,7 @@ export class ShipDesignPane {
 	unbind() {
 		// stop listening for hotkeys
 		window.removeEventListener('keypress', this.keypressCallback);
+		this.editing_name = false;
 		}
 	 	
 	ClosePanel() {
@@ -53,7 +56,17 @@ export class ShipDesignPane {
 	ClickBlueprint( bp ) { 
 		this.bp = bp;
 		}
+	
+	StartEditName() {
+		this.editing_name = true;
+		}
 		
+	StopEditName() {
+		this.bp.name = this.bp.name || 'Some Ship';
+		this.editing_name = false;
+		return false;
+		}
+				
 	ValidateNewDesign() { 
 		this.design_is_valid = true;
 		if ( this.newbp.mass > this.app.game.myciv.max_hull_size ) { this.design_is_valid = false; }

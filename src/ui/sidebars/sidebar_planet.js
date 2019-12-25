@@ -7,6 +7,7 @@ export class PlanetDetailPane {
 	constructor() { 
 		this.local_fleet = null;
 		this.turn_subscription = Signals.Listen('turn', data => this.planetChanged() );
+		this.editing_name = false;
 		}
 		
 	activate(data) {
@@ -19,6 +20,16 @@ export class PlanetDetailPane {
 		this.turn_subscription.dispose();
 		}
 
+	StartEditName() {
+		this.editing_name = true;
+		}
+		
+	StopEditName() {
+		this.planet.name = this.planet.name || 'Some Planet';
+		this.editing_name = false;
+		return false;
+		}
+		
 	prod_q_repeat_vals = [
 		{ value: -1, name: '∞'},
 		{ value: 1, name: '1x'},
