@@ -23,14 +23,14 @@
 			</p>
 		</p>
 		
-		<p>
-			<b style="color: #1BD;">⮞${fleet.speed|round}&nbsp;</b>
-			<b style="color: #F33;">⚡${fleet.milval|round}&nbsp;</b>
-			<b style="color: #AEA;" show.bind="fleet.research">⚛${fleet.research}&nbsp;</b>
-			<b style="color: #FF9F00;" class="clickable" show.bind="fleet.troops" click.delegate="show_defenses = !show_defenses">☠${fleet.troops}&nbsp;</b>
-			<b style="color: #FF0;" show.bind="can_colonize">⚑&nbsp;</b>
-			<b style="color: #F33;">${fleet.fp_remaining / (fleet.fp||1) | percent}% FP &nbsp;</b>
-			<b style="color: #8B8;">${fleet.health / (fleet.healthmax||1) | percent}% HP &nbsp;</b>
+		<p class="tagicons" style="vertical-align:middle; line-height:1em; margin: 0.25em 0; display:flex;">
+			<span style="flex: 1 1 auto;"  class="tagicon propulsion" title="fleet speed">${fleet.speed|round}&nbsp;</span>
+			<span style="flex: 1 1 auto;"  class="tagicon attack" title="military value">${fleet.milval|round}&nbsp;</span>
+			<span style="flex: 1 1 auto;"  class="tagicon research" show.bind="fleet.research" title="research capacity">${fleet.research}&nbsp;</span>
+			<span style="flex: 1 1 auto;"  class="tagicon invade" class="clickable" show.bind="fleet.troops" click.delegate="show_defenses = !show_defenses" title="troops onboard">${fleet.troops}&nbsp;</span>
+			<span style="flex: 1 1 auto;"  class="tagicon colonize" show.bind="can_colonize" title="can colonize planets">&nbsp;</span>
+			<span style="flex: 1 1 auto;"  class="tagicon ammo" title="firepower remaining">${fleet.fp_remaining / (fleet.fp||1) | percent}%&nbsp;</span>
+			<span style="flex: 1 1 auto;"  class="tagicon health" title="fleet hitpoints remaining">${fleet.health / (fleet.healthmax||1) | percent}%&nbsp;</span>
 		</p>
 		
 		<div class="defenses wrapper" if.bind="app.game.turn_num && show_defenses && (app.options.see_all || fleet.owner.is_player)">
@@ -62,7 +62,7 @@
 		
 		<!-- show fleet actions if not on a deep space mission -->
 		<template containerless if.bind="!fleet.mission && (fleet.owner.is_player || app.options.see_all)">
-			<p class="msg" style="font-weight:bold; color: #FAA;">
+			<p class="msg centered" style="font-weight:bold; color: #FAA;">
 				<span show.bind="can_send==2">Right-click a star to move fleet</span>&nbsp;
 			</p>
 			
@@ -96,11 +96,14 @@
 				click.delegate="ClickShip(ship,$event)" 
 				repeat.for="ship of fleet.ships" 
 				>
-				<p class=" top">
-					<span>${ship.bp.colonize ? '🅲' : ''} ${ship.bp.research ? '🆁' : ''}</span>
-					<span>${'🟊'.repeat(ship.xplevel)}</span>
-					<b>${ship.bp.sizeclass}</b>
-				</p>
+				<div class="top tagicons">
+					<!-- <span class="tagicon attack" if.bind="ship.bp.fp"></span> -->
+					<span class="tagicon research" if.bind="ship.bp.research"></span>
+					<span class="tagicon colonize" if.bind="ship.bp.colonize"></span>
+					<span class="tagicon invade ${ship.troops.length==0 ? 'ghost' : ''}" if.bind="ship.bp.troopcap">${ship.troops.length}</span>
+					<!-- <span>${'🟊'.repeat(ship.xplevel)}</span> -->
+					<!-- <b>${ship.bp.sizeclass}</b> -->
+				</div>
 				<img src.one-time="ship.bp.img" />
 				<p class="center">
 					<span>${ship.bp.hull}</span>&nbsp;/&nbsp;<span>${ship.bp.armor}</span>&nbsp;/&nbsp;<span>${ship.bp.shield}</span>

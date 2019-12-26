@@ -3091,7 +3091,7 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	transform-origin: 0 0 ;
 	width: 600%;
 	}
-/*.shipgrid.pack_2x .ship > P,*/
+/* .shipgrid.pack_2x .ship > P, */
 .shipgrid.pack_4x .ship SPAN,
 .shipgrid.pack_9x .ship SPAN,
 .shipgrid.pack_16x .ship SPAN,
@@ -3105,6 +3105,10 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	display: none;
 	}
 	
+/* always display the top */
+.shipgrid .ship .top *, 
+.shipgrid .ship .top { display:flex !important; }	
+
 .shipgrid .ship {
 	border: 1px solid transparent;
 	border-radius: 0.5em;
@@ -3146,6 +3150,9 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 /* 	border: 1px solid red; */
 /* 	width: 100%; */
 	}
+.shipgrid .ship > .top {
+	text-align: left;
+	}	
 .shipgrid .ship > .infobar {
 	text-align: right;
 	width: 100%;
@@ -3829,6 +3836,15 @@ DIV.annoyometer .nub {
 .tagicon.ship::before {
 	background-color: #D11;
 	background-image: url(../img/icons/svg/rocket.svg);
+	}	
+	
+.tagicon.health::before {
+	background-color: #0f7e21;
+	background-image: url(../img/icons/svg/heart.svg);
+	}	
+.tagicon.ammo::before {
+	background-color: #DA0;
+	background-image: url(../img/icons/svg/circle01.svg);
 	}	
 
 
