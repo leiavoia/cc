@@ -356,9 +356,9 @@ export default class Game {
 						items_built = items_built.filter( i => i.type != 'makework' ).unique();
 						for ( let item of items_built ) {
 							this.app.AddNote(
-								'neutral',
-								`${item.name}`,
-								`${item.name} completed at ${p.name}`,
+								'info',
+								null,
+								`<b>${item.name}</b> completed on <b>${p.name}</b>`,
 								() => { this.app.FocusMap(p); this.app.SwitchSideBar(p); }
 								);							
 						}

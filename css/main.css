@@ -757,6 +757,16 @@ where each item has an icon and some text data.
 #layout_ui_news > DIV.neutral H3 {
 	color: #6091D1;
 	}
+#layout_ui_news > DIV.info {	
+	background: 
+		url(../img/layout/notice_neutral.png) no-repeat 9px 4px,
+		linear-gradient( to right, #808080 0, #808080 48px, rgba(0,0,0,0.78) 48px, rgba(0,0,0,0.78) 100%) no-repeat top left
+		;
+	border-color: #808080;
+	}
+#layout_ui_news > DIV.info H3 {
+	color: #808080;
+	}
 	
 	
 	

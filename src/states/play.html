@@ -344,7 +344,7 @@
 	
 			<!-- NEWS --> 
 			<div id="layout_ui_news" class="fadeIn" if.bind="!app.main_panel_mode">
-				<p class="button_rack fill"><button class="micro cool" click.delegate="app.ClearNotes()" if.bind="app.notes.length > 1">Clear Messages</button></p>
+				<p class="button_rack fill"><button class="micro cool" click.delegate="app.ClearNotes()" if.bind="app.notes.length">Clear Messages</button></p>
 				<div repeat.for="note of app.notes" class="${note.type} trekIn" click.trigger="app.ClickNote(note)">
 					<button class="x" click.trigger="app.ClickNote(note,true,false)">🗙</button>
 					<h3 if.one-time="note.title">${note.title}</h3>
