@@ -543,6 +543,7 @@ export default class Game {
 	// `data` is whatever the civ is wanting to discuss, which isnt programmed yet.
 	// currently only takes `data.offer` for trade offers and `data.message` for raw text.
 	QueueAudience( civ, data ) {
+		if ( !civ ) { return false; }
 		if ( this.app.options.soak ) { return false; }
 		// first flush out any existing audiences with the same civ.
 		// we dont want embarassing multiple audiences in one turn.
@@ -557,17 +558,20 @@ export default class Game {
 	// `tech` is an item from the civ.tech.compl list.
 	// `msg` is optional in case you steal something or win something.
 	QueueTechAnnouncement( tech, msg=null, title=null ) {
+		if ( !tech ) { return false; }
 		if ( this.app.options.soak ) { return false; }
 		this.tech_announcements.push({ tech, msg, title });	
 		}
 		
 	QueueShipCombat( attacker, defender, planet, force_prompt=false ) {
+		if ( !attacker || !defender ) { return false; }
 		this.shipcombats.push({ attacker, defender, planet,
 			label: `${attacker.owner.name} attacks ${defender.owner.name} at ${attacker.star.name}`
 			});	
 		}
 		
 	QueueGroundCombat( attacker, planet, end = 'back', force_prompt=false ) {
+		if ( !attacker || !planet ) { return false; }
 		let data = { attacker, planet,
 			label: `${attacker.owner.name} invades planet ${planet.name}`,
 			prompt:force_prompt
