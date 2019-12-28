@@ -379,6 +379,8 @@ export default class Civ {
 		ship_maint: 0,
 		troop_maint: 0,
 		planet_maint: 0,
+		treaty_research: 0,
+		treaty_income: 0,
 		cat_spending: {},
 		subcat_spending: {}
 		}; // how to structure???
@@ -1280,6 +1282,8 @@ export default class Civ {
 	DoAccounting( app ) {
 		this.econ.ship_maint = 0;
 		this.econ.troop_maint = 0;
+		this.econ.treaty_income = 0;
+		this.econ.treaty_research = 0;
 		this.econ.income = 0;
 		for ( let k in this.econ.cat_spending ) { this.econ.cat_spending[k] = 0; }
 		for ( let k in this.econ.subcat_spending ) { this.econ.subcat_spending[k] = 0; }
@@ -1308,6 +1312,17 @@ export default class Civ {
 				for ( let t of s.troops ) { 
 					this.econ.troop_maint += t.bp.cost.labor * 0.15; // HACK TODO tech and civ stats may change
 					}
+				}
+			}
+		// treaty income
+		for ( let [k,contact] of this.diplo.contacts ) { 
+			if ( contact.treaties.has('TRADE') ) {
+				this.econ.treaty_income += contact.treaties.get('TRADE').income_last_turn || 0;
+				// NOTE: DO NOT add to `income`; it becomes self-referencing		
+				// this.econ.income = this.econ.treaty_income;
+				}
+			if ( contact.treaties.has('RESEARCH') ) {
+				this.econ.treaty_research += contact.treaties.get('RESEARCH').income_last_turn || 0;
 				}
 			}
 		// stat tracking

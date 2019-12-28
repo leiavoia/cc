@@ -329,16 +329,12 @@ export default class Game {
 		this.processing_turn = true;
 		
 		// TODO: lock the UI
-		
-// 		console.time('Turn Processor');
 
 		this.CheckForCivDeath();
 		
 		// calculate resource being demanded by planetary zones
 		for ( let civ of this.galaxy.civs ) { 
 			civ.EstimateResources();
-			// recalculate box filter while we're here
-// 				civ.RecalcEmpireBox();
 			// reset some stuff
 			civ.research_income = 0;
 			for ( let k in civ.resource_income ) { civ.resource_income[k] = 0; }
@@ -346,7 +342,6 @@ export default class Game {
 			}
 		
 		// Planetary Economics
-// 			console.time('Planetary Econ');
 		for ( let s of this.galaxy.stars ) { 
 			for ( let p of s.planets ) {
 				if ( p.owner ) {  					
@@ -374,39 +369,26 @@ export default class Game {
 					}
 				}
 			}
-// 			console.timeEnd('Planetary Econ');
-		
-		// collects taxes, handles expenses, makes accounting records
-		for ( let civ of this.galaxy.civs ) {
-			civ.DoAccounting( this.app );
-			} 
 			
 		// restock weapons
-// 			console.time('Fleet Reloading');
 		for ( let f of this.galaxy.fleets ) { 
 			f.ReloadAllShipWeapons();
 			f.ReevaluateStats();
 			}
-// 			console.timeEnd('Fleet Reloading');
 		
 		// AI!
 		if ( this.app.options.ai ) { 
-// 				console.time('AI');
 			for ( let civ of this.galaxy.civs ) { 
 				if ( !civ.is_player || this.app.options.soak ) { 
 					civ.TurnAI( this.app );
 					}
 				}
-// 				console.timeEnd('AI');
 			}
 			
 		// important to do ship research BEFORE moving ships,
 		// otherwise they get to do both in one turn. Not allowed.
-// 			console.time('Fleet Research');
 		this.DoFleetResearch();
-// 			console.timeEnd('Fleet Research');
 		
-// 			console.time('Ship Movement');
 		// ship movement. TECHNICAL: loop backwards because moving can 
 		// remove fleets from the list when they land at destinations.
 		for ( let i = this.galaxy.fleets.length-1; i >= 0; i-- ) { 
@@ -444,38 +426,33 @@ export default class Game {
 		if ( this.app.sidebar_obj && !this.app.sidebar_mode ) { 
 			this.app.sidebar_obj = null;
 			}
-// 			console.timeEnd('Ship Movement');
 		
 		// RESEARCH
-// 			console.time('Research');
 		for ( let civ of this.galaxy.civs ) { 
 			civ.DoResearch( this.app );
 			}	
-// 			console.timeEnd('Research');
 		
 		// find potential combats
-// 			console.time('Finding combats');
 		this.FindShipCombats();
 		this.FindGroundCombats();
-// 			console.timeEnd('Finding combats');
 		
 		// [!]OPTIMIZE we can optimize this out of the loop if 
 		// we limit it to events that change planets or ship ranges
-// 			console.time('Recalc Civ Contact');
 		this.RecalcCivContactRange();
-// 			console.timeEnd('Recalc Civ Contact');
 		
-// 			console.time('Recalc Star Range');
 		this.RecalcStarRanges();
-// 			console.timeEnd('Recalc Star Range');
 			
 		// fleets move, so we need to do this on each turn
-// 			console.time('Recalc Fleet Range');
 		this.RecalcFleetRanges(); 
-// 			console.timeEnd('Recalc Fleet Range');
-			
+		
+		// this needs to come before accounting because treaty incomes affect totals.	
 		this.UpdateDiplomaticRelations();
 		
+		// collects taxes, handles expenses, makes accounting records
+		for ( let civ of this.galaxy.civs ) {
+			civ.DoAccounting( this.app );
+			}
+					
 		// calculate overall civ power scores
 		for ( let civ of this.galaxy.civs ) { 
 			civ.CalcPowerScore();
@@ -500,7 +477,6 @@ export default class Game {
 		
 		this.turn_num++;
 		
-// 			console.timeEnd('Turn Processor');
 		//
 		// At this point the turn is considered "processed",
 		// however the player may still need to complete

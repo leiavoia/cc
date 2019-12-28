@@ -72,6 +72,7 @@ export const Treaties = {
 		},
 	RESEARCH : { 
 		label: 'Research Sharing Agreement',
+		income_last_turn: 0,
 		AvailTo: function (a,b) { 
 			const acct = a.diplo.contacts.get(b);
 			return acct.lovenub >= 0.65 && !acct.treaties.has(this.type) && acct.comm >= 0.7;
@@ -80,10 +81,10 @@ export const Treaties = {
 			this.us.BumpLoveNub( this.them, 0.01 );
 			const maxpct = 0.15; // 15% of our per-turn RP when fully vested
 			let mod = utils.Clamp( ( turn_num - this.created_on ) / 50, 0, 1 );
-			const amount = Math.ceil( this.us.research_income * mod * maxpct );
-			this.them.research += amount;
-			this.them.research_income += amount;
-			// TODO: add to research accounting record
+			const amount = Math.ceil( this.them.research_income * mod * maxpct );
+			this.us.research += amount; // running game total
+			this.us.research_income += amount; // this turn total
+			this.income_last_turn = amount;
 			// NOTE: unlike money, `research_income` is processed based on income 
 			// from that turn. it would become self-referencing here, but it also 
 			// resets each turn, so seems to be okay, but not ideal.
@@ -92,6 +93,7 @@ export const Treaties = {
 		},
 	TRADE : { 
 		label: 'Trade Agreement',
+		income_last_turn: 0,
 		AvailTo: function (a,b) { 
 			const acct = a.diplo.contacts.get(b);
 			return acct.lovenub >= 0.42 && !acct.treaties.has(this.type) && acct.comm >= 0.3;
@@ -100,10 +102,10 @@ export const Treaties = {
 			this.us.BumpLoveNub( this.them, 0.01 );
 			const maxpct = 0.15; // 15% of our per-turn revenue when fully vested
 			let mod = utils.Clamp( ( turn_num - this.created_on ) / 50, 0, 1 );
-			const amount = Math.ceil( this.us.econ.income * mod * maxpct );
-			this.them.resources.$ += amount;
-			// TODO: add to accounting record
-			// NOTE: DO NOT add to `income`; it becomes self-referencing		
+			const amount = Math.ceil( this.them.econ.income * mod * maxpct );
+			this.us.resources.$ += amount;
+			this.income_last_turn = amount;
+			// Civ::DoAccounting() handles the rest
 			},
 		Init: function() { }
 		},

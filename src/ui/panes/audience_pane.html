@@ -21,6 +21,8 @@
 			<div class="trade_item_list" if.bind="app.game.myciv.diplo.contacts.get(civ).treaties.size">
 				<div class="treaty" repeat.for="[type, treaty] of app.game.myciv.diplo.contacts.get(civ).treaties">
 					${treaty.label}
+					<span if.bind="type=='TRADE'" class="bold good"> (+$${treaty.income_last_turn})</span>
+					<span if.bind="type=='RESEARCH'" class="bold good"> (+${treaty.income_last_turn} RP)</span>
 				</div>
 			</div>
 			<p if.bind="app.options.debug">
