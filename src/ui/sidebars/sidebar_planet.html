@@ -95,7 +95,7 @@
 					<p class="desc">${sel_zone.desc}</p>
 					<p class="stats resources">
 						Size: <b>${sel_zone.size}</b>, 
-						Sectors: <b>${sel_zone.sect}</b>
+						Sectors: <b>${sel_zone.sect}/${sel_zone.maxsect}</b>
 						<br/>
 						<template containless if.bind="sel_zone.val < 1">
 							Matures In: <b>${ (app.game.turn_num*0) + ( planet.throttle_speed * sel_zone.gf * (1-sel_zone.val) * ( sel_zone.size / sel_zone.sect ) ) | ceil} turns</b> &nbsp;
@@ -110,7 +110,7 @@
 						</template>
 						Output: <span class="${k=='$'?'cash':k}" repeat.for="k of sel_zone.output_rec|props">${sel_zone.output_rec[k]|round:1}</span>
 					</p>
-					<p if.bind="sel_zone.insuf" class="nag bad">⚠️ Zone in Decline</p>
+					<p if.bind="sel_zone.insuf" class="nag bad"> ⚠️ ${sel_zone_culprits ? sel_zone_culprits : 'Zone in Decline'} </p>
 					<p if.bind="app.options.debug"><button click.delegate="sel_zone.log = sel_zone.log ? false : true" class="${sel_zone.log ? 'alt' : 'cool'}">LOG ME</button></p>
 				</div>
 				<div>

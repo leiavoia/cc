@@ -63,6 +63,7 @@ export class PlanetDetailPane {
 					}
 				else {
 					this.CheckIfSelectedZoneHasUpgrades();
+					this.CheckForInsufZoneCulprits();
 					}
 				}
 			}
@@ -70,6 +71,7 @@ export class PlanetDetailPane {
 			this.sel_build_item = null;
 			this.sel_zone = null;
 			this.sel_zone_upgrade_avail = false;
+			this.sel_zone_culprits = [];
 			}
 		}
 		
@@ -161,10 +163,26 @@ export class PlanetDetailPane {
 			).length > 0;
 		}
 		
+	// if zone is insufficient, get a human readable explaination
+	CheckForInsufZoneCulprits() { 
+		if ( this.sel_zone && this.sel_zone.insuf ) {
+			let culprits = [];
+			for ( let k in this.sel_zone.inputs ) {
+				if ( this.app.game.myciv.resource_supply[k] < 1.0 ) {
+					culprits.push( this.app.game.myciv.ResourceLabel(k) );
+					}
+				}
+			this.sel_zone_culprits = 'Short on ' + culprits.join(', ');
+			}
+		else {
+			this.sel_zone_culprits = '';
+			}
+		}
+				
 	ToggleStagingPoint() { 
 		this.planet.owner.AI_ToggleStagingPoint( this.planet.star );
 		}
-		
+
 	ClickZone(z,sticky) {
 		if ( this.sel_zone == z ) { 
 			this.sel_zone = null;
@@ -172,6 +190,7 @@ export class PlanetDetailPane {
 		else {
 			this.sel_zone = z;
 			this.CheckIfSelectedZoneHasUpgrades();
+			this.CheckForInsufZoneCulprits();
 			}
 		this.app.CloseMainPanel();
 		}
