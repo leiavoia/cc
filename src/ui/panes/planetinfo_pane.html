@@ -9,35 +9,35 @@
 			<div class="content data" style="min-width: 45%;">
 				<h2>Accounting</h2>
 				<table class="small wide">
-					<tr>
+					<tr class="resources">
 						<th></th>
 						<th>Name</th>
-						<th>$</th>
-						<th>Sh</th>
-						<th>Df</th>
-						<th>Hs</th>
-						<th>Rs</th>
-						<th>O</th>
-						<th>S</th>
-						<th>M</th>
-						<th>R</th>
-						<th>G</th>
-						<th>B</th>
-						<th>C</th>
-						<th>Y</th>
-						<th>V</th>
+						<th><span class="cash" title="cash"></span></th>
+						<th><span class="tagicon ship" title="Ship Construction"></span></th>
+						<th><span class="tagicon military" title="Defense Construction"></span></th>
+						<th><span class="tagicon housing" title="Housing"></span></th>
+						<th><span class="tagicon research" title="Research"></span></th>
+						<th><span class="o" title="Organics"></span></th>
+						<th><span class="s" title="Silicates"></span></th>
+						<th><span class="m" title="Metals"></span></th>
+						<th><span class="r" title="Redium"></span></th>
+						<th><span class="g" title="Verdagen"></span></th>
+						<th><span class="b" title="Bluetonium"></span></th>
+						<th><span class="c" title="Cyanite"></span></th>
+						<th><span class="y" title="Yellowtron"></span></th>
+						<th><span class="v" title="Violetronium"></span></th>
 					</tr>
 					<tr class="bold">
 						<td></td>
 						<td>TOTALS</td>
 						<td repeat.for="k of ['$','ship','def','hou','res','o','s','m','r','g','b','c','y','v']"
-						class="${planet.acct_total[k] > 0.001 ? 'good' : (planet.acct_total[k] < 0.001 ? 'bad' : 'zero')}">${planet.acct_total[k]|round}</td>
+						class="${planet.acct_total[k] > 0.001 ? 'good' : (planet.acct_total[k] && planet.acct_total[k] < 0.001 ? 'bad' : 'zero')}">${planet.acct_total[k]|round}</td>
 					</tr>
 					<tr repeat.for="row of planet.acct_ledger">
 						<td class="zero right">${row.type}</td>
 						<td>${row.name}</td>
 						<td repeat.for="k of ['$','ship','def','hou','res','o','s','m','r','g','b','c','y','v']"
-						class="${row[k] > 0.001 ? 'good' : (row[k] < 0.001 ? 'bad' : 'zero')}">${row[k]|round}</td>
+						class="${row[k] > 0.001 ? 'good' : (row[k] && row[k] < 0.001 ? 'bad' : 'zero')}">${row[k]|round}</td>
 					</tr>
 				</table>		
 			</div>
@@ -53,6 +53,7 @@
 					<option repeat.for="option of ship_dest_opts" model.bind="option.value">${option.name}</option>
 				</select>
 				
+				<br/>
 				<h2>Economy</h2>
 				<p>Throttle: ${planet.throttle + 0.5|percent}%</p>
 				<p>Productivity: ${planet.throttle_output|percent}%</p>

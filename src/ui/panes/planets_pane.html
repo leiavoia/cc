@@ -1,18 +1,23 @@
 <template>
 	<div id="planets_pane" class="pane">
 	
-		<p style="float:right; margin: 0;"><button click.delegate="ClosePanel()" class="big bad">CLOSE</button></p>
+		<p style="float:right; margin: 0;">
+			<button click.delegate="mode = 'basic'" class="big ${mode=='basic' ? '' : 'cool'}">BASICS</button>
+			<button click.delegate="mode = 'output'" class="big ${mode=='output' ? '' : 'cool'}">OUTPUTS</button>
+			<button click.delegate="ClosePanel()" class="big bad">CLOSE</button>
+		</p>
 		
 		<h1>Planets</h1>
 		
 		<p>
-			<a href="#" class="button ${show_mine?'alt':''}" click.delegate="show_mine=!show_mine">My Planets</a>
-			<a href="#" class="button ${show_foreign?'alt':''}" click.delegate="show_foreign=!show_foreign">Foreign Planets</a>
-			<a href="#" class="button ${show_unclaimed?'alt':''}" click.delegate="show_unclaimed=!show_unclaimed">Unclaimed Planets</a>
-			<b>${planets.length}</b> known planets in range
+			<button class="button ${show_mine?'':'cool'}" click.delegate="show_mine=!show_mine">My Planets</button>
+			<button class="button ${show_foreign?'':'cool'}" click.delegate="show_foreign=!show_foreign">Foreign Planets</button>
+			<button class="button ${show_unclaimed?'':'cool'}" click.delegate="show_unclaimed=!show_unclaimed">Unclaimed Planets</button>
+			<b>${planets.length}</b> explored planets in range
 		</p>
 		
-		<table cellpadding="6" if.bind="planets.length">
+		<!-- BASIC VIEW -->
+		<table cellpadding="6" if.bind="planets.length && mode=='basic'">
 			<tr>
 				<th></th>
 				<th class="clickable" click.delegate="SortBy('name')">Planet</th>
@@ -23,8 +28,7 @@
 				<th class="clickable" click.delegate="SortBy('energy')">Energy</th>
 				<th class="clickable" click.delegate="SortBy('pop')">Pop</th>
 				<th class="clickable" click.delegate="SortBy('popmax')">PopMax</th>
-				<th class="clickable" click.delegate="SortBy('taxrate')">Tax%</th>
-				<th class="clickable" click.delegate="SortBy('spending')">Spend</th>
+				<!-- <th class="clickable" click.delegate="SortBy('taxrate')">Tax%</th> -->
 				<th class="clickable" click.delegate="SortBy('income')">Income</th>
 				<th class="clickable">Building</th>
 			</tr>
@@ -45,10 +49,47 @@
 					<td class="energy">${p.energy}x</td>
 					<td class="pop">${p.total_pop|round:1}</td>
 					<td class="maxpop">${p.maxpop|round:1}</td>
-					<td class="taxrate">${p.tax_rate|percent}</td>
-					<td class="spending">${p.spending|percent}</td>
+					<!-- <td class="taxrate">${p.tax_rate|percent}</td> -->
 					<td class="income ${p.acct_total.$ >= 0 ? 'good' : 'bad'}">${p.acct_total.$ >= 0 ? '+' : ''}${p.acct_total.$|round}</td>
 					<td class="building">${p.owner && p.owner.is_player && p.prod_q.length ? (p.prod_q[0].name + ' (' + p.prod_q[0].turns_left + ')') : ''}</td>
+				</tr>
+			</template>
+		</table>
+		
+		<!-- RESOURCE OUTPUT VIEW -->
+		<table cellpadding="6" if.bind="planets.length && mode=='output'">
+			<tr class="resources">
+				<th></th>
+				<th class="clickable" click.delegate="SortBy('name')">Planet</th>
+				<th class="clickable" click.delegate="SortBy('owner')">Owner</th>
+				<th class="clickable" click.delegate="SortBy('size')">Size</th>
+				<th class="clickable" click.delegate="SortBy('income')"><span class="cash" title="cash"></span></th>
+				<th class="clickable" click.delegate="SortBy('o')"><span class="o" title="Organics"></span></th>
+				<th class="clickable" click.delegate="SortBy('s')"><span class="s" title="Silicates"></span></th>
+				<th class="clickable" click.delegate="SortBy('m')"><span class="m" title="Metals"></span></th>
+				<th class="clickable" click.delegate="SortBy('r')"><span class="r" title="Redium"></span></th>
+				<th class="clickable" click.delegate="SortBy('g')"><span class="g" title="Verdagen"></span></th>
+				<th class="clickable" click.delegate="SortBy('b')"><span class="b" title="Bluetonium"></span></th>
+				<th class="clickable" click.delegate="SortBy('c')"><span class="c" title="Cyanite"></span></th>
+				<th class="clickable" click.delegate="SortBy('y')"><span class="y" title="Yellowtron"></span></th>
+				<th class="clickable" click.delegate="SortBy('v')"><span class="v" title="Violetronium"></span></th>
+				<th class="clickable" click.delegate="SortBy('ship')"><span class="tagicon ship" title="Ship Construction"></span></th>
+				<th class="clickable" click.delegate="SortBy('def')"><span class="tagicon military" title="Defense Construction"></span></th>
+				<th class="clickable" click.delegate="SortBy('hou')"><span class="tagicon housing" title="Housing"></span></th>
+				<th class="clickable" click.delegate="SortBy('res')"><span class="tagicon research" title="Research"></span></th>
+			</tr>
+			<template repeat.for="p of planets" containerless>
+				<tr if.bind="(show_mine && p.owner == myciv) || (show_unclaimed && !p.owner) || (show_foreign && p.owner != myciv && p.owner)"
+					click.delegate="ClickPlanet(p)" class="${p.owner == myciv ? 'own' : 'foreign'} ${p.star.explored ? 'known' : 'unknown'}" 
+					>
+					<td class="image"><div class="planet atm${p.atm} tmp${p.temp}" css="background-size: ${p.size|planetsizer}% auto;"></div></td>
+					<td class="name" css="color: ${p.owner ? p.owner.color : 'inherit'};">${p.name}</td>
+					<td class="owner" css="color: ${p.owner ? p.owner.color : 'inherit'};">${p.owner ? p.owner.name : ''}</td>
+					<td class="size">${p.size}</td>
+					<td repeat.for="k of ['$','o','s','m','r','g','b','c','y','v','ship','def','hou','res']"
+						class="${p.acct_total[k] > 0.001 ? 'good' : (p.acct_total[k] && p.acct_total[k] < 0.001 ? 'bad' : 'zero')}" >
+						${p.acct_total[k]|round}
+					</td>	
 				</tr>
 			</template>
 		</table>

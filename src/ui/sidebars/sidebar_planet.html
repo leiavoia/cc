@@ -147,7 +147,7 @@
 			<div class="data wrapper resources" if.bind="planet.owner" click.delegate="OpenDetailsPane()">
 				<span class="${k=='$'?'cash':k}" repeat.for="k of ['$','o','r','c', 'hou','s','g','y',  'res','m','b','v', 'ship','def']"
 					style="width: 23%; margin: 0.5%; padding: 0.5%; border-radius:2px; display: inline-block; height:0.8em;line-height:0.8em;">
-					<b class="${planet.acct_total[k] > 0.001 ? 'good' : (planet.acct_total[k] < 0.001 ? 'bad' : 'zero')}">${planet.acct_total[k]|ceil}</b>
+					<b class="${planet.acct_total[k] > 0.001 ? 'good' : (planet.acct_total[k] && planet.acct_total[k] < 0.001 ? 'bad' : 'zero')}">${planet.acct_total[k]|round}</b>
 					<!-- <b style="color:#D11;" if.bind="planet.resource_rec[k] > 0">-${planet.resource_rec[k]|ceil}</b> -->
 					<!-- <b style="color:#AEA;" if.bind="planet.output_rec[k] > 0">+${planet.output_rec[k]|ceil}</b> -->
 				</span>			

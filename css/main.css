@@ -2922,24 +2922,20 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	font-weight:bold;
 	text-decoration: underline;
 }
-#planets_pane TABLE TR.unknown TD.size,
-#planets_pane TABLE TR.unknown TD.hab,
-#planets_pane TABLE TR.unknown TD.resources,
-#planets_pane TABLE TR.unknown TD.energy,
-#planets_pane TABLE TR.unknown TD.pop,
-#planets_pane TABLE TR.unknown TD.maxpop,
-#planets_pane TABLE TR.unknown TD.spending,
-#planets_pane TABLE TR.unknown TD.taxrate,
-#planets_pane TABLE TR.unknown TD.income,
-#planets_pane TABLE TR.unknown TD.building,
+
+/* hide stuff by default and reveal only what player should be allowed to see */
+#planets_pane TABLE TR.foreign TD { opacity:0; }
+#planets_pane TABLE TR.unknown TD { opacity:0; }
+#planets_pane TABLE TR.known TD.energy,
+#planets_pane TABLE TR.known TD.resources,
 #planets_pane TABLE TR.unknown TD.image,
-#planets_pane TABLE TR.foreign TD.pop,
-#planets_pane TABLE TR.foreign TD.maxpop,
-#planets_pane TABLE TR.foreign TD.spending,
-#planets_pane TABLE TR.foreign TD.taxrate,
-#planets_pane TABLE TR.foreign TD.income,
-#planets_pane TABLE TR.foreign TD.building
- { opacity:0; }
+#planets_pane TABLE TR.unknown TD.name,
+#planets_pane TABLE TR.foreign.known TD.image,
+#planets_pane TABLE TR.foreign.known TD.name,
+#planets_pane TABLE TR.foreign.known TD.size,
+#planets_pane TABLE TR.foreign.known TD.hab,
+#planets_pane TABLE TR.foreign.known TD.owner
+{ opacity:1; }
 
 #planets_pane .planet {
 	display: inline-block;
@@ -2950,6 +2946,7 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	margin: -0.25em 0 -0.25em -0.25em;
 	}
 
+#planets_pane TH .tagicon:before { margin-right: 0; }
 
 
 	

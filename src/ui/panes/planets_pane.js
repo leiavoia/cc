@@ -10,6 +10,7 @@ export class PlanetsPane {
 	show_unclaimed	= false;
 	sort_by = 'size';
 	sort_dir = 'asc';
+	mode = 'basic' // 'basic', 'output'
 	
 	activate(data) {
 		this.app = data.app;
@@ -33,7 +34,7 @@ export class PlanetsPane {
 	UpdatePlanets() { 
 		this.planets.splice(0, this.planets.length); // empty it
 		for ( let star of this.app.game.galaxy.stars ) { 
-			if ( this.app.options.see_all || star.in_range ) { 
+			if ( this.app.options.see_all || star.explored ) { 
 				for ( let planet of star.planets ) { 
 					this.planets.push( planet );
 					}
@@ -43,8 +44,8 @@ export class PlanetsPane {
 		}
 		
 	SortBy( sort_by ) {
-		this.sort_by = sort_by || this.sort_by;
 		this.sort_dir = this.sort_by == sort_by ? (this.sort_dir=='asc' ? 'desc' : 'asc') : 'desc';
+		this.sort_by = sort_by || this.sort_by;
 		// generic sorting method
 		let val = x => { 
 			switch ( this.sort_by ) {
@@ -57,6 +58,19 @@ export class PlanetsPane {
 				case 'taxrate': return x.tax_rate || 0;
 				case 'spending': return x.spending || 0;
 				case 'income': return x.acct_total.$ || 0;
+				case 'o': return x.acct_total.o || 0;
+				case 's': return x.acct_total.s || 0;
+				case 'm': return x.acct_total.m || 0;
+				case 'r': return x.acct_total.r || 0;
+				case 'g': return x.acct_total.g || 0;
+				case 'b': return x.acct_total.b || 0;
+				case 'c': return x.acct_total.c || 0;
+				case 'y': return x.acct_total.y || 0;
+				case 'v': return x.acct_total.v || 0;
+				case 'hou': return x.acct_total.hou || 0;
+				case 'ship': return x.acct_total.ship || 0;
+				case 'def': return x.acct_total.def || 0;
+				case 'res': return x.acct_total.res || 0;
 				case 'owner': return x.owner ? x.owner.name : null;
 				case 'resources': return Object.values(x.resources).reduce( (accum,current) => accum+current, 0 );
 				}	
