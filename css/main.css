@@ -847,6 +847,7 @@ TABLE.env TD.ideal {
 .bad { color: #D21; }
 .alert { color: #FCF742; }
 .zero { color: #666; }
+.dim { color: #888; }
 
 .topless {margin-top: 0 !important;}
 .bottomless {margin-bottom: 0 !important;}
@@ -863,6 +864,7 @@ TABLE.env TD.ideal {
 .biggester { font-size: 300%; }
 
 .pretty TD { color: #4BA5CC; }
+
 
 TABLE.hover_rows TR:hover {
 	background: rgba(75, 165, 204, 0.65);
@@ -987,7 +989,7 @@ button.active, .button_rack A.active, A.button.active {
 		-0.15em -0.15em 0.15em inset rgba(0,0,0,0.65); 
 	}
 button.ghost, .button_rack A.ghost, A.button.ghost, .ghost {
-	opacity: 0.35;
+	opacity: 0.24;
 	pointer-events:none;
 	cursor: default;
 	}
@@ -1124,7 +1126,7 @@ progress.skinny {
 
 INPUT.ghost, INPUT.disabled {
 	pointer-events: none; 
-	opacity: 0.25;
+	opacity: 0.24;
 	}	
 
 OUTPUT.random { font-style: italic; } 
@@ -1681,17 +1683,13 @@ invisible when unexplored, dim when explored */
 	/* overflow:auto; */
 	}
 	
-#layout_ui_side .wrapper {
+.wrapper {
 	padding: 0.5em;
 	margin: 1em 0 1em 0;
-	background-color: rgba(255,255,255,0.08);
+	background-color: rgba(255,255,255,0.10);
 	border-radius: 8px;
 	}
-	
-#layout_ui_side > .planet .wrapper {
-	background-color: rgba(255,255,255,0.08);
-	}
-	
+		
 #layout_ui_side > .planet NAV {
 	display:block;
 	width: 100%;
@@ -1782,7 +1780,7 @@ invisible when unexplored, dim when explored */
 }	
 	
 .planet .cost > SPAN { margin-right: 0.55em; }
-.zone_detail .resources > SPAN { margin-right: 0.55em; }
+.wrapper .resources > SPAN { margin-right: 0.55em; }
 
 #layout_ui_side > .planet > IMG {
 	float:right;
@@ -2484,6 +2482,14 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	font-size: 85%;
 	margin: 0.3em auto;
 	}
+#layout_ui_side > .planet TABLE.prod_queue TD:first-child {
+	padding-left: 0;
+	text-align:left;
+	}
+#layout_ui_side > .planet TABLE.prod_queue TD:last-child {
+	padding-right: 0;
+	text-align:right;
+	}
 #layout_ui_side > .planet TABLE.prod_queue {
 	width: 100%;
 	border-spacing: 0;
@@ -2497,11 +2503,13 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 /* 	line-height: 1.25em; */
 	}
 #layout_ui_side > .planet TABLE.prod_queue OPTION {
-	height: 1.25em;
+	height: 1.45em;
 	}
-	
-#layout_ui_side > .planet TABLE.prod_queue A {
-	text-decoration:none;
+#layout_ui_side > .planet TABLE.prod_queue BUTTON {
+	font-weight:bold;
+	}
+#layout_ui_side > .planet TABLE.prod_queue BUTTON.bad {
+	width: 2em;
 	}
 #layout_ui_side > .planet TABLE.prod_queue TD {
 	padding: 0.25em;
@@ -2513,26 +2521,30 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	left: 0;
 	top: 0;
 	z-index: 2;
-	line-height: 1.25em;
-	height: 1.25em;
-	padding: 0.25em 0.25em 0.25em 0.75em;
-	margin: 0;
+	line-height: 1.45em;
+	height: 1.45em;
+	padding: 0em 0.2em 0em 0.25em;
+	margin: 0.5em 0.5em 0 0;
+	overflow:hidden;
+	}
+#layout_ui_side > .planet TABLE.prod_queue SPAN.turns_left {
+	color: #7be96f;
+	font-weight: bold;
 	}
 #layout_ui_side > .planet TABLE.prod_queue progress[value] {
 	position: relative;
-	margin: 0;
+	margin: 4px 0 0 0;
 	padding: 0;
 	-webkit-appearance: none;
 	-moz-appearance: none;
 		appearance: none;
 	border: none;
-	width: 100%;
-	height: 1.25em;
+	width: 200px;
+	height: 1.45em;
+	line-height: 1.45em;
 	/* FF container defaults */
 	border-radius: 3px;
 	background-color: #172936;
-/* 	box-shadow: 3px 3px 3px rgba(0,0,0,0.75) inset; */
-	  
 	}
 #layout_ui_side > .planet TABLE.prod_queue progress[value]::-webkit-progress-bar {
 	border-radius: 3px;
@@ -2990,7 +3002,7 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	margin: 0 0 0 -0.5em !important;
 	}
 	
-#zone_pane .zone_detail {
+#zone_pane .wrapper {
 	background: #141414;
 	border-radius: 0.5em;
 	padding: 0.5em 1em;
@@ -2999,20 +3011,53 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	margin: 0.5em;
 	min-width: 300px;
 	}
-#zone_pane .zone_detail:hover {
+#zone_pane .wrapper:hover {
 	background: #333;
 	cursor: cell;
 	}
-#zone_pane .zone_detail.disabled {
+#zone_pane .wrapper.disabled {
 	opacity: 0.25;
 	cursor: not-allowed;
 	}
-#zone_pane .zone_detail.disabled:hover {
+#zone_pane .wrapper.disabled:hover {
 	background: #141414;
 	cursor: not-allowed;
 	pointer-events: none;
 	}
 
+/* this actually targets the build-project pane */
+#zone_pane .item {
+	border-radius: 0.5em;
+	padding: 0.5em 1em;
+	flex: 1 1 35%;
+	box-sizing: border-box;
+	margin: 0.5em;
+	min-width: 380px;
+	}
+#zone_pane IMG {
+	max-width: 6em;
+	max-height: 9em;
+	min-width: 4em;
+	object-position: top;
+	object-fit:contain;
+	float: right;
+	margin: 1em 0 1em 1em;
+	}
+#zone_pane .item H2 SPAN {
+	color: #AEA;
+	}
+#zone_pane .subtext { line-height: 1em; margin: 0; padding: 0; }
+#zone_pane .subtext SPAN { margin-right:0.75em; }
+#zone_pane .item:hover {
+	background: #115a96;
+	cursor: pointer;
+	}
+	
+#zone_pane .ship H2 { color: #4BA5CC; }	
+#zone_pane .groundunit H2 { color: #f3ac29; }	
+#zone_pane .makework H2 { color: #AEA; }	
+	
+	
 
 #fleet_pane MAIN > DIV {
 	display: flex;
@@ -3360,7 +3405,7 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	}
 #diplo_pane #civ_list > DIV.ghost {
 	pointer-events:none; 
-	opacity:0.30;
+	opacity:0.24;
 	}
 #civ_list > DIV IMG.diplo_img {
 	width: 100%;

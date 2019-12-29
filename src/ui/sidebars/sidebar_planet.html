@@ -6,8 +6,8 @@
 			<button click.delegate="OpenDetailsPane()" class="${planet.owner===app.game.myciv ? '' : 'ghost'}">INFO</button>
 			<button click.delegate="PressLocalFleetButton()" class="${local_fleet ? '' : 'ghost'}">FLEET</button>
 			<button click.delegate="PressStarButton()">STAR</button>
-			<button click.delegate="PressPrevPlanetButton()">◀</button>
-			<button click.delegate="PressNextPlanetButton()">▶</button>
+			<button click.delegate="PressPrevPlanetButton()" class="${planet.star.planets.length > 1 ? '' : 'ghost'}">◀</button>
+			<button click.delegate="PressNextPlanetButton()" class="${planet.star.planets.length > 1 ? '' : 'ghost'}">▶</button>
 			<button click.delegate="ToggleStagingPoint()" 
 				class=" ${ (planet.owner.is_player) 
 					? (planet.star.accts.get(planet.owner).ai.staging_pt ? 'alt' : '') 
@@ -148,47 +148,40 @@
 				<span class="${k=='$'?'cash':k}" repeat.for="k of ['$','o','r','c', 'hou','s','g','y',  'res','m','b','v', 'ship','def']"
 					style="width: 23%; margin: 0.5%; padding: 0.5%; border-radius:2px; display: inline-block; height:0.8em;line-height:0.8em;">
 					<b class="${planet.acct_total[k] > 0.001 ? 'good' : (planet.acct_total[k] && planet.acct_total[k] < 0.001 ? 'bad' : 'zero')}">${planet.acct_total[k]|round}</b>
-					<!-- <b style="color:#D11;" if.bind="planet.resource_rec[k] > 0">-${planet.resource_rec[k]|ceil}</b> -->
-					<!-- <b style="color:#AEA;" if.bind="planet.output_rec[k] > 0">+${planet.output_rec[k]|ceil}</b> -->
 				</span>			
-				<!-- <span class="" style="width: 23%; margin: 0.5%; padding: 0.5%; border-radius:2px; display: inline-block; height:0.8em;line-height:0.8em;">
-					GDP: <b>${planet.econ.GDP|round:1}</b>
-				</span>				
-				<span class="" style="width: 23%; margin: 0.5%; padding: 0.5%; border-radius:2px; display: inline-block; height:0.8em;line-height:0.8em;">
-					PCI: <b>${planet.econ.PCI|round:1}</b> ➞ <b>${planet.econ.target_PCI|round:1}</b>
-				</span>				 -->
-				<!-- <span class="" style="width: 23%; margin: 0.5%; padding: 0.5%; border-radius:2px; display: inline-block; height:0.8em;line-height:0.8em;">
-					Morale: <b>${planet.morale|percent}%</b>
-				</span> -->
 			</div>
 			
 			<div class="wrapper" if.bind="planet.owner">
-				<!-- <h3>Now Building:</h3> -->
 				<!-- hacky way of dodging aurelia binding problem to hilite only first element -->
 				<template containerless repeat.for="now_building of planet.prod_q">
-					<p if.bind="$index===0" class="marginless resources cost">Remaining: <span class="${k}" repeat.for="k of now_building.cost|props">${(1-now_building.pct)*now_building.cost[k]|ceil}</span></p>
+					<p if.bind="$index===0 && app.options.debug" class="marginless resources cost">Remaining: <span class="${k}" repeat.for="k of now_building.cost|props">${(1-now_building.pct)*now_building.cost[k]|ceil}</span></p>
 				</template>
-				<table class="prod_queue">
+				<table class="prod_queue marginless">
 					<tr repeat.for="item of planet.prod_q">
-						<td>${item.turns_left >= 999 ? '-' : item.turns_left}</td>
-						<td><progress max="100" value="${item.pct*100|floor}"></progress><p>${item.name}</p></td>
-						<td><a href="#" click.delegate="BuildQueueMoveItemUp($index)" if.bind="$index > 0">▲</a></td>
-						<td><a href="#" click.delegate="BuildQueueMoveItemDown($index)" if.bind="$index != (planet.prod_q.length-1)">▼</a></td>
+						<td class="progress">
+							<progress max="100" value="${item.pct*100|floor}"></progress>
+							<p>${item.name} <span class="turns_left">${item.turns_left >= 999 ? '∞' : item.turns_left}</span></p>
+						</td>
+						<td><button class="cool small ${$index > 0 ? '' :'ghost'}" click.delegate="BuildQueueMoveItemUp($index)">▲</button></td>
+						<td><button class="cool small ${$index != (planet.prod_q.length-1) ? '' :'ghost'}" click.delegate="BuildQueueMoveItemDown($index)">▼</button></td>
 						<td>
 							<select value.bind="item.qty" style="width:3em;">
 								<option repeat.for="option of prod_q_repeat_vals" model.bind="option.value">${option.name}</option>
 							</select>			
 						</td>
-						<td><a href="#" click.delegate="BuildQueueRemoveItem($index)" class="bad">X</a></td>
+						<td><button class="bad small" click.delegate="BuildQueueRemoveItem($index)">X</button></td>
 					</tr>
 				</table>
-				<p>
-					<select value.bind="sel_build_item" style="display:inline-block;">
+				<p class="button_rack fill topless">
+					<!--
+						<select value.bind="sel_build_item" style="display:inline-block;">
 						<option repeat.for="i of build_queue_items" model.bind="i">${i.bp.name} (${i.turns}t)</option>
 					</select>
 					<button click.delegate="AddSelectedItemToBuildQueue()">Add</button>
+					-->
+					<button click.delegate="OpenBuildPane()">Add Project</button>
 				</p>
-				<p class="clickable" click.delegate="OpenDetailsPane()">Send newly built ships to: 
+				<p class="clickable" click.delegate="OpenDetailsPane()">New ships sent to: 
 					<b>${
 						planet.ship_dest == '@' 
 						? 'Nearest Staging Point'
@@ -202,7 +195,6 @@
 			</div>
 			
 			<div class="defenses wrapper" if.bind="planet.owner && planet.troops.length">
-				<!-- <h3>Defenses:</h3> -->
 				<div repeat.for="[bp,count] of ground_units" style="display:inline-block;">
 					<img src.bind="bp.img" title.bind="bp.name"
 						style="

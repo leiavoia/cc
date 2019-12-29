@@ -151,6 +151,10 @@ export class PlanetDetailPane {
 		this.app.SwitchMainPanel( 'zone', this.planet, {zone:z}, false, false);
 		}
 		
+	OpenBuildPane() { 
+		this.app.SwitchMainPanel( 'build', this.planet, null, false, false);
+		}
+		
 	CheckIfSelectedZoneHasUpgrades() {
 		if ( this.sel_zone.perma ) { 
 			this.sel_zone_upgrade_avail = false;

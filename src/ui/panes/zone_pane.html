@@ -8,7 +8,7 @@
 			<p class="bad bold big centered" if.bind="!zones.length">No upgrades available.</p>
 			<div class="">
 				<div repeat.for="z of zones" click.delegate="ClickZone(z)"
-					class="zone_detail ${z.type} ${(zone && eligible_zones[$index]) || (!zone && z.minsect &lt;= planet.size - planet.zoned) ? '' : 'disabled'}" >
+					class="wrapper zone_detail ${z.type} ${(zone && eligible_zones[$index]) || (!zone && z.minsect &lt;= planet.size - planet.zoned) ? '' : 'disabled'}" >
 					<div>
 						<p class="name">${z.name}</p>
 						<p class="type">${z.type}</p>
@@ -33,9 +33,9 @@
 						<div class="zone ${z.type} ${z.key} only"></div>
 					</div>
 				</div>
-				<!-- hack to make nice single item rows -->
-				<div class="zone_detail" style="visibility:hidden;"></div>
-				<div class="zone_detail" style="visibility:hidden;"></div>
+				<!-- hacks to make nice single item rows -->
+				<div class="wrapper" style="visibility:hidden;"></div>
+				<div class="wrapper" style="visibility:hidden;"></div>
 			</div>
 		</main>
 	</div>

@@ -1,0 +1,74 @@
+<template>
+	<!-- "zone pane" - not a typo -->
+	<div id="zone_pane" class="pane flex">
+		<header>
+			<p style="float:right; margin: 0;"><button click.delegate="ClosePanel()" class="button big bad marginless">CLOSE</button></p>
+			<h1>Build Project</h1>
+		</header>
+		<main class="planet" if.bind="planet.owner">
+			<div class=""><!-- flex wrapper -->
+				<div repeat.for="bp of ships" class="wrapper ship ${IsBuildable(bp) ? '' : 'ghost'}" click.delegate="ClickShip(bp)">
+					<img src.one-time="bp.img" />
+					<h2>${bp.name}</h2>
+					<table class="pretty">
+						<tr>
+							<th>Hull</th>	
+							<td>${bp.hull}</td>
+							<th>Discount</th>	
+							<td>${bp.bulk_discount|percent}%</td>
+						</tr>
+						<tr>
+							<th>Armor</th>	
+							<td>${bp.armor}</td>
+							<th>Firepower</th>	
+							<td>${bp.fp}</td>
+						</tr>
+						<tr>
+							<th>Shielding</th>	
+							<td>${bp.shield}</td>
+							<th>Speed</th>	
+							<td>${bp.speed} / ${bp.combatspeed}</td>
+						</tr>
+					</table>
+					<span repeat.for="w of bp.weapons" class="dim">
+						${w.name} (${w.qty})<span if.bind="$index != bp.weapons.length-1 || bp.comps.length">,&nbsp</span> 
+					</span>
+					<span repeat.for="c of bp.comps" class="dim">
+						${c.name}<span if.bind="$index != bp.comps.length-1">,&nbsp</span> 
+					</span>
+					<p class="resources">
+						Costs: <span class="${k=='$'?'cash':k}" repeat.for="k of bp.cost|props">${bp.cost[k] * planet.throttle_input|round:1}</span>
+					</p>
+				</div>
+
+				<div repeat.for="bp of groundunits" class="wrapper groundunit ${IsBuildable(bp) ? '' : 'ghost'}" click.delegate="ClickGroundUnit(bp)">
+					<img src.one-time="bp.img" />
+					<h2>${bp.name}</h2>
+					<table class="tight headers_right pretty">
+						<tr>
+							<th>Damage</th>	
+							<td>${bp.mindmg} - ${bp.maxdmg}</td>
+						</tr>
+						<tr>
+							<th>Hit Points</th>	
+							<td>${bp.hp}</td>
+						</tr>
+					</table>
+					<p class="resources">
+						Costs: <span class="${k=='$'?'cash':k}" repeat.for="k of bp.cost|props">${bp.cost[k] * planet.throttle_input|round:1}</span>
+					</p>
+				</div>
+
+				<div repeat.for="p of makework" class="wrapper makework" click.delegate="ClickMakeworkProject(p)">
+					<img src.one-time="p.img" />
+					<h2>${p.name}</h2>
+					<p class="dim">${p.desc}</p>
+				</div>
+				
+				<!-- hacks to make nice single item rows -->
+				<div class="wrapper" style="visibility:hidden;"></div>
+				<div class="wrapper" style="visibility:hidden;"></div>
+			</div>
+		</main>
+	</div>
+</template>

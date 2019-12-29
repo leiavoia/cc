@@ -483,7 +483,7 @@ export default class Planet {
 		
 	ListMakeworkProjects() { 
 		return [
-			{type: 'tradegoods', name: 'Trade Goods'},
+			{ type: 'tradegoods', name: 'Trade Goods', img: 'img/icons/svg/coins-1.svg', desc: 'Converts unused ship and defense manufacturing labor into cash at a reduced rate.' },
 			];
 		}
 		
