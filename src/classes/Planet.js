@@ -441,21 +441,42 @@ export default class Planet {
 		}
 		
 	AddBuildQueueMakeworkProject( type = 'tradegoods' ) { 
-		// TODO differentiate makework types. only tradegoods for now
 		let item = null;
 		switch ( type ) { 
+			case 'research' : { 
+				item = {
+					type: 'makework',
+					name: 'Research Support',
+					obj: 'research',
+					cost: { labor: 50 }, // "cost" in hammers
+					qty: -1, // default infinity
+					turns_left: '-',
+					pct: 0,
+					ProduceMe: function ( planet ) {
+						let amount = 5;
+						let row = planet.acct_ledger.find( r => r.name=='Research Support' )
+							|| { name:'Research Support', type:'project', subcat:'makework' };
+						row.res = (row.res||0) + amount;
+						planet.acct_total.res = (planet.acct_total.res||0) + amount;
+						planet.owner.resource_income.res += amount;
+						planet.owner.resources.research += amount;	
+						planet.owner.resources.research_income += amount;	
+						}
+					};
+				break;
+				}
 			case 'tradegoods' : 
 			default : { 
 				item = {
 					type: 'makework',
 					name: 'Trade Goods',
 					obj: 'tradegoods',
-					cost: { labor: 20 }, // "cost" in hammers
+					cost: { labor: 50 }, // "cost" in hammers
 					qty: -1, // default infinity
 					turns_left: '-',
 					pct: 0,
 					ProduceMe: function ( planet ) {
-						let amount = 20;
+						let amount = 5;
 						planet.econ.tradegoods += amount;
 						let row = planet.acct_ledger.find( r => r.name=='Trade Goods' )
 							|| { name:'Trade Goods', type:'project', subcat:'makework' };
@@ -484,6 +505,7 @@ export default class Planet {
 	ListMakeworkProjects() { 
 		return [
 			{ type: 'tradegoods', name: 'Trade Goods', img: 'img/icons/svg/coins-1.svg', desc: 'Converts unused ship and defense manufacturing labor into cash at a reduced rate.' },
+			{ type: 'research', name: 'Research Support', img: 'img/icons/svg/atom02.svg', desc: 'Converts unused ship and defense manufacturing labor into research points at a reduced rate.' },
 			];
 		}
 		

@@ -160,7 +160,7 @@
 					<tr repeat.for="item of planet.prod_q">
 						<td class="progress">
 							<progress max="100" value="${item.pct*100|floor}"></progress>
-							<p>${item.name} <span class="turns_left">${item.turns_left >= 999 ? '∞' : item.turns_left}</span></p>
+							<p>${item.name} <span class="turns_left">${item.turns_left && item.turns_left >= 999 ? '∞' : item.turns_left}</span></p>
 						</td>
 						<td><button class="cool small ${$index > 0 ? '' :'ghost'}" click.delegate="BuildQueueMoveItemUp($index)">▲</button></td>
 						<td><button class="cool small ${$index != (planet.prod_q.length-1) ? '' :'ghost'}" click.delegate="BuildQueueMoveItemDown($index)">▼</button></td>

@@ -20,7 +20,7 @@ export class BuildPane {
 		}
 		
 	ClickMakeworkProject( x ) {
-		this.planet.AddBuildQueueMakeworkProject( x );
+		this.planet.AddBuildQueueMakeworkProject( x.type );
 		this.app.CloseMainPanel();
 		}
 		
