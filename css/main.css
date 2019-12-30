@@ -199,6 +199,10 @@ We also link to Google Fonts:
 	animation: fadeIn .5s both ease-out;
 	opacity: 0.01;
 }
+.fadeInSlow {
+	animation: fadeIn 2s both ease-out;
+	opacity: 0.01; 
+}
 .fadeOut {
 	animation: fadeOut .5s both ease-in;
 	opacity:0;
@@ -1787,7 +1791,7 @@ invisible when unexplored, dim when explored */
 	height: 30px;
 	max-width: 70px;
 	}		
-#layout_ui_side .planet .phys {
+#layout_ui_side .phys {
 	text-shadow: #000 2px 2px 1px;
 	background-image: linear-gradient( to right, rgba(0,0,0,0) 10%, rgba(0,0,0,0.55) 40%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0) 90% ); 
 	padding: 0.5em 1em; 
@@ -1795,17 +1799,21 @@ invisible when unexplored, dim when explored */
 	text-align:center;
 /* 	clear:right; */
 	}
-#layout_ui_side .planet .phys P {
+#layout_ui_side .star .phys {
+	text-align:left;
+	margin-top: -0.25em;
+	}
+.phys P {
 	margin: 0 0 0.25em 0;
 	}
-#layout_ui_side .planet .phys svg.icon {
+.phys svg.icon {
 	display:inline;
 	}
-#layout_ui_side .planet .phys .goodies SPAN {
+.phys .goodies SPAN {
 	margin: 0.25em;
 	display: inline-block;
 	}
-.planet .phys P.env_label {
+.phys P.env_label {
 	margin: 0 0 0.20em 0;
 	padding-top:0;
 /* 	text-align:right; */
@@ -1814,50 +1822,50 @@ invisible when unexplored, dim when explored */
 	font-weight:bold;
 /* 	font-size:100%; */
 	}
-#layout_ui_side .planet .phys P.env_stats {
+.phys P.env_stats {
 	color: #999;
 	font-size: 80%;
 /* 	padding-top: 0.25em; */
 /* 	text-align:right; */
 /* 	clear:both; */
 	}
-#layout_ui_side .planet .phys DIV.size {
+.phys DIV.size {
 	font-size: 200%;
 	font-weight: bold;
 	color: #FFF;
 	}
-#layout_ui_side  .planet .phys DIV.size SPAN {
+.phys DIV.size SPAN {
 	display: inline-block;
 	line-height: 0.4;
 	}
-#layout_ui_side .planet .phys DIV.size SPAN {
+.phys DIV.size SPAN {
 	margin-top: 0.25em;
 	margin-right: 0.26em
 	}
-#layout_ui_side  .planet .phys DIV.size SPAN > SPAN {
+.phys DIV.size SPAN > SPAN {
 	font-size: 0.8rem;
 	line-height: 1.5em;
 	font-weight: normal;
 	text-shadow: #000 1px 1px 1px;
 	}
-#layout_ui_side .star .planet .phys {
+.star .phys {
 	padding: 0;
 	margin: 0.5em 0 0.5em 0;
 	text-align:left;
 	}
-#layout_ui_side .star .planet .phys > DIV.size {
+.star .phys > DIV.size {
 	font-size: 130%;
 	padding-top: 0.35em;
 	}
-/*#layout_ui_side .star .planet .phys DIV.size SPAN > SPAN {
+/*#layout_ui_side .star .phys DIV.size SPAN > SPAN {
  	display:none; 
 	}*/
-#layout_ui_side  .planet .phys DIV.size SPAN.pop { color: #FAA; }
-#layout_ui_side  .planet .phys DIV.size SPAN.inf { color: #FF3; }
-#layout_ui_side  .planet .phys DIV.size SPAN.size { color: #29F; }
-#layout_ui_side  .planet .phys DIV.size SPAN.mine { color: #E68200; }
-#layout_ui_side  .planet .phys DIV.size SPAN.en { color: #FF59FC; }
-#layout_ui_side  .planet .phys DIV.size DIV { 
+.phys DIV.size SPAN.pop { color: #FAA; }
+.phys DIV.size SPAN.inf { color: #FF3; }
+.phys DIV.size SPAN.size { color: #29F; }
+.phys DIV.size SPAN.mine { color: #E68200; }
+.phys DIV.size SPAN.en { color: #FF59FC; }
+.phys DIV.size DIV { 
 	box-shadow: 2px 2px 2px rgba(0,0,0,0.75); 
 	background-color: #FFF; 
 	border-radius:2px;
@@ -1866,15 +1874,15 @@ invisible when unexplored, dim when explored */
 	margin: 3px 1em 3px 0; 
 	clear:left;
 	}
-#layout_ui_side  .planet .phys DIV.size DIV.pop { background-color: #FAA; }
-#layout_ui_side  .planet .phys DIV.size DIV.inf { background-color: #FF3; }
-#layout_ui_side  .planet .phys DIV.size DIV.size { background-color: #29F; }
+.phys DIV.size DIV.pop { background-color: #FAA; }
+.phys DIV.size DIV.inf { background-color: #FF3; }
+.phys DIV.size DIV.size { background-color: #29F; }
 
-#layout_ui_side  .planet .phys P.special {
+.phys P.special {
 	font-style:italic;
 	}
 
-.planet .env_box {
+.env_box {
 	width: 92px;
 	height: 92px;
 /* 	background: rgba(0,0,0,0.55); */
@@ -1885,7 +1893,7 @@ invisible when unexplored, dim when explored */
 	box-shadow: 3px 3px 2px black;
 	position:relative;
 	}
-.planet .env_box .target {
+.env_box .target {
 	position:absolute;
 	width: 20%;
 	height: 20%;
@@ -1895,8 +1903,9 @@ invisible when unexplored, dim when explored */
 	box-sizing: border-box; 
 	border-radius: 2px;
 	z-index: 2;
+	border-color: #AEA;
 	}
-.planet .env_box .hab {
+.env_box .hab {
 	position:absolute;
 	width: 100%;
 	height: 100%;
@@ -1907,35 +1916,35 @@ invisible when unexplored, dim when explored */
 	opacity: 0.35;
 	color: #AEA;
 	}
-.planet.grav1 .env_box .target { border-width: 3px; }
-.planet.grav2 .env_box .target { border-width: 5px; }
-.planet.grav3 .env_box .target { border-width: 7px; }
-.planet.grav4 .env_box .target { border-width: 10px; }
-.planet.atm0.tmp0 .env_box .target { border-color: #444444; margin-left: 0%; margin-top: 0%; }
-.planet.atm1.tmp0 .env_box .target { border-color: #888888; margin-left: 20%; margin-top: 0%; }
-.planet.atm2.tmp0 .env_box .target { border-color: #DDDDDD; margin-left: 40%; margin-top: 0%; }
-.planet.atm3.tmp0 .env_box .target { border-color: #90C8F5; margin-left: 60%; margin-top: 0%; }
-.planet.atm4.tmp0 .env_box .target { border-color: #3976A8; margin-left: 80%; margin-top: 0%; }
-.planet.atm0.tmp1 .env_box .target { border-color: #CCA9A9; margin-left: 0%; margin-top: 20%; }
-.planet.atm1.tmp1 .env_box .target { border-color: #E9A8FF; margin-left: 20%; margin-top: 20%; }
-.planet.atm2.tmp1 .env_box .target { border-color: #9E6F3E; margin-left: 40%; margin-top: 20%; }
-.planet.atm3.tmp1 .env_box .target { border-color: #9FE5FC; margin-left: 60%; margin-top: 20%; }
-.planet.atm4.tmp1 .env_box .target { border-color: #BAD9DB; margin-left: 80%; margin-top: 20%; }
-.planet.atm0.tmp2 .env_box .target { border-color: #F5B3B3; margin-left: 0%; margin-top: 40%; }
-.planet.atm1.tmp2 .env_box .target { border-color: #B0B870; margin-left: 20%; margin-top: 40%; }
-.planet.atm2.tmp2 .env_box .target { border-color: #2CA10B; margin-left: 40%; margin-top: 40%; }
-.planet.atm3.tmp2 .env_box .target { border-color: #79D938; margin-left: 60%; margin-top: 40%; }
-.planet.atm4.tmp2 .env_box .target { border-color: #57BCFA; margin-left: 80%; margin-top: 40%; }
-.planet.atm0.tmp3 .env_box .target { border-color: #CF4242; margin-left: 0%; margin-top: 60%; }
-.planet.atm1.tmp3 .env_box .target { border-color: #E8DD97; margin-left: 20%; margin-top: 60%; }
-.planet.atm2.tmp3 .env_box .target { border-color: #F0D871; margin-left: 40%; margin-top: 60%; }
-.planet.atm3.tmp3 .env_box .target { border-color: #95DE47; margin-left: 60%; margin-top: 60%; }
-.planet.atm4.tmp3 .env_box .target { border-color: #E4F2B1; margin-left: 80%; margin-top: 60%; }
-.planet.atm0.tmp4 .env_box .target { border-color: #DD0000; margin-left: 0%; margin-top: 80%; }
-.planet.atm1.tmp4 .env_box .target { border-color: #DD4444; margin-left: 20%; margin-top: 80%; }
-.planet.atm2.tmp4 .env_box .target { border-color: #EE8888; margin-left: 40%; margin-top: 80%; }
-.planet.atm3.tmp4 .env_box .target { border-color: #FFBBBB; margin-left: 60%; margin-top: 80%; }
-.planet.atm4.tmp4 .env_box .target { border-color: #FFFF00; margin-left: 80%; margin-top: 80%; }
+.grav1 .env_box .target { border-width: 3px; }
+.grav2 .env_box .target { border-width: 5px; }
+.grav3 .env_box .target { border-width: 7px; }
+.grav4 .env_box .target { border-width: 10px; }
+.atm0.tmp0 .env_box .target { margin-left: 0%; margin-top: 0%; }
+.atm1.tmp0 .env_box .target { margin-left: 20%; margin-top: 0%; }
+.atm2.tmp0 .env_box .target { margin-left: 40%; margin-top: 0%; }
+.atm3.tmp0 .env_box .target { margin-left: 60%; margin-top: 0%; }
+.atm4.tmp0 .env_box .target { margin-left: 80%; margin-top: 0%; }
+.atm0.tmp1 .env_box .target { margin-left: 0%; margin-top: 20%; }
+.atm1.tmp1 .env_box .target { margin-left: 20%; margin-top: 20%; }
+.atm2.tmp1 .env_box .target { margin-left: 40%; margin-top: 20%; }
+.atm3.tmp1 .env_box .target { margin-left: 60%; margin-top: 20%; }
+.atm4.tmp1 .env_box .target { margin-left: 80%; margin-top: 20%; }
+.atm0.tmp2 .env_box .target { margin-left: 0%; margin-top: 40%; }
+.atm1.tmp2 .env_box .target { margin-left: 20%; margin-top: 40%; }
+.atm2.tmp2 .env_box .target { margin-left: 40%; margin-top: 40%; }
+.atm3.tmp2 .env_box .target { margin-left: 60%; margin-top: 40%; }
+.atm4.tmp2 .env_box .target { margin-left: 80%; margin-top: 40%; }
+.atm0.tmp3 .env_box .target { margin-left: 0%; margin-top: 60%; }
+.atm1.tmp3 .env_box .target { margin-left: 20%; margin-top: 60%; }
+.atm2.tmp3 .env_box .target { margin-left: 40%; margin-top: 60%; }
+.atm3.tmp3 .env_box .target { margin-left: 60%; margin-top: 60%; }
+.atm4.tmp3 .env_box .target { margin-left: 80%; margin-top: 60%; }
+.atm0.tmp4 .env_box .target { margin-left: 0%; margin-top: 80%; }
+.atm1.tmp4 .env_box .target { margin-left: 20%; margin-top: 80%; }
+.atm2.tmp4 .env_box .target { margin-left: 40%; margin-top: 80%; }
+.atm3.tmp4 .env_box .target { margin-left: 60%; margin-top: 80%; }
+.atm4.tmp4 .env_box .target { margin-left: 80%; margin-top: 80%; }
 
 .atm0.tmp0 .env_label { color: #666666; }
 .atm1.tmp0 .env_label { color: #888888; }
@@ -2512,7 +2521,7 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	width: 2em;
 	}
 #layout_ui_side > .planet TABLE.prod_queue TD {
-	padding: 0.25em;
+	padding: 0 0.25em;
 	position: relative;
 	vertical-align: middle;
 	}
@@ -2524,7 +2533,7 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	line-height: 1.45em;
 	height: 1.45em;
 	padding: 0em 0.2em 0em 0.25em;
-	margin: 0.5em 0.5em 0 0;
+	margin: 0.25em 0.5em 0 0;
 	overflow:hidden;
 	}
 #layout_ui_side > .planet TABLE.prod_queue SPAN.turns_left {
@@ -2539,7 +2548,7 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	-moz-appearance: none;
 		appearance: none;
 	border: none;
-	width: 200px;
+	width: 195px;
 	height: 1.45em;
 	line-height: 1.45em;
 	/* FF container defaults */
@@ -2827,25 +2836,15 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	min-height: 75px;
 	}
 
-
-
-
-
-/*#layout_ui_side > .star .planet:hover {
-	background-color: rgba(255,255,200,0.5);
-	}*/
 #layout_ui_side > .star .planet H3 {
 	font-size: 100%;
 	}
 #layout_ui_side > .star .planet IMG.flag {
 	max-height: 1.0em;
-/* 	padding: 0 0.5em 0 0; */
 	float:left;
 	margin: 0 0 0.25em -2.5em;
 	}
-/*#layout_ui_side > .star .planet P {
-	margin: 0.25em 0;
-	}*/
+
 #layout_ui_side > .star P.exp {
 	font-size: 100%;
 	color: yellow;
@@ -2857,39 +2856,16 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	font-size: 200%;
 	line-height: 1.5em;
 	}
-/*#layout_ui_side > .star .planet P.phys {
-	font-weight: bold;
-	}*/
+
 #layout_ui_side > .star .planet P.physattr {
 	font-style: italic;
 	}
-/*#layout_ui_side > .star .planet SPAN.size {
-	color: yellow;
-	margin-right: 0.75em;
-	}*/
+
 #layout_ui_side > .star .planet SPAN.env_label {
 	margin-right: 0.75em;
 	}
-/*#layout_ui_side > .star .planet SPAN.mining {
-	color: green;
-	margin-right: 0.75em;
-	}*/
-#layout_ui_side .star .planet .env_box {
-	width: 52px;
-	height: 52px;
-	float:right;	
-	clear:right;
-	margin-bottom: 0;
-	margin-top: 0.0em;
-	overflow:hidden;
-	}
-.star .planet.grav1 .env_box .target { border-width: 2px; }
-.star .planet.grav2 .env_box .target { border-width: 3px; }
-.star .planet.grav3 .env_box .target { border-width: 4px; }
-.star .planet.grav4 .env_box .target { border-width: 5px; }
 
 #layout_ui_side .star .planet P.env_label {
-/* 	width: 100px; */
 	float:right;
 	clear: right;
 	font-size: 100%;
@@ -3357,7 +3333,7 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 #colonize_pane .content {
 	float: right;
 	right: 100%;
-	margin: 3em;
+	margin: 2em 3em;
 	padding: 2em;
 	width:32%;
 	min-width: 300px; 
@@ -4105,7 +4081,7 @@ DIV.annoyometer .nub {
 	max-width: 10%;
 	margin: auto 0;
 	}	
-#setup_pane .planet .env_box {
+.env_box {
 	background: 
 		linear-gradient( to right, 
 			rgba( 0, 0, 0, 1 ) 0%,
@@ -4120,8 +4096,8 @@ DIV.annoyometer .nub {
 			)
 		;
 	}
-#setup_pane .planet .env_box .target { border-width: 0 !important; }
-#setup_pane .planet .env_box .target .grav {
+planet .env_box .target { border-width: 0 !important; }
+planet .env_box .target .grav {
 	border-color: black;
 	border-style: ridge; 	
 	position:absolute;
@@ -4134,11 +4110,11 @@ DIV.annoyometer .nub {
 	border-radius: 2px;
 	z-index: 5;
 	}
-#setup_pane .planet.grav0 .env_box .target .grav { border-width: 2px; }
-#setup_pane .planet.grav1 .env_box .target .grav { border-width: 6px; }
-#setup_pane .planet.grav2 .env_box .target .grav { border-width: 10px; }
-#setup_pane .planet.grav3 .env_box .target .grav { border-width: 15px; }
-#setup_pane .planet.grav4 .env_box .target .grav { border-width: 19px; }
+planet.grav0 .env_box .target .grav { border-width: 2px; }
+planet.grav1 .env_box .target .grav { border-width: 6px; }
+planet.grav2 .env_box .target .grav { border-width: 10px; }
+planet.grav3 .env_box .target .grav { border-width: 15px; }
+planet.grav4 .env_box .target .grav { border-width: 19px; }
 
 .env_box .a { 
 	box-sizing: border-box; 
@@ -4152,23 +4128,23 @@ DIV.annoyometer .nub {
 	z-index: 2;
 	border: 1px solid #090;
 }
-.planet.adapt2 .env_box .a1 {
+.adapt2 .env_box .a1 {
 	margin-left: -100%;
 	width: 300%;
 }
-.planet.adapt2 .env_box .a2 {
+.adapt2 .env_box .a2 {
 	margin-top: -100%;
 	height: 300%;
 }
-.planet.adapt3 .env_box .a1 {
+.adapt3 .env_box .a1 {
 	margin-left: -200%;
 	width: 500%;
 }
-.planet.adapt3 .env_box .a2 {
+.adapt3 .env_box .a2 {
 	margin-top: -200%;
 	height: 500%;
 }
-.planet.adapt3 .env_box .a3 {
+.adapt3 .env_box .a3 {
 	margin-top: -100%;
 	margin-left: -100%;
 	width: 300%;
@@ -4366,6 +4342,7 @@ DIV.annoyometer .nub {
 	left: 0;
 	top: 0;
 	z-index: 50;
+	pointer-events: none;
 	}
 @keyframes xplay {
    from { transform: translateX(2200px) translateY(600px) rotate(20deg) scale(3.0, 3.0); opacity: 1; }

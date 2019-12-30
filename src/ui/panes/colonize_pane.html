@@ -1,31 +1,43 @@
 <template>
-<!--	<require from="./converters/percent"></require> -->
-<!-- 	<require from="./converters/round"></require> -->
-<!-- 	<require from="./converters/idealplanetsize"></require> -->
-	
 	<div id="colonize_pane" class="star_${planet.star.color} atm${planet.atm} tmp${planet.temp}">
-		<div class="planet atm${planet.atm} tmp${planet.temp}" css="background-size: ${planet.size * 4}% auto; "></div>
+		<div class="planet atm${planet.atm} tmp${planet.temp}" css="background-size: ${planet.size * 4}% auto;"></div>
 		<div class="spaceship" style="top:40%; left: 20%;"></div>
-		<div class="content">
+		<div class="content fadeInSlow">
 			<h2>Welcome To</h2>
 			<p>
-				<input type="text" name="name" value.bind="planet.name" maxlength="20" /><br/>
-				<span style="color: #999; font-size: 65%">(Overtype to change name)</span>
+				<input type="text" name="name" value.bind="planet.name" maxlength="20" style="width:100%" />
 			</p>
-			<p>
-				<span class="env_label">${planet.envDisplayName}</span>, 
-				<span class="size">SIZE: ${planet.size}</span>, 
-				<span class="en">ENERGY: ${planet.energy}x</span>
-			</p>
-			<div class="resources">
-				<template repeat.for="k of p.resources|props" containerless>
-					<span repeat.for="i of p.resources[k]" class="${k}"></span>
-				</template>
-			</div>
-			<p>This beautiful planet holds great promise to your people who are eager to colonize the stars. With an abundance of natural resources and energy, it will surely provide wealth and prosperity to your civilization.</p>
-<!-- 			<p>The environment of ${planet.name} provides a sense of natural awe and wonder that should attract new citizens and tourists alike.</p> -->
-			<p><a href="#" class="button big" click.delegate="ClickDone()">Done</a></p>
+			<div class="phys">
+				<p class="env_label bold ">
+					${planet.gravDisplayName} ${planet.envDisplayName}
+				</p>			
+				<!-- <div class="atm${planet.atm} tmp${planet.temp} grav${planet.grav}" style="float:right; margin-left: 0.5em; margin-bottom: 1em;">
+					<div class="env_box" style="height: 120px; width: 120px;">
+						<div class="target"> </div>
+					</div>
+				</div> -->
+				<div class="size big">
+					<span class="size">${planet.size}<br/><span class="size">SIZE</span></span>
+					<span class="en">${planet.energy}<br/><span class="en">ENERGY</span></span>			
+					<span class="good">
+						+${planet.Adaptation(this.game.myciv.race)}<br /> 
+						<span class="">HABITABILITY</span>
+					</span>
+				</div>
+				<p class="resources big">
+					<template repeat.for="k of planet.resources|props" containerless>
+						<span repeat.for="i of planet.resources[k]" class="${k}"></span>
+					</template>
+				</p>
+				<div class="physattrs" style="margin-bottom: 1em;">
+					<p repeat.for="a of planet.physattrs" title.bind="a.desc" style="color: #999; line-height: 1.1em;">
+						<b>★${a.name}</b><br/>&nbsp;&nbsp;&nbsp;
+						<span class="small">${a.desc}</span>
+					</p>
+				</p>
+			</div> 
+			<!-- <p>This beautiful planet holds great promise to your people who are eager to colonize the stars. With an abundance of natural resources and energy, it will surely provide wealth and prosperity to your civilization.</p> -->
+			<p><button class="big" click.delegate="ClickDone()">Done</button></p>
 		</div>
 	</div>
-
 </template>
