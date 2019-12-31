@@ -4283,8 +4283,33 @@ planet.grav4 .env_box .target .grav { border-width: 19px; }
 #layout_ui_main.title_screen H1 SPAN:nth-child(21) { opacity: 1; animation: fadeIn 2s both ease-out 0.44s; }	
 	
 	
-	
-	
+
+#layout_ui_main #gameover_pane {
+	padding: 6em 2em;
+}
+#gameover_pane P {
+	font-size: 200%;
+	padding: 0.35em 20%;
+}	
+#gameover_pane P.button_rack {
+	margin-top: 3em;
+}	
+#gameover_pane H1 {
+	font-size: 600%;
+}	
+#gameover_pane H1,
+#gameover_pane P,
+#gameover_pane {
+	text-align:center;
+}	
+#gameover_pane.victory {
+	background: url(../img/map/bg/spacebg_035.jpg) 50% 50% no-repeat;
+	background-size: cover;
+}
+#gameover_pane.defeat {
+	background: url(../img/map/bg/spacebg_047.jpg) 50% 50% no-repeat;
+	background-size: cover;
+}
 	
 	
 	

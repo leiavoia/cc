@@ -26,6 +26,7 @@ export class PlayState {
 	constructor( app ) {
 		this.app = app;
 		this.app.options.show_range = false;
+		this.app.exclusive_ui = false;
 		}
 
 	detached() { 
@@ -162,6 +163,7 @@ export class PlayState {
 		}
 		
 	attached () {
+		this.app.exclusive_ui = false;
 		this.current_scale = 1.0;
 		this.xtreme_zoom = false;
 		document.body.className = document.body.className.replace('xtreme_zoom');
@@ -246,6 +248,11 @@ export class PlayState {
 		Signals.Send('state_changed', this );
 		}
 		
+	// this helps with repeat-activation problems
+	determineActivationStrategy() {
+		return "replace";
+		}
+				
 	}
 
 	

@@ -104,23 +104,16 @@ export default class Game {
 		// last man standing
 		if ( check_last_man_standing && civs_in_play.length == 1 ) { 
 			this.victory_achieved = true;
-			// console.log( 'LAST MAN STANDING: ' + civs_in_play[0].name );
-			if ( civs_in_play[0].is_player ) { 
-				this.app.AddNote(
-					'good',
-					`YOU WINNEDED!`,
-					`"${civs_in_play[0].name}" is the last civ standing.`,
-					null
-					);
+			if ( !this.app.options.soak ) { 
+				// player is last man standing
+				if ( civs_in_play[0].is_player ) { 
+					this.app.SwitchMainPanel( 'gameover', civs_in_play[0], { victory:true, msg:`The galaxy belongs to you now.` }, true, true );
+					}
+				// AI is last man standing
+				else {
+					this.app.SwitchMainPanel( 'gameover', civs_in_play[0], { victory:false, msg:`The <b>${civs_in_play[0].name}</b> was the last remaining civilization.` }, true, true );
+					}
 				}
-			else {
-				this.app.AddNote(
-					'bad',
-					`YOU LOSEDED!`,
-					`"${civs_in_play[0].name}" is the last civ standing. You lost!`,
-					null
-					);	
-				}			
 			return true;
 			}
 		// player died
@@ -128,8 +121,7 @@ export default class Game {
 			if ( this.app.options.soak ) this.RotateMyCiv();
 			else {
 				this.victory_achieved = true;
-				// console.log('*** PLAYER DIED - GAME OVER ***');
-				this.app.AddNote( 'bad', `GAME OVER`, `U R Dead` );
+				this.app.SwitchMainPanel( 'gameover', civs_in_play[0], { victory:false, msg:`Your civilization has perished.` }, true, true );
 				return true;
 				}
 			}					
@@ -146,23 +138,16 @@ export default class Game {
 					}
 				if ( gotcha ) { 
 					this.victory_achieved = true;
-					// console.log( 'VICTORY ACHIEVED: ' + r.name );
-					if ( civ == this.myciv ) { 
-						this.app.AddNote(
-							'good',
-							`YOU WINNEDED!`,
-							`"${r.name}" victory achieved.`,
-							function(){ this.app.SwitchMainPanel( 'victory', r ); }
-							);
+					if ( !this.app.options.soak ) { 
+						// player completed victory recipe
+						if ( civ == this.myciv ) { 
+							this.app.SwitchMainPanel( 'gameover', civs_in_play[0], { victory:true, recipe:r }, true, true );
+							}
+						// another civ completed victory recipe
+						else {
+							this.app.SwitchMainPanel( 'gameover', civs_in_play[0], { victory:false, recipe:r, civ:civ }, true, true );
+							}
 						}
-					else {
-						this.app.AddNote(
-							'bad',
-							`YOU LOSEDED!`,
-							`"${r.name}" victory achieved by the ${civ.name} civilization. This means YOU LOSE. You get NOTHING!`,
-							function(){ this.app.SwitchMainPanel( 'victory', r ); }
-							);	
-						}			
 					return true;
 					}
 				}

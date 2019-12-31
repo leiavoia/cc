@@ -1,0 +1,41 @@
+<template containerless>
+	<div id="gameover_pane" class="pane ${victory ? 'victory' : 'defeat'}">
+
+		<h1 if.bind="victory" class="good">VICTORY!</h1>
+		<h1 else class="bad">DEFEAT!</h1>
+
+		<!-- TODO: REASON WHY -->
+		<div class="center" if.bind="victory">
+			<p class="bold good" if.bind="recipe">Achieved: ${recipe.name}</p>
+			<p if.bind="msg" innerhtml.bind="msg" class="good"></p>
+			<p>Congratulations on not losing.</p>
+		</div>
+		<div class="center" else>
+			<p class="bad" if.bind="recipe">
+				<span if.bind="winning_civ">The <b>${winning_civ.name}</b></span>
+				<span else>Another civilization</span>
+				has achieved the <b>${recipe.name}</b>.
+			</p>
+			<p if.bind="msg" innerhtml.bind="msg" class="bad"></p>
+			<p>Welcome to the history books! Your pathetic civilization is now one of its many unread footnotes.</p>
+		</div>
+		
+		<p class="center button_rack">
+			<button click.delegate="ClickEnd()">End Game</button>
+			<button click.delegate="ClickContinue()" if.bind="victory">Continue Playing!</button>
+		</p>
+		
+		<!-- graph -->
+		<div show.bind="app.options.graph_history && show_history" class="fill offset"> 
+			<p class="button_rack fill topless">
+				<button 
+					repeat.for="m of modes" 
+					click.delegate="ChangeMode(m.key)"
+					class="${m.key == mode ? 'alt' : ''} bold"
+				>${m.label}</button>
+			</p>
+			<canvas id="myChart"></canvas>
+		</div>
+			
+	</div>
+</template>
