@@ -249,14 +249,17 @@ export default class Game {
 		this.myciv.color_rgb = this.app.options.setup.color.map( c => parseInt(c) ) || [0,128,0];
 		this.myciv.color = utils.RGBArrayToHexColor(this.myciv.color_rgb);
 		// make sure the player's color does not conflict with AI colors
+		let dist3d = function( c1, c2 ) { 
+			return Math.sqrt ( Math.abs(  
+				Math.pow( c2[0] - c1[0], 2 ) +
+				Math.pow( c2[1] - c1[1], 2 ) +
+				Math.pow( c2[2] - c1[2], 2 )
+				) );
+			};
 		for ( let c of this.galaxy.civs ) { 
 			if ( c == this.myciv ) { continue; } 
-			let diff = Math.sqrt ( 
-				Math.pow( Math.abs( c.color_rgb[0] - this.myciv.color_rgb[0] ), 2 ) +
-				Math.pow( Math.abs( c.color_rgb[1] - this.myciv.color_rgb[1] ), 2 ) +
-				Math.pow( Math.abs( c.color_rgb[2] - this.myciv.color_rgb[2] ), 2 )
-				);
-			if ( diff < 100 ) {
+			let sanity = 150;
+			while ( dist3d( this.myciv.color_rgb, c.color_rgb ) < 60 && --sanity ) {
 				c.color_rgb = Civ.PickNextStandardColor();
 				c.color = utils.RGBArrayToHexColor(c.color_rgb);
 				c.homeworld.star.UpdateOwnershipTitleColorCSS();				
