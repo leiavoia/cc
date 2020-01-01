@@ -26,6 +26,7 @@ export class StarDetailPane {
 		
 	Update( turn_num ) { 
 		this.calc_vals = {};
+		this.fleets = [];
 		if ( this.star ) { 
 			for ( let p of this.star.planets ) { 
 				this.calc_vals[p.id] = {
@@ -33,6 +34,7 @@ export class StarDetailPane {
 					hab: p.Habitable( this.app.game.myciv.race )
 					};
 				}
+			this.fleets = this.star.fleets.map( f => ({ fleet:f, models: f.ListUniqueModels() }) );
 			this.playerHasLocalFleet = this.star.PlayerHasLocalFleet;
 			}
 		}

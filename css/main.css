@@ -2836,7 +2836,7 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	min-height: 75px;
 	}
 
-#layout_ui_side > .star .planet H3 {
+#layout_ui_side > .star H3 {
 	font-size: 100%;
 	}
 #layout_ui_side > .star .planet IMG.flag {
@@ -2880,8 +2880,9 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	display:inline;
 	padding: 0;
 	}
-	
-	
+#layout_ui_side HR {	
+	border: 1px solid #333;
+	}
 	
 	
 	
