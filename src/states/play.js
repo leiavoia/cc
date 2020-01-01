@@ -27,6 +27,7 @@ export class PlayState {
 		this.app = app;
 		this.app.options.show_range = false;
 		this.app.exclusive_ui = false;
+		this.PreloadImages();
 		}
 
 	detached() { 
@@ -37,6 +38,100 @@ export class PlayState {
 		this.xtreme_zoom = false;
 		}
 	
+	PreloadImages() {
+		if ( this.img_cache ) { return; } 
+		let urls = [
+			'img/map/caret.png',
+			'img/map/sectors.png',	
+			// 'img/planets/planet_20.png',
+			// 'img/planets/planet_19.png',
+			// 'img/planets/planet_24.png', 
+			// 'img/planets/planet_15.png',
+			// 'img/planets/planet_33.png',
+			// 'img/planets/planet_16.png',
+			// 'img/planets/planet_11.png',
+			// 'img/planets/planet_00.png', 
+			// 'img/planets/planet_17.png',
+			// 'img/planets/planet_23.png', 
+			// 'img/planets/planet_01.png',
+			// 'img/planets/planet_08.png',
+			// 'img/planets/planet_31.png',
+			// 'img/planets/planet_21.png',
+			// 'img/planets/planet_35.png',
+			// 'img/planets/planet_03.png',
+			// 'img/planets/planet_27.png',
+			// 'img/planets/planet_26.png',
+			// 'img/planets/planet_36.png',
+			// 'img/planets/planet_02.png',
+			// 'img/planets/planet_06.png',
+			// 'img/planets/planet_04.png',
+			// 'img/planets/planet_10.png',
+			// 'img/planets/planet_12.png',
+			// 'img/planets/planet_22.png',
+			'img/planets/planet_20s.png', //
+			'img/planets/planet_19s.png',
+			'img/planets/planet_24s.png',
+			'img/planets/planet_15s.png',
+			'img/planets/planet_33s.png',
+			'img/planets/planet_16s.png',
+			'img/planets/planet_11s.png',
+			'img/planets/planet_00s.png',
+			'img/planets/planet_17s.png',
+			'img/planets/planet_23s.png',
+			'img/planets/planet_01s.png',
+			'img/planets/planet_08s.png',
+			'img/planets/planet_31s.png',
+			'img/planets/planet_21s.png',
+			'img/planets/planet_35s.png',
+			'img/planets/planet_03s.png',
+			'img/planets/planet_27s.png',
+			'img/planets/planet_26s.png',
+			'img/planets/planet_36s.png',
+			'img/planets/planet_02s.png',
+			'img/planets/planet_06s.png',
+			'img/planets/planet_04s.png',
+			'img/planets/planet_10s.png',
+			'img/planets/planet_12s.png',
+			'img/planets/planet_22s.png',
+			// TODO: we can optimize SVG downloads by putting them into a font
+			'img/icons/svg/cube01.svg',
+			'img/icons/svg/building.svg',
+			'img/icons/svg/home.svg',
+			'img/icons/svg/building22.svg',
+			'img/icons/svg/boxwire.svg',
+			'img/icons/svg/city.svg',
+			'img/icons/svg/stardock01.svg',
+			'img/icons/svg/game.svg',
+			'img/icons/svg/coins-1',
+			'img/icons/svg/leaf.svg',
+			'img/icons/svg/talkbubble.svg',
+			'img/icons/svg/medical.svg',
+			'img/icons/svg/transport.svg',
+			'img/icons/svg/target.svg',
+			'img/icons/svg/atom02.svg',
+			'img/icons/svg/decoration.svg',
+			'img/icons/svg/prism02.svg',
+			'img/icons/svg/geoshape05.svg',
+			'img/icons/svg/geoshape03.svg',
+			'img/icons/svg/shield.svg',
+			'img/icons/svg/spinner4.svg',
+			'img/icons/svg/tool.svg',
+			'img/icons/svg/hexstar3.svg',
+			'img/icons/svg/focus.svg',
+			'img/icons/svg/star.svg',
+			'img/icons/svg/planet01.svg',
+			'img/icons/svg/robot.svg',
+			'img/icons/svg/hammer.svg',
+			'img/icons/svg/rocket.svg',
+			'img/icons/svg/heart.svg',
+			'img/icons/svg/circle01.svg',
+			];
+		for ( let url of urls ) { 
+			let img = new Image();
+			img.src = url;
+			}
+		this.img_cache = true;
+		}
 	SetCaret( obj ) { 
 		if ( (obj instanceof Star) || (obj instanceof Anom) ) { 
 			this.caret.x = obj.xpos; 

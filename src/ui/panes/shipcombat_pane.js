@@ -16,6 +16,15 @@ export class ShipCombatPane {
 		this.nonplayer_team = null;
 		this.ship_grid_packing = 1; // controls density of ships on UI. [1,2,4,9,16,25,36]
 		this.sel_ship = null; // appears in the focus box
+		// preload images
+		if ( !this.img_cache ) { 
+			let urls = ['img/anim/explosion_128px_sheet_row.png'];
+			for ( let url of urls ) { 
+				let img = new Image();
+				img.src = url;
+				}
+			this.img_cache = true;
+			}
 	    }
 	   
 	activate(data) {

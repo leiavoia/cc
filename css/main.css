@@ -3881,7 +3881,7 @@ DIV.annoyometer .nub {
 #ship_des_pane {
 	height:100%;
 	max-height: 100%;
-	background: #000 url(../img/workshop/technic1.png) repeat;
+	background: #000 url(../img/bg/technic1.png) repeat;
 	}
 #ship_des_pane #bp_list { 
 	flex: 1 1 20em;
