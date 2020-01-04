@@ -2115,7 +2115,12 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	background-size: 22px 22px !important;
 	cursor: help;
 	overflow:hidden;
+	font-size: 8px;
+	padding-left: 2px;
 	/* transition: opacity 0.35s; */
+	}
+.planet .zones DIV SPAN {
+	opacity: 0.7;
 	}
 .planet .zone.empty {
 	border: 1px solid #333;

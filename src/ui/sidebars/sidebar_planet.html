@@ -79,6 +79,7 @@
 						${z.sect==1 ? 'only' : ( s==0 ? 'start' : (s==z.sect-1 ? 'end' : 'mid') ) }
 						pct${ z.val>0 && z.val<0.1 ? 1 : (z.val*10) |floor:1}0
 						">
+						<span if.bind="s==0">${z.size * z.val | ceil}</span>
 					</div>
 				</template>
 				<div repeat.for="z of (planet.size - planet.zoned)" class="zone empty" click.delegate="ClickEmptyZone()"></div>
@@ -94,7 +95,7 @@
 					<p class="type">${sel_zone.type}</p>
 					<p class="desc">${sel_zone.desc}</p>
 					<p class="stats resources">
-						Size: <b>${sel_zone.size}</b>, 
+						Size: <b>${sel_zone.size * sel_zone.val | ceil}/${sel_zone.size}</b>, 
 						Sectors: <b>${sel_zone.sect}/${sel_zone.maxsect}</b>
 						<br/>
 						<template containless if.bind="sel_zone.val < 1">
