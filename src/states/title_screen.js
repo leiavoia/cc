@@ -49,6 +49,21 @@ export class TitleState {
 			}
 		}
 
+	ExportSavedGame(g,event) {
+		event.stopPropagation(); 
+		let key = 'Game: ' + g.key;
+		let str = localStorage.getItem( key );
+		if ( !str ) { return false; }
+		let element = document.createElement('a');
+		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(str));
+		element.setAttribute('download', 'ConstellationControl_t' + g.turn_num + '_' + g.time.replace(/( |\s)+/ig,'_') + '.game');
+		element.style.display = 'none';
+		document.body.appendChild(element);
+		element.click();
+		document.body.removeChild(element);
+		return false;
+		}
+		
 	ClickHeadless() {
 		this.app.ChangeState('headless');
 		}
