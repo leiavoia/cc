@@ -237,7 +237,16 @@ body,html {
 	-ms-user-select: none;      /* IE 10+ */
 	user-select: none;          /* Likely future */  
 	}
+
 	
+/* prevents tablets from changing text size on orientation */
+@media only screen and (max-device-width: 1028px) {
+    html {
+        -webkit-text-size-adjust : none;
+        text-size-adjust         : none;
+    }
+}
+
 /* bottom layer - contains nebula graphic background */
 #layout_pagewrap {
 	height:100%;
