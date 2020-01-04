@@ -9,6 +9,7 @@ export class ZonePane {
 	activate(data) {
 		this.app = data.app;
 		this.planet = data.obj;
+		this.adapt = this.planet.Adaptation();
 		// if we are supplied with a target zone, we are in upgrade mode.
 		// otherwise we're in addition mode.
 		if ( 'data' in data && 'zone' in data.data ) {
@@ -20,6 +21,7 @@ export class ZonePane {
 				z.type == this.zone.type 
 				&& z.key != this.zone.key 
 				&& z.minsect <= this.zone.sect
+				&& z.minsect <= this.adapt
 				&& this.NotAUselessMiningZone(z)
 				);
 			// create a parallel array that has the cost to upgrade the zones
@@ -45,7 +47,10 @@ export class ZonePane {
 				}
 			} 
 		else { // addition mode
-			this.zones = this.app.game.myciv.avail_zones.filter( z => this.NotAUselessMiningZone(z) );
+			this.zones = this.app.game.myciv.avail_zones.filter( z => 
+				this.NotAUselessMiningZone(z) 
+				&& z.minsect <= this.adapt
+				);
 			}
 		}
 		
