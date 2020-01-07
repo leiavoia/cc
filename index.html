@@ -12,6 +12,60 @@
 	<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
 	<!-- app css -->
 	<link href="css/main.css" rel="stylesheet" type="text/css" />
+	<!-- error trapping code - can be used to relay info back to server or splash screen -->
+	<script>
+		// Store the original error handler callback function
+		const originalErrorHandler = window.onerror;
+		// Do something with the error object
+		const reportError = (error_args) => {
+			let body = document.getElementsByTagName('body')[0];
+			let el = document.createElement("div");
+			el.id = '_error_splash';
+			el.style.color = 'red';
+			el.style.position = 'absolute';
+			el.style.top = '0';
+			el.style.left = '0';
+			el.style.zIndex = '10000';
+			el.style.background = 'black';
+			el.style.height = '100%';
+			el.style.width = '100%';
+			body.appendChild(el); 
+			// button to clear error
+			let p = document.createElement("p");
+			let button = document.createElement("button");
+			button.innerHTML = "Clear Error";
+			p.appendChild(button);
+			button.addEventListener("click", function() {
+				el.parentNode.removeChild(el);
+				});
+			el.appendChild(p);
+			// textarea with error output
+			let input = document.createElement("textarea");
+			input.name = "post";
+			input.maxLength = "20000";
+			input.cols = "80";
+			input.rows = "20";
+			input.value = JSON.stringify(error_args, null, 2);
+			el.appendChild(input);
+			};
+		// Override the global error handler
+		window.onerror = (errorMessage, url, lineNumber, columnNumber, errorObject) => {
+			// Report the error
+			reportError({
+				type: 'Error',
+				message: errorMessage,
+				url: url,
+				line: lineNumber,
+				column: columnNumber,
+				error: errorObject
+				});
+			// Run the original error handler callback (in case it is a proper function)
+			if (typeof originalErrorHandler === 'function') {
+				return originalErrorHandler(errorMessage, url, lineNumber, columnNumber, errorObject);
+				}
+			return false;
+			};
+	</script>
 </head>
 
 
@@ -251,11 +305,8 @@
 
 
 <div style="height:100%;" aurelia-app="main" id="spa_wrapper">
-	
 	<p style="text-align:center; margin-top: 8em; color: #6CE; font-weight: bold; font-size: 200%;">Loading Application ...</p>
-	
-    	<script src="scripts/vendor-bundle.js" data-main="aurelia-bootstrapper"></script>
-    
+	<script src="scripts/vendor-bundle.js" data-main="aurelia-bootstrapper"></script>
 </div>
 
 
