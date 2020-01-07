@@ -37,9 +37,9 @@ export class Modlist {
 			else if ( 'modlist' in parent && parent.modlist instanceof Modlist ) { 
 				this.parent = parent.modlist;
 				}
-			// vanilla object created from JSON
-			else if ( typeof(parent)==='object' && 'mods' in parent ) { 
-				Object.assign( this, parent );
+			// vanilla array of mods created from JSON
+			else if ( Array.isArray(parent) ) { 
+				this.mods = parent;
 				}
 			}
 		}
@@ -52,11 +52,13 @@ export class Modlist {
 			});
 		}
 		
-	Unpack( ) { 
+	Unpack(catalog) {
 		this.mods = this.mods.map( x => {
-			if ( x.prov && Number.isInteger(x.prov) ) { x.prov = catalog[x.prov]; }
+			let prov = x.prov;
+			if ( prov && Number.isInteger(prov) ) { prov = catalog[prov]; }
 			else { x.prov = null; }
-			return x;
+			let m = new Mod( x.abil, x.op, x.val, x.label, prov );
+			return m;
 			});				
 		}
 		

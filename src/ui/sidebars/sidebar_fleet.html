@@ -108,8 +108,8 @@
 				<p class="center">
 					<span>${ship.bp.hull}</span>&nbsp;/&nbsp;<span>${ship.bp.armor}</span>&nbsp;/&nbsp;<span>${ship.bp.shield}</span>
 				</p>
-				<progress if.bind="ship.armor" max="100" value="${((ship.armor / ship.bp.armor)*100)|round}" class="${ship.health_class}"></progress>
-				<progress if.bind="!ship.armor" max="100" value="${((ship.hull / ship.bp.hull)*100)|round}" class="${ship.health_class}"></progress>
+				<progress if.bind="ship.armor && ship.bp.armor" max="100" value="${((ship.armor / ship.bp.armor)*100)|round}" class="${ship.health_class}"></progress>
+				<progress else max="100" value="${((ship.hull / ship.bp.hull)*100)|round}" class="${ship.health_class}"></progress>
 				<p class="name">${ship.bp.name} </p>
 			</div>
 		</div>

@@ -507,8 +507,10 @@ export default class Civ {
 			}
 		obj.tech = Object.assign( {}, this.tech ); // dont overwrite original object
 		obj.tech.techs = this.tech.techs.map( t => t.key );	
-		obj.tech.avail = this.tech.avail.map( t => ({key:t.key, rp:t.rp}) );
-		obj.tech.compl = this.tech.compl.map( t => ({key:t.key, rp:t.rp, source:(t.source ? t.source.id : null)}) );
+		obj.tech.avail = this.tech.avail.map( t => ({key:t.node.key, rp:t.rp}) );
+		obj.tech.compl = this.tech.compl.map( t => ({key:t.node.key, rp:t.rp, source:(t.source ? t.source.id : null)}) );
+		delete(obj.tech.avail_keys);
+		delete(obj.tech.compl_keys);
 		obj.ai = this.ai.toJSON();
 		// optionally remove stat history to save space
 		if ( !App.instance.options.graph_history ) { 
@@ -538,7 +540,7 @@ export default class Civ {
 		this.avail_zones = this.avail_zones.map( x => ZoneList[x] );
 		this.victory_ingredients = this.victory_ingredients.map( x => VictoryIngredients[x] );
 		this.mods = new Modlist(this.mods);
-		this.mods.Unpack( catalog ); 
+		this.mods.Unpack( catalog );
 		this.ai = this.ai._classname=='CivAI' 
 			? ( new AI.CivAI(this.ai) ) // playable civs use CivAI
 			: ( new AI.AI(this.ai) ); // space monsters and shill civs use regular AI 
@@ -558,8 +560,12 @@ export default class Civ {
 			}		
 		this.diplo.contacts = contacts;
 		// techs
-		this.tech.techs = this.tech.techs.map( t => Tech.Techs[t.key] );
+		this.tech.techs = this.tech.techs.map( t => Tech.Techs[t] );
+		this.tech.avail_keys = {};
+		for ( let t of this.tech.avail ) { this.tech.avail_keys[t.key] = true; }
 		this.tech.avail = this.tech.avail.map( t => ({ node: Tech.TechNodes[t.key], rp:t.rp }) );
+		this.tech.compl_keys = {};
+		for ( let t of this.tech.compl ) { this.tech.compl_keys[t.key] = true; }
 		this.tech.compl = this.tech.compl.map( t => ({ node: Tech.TechNodes[t.key], rp:t.rp, source:(t.source?catalog[t.source]:null) }) );
 		}
 						
