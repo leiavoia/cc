@@ -263,6 +263,16 @@ export class PlayState {
 		this.xtreme_zoom = false;
 		document.body.className = document.body.className.replace('xtreme_zoom');
 		
+		// this might prevent mobile Safari pinch-zoom problems.
+		// see: https://stackoverflow.com/questions/37808180/disable-viewport-zooming-ios-10-safari
+		// window.addEventListener(
+		// 	"touchmove",
+		// 	function(event) {
+		// 		if (event.scale !== 1) { event.preventDefault(); }
+		// 		},
+		// 	{ passive: false }
+		// 	);
+
 		// make annoying context menu go away
 		document.addEventListener('contextmenu', function(e) {
 			e.preventDefault();

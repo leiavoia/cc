@@ -277,6 +277,7 @@ body,html {
 	z-index: 200;
 	color: #FFF;	
 	transition:  background-color 0.75s ; /* for extreme zoom transition */
+	overflow:hidden;
 	}
 
 /* darkening effect in strategic view */
@@ -2549,6 +2550,14 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	padding: 0em 0.2em 0em 0.25em;
 	margin: 0.25em 0.5em 0 0;
 	overflow:hidden;
+	white-space: nowrap;
+	width: 100%;
+	}
+#layout_ui_side > .planet TABLE.prod_queue IMG {
+	vertical-align:middle;
+	max-height: 1.25em;
+	max-width: 1em;
+	/* filter: brightness(0) invert(1); */
 	}
 #layout_ui_side > .planet TABLE.prod_queue SPAN.turns_left {
 	color: #7be96f;

@@ -448,6 +448,7 @@ export default class Planet {
 					type: 'makework',
 					name: 'Research Support',
 					obj: 'research',
+					img: 'img/icons/svg/atom02.svg',
 					cost: { labor: 50 }, // "cost" in hammers
 					qty: -1, // default infinity
 					turns_left: '-',
@@ -471,6 +472,7 @@ export default class Planet {
 					type: 'makework',
 					name: 'Trade Goods',
 					obj: 'tradegoods',
+					img: 'img/icons/svg/coins-1.svg',
 					cost: { labor: 50 }, // "cost" in hammers
 					qty: -1, // default infinity
 					turns_left: '-',
