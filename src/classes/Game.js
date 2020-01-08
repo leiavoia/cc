@@ -85,7 +85,7 @@ export default class Game {
 		let living_civs_before = this.galaxy.civs.filter( c => c.alive && !c.race.is_monster).length;
 		for ( let i = this.galaxy.civs.length-1; i >= 0; i-- ) { 
 			let civ = this.galaxy.civs[i];
-			if ( civ.alive && !civ.race.is_monster && (!civ.planets.length || civ.resources.$ <= 0) ) {
+			if ( civ.alive && !civ.race.is_monster && (!civ.planets.length /*|| civ.resources.$ <= 0*/) ) {
 				civ.Kill();
 				this.galaxy.civs.splice( i, 1 );
 				this.app.AddNote( 'neutral', `${civ.name} defeated`, null );
