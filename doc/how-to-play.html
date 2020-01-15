@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+	<meta charset="utf-8">
+	<title>Constellation Control - How To Play</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link href='https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700,300|Teko:400,700' rel='stylesheet' type='text/css'>
+	<link href="doc.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<main>
+
+	<h1>How To Play Constellation Control</h1>
+	
+	<section>
+		<ul>
+			<li><a href="#goals">Goals</a></li>
+			<li><a href="#galaxy">Galaxy</a></li>
+			<li><a href="#stars">Stars</a></li>
+			<li><a href="#anoms">Anomalies</a></li>
+			<li><a href="#fleets">Fleets</a></li>
+			<li><a href="#shipcombat">Ship Combat</a></li>
+			<li><a href="#groundcombat">Ground Combat</a></li>
+			<li><a href="#diplomacy">Diplomacy</a></li>
+			<li><a href="#tech">Technology</a></li>
+			<li><a href="#shipdesign">Ship Design</a></li>
+			<li><a href="#events">Events</a></li>
+		</ul>
+	</section>
+	
+	<section id="goals">
+		<h2>Goals</h2>
+		
+		<a href="img/victory.jpg"><img src="img/victory-s.jpg" alt="Victory screen" /></a>
+		
+		<p>Constellation Control is a 4X space strategy game. Take control of a young, space-faring civilization and guide it to success by settling new worlds, researching technologies, building fleets of ships for defense, and searching out the mysteries of the galaxy.</p>
+		
+		<p>Constellation Control can be won by either of:</p>
+		<ol>
+			<li>Destroying all other civilizations ("Last Man Standing")</li>
+			<li>Completing one of several different victory recipes</li>
+		</ol>
+		
+		<h3>Victory Recipes</h3>
+		<p>Victory Recipes are victory conditions composed of smaller goals. A recipe is completed by acquiring all of the necessary Victory Ingredients for that recipe. Currently, the only implemented recipe is the Tessera Constellation recipe. You complete this recipe by settling the four special planets of the Tessera Constellation, an ancient subspace network left behind by an extinct alien race. The first civilization to own all four planets at once wins immediately.</p>
+	</section>
+	
+	<section id="galaxy">
+		<h2>Galaxy &amp; UI</h2>
+		
+		<a href="img/galaxymap.jpg"><img src="img/galaxymap-s.jpg" alt="Galaxy Map UI" /></a>
+		<a href="img/galaxymap2.jpg"><img src="img/galaxymap2-s.jpg" alt="Galaxy Map - Tactical View" /></a>
+		<a href="img/galaxymap3.jpg"><img src="img/galaxymap3-s.jpg" alt="Galaxy Map - Strategic View" /></a>
+		
+		<p>The game is played on a 2D galaxy map. Click and drag the map to scroll. Use the mousewheel or two-finger-pinch to zoom the map.</p>
+		<p>The map will display Stars, Anomalies, and Fleets. You can click any of these objects for more information.</p>
+		<p>Zooming the map out very far will switch to "strategic view" with a simplified representation. Zooming in will show the tactical view with details.</p>
+		<p>On the right side is the navigation bar with links to the main menu, list of planets, list of fleets, economy, ship designer, technology, diplomacy, victory status and civilization rankings, and game configuration.</p>
+		<p>On the top of the screen is the status visor showing how many planets you have settled, resource levels, current research project, and other critical info.</p>
+		<p>On the bottom is the button bar for map navigation and quickly toggling UI features.</p>
+		<p>You can clear the screen of sub menus at any time by clicking the "CLEAR" button in the top right of the screen.</p>
+		<p>Return to the main menu by clicking the "Hamburger" icon below the clear button.</p>
+		
+		<h3>Starting a New Game</h3>
+		
+		<a href="img/newgame.jpg"><img src="img/newgame-s.jpg" alt="Starting a new game" /></a>
+		
+		<p>When starting a new game, you may choose galaxy setup options:</p>
+		
+		<ul>
+			<li><b>Galaxy Size:</b> The amount of physical space to create as measured in "sectors". Each sector is roughly the size of one star and its immediate surroundings.</li>
+			<li><b>Star Density:</b> The percentage of space that should be populated by stars.</li>
+			<li><b>AIs:</b> The number of AI civilizations to populate the galaxy with.</li>
+			<li><b>Galaxy Age:</b> Younger galaxies tend to have energetic stars with resource-poor planets. Older galaxies have abundant resources, but little energy, making progress slow.</li>
+			<li><b>Crazyness:</b> Affects how extreme the dimensions of the galaxy are, the shape of star formations, and occurrence of whacky star systems and planet attributes, the frequency and severity of events, and the presence of game-changing scenarios and galactic intrigues.</li>
+		</ul>
+		
+	</section>
+	
+	<section id="stars">
+		<h2>Stars</h2>
+		
+		<a href="img/stars.jpg"><img src="img/stars-s.jpg" alt="Stars" /></a>
+		
+		<p>Stars have 1-5 planets which can be colonized by civilizations. You can see planets under the star's title if the planet is within scanning range. You can view the planet details if the star has been explored by one of your fleets.</p>
+		<p>Fleets park at stars. You can see parked fleets under the star. Click a fleet for more information.</p>
+		<p>Civs own individual planets within a star system. They cannot own the star itself.</p>
+		<p>Star colors influence what sort of planets are found there, on a spectrum of young/hot (blue) to old/cool (red). Young stars often have planets with high energy but low in resources. Planets around older, cooler stars tend to have more resources and generally support life better, but are low in energy. There are rare purple and green stars as well as black hole systems which can contain extreme and bizarre planets types not found anywhere else.</p>
+		<p>Stars that are within travel range of your fleets have visible name tags and number of planets, but you will not be able to see any more details until you send a fleet there. Once a fleet arrives, you can view planet information and the star is marked as "explored". Stars that have planets settled by any civ will have a colored name tag.</p>
+	</section>
+	
+	<section id="anoms">
+		<h2>Anomalies</h2>
+		
+		<a href="img/anom.jpg"><img src="img/anom-s.jpg" alt="Exploring an anomaly" /></a>
+		
+		<p>Space is full of strange anomalies that your fleets can explore. If you park on an anomaly with a fleet that has one or more ships equiped with a Space Lab, then it will automatically start researching the anomaly. When research is complete, something wonderful, interesting, or possibly terrifying may happen!</p>
+		
+		<p>There are also hyperspace anomalies that do not appear on the galaxy map. You can hunt for these unseen anomalies by sending a fleet on a hyperspace research mission for a period of turns. When their mission is over, they will report their findings, if any.</p>
+			
+	</section>
+	
+	<section id="fleets">
+		<h2>Fleets</h2>
+	
+		<a href="img/fleets2.jpg"><img src="img/fleets2-s.jpg" alt="Fleets in route" /></a>
+		<a href="img/fleets.jpg"><img src="img/fleets-s.jpg" alt="Fleets Screen" /></a>
+		
+		<p>Fleets are collections of space ships owned by one civ.</p>
+		<p>Fleets travel between stars and anomalies in a straight line through empty space (this is a "no starlanes" game). Destinations must be within the range of the fleet. To move a fleet, click the fleet you want to move and then right-click the desired destination. For other devices, you can click "MOVE" and then click the destination. While in transit, fleets cannot be redirected until they reach their destination.</p>
+		<p>Ships in a fleet can be split into several smaller fleets and travel to different destinations. Ships at a single star system will always combine to form a single fleet. To split a fleet, click the ships you want to send and then click "MOVE" or right-click another star. The ships you selected will be split into a new fleet and rerouted.</p>
+		<p>Fleets with a colony ship can colonize new worlds by clicking "COLONIZE" if the planet is habitable by your civ.</p>
+		<p>If a fleet contains at least one ship with a Space Lab, you can research anomalies on the map by parking the fleet on an anomaly. You can also send the fleet on research missions off the map by clicking "MISSION". During research missions, fleets will not be visible on the map and cannot be recalled. The fleet will hunt for unseen hyperspace anomalies and return after the length of time you set for it. Fleets on longer missions have higher chances of discovering anomalies. Some anomalies are dangerous, so it is recommended that you escort your research vessels with combat ships as well.</p>
+		<p>Fleets with ships equipped with weapons may engage other fleets in combat by clicking "ATTACK".</p>
+		<p>Fleets with ships equipped with ground combat units can invade foreign colonized worlds if the world is habitable by your civ.</p>
+		<p>Fleets with ships that can hold ground combat units can transfer ground units between the fleet and the planets it may be parked on by clicking "TROOPS".</p>
+	</section>
+	
+	<section id="planets">
+		<h2>Planets</h2>
+	
+		<a href="img/planet.jpg"><img src="img/planet-m.jpg" alt="Planet Sidebar" /></a>
+		
+		<p>Planets are settled by sending a Colony Ship to the planet's star and clicking COLONIZE on the planet or from the fleet view. Once a planet is settled by you, you can direct its economy and production goals.</p>
+		
+		<p>Planets are defined by these features:</p>
+		<ul>
+			<li><b>Size:</b> Determines how many zones you can build.</li> 
+			<li><b>Energy:</b> Determines how fast zones can be built.</li> 
+			<li><b>Resources:</b> Which raw materials are available for mining and in what quantity.</li> 
+			<li><b>Specials:</b> Special features that can help or hinder a planet.</li> 
+			<li><b>Atmosphere, Temperature, and Gravity:</b> Determines how habitable the planet is for your race.</li> 
+		</ul>
+		
+		<h3>Habitability</h3>
+			
+			<a href="img/hab.jpg"><img src="img/hab-s.jpg" alt="Habitability" /></a>
+			
+			<p>Atmosphere, temperature, and gravity create a three-axis "habitability cube". Each feature has 5 values, creating 5x5x5 = 125 possible world types that can exist.</p>
+			
+			<p>Your species has a preferred environment but may exist on alien worlds with similar environments. You can expand the range of worlds you can live on by increasing your Adaptation. Adaptation measures how far away from your preferred environment your people can still live in. Researching Habitation technology will increase adaptation over time. Improved adaptation also increases how large you can build up zones, thus how "tall" a planet can get. Civilizations generally start with an Adaptation of +1, meaning that they can only live on one very specific environment. Increasing adaptation to +2 means that you can settle worlds one "hop" away from your ideal environment and that your homeworld can now support more zone growth.</p>
+			
+			<p>Each alien civilization has its own preferred environment, so you will not necessarily be competing with them for planets. However, be wary of aliens with similar environmental needs as your own.</p>
+			
+		<h3>Resources</h3>
+		
+			<img src="img/resources.jpg" alt="Resources" /></a>
+			
+			<p>There are 9 unique resource types that can be mined (identified by color). The planet will display between 0-5 units of each resource based on its availability on that planet. Resources with 5 icons will have 5x the output of a single icon. Mine resources by building Mining zones.</p>
+		
+			<p>Resource types are:</p>
+			<ol>
+				<li>Organic Materials (O) - abundant</li>
+				<li>Silicates (S) - abundant</li>
+				<li>Metals (M) - abundant</li>
+				<li>Redium (R) - uncommon</li>
+				<li>Verdagen (G) - uncommon</li>
+				<li>Bluetonium (B) - uncommon</li>
+				<li>Cyanite (C) - rare</li>
+				<li>Yellowtron (Y) - rare</li>
+				<li>Violetronium (V) - rare</li>
+			</ol>
+		
+		<h3>Zoning</h3>
+			
+			<a href="img/zones.jpg"><img src="img/zones-m.jpg" alt="Zones" /></a>
+			<a href="img/zones2.jpg"><img src="img/zones2-s.jpg" alt="Building new zones" /></a>
+			
+			<p>Planets are primarily directed through Zoning. Zoning tells the planet what sort of activity to conduct. Each zone takes input (cash and resources) and outputs a product depending on the type of zone.</p>
+			<p>Each planet has a number Sectors, according to its size. This determines how many zones you can build on it. These are initially seen as empty slots on the planet view.</p>
+			<p>Zones are defined by:</p>
+			<ol>
+				<li><b>Type: </b> General category this zone falls into.</li>
+				<li><b>Minimum Sectors: </b> Minimum number of "slots" needed to create a new zone.</li>
+				<li><b>Maximum Sectors: </b> Maximum number of "slots" a zone will grow into.</li>
+				<li><b>Size: </b> Output multiplier. (How tall a zone is).</li>
+				<li><b>Value: </b> How "complete" the zone construction is compared to its full potential size (seen as a white "water line" on the zone).</li>
+				<li><b>Cost: </b> Resources this zone needs to do its job.</li>
+				<li><b>Output: </b> What this zone creates.</li>
+			</ol>
+			<p>The major categories of zones you can create are Government, Mining, Housing, Research, Stardock, Defense, Economy, and Special. Within each basic category are specific types with specific effects.</p>
+			<p>Build zones by clicking on any empty sector. When you create a zone, the zone starts completely undeveloped. Over time it will gradually build up if you feed it the necessary resources it requires each turn. If you do not have enough resources, it will shrink.</p>
+			<p>A single zone placed on a single sector has a size of 1. If your adaptation allows, zones may fuse with adjacent zones when they are completely built. This new zone will take up the same number of sectors as the original single zones did, but its maximum size is now the <i>factorial</i> of the total number of sectors it occupies! This means that creating larger zones by means of improved adaptation greatly increases the output potential.</p>
+			<p>EXAMPLE: You build 4 housing zones on a planet with adaptation=4. Over time the zones grow to completion. They will fuse with other completed zones, one at a time. This will first create 2 zones of 2 sectors each, then 1 zone of 4 sectors. This final 4-sector zone will have a size, not of 4, but of 4 + 3 + 2 + 1 = 10.</p>
+				
+			<h4>Throttle</h4>
+			
+				<p>You can alter your economic strategy by changing the planetary production throttle. Overdriving the planet will increase overall production, but waste money and resources. Setting it to be more efficient will consume far less resources, but the output will be hindered.</p>
+				
+				<ul>
+					<li><b>Miserly: </b> Resource Usage: 25%. Production: 50%. Speed: 50%.</li>
+					<li><b>Efficient: </b> Resource Usage: 62%. Production: 75%. Speed: 75%.</li>
+					<li><b>Balanced: </b> Resource Usage: 100%. Production: 100%. Speed: 100%.</li>
+					<li><b>Productive: </b> Resource Usage: 150%. Production: 125%. Speed: 125%.</li>
+					<li><b>Overdrive: </b> Resource Usage: 200%. Production: 150%. Speed: 150%.</li>
+				</ul>
+				
+				<p>You cannot throttle individual zones.</p>
+				
+		<h3>Building Queue</h3>
+		
+			<a href="img/prodqueue.jpg"><img src="img/prodqueue-s.jpg" alt="Building Queue" /></a>
+			
+			<p>Each planet can build a number of physical products including ships, ground units, planetary defenses, and make-work programs designed to put unused production capacity to good use generating cash or research.</p>
+			
+			<p>Add building projects to the building queue by clicking "Add Project" and selecting from the available projects.</p>
+			
+			<p>Different projects have different costs. Ships require ship labor generated by stardock-type zones, while ground units require military labor created by military zones. Projects will usually require additional material resources to complete. Because ships and ground units use two different kinds of labor, the building queue can work on both types of projects at once.</p>
+			
+			<p>Projects in the building queue can be set to build a specific number of units (1-5) or repeat-build forever.</p>
+			
+			<p>If you have military or stardock zones creating labor that you are not using to build ground units and ships, you can add a make-work project. These will capture unused labor and turn it into cash or research at a reduced rate. This makes sure labor is not entirely wasted.</p>
+			
+			<p>If you remove items from the build queue, labor and resources already built into that project are thrown away. They cannot be put towards a different project.</p>
+			
+			<p>When ships are built, they can be automatically sent to another location, either a specific star system or the nearest designated staging point. You can mark a star system as a staging point by viewing any of your own planets in that system and clicking the STAGING button at the top. Staging points are marked on the map with a large cross behind the star. Your homeworld is your initial staging point by default.</p>
+				
+		<h3>Economy</h3>
+		
+			<a href="img/econ.jpg"><img src="img/econ-s.jpg" alt="Economy Screen" /></a>
+			
+			<p>Each planet has a micro-economy determined by the planets natural resources and value. This planetary value then determines how much tax the population of the planet provides. There is a global 20% tax rate. To make money, you need to build housing zones which raise the maximum planetary population. As the population naturally rises, so will your tax revenue.</p>
+			
+			<p>Over the course of the game you will acquire raw resources from mining and use those resources to build other things. You will need to watch how resources are being obtained and used so that you do not run out. When resources are low, it affects your entire galactic economy and usage of limited resources is rationed. Zones will only grow if they have 100% of the resources they require. If even one has a shortfall, the zone will decline and output will be limited. Prolonged shortages can decimate a civilization's infrastructure (including your enemy's!)</p>
+			
+	</section>
+	
+	<section id="shipcombat">
+	
+		<h2>Ship Combat</h2>
+		
+		<a href="img/shipcombat.jpg"><img src="img/shipcombat-s.jpg" alt="Ship Combat" /></a>
+			
+		<p>Opposing fleets can initiate combat with each other if either fleet is equipped with weapons.</p>
+		
+		<p>When combat begins, you will see your fleet on one side and the opposing fleet on the other side. You will have the opportunity to click any high priority targets on the opposing fleet and to choose an engagement strategy.</p>
+		
+		<p>Combat is played in simulated 5-second increments in "weapon time", not in turn-based combat. This means that weapons fire when ready and repeat at their inherent reload speed. All ships are analyzed for weapon reload speed and combat speed (initiative) at the beginning of combat. When you click "Begin", all ships from both sides will begin firing at targets in order by their weapon's initiative. At the end of a simulated 5-seconds, you will have the opportunity to reselect priority targets, change engagement strategies, or flee. Combat continues until one fleet is entirely destroyed or when both fleets are out of ammo.</p>
+		
+		<p>Because all weapons have limited ammo, it is possible that combat may end with a stalemate. Combat can be re-engaged on the next turn after weapons have been restocked.</p>
+			 
+	</section>
+	
+	<section id="groundcombat">
+		<h2>Ground Combat</h2>
+	
+		<a href="img/groundcombat.jpg"><img src="img/groundcombat-s.jpg" alt="Ground Combat" /></a>
+		
+		<p>Ground combat occurs when a fleet with troop ships containing ground units chooses to "Invade" an enemy planet. Planets being invaded must be within the habitability range of the attacker. (This means that planets outside the habitability range of the attacker are inherently safe from ground invasions.)</p>
+		
+		<p>Before combat begins, you may be able to select an invasion strategy or to increase your odds by throwing money at it.</p>
+		
+		<p>Ground combat is entirely automated. Ground units will square off in one-on-one battles with each other. A dice roll from each unit is cast based on each unit's damage potential and the highest roll wins. The loser is destroyed and the winner remains unscathed. If both units roll the same number, both units are destroyed. It is possible that a ground invasion may end in a "Pyrrhic victory", with all units on both sides having been lost and the defender maintaining control of the planet.</p>
+		
+		<p>If a planet is captured, control instantly goes to the winner. Zones and population remain intact unless the invasion strategy caused collateral damage (NOT IMPLEMENTED).</p>
+		
+	</section>
+	
+	<section id="diplomacy">
+			
+		<h2>Diplomacy</h2>
+	
+		<a href="img/diplo.jpg"><img src="img/diplo-s.jpg" alt="Diplomacy" /></a>
+		
+		<p>You can engage in diplomacy with other alien civs. You will be notified when another civ is within range of communication.</p>
+		
+		<p>In order to communicate with other civs, you must:</p>
+		<ol>
+			<li>Be within physical range of each other. Range is determined by the lesser of your best ship engine technologies.</li>
+			<li>Have compatible communication skills.</li>
+			<li>Have a minimum amount of the leader's remaining attention span.</li>
+		</ol>
+		
+		<p>The Diplomacy screen will show each civ that you have met and their status. Each civ will have:</p>
+		<ol>
+			<li>A "love nub" relationship meter that indicates how you are getting along.</li>
+			<li>An "attention span" meter that indicates how much of the diplomats attention you can use up in an audience.</li>
+			<li>A list of currently enacted treaties.</li>
+		</ol>
+		
+		<h3>Communication</h3>
+		
+			<a href="img/gibberish.jpg"><img src="img/gibberish-s.jpg" alt="It's all ◐◑◒◓●◔◕◖◗ to me" /></a>
+			
+			<p>Each civ including your own has a range on a "communication scale" that it knows how to communicate across. When two civs have overlapping ranges, they can communicate with each other (hold audiences). If there is little or no overlap, you cannot interact with them and they will appear to talk gibberish. You can increase your own civ's communication ability by researching "Communication Skills" technology.</p>
+			
+			<p>Your options available during an audience are determined by <i>how much</i> your communication skills overlap. Civs with a high level of communication will be able to make better deals, trade more sophisticated technology, and create more meaningful political arrangements (treaties). Higher communication ability also slightly increases overall goodwill between civs.</p>
+
+		<h3>Audiences</h3>
+		
+			<a href="img/audience.jpg"><img src="img/audience-s.jpg" alt="Audience" /></a>
+		
+			<p>When holding an audience with another civ, you can make treaties, declare war, and trade technologies, resources, and even entire planets.</p>
+			
+			<p>Options available will be limited by your mutual communication abilities and by the other leader's disposition. They will be unwilling to deal much with you if you are not on good terms. This means that the best treaties and trade deals available require friendly relationships.</p>
+		
+			<p>Each leader has an attention span that gets depleted as you engage with them in audiences and propose deals. Bigger or more important deals will deplete the attention span of the leader more than small deals. As their attention span gets lower, leaders will be less likely to accept deals and will eventually leave. You will not be able to hold an audience with a leader who's attention span is below their minimum. Each leader's attention span slow regenerates each turn according to the leader's unique AI personality. You will also find that some leaders will only ever have a short attention span and that waiting will not improve it.</p>
+			
+		<h3>Trades</h3>
+		
+			<a href="img/trade.jpg"><img src="img/trade-s.jpg" alt="Trade deal" /></a>
+			
+			<p>When proposing trade deals, you will put items you want to give in your column from a list of things available, and place things you want to receive in their column from their list of things available.</p>
+			
+			<p>When you propose the trade, the leader will think about it for a moment and either accept, refuse, or propose a counter-offer. You also have the ability to counter offers from other leaders, however each counter offer depletes their attention span, meaning that if you bicker over it too much, they will walk away from the table.</p>
+			
+			<p>Each civ leader has a unique AI personality that will approach deal making differently. Some will willingly trade anything, while others are self-centered hard-bargainers.</p>
+			
+			<p>If the other leader thinks it has received a good deal, it will improve your mutual relationship. Making demands or "unfair" deals will reduce the relationship. Each leader has their own definition of "good deal". Thus, each trade that you propose is a bit of a gamble, and you learn from your mistakes.</p>
+			
+		<h3>Treaties</h3>
+		
+			<p>Accepting a treaty with another civ creates a binding arrangement. Treaties do not need to be renewed. Violating or backing out of a treaty is very damaging for your relationship and for your galactic reputation. Treaties that you can enact include:</p>
+			
+			<ul>
+				<li><b>Non-Aggression Pact:</b> Parties agree not to attack each other.</li>
+				<li><b>Surveillance Agreement:</b> Parties share their information on explored star systems and visibility of local fleet movement.</li>
+				<li><b>Research Sharing Agreement:</b> Each civ earns up to 15% of the total research income of the other. Research generated increases over time until fully vested after 50 turns.</li>
+				<li><b>Trade Agreement:</b> Each civ earns up to 15% of the total cash income of the other. Money generated increases over time until fully vested after 50 turns.</li>
+				<li><b>Technology Rights Agreement:</b> AKA "tech brokering". Parties agree not to re-trade technologies they trade with each other. Having this agreement in place limits your ability to re-trade techs to third-parties, but also makes the other leader more likely to accept tech trade offers to begin with, knowing it will not be abused.</li>
+				<li><b>Stellar Exclusivity Agreement:</b> Parties agree not to settle planets in each other's star systems. Existing colonies are grandfathered in.</li>
+				<li><b>Political Alliance:</b> Parties agree to come to each other's aid in times of need (NOT IMPLEMENTED YET).</li>
+				<li><b>Technology Alliance:</b> Parties automatically trade all current and future technologies.</li>
+				<li><b>Cease-Fire:</b> Ends a War. Both parties agree not to attack each other. Not as strong as a Non-Aggression Pact, but helps build good will on the road to diplomatic recovery.</li>
+			</ul>
+	</section>
+	
+	<section id="tech">
+	
+		<h2>Technology</h2>
+	
+		<a href="img/tech2.jpg"><img src="img/tech2-s.jpg" alt="Technology Screen - Acquired Technologies" /></a>
+		<a href="img/tech1.jpg"><img src="img/tech1-s.jpg" alt="Technology Screen - Select a Research Project" /></a>
+		
+		<p>You can research technology by creating research-type planetary zones that output research points (RP). Research points are spent on technologies in your list of available technologies for research, in order. All RPs are spent on the next tech in the list until it is completed. After this, the next tech will automatically start being researched. You can change the project order by clicking on a project and moving it up or down.</p>
+		
+		<p>The technologies available are determined by which technologies you already have. Each tech in the game has a list of prerequisite techs. If all prerequisites have been acquired by your civ, that tech then becomes available for research. (i.e. Constellation Control does not have a traditional "tech tree". It is more of a "tech graph".)</p>
+		
+		<p>When you complete a research project, it automatically yields the individual technologies bundled in with it. This means that a research project can yield more than one tech at a time. Example: Researching "Space Weapons 1" yields all of: Lightning Striker, Turbo Laser, Space Cannon, Buckshot Blaster, and Nuclear Missiles.</p>
+		
+		<p>Besides research, technology can be acquired by trading with other civs, scrapping captured ships, invading enemy planets, espionage, and exploring space anomalies. Some technologies are not researcheable, but must be found, stolen, reverse-engineered, or received. [NOT IMPLEMENTED]</p>
+			
+	</section>
+	
+	<section id="shipdesign">
+		<h2>Ship Design</h2>
+	
+		<a href="img/shipdes.jpg"><img src="img/shipdes-s.jpg" alt="Ship Designer" /></a>
+		
+		<p>You can design ships and build your custom designs in planetary build queues. When designing a ship, you can add Weapons and Components until the ship reaches maximum mass size (which can be increased with technology).</p>
+		
+		<p>Ship designs receive a discount in labor and resources as you physically build more of them. The more you build, the greater the discount. Because of this, there is a cost advantage to building smaller ships and sticking with reliable older-technology designs.</p>
+		
+		<p>Ship designs have the following characteristics:</p>
+		
+		<ul>
+			<li><b>Mass:</b> Total mass of the ship, determines size class designation and labor to produce.</li>
+			<li><b>Size Class:</b> A letter designation to indicate ship size, starting with "A". Each letter is twice as large as the previous. ("B" is 2x "A", while "C" is 4x "A").</li>
+			<li><b>Hull (HP):</b> Hit points of hull.</li>
+			<li><b>Armor (AP):</b> Hit points of armor.</li>
+			<li><b>Shield:</b> Damage subtracted from every incoming weapon strike.</li>
+			<li><b>Map Speed:</b> Minimum speed ship can travel on the map. (Fleets only move as fast as the slowest ship).</li>
+			<li><b>Combat Speed:</b> Increases initiative on the first combat round, makes craft harder to hit.</li>
+			<li><b>Firepower:</b> Total combined output of all weapons, assuming all shots fired.</li>
+			<li><b>AI Value (milval):</b> Military value of the ship as perceived by the AI. A general indicator of strength.</li>
+			<li><b>Cost:</b> An array of resources required to build this ship, including labor (produced by stardock planet zones).</li>
+			<li><b>Discount %:</b> How much of a discount this model gets in production.</li>
+		</ul>
+		
+		<p>Additionally, each design can have special designations depending on what components are installed:</p>
+		<ul>
+			<li><b>Colonizer:</b> Ship has a colony module for settling new planets.</li>
+			<li><b>Research Vessel:</b> Ship has a space lab equipped to research space anomalies.</li>
+			<li><b>Carrier:</b> Ship has a troop transport module for carrying ground units for planetary invasion.</li>
+			<li><b>Fighter:</b> Ship has space-combat weapons.</li>
+			<li><b>Bomber:</b> Ship has weapons capable of ground bombardment [NOT IMPLEMENTED].</li>
+		</ul>
+		
+		<h3>Components</h3>
+		
+			<p>Simply click any available component to add it to your design.</p>
+			
+			<p>Costs for each component are either discrete (lump sum for the whole component) or per-mass (costs more as the ship gets bigger). For example, a Space Lab is a fixed size with a fixed cost, while Nuclear Engines will scale as you add more stuff to the design and drives the cost up higher.</p>
+			
+			<p>Some components are mutually exclusive. For example, you can add only one kind of engine, armor, or shield at a time.</p> 
+			
+		<h3>Weapons</h3>
+		
+			<p>Click a weapon to add it to your design. Afterwards, you can increase or decrease the quantity of that weapon.</p>
+			
+			<p>Each weapon has the following attributes:</p>
+			
+			<ul>
+				<li><b>Type:</b> Influences what kind of defenses the weapon is effective against [NOT IMPLEMENTED].</li>
+				<li><b>Damage:</b> The base damage range the weapon inflicts. May be additionally influenced by other techs or components active in combat.</li>
+				<li><b>Shots:</b> AKA "ammo". The total number of times this weapon can be fired in combat. (There are no unlimited weapons.)</li>
+				<li><b>Reload:</b> The speed in simulated seconds at which the weapon can fire again. The lower the number, the faster the weapon fires and the sooner it comes into play in combat.</li>
+				<li><b>Accuracy:</b> Improves to-hit calculation.</li>
+				<li><b>Mass:</b> How big the weapon is (increasing the design size).</li>
+				<li><b>Cost:</b> An array of resources required to build this item, including labor (produced by stardock planet zones).</li>
+			</ul>
+			
+			<p>When space combat weapons fire at a target, the following happens:</p>
+			<ol>
+				<li>To-Hit Calculation: The weapon's accuracy combined with the target's combat speed and the difference in size between the two ships determines whether or not the weapon connects at all. If the weapon hits, then:</li>
+				<li>Damage Roll: The weapon will randomly roll for damage inflicted. This may be reduced by shields and modified by other technologies and components in play.</li>
+				<li>If both the armor and hull points of the target are depleted, the target is destroyed.</li>
+			</ol>
+			
+			<p>All weapons strike instantly. There is no "travel time".</p>
+		
+	</section>
+	
+	<section id="events">
+		<h2>Events</h2>
+
+		<p>A robust events system is programmed but currently has no content. Events can be triggered randomly or in response to game activity, including other events. Events can even be chained into a Choose Your Own Adventure graph for the full space-opera experience.</p>
+		
+		<p>Each event has the following attributes:</p>
+		
+		<ul>
+			<li><b>Title</b> </li>
+			<li><b>Description:</b> Text to display to the player.</li>
+			<li><b>Effect:</b> Function to run when the event is played. Literally any game effect that a programmer can think of.</li>
+			<li><b>Image:</b> Optional image to display.</li>
+			<li><b>Options:</b> A list of possible reactions to present to the player to choose from.</li>
+		</ul>
+		
+		<p>When an event with no options is played, it is a classic 4X "Random Event"; it has some programmed effect and you just deal with it.</p>
+		
+		<p>Events with included options give the player a choice of how to react. When a player makes a selection, the following happens:</p>
+		
+		<ol>
+			<li>Any optional immediate actions are triggered ("onChoose").</li>
+			<li>Any optional chained events are followed.</li>
+		</ol>
+		
+		<p>Chained events let you program a series of events they may occur. Chained events are an array of possible events that happen in response to an option being selected by the player. Each chained event may have any of these attributes:</p>
+		
+		<ol>
+			<li><b>Trigger: </b> Which event in the Event Library will be triggered.</li>
+			<li><b>Chance:</b> The chance that this event will be triggered if there are multiple chained events.</li>
+			<li><b>Delay:</b> How many turns to wait to trigger the following event. It can be a range.</li>
+		</ol>
+		
+		<p>With this simple event system, it is possible to write an entire sci-fi novel into the game with multiple outcomes, successive actions built on previous choices, diplomatic intrigues, and all manner of whacky stuff with real in-game effects. The universe is the limit!</p>
+		
+	</section>
+	
+</main>			
+</body>
+</html>

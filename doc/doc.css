@@ -1,0 +1,108 @@
+BODY {
+	font-family: 'Roboto Condensed', sans-serif;
+	background: #222;
+	background: #000 url(../img/map/bg/spacebg_037.jpg) 50% 50% no-repeat;
+	background-size: cover;
+	background-attachment: fixed;
+	font-size: 150%;
+	line-height: 1.4em;
+	}
+/* this gives pretty backgrounds for iOS */
+body:after{
+      content:"";
+      position:fixed;
+      top:0;
+      height:100vh;
+      left:0;
+      right:0;
+      z-index:-1; 
+      background: url(../img/map/bg/spacebg_037.jpg) center center;
+      background-size: cover;
+}
+	
+BODY, P, LI, A, TD, TH {
+	color: #DDD;
+	}
+H1, H2, H3, H4, H5, H6 {
+	color: #4BA5CC;
+	}
+H1 {
+	line-height: 1.2em;
+	margin-bottom: 1em;
+	}
+P { 
+	margin-bottom: 1.5em; 
+	text-align:justify;
+	}
+MAIN {
+	margin: 0 auto;
+	max-width: 40em;
+	padding: 2em;
+	}
+SECTION {
+	margin-bottom: 5em;
+	}
+LI {
+	margin-bottom: 0.75em;
+	}
+	
+DT {
+	color: #4BA5CC;
+	font-weight: bold; 
+	}
+DD { 
+	margin: 0.25em 0 1em 2em;	
+	}
+	
+.button {
+	display: inline-block;
+	background: #AEA;
+	padding: 0.5em;
+	font-size: 120%;
+	border-radius: 0.3em;
+	text-decoration:none;
+	color: #000;
+	}
+
+.img-grid { 
+	display:flex;
+	margin: 2em -1em;
+	flex-flow: row wrap;
+	}
+	
+.img-grid FIGURE {
+	flex: 1 1 auto;
+	margin: 1em 0em;
+	text-align:center;
+	max-width: 320px;
+	}
+	
+.img-grid FIGURE .date {
+	display:block;
+	color: #AAA;
+	font-size: 70%;
+	}
+.img-grid FIGURE IMG {
+	width: 276px;
+	}
+
+IMG {
+	max-width: 100%;
+	}
+	
+@media screen and (min-width: 1500px) {
+	SECTION > IMG,
+	SECTION > A IMG {
+		float: left;
+		clear: left;
+		margin-left: -340px;
+		margin-top: 0.25em;
+		margin-bottom: 1em;
+		}
+	MAIN {
+		margin: 0 5em 5em 360px ;
+		max-width: 40em;
+		/* padding: 2em; */
+		}
+	}
+	
