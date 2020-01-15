@@ -1,18 +1,21 @@
 import gulp from 'gulp';
 import browserSync from 'browser-sync';
 import historyApiFallback from 'connect-history-api-fallback/lib';
-import {CLIOptions} from 'aurelia-cli';
 import project from '../aurelia.json';
+import {CLIOptions} from 'aurelia-cli';
 import build from './build';
 import watch from './watch';
+
+const bs = browserSync.create();
 
 let serve = gulp.series(
   build,
   done => {
-    browserSync({
+    bs.init({
       online: false,
-      open: false,
-      port: 9000,
+      open: CLIOptions.hasFlag('open') || project.platform.open,
+      port: CLIOptions.getFlagValue('port') || project.platform.port,
+      host: CLIOptions.getFlagValue('host') || project.platform.host || "localhost",
       logLevel: 'silent',
       server: {
         baseDir: [project.platform.baseDir],
@@ -24,6 +27,12 @@ let serve = gulp.series(
     }, function (err, bs) {
       if (err) return done(err);
       let urls = bs.options.get('urls').toJS();
+      let host = bs.options.get('host');
+      let port = bs.options.get('port');
+
+      if( host !== "localhost" )
+        log(`Application Available At: http://${host}:${port}`);
+
       log(`Application Available At: ${urls.local}`);
       log(`BrowserSync Available At: ${urls.ui}`);
       done();
@@ -37,18 +46,16 @@ function log(message) {
 
 function reload() {
   log('Refreshing the browser');
-  browserSync.reload();
+  bs.reload();
 }
 
-let run;
+const run = gulp.series(
+  serve,
+  done => { watch(reload); done(); }
+);
 
-if (CLIOptions.hasFlag('watch')) {
-  run = gulp.series(
-    serve,
-    done => { watch(reload); done(); }
-  );
-} else {
-  run = serve;
-}
+const shutdownAppServer = () => {
+  bs.exit();
+};
 
-export default run;
+export { run as default, serve , shutdownAppServer };

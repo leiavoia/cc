@@ -1,44 +1,6 @@
 {
-  "name": "x",
+  "name": "x-2",
   "type": "project:application",
-  "platform": {
-    "id": "web",
-    "displayName": "Web",
-    "output": "scripts",
-    "index": "index.html",
-    "baseDir": "."
-  },
-  "transpiler": {
-    "id": "babel",
-    "displayName": "Babel",
-    "fileExtension": ".js",
-    "options": {
-      "plugins": [
-        "transform-es2015-modules-amd"
-      ]
-    },
-    "source": "src/**/*.js"
-  },
-  "markupProcessor": {
-    "id": "none",
-    "displayName": "None",
-    "fileExtension": ".html",
-    "source": "src/**/*.html"
-  },
-  "cssProcessor": {
-    "id": "sass",
-    "displayName": "Sass",
-    "fileExtension": ".scss",
-    "source": "src/**/*.scss"
-  },
-  "editor": {
-    "id": "vscode",
-    "displayName": "Visual Studio Code"
-  },
-  "unitTestRunner": {
-    "id": "none",
-    "displayName": "None"
-  },
   "paths": {
     "root": "src",
     "resources": "resources",
@@ -47,14 +9,91 @@
     "valueConverters": "resources/value-converters",
     "bindingBehaviors": "resources/binding-behaviors"
   },
+  "transpiler": {
+    "id": "babel",
+    "fileExtension": ".js",
+    "options": {
+      "plugins": [
+        [
+          "@babel/plugin-transform-modules-amd",
+          {
+            "loose": true
+          }
+        ]
+      ]
+    },
+    "source": [
+      "src/**/*.js"
+    ]
+  },
+  "markupProcessor": {
+    "source": [
+      "src/**/*.html"
+    ]
+  },
+  "cssProcessor": {
+    "source": [
+      "src/**/*.css"
+    ]
+  },
+  "jsonProcessor": {
+    "source": [
+      "src/**/*.json"
+    ]
+  },
+  "platform": {
+    "port": 9000,
+    "host": "localhost",
+    "open": false,
+    "index": "index.html",
+    "baseDir": ".",
+    "output": "scripts"
+  },
   "build": {
     "targets": [
       {
-        "id": "web",
-        "displayName": "Web",
-        "output": "scripts",
+        "port": 9000,
         "index": "index.html",
-        "baseDir": "."
+        "baseDir": ".",
+        "output": "scripts"
+      }
+    ],
+    "options": {
+      "minify": "stage & prod",
+      "sourcemaps": "dev & stage",
+      "rev": "prod",
+      "cache": "dev & stage"
+    },
+    "bundles": [
+      {
+        "name": "app-bundle.js",
+        "source": [
+          "**/*.{js,json,css,html}"
+        ]
+      },
+      {
+        "name": "vendor-bundle.js",
+        "prepend": [
+          "node_modules/promise-polyfill/dist/polyfill.min.js",
+          "node_modules/alameda/alameda.js"
+        ],
+        "dependencies": [
+          "aurelia-bootstrapper",
+          "aurelia-loader-default",
+          "aurelia-pal-browser",
+          {
+            "name": "aurelia-testing",
+            "env": "dev"
+          },
+          "text",
+          "fastpriorityqueue",
+          "panzoom",
+          {
+            "name": "chart.js",
+            "path": "../node_modules/chart.js/dist",
+            "main": "Chart.min.js"
+          }          
+        ]
       }
     ],
     "loader": {
@@ -68,77 +107,10 @@
             ".html",
             ".css"
           ],
-          "stub": true
+          "stub": false
         }
       ]
-    },
-    "options": {
-      "minify": "stage",
-      "sourcemaps": "stage"
-    },
-    "bundles": [
-      {
-        "name": "app-bundle.js",
-        "source": [
-          "[**/*.js]",
-          "**/*.{css,html}"
-        ]
-      },
-      {
-        "name": "vendor-bundle.js",
-        "prepend": [
-          "node_modules/bluebird/js/browser/bluebird.core.js",
-          "node_modules/aurelia-cli/lib/resources/scripts/configure-bluebird.js",
-          "node_modules/requirejs/require.js"
-        ],
-        "dependencies": [
-          "aurelia-binding",
-          "aurelia-bootstrapper",
-          "aurelia-dependency-injection",
-          "aurelia-event-aggregator",
-          "aurelia-framework",
-          "aurelia-history",
-          "aurelia-history-browser",
-          "aurelia-loader",
-          "aurelia-loader-default",
-          "aurelia-logging",
-          "aurelia-logging-console",
-          "aurelia-metadata",
-          "aurelia-pal",
-          "aurelia-pal-browser",
-          "aurelia-path",
-          "aurelia-polyfills",
-          "aurelia-route-recognizer",
-          "aurelia-router",
-          "aurelia-task-queue",
-          "aurelia-templating",
-          "aurelia-templating-binding",
-          "text",
-          "fastpriorityqueue",
-          "panzoom",
-          {
-            "name": "chart.js",
-            "path": "../node_modules/chart.js/dist",
-            "main": "Chart.min.js"
-          },          
-          {
-            "name": "aurelia-templating-resources",
-            "path": "../node_modules/aurelia-templating-resources/dist/amd",
-            "main": "aurelia-templating-resources"
-          },
-          {
-            "name": "aurelia-templating-router",
-            "path": "../node_modules/aurelia-templating-router/dist/amd",
-            "main": "aurelia-templating-router"
-          },
-          {
-            "name": "aurelia-testing",
-            "path": "../node_modules/aurelia-testing/dist/amd",
-            "main": "aurelia-testing",
-            "env": "dev"
-          }
-        ]
-      }
-    ]
-  }
+    }
+  },
+  "packageManager": "npm"
 }
