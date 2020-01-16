@@ -4284,6 +4284,9 @@ planet.grav4 .env_box .target .grav { border-width: 19px; }
 	width: 100%;
 	color: #AAA;
 	}
+#layout_ui_main.title_screen .disclaimer A {
+	color: #AAA;
+	}
 
 #layout_ui_content.active #fleets_pane {
 	background: rgba(0,0,0,0.7);
