@@ -36,7 +36,8 @@
 				Offer Bad @ ${civ.diplo.offer_bad_at|round:2}<br/>
 				Attention Span Recharge: ${civ.diplo.attspan_recharge|round:2}<br/>
 				Attention Span Max: ${civ.diplo.attspan_max|round:2}<br/>
-				Emotion: x${civ.diplo.emotion|round:2}
+				Emotion: x${civ.diplo.emotion*2|round:2}
+				Memory: ${civ.diplo.memory|round:2}
 			</p>	
 		</div>
 		
@@ -129,6 +130,13 @@
 			<p style="text-align:center; font-size: 300%; margin-top: 3em;">Considering your offer...</p>
 			<p style="text-align:center; font-size: 300%; margin-top: 3em;">
 				<progress style="height: 1em; width: 10em;"/>
+			</p>
+			<p if.bind="app.options.debug">
+				<b>${offer.score|round:3} SCORE </b><br/>
+				${civ.diplo.offer_ok_at|round:3} Offer OK @ <br/>
+				${civ.diplo.offer_counter_at|round:3} Offer Counter @<br/>
+				${civ.diplo.offer_bad_at|round:3} Offer Bad @<br/>
+				x${civ.diplo.emotion*2|round:3} Emotion
 			</p>
 		</div>
 			

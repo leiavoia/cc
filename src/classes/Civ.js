@@ -84,7 +84,9 @@ export default class Civ {
 		// anything less than `bad` get refused and treated as an insult
 		attspan_recharge: 0.05, // how much their attention space recharges each turn
 		attspan_max: 0.8, // maximum attention span
-		emotion: 1.0, // how much to multiply diplomatic effects		
+		emotion: 0.5, // how much to multiply diplomatic effects		
+		memory: 1.0, // 0..1, how long they remember diplomatic events
+		rep: 0, // our overall galactic reputation
 		};
 		
 	// bumping the lovenub of this civ will actually bump both nubs in sync.
@@ -92,8 +94,8 @@ export default class Civ {
 	BumpLoveNub( civ, amount /* 0..1 */ ) {
 		let acct = this.diplo.contacts.get(civ);
 		if ( acct ) { 
-			let emotion = civ.diplo.emotion;
-			if ( !this.is_player ) { emotion = Math.max(emotion, this.diplo.emotion); }
+			let emotion = civ.diplo.emotion * 2;
+			if ( !this.is_player ) { emotion = Math.max(emotion, this.diplo.emotion*2); }
 			acct.lovenub = utils.Clamp( acct.lovenub + amount * emotion, 0, 1 );
 			let them = civ.diplo.contacts.get(this);
 			if ( them ) { 
@@ -149,9 +151,77 @@ export default class Civ {
 				attspan: ( this.is_player ? 1.0 : this.diplo.attspan_max ),
 				in_range: true,
 				comm: this.CommOverlapWith( civ ), // when technology changes, you need to update this!
-				treaties: new Map()
+				treaties: new Map(),
+				rep: 0, // their opinion of us (our reputation with them)
+				replog: [] // stuff we did to them
 				});
+			// first impressions are a blend of our galactic reputation and their natural disposition
+			let value = Math.round(civ.diplo.rep/2) + ( (this.diplo.dispo-0.5) * 50 );
+			this.LogDiploEvent( civ, value, 'first_impressions', 'First impressions' );
+			
 			}
+		}
+		
+	// recalculates reputation with the named civ, or all civs if civ is null.
+	RecalcReputation( civ = null ) {
+		let MAX_MEMORY_TURNS = 100; // [!]MAGICNUMBER
+		let grandtotal = 0;
+		let turn = App.instance.game.turn_num;
+		for ( let [c,acct] of this.diplo.contacts ) {
+			if ( c == civ || !civ ) { 
+				let total = 0;
+				for ( let i = acct.replog.length-1; i >= 0; i-- ) {
+					let l = acct.replog[i];
+					let age = turn - l.start;
+					let mem = c.diplo.memory * MAX_MEMORY_TURNS;
+					let power = !l.start ? 1 : (1-(age / mem)); // [!]FUTURE - linear falloff. something more fancy might be nice 
+					l.val = Math.round( l.baseval * power ); 
+					// trim if too old or too weak
+					if ( ( l.val > -1 && l.val < 1 ) || ( l.start && age >= mem ) ) { 
+						acct.replog.splice( i, 1 ); // `splice` helps Aurelia binding
+						continue;
+						}
+					total += l.val;
+					}
+				acct.rep = Math.round( total.clamp( -100, 100 ) );
+				}
+			grandtotal += acct.rep;
+			}
+		// galactic reputation
+		this.diplo.rep = this.diplo.contacts.size ? Math.round(grandtotal / this.diplo.contacts.size) : 0;
+		}
+		
+	// log a diplomatic event caused by `civ` against us.
+	// `val` can be any numeric value between -100 .. +100.
+	// `tag` is a string you can use to reference the entry in case it needs removal.
+	// `sticky` makes the entry not expire over time.
+	LogDiploEvent( civ, val, tag, label, sticky = false ) {
+		if ( !val ) { return; }
+		// technical: we are accessing THEIR account of US.
+		let acct = civ.diplo.contacts.get(this);
+		if ( acct ) {
+			let v = Math.round(val) * ( this.diplo.emotion * 2 );
+			acct.replog.push({
+				start: ( sticky ? 0 : ( App.instance.game.turn_num || 1 ) ),
+				baseval: v,
+				val: v,
+				label,
+				tag,
+				});
+			civ.RecalcReputation(this);
+			}
+		}
+		
+	// remove a log caused by `civ` against us.
+	RemoveDiploLogEntry( civ, tag ) {
+		let acct = civ.diplo.contacts.get(this);
+		if ( acct ) { 
+			let i = acct.replog.findIndex( l => l.tag == tag );
+			if ( i >=0 ) { acct.replog.splice( i, 1 ); }
+			civ.RecalcReputation(this);
+			return true;
+			}
+		return false;
 		}
 		
 	RecalcEmpireBox() { 
@@ -578,9 +648,10 @@ export default class Civ {
 		civ.race.env.grav = utils.BiasedRandInt(0, 4, 2, 0.5);
 		// diplomatic personality
 		civ.diplo.style = Math.random();
+		civ.diplo.memory = utils.BiasedRand(0, 1, 0.75, 0.5); // 0..1, how long they remember events
 		civ.diplo.skill = utils.BiasedRand(0.05, 0.25, 0.10, 0.5);
 		civ.diplo.dispo = utils.BiasedRand(0.2, 0.8, 0.5, 0.75);
-		civ.diplo.emotion = utils.BiasedRand(0.25, 2.0, 1.0, 0.9);
+		civ.diplo.emotion = utils.BiasedRand(0.25, 0.8, 0.5, 0.8);
 		civ.diplo.attspan_recharge = utils.BiasedRand(0.005, 0.1, 0.035, 0.5);
 		civ.diplo.attspan_max = utils.BiasedRandInt(2, 10, 6, 0.5) / 10;
 		civ.diplo.offer_ok_at = (0.3 * Math.random() - 0.11); // anything over this is a good deal
@@ -1130,47 +1201,6 @@ export default class Civ {
 
 		}
 		
-	DiplomaticEffectOfBreakingTreaty( civ, type ) { 
-		const acct = this.diplo.contacts.get(civ);
-		if ( acct ) { 
-			let amount = 0;
-			switch ( type ) {
-				// special exception for WAR which isn't actually a treaty
-				case 'WAR' : { break; }
-				// no big deals:
-				case 'SURVEIL' :
-				case 'NO_STAR_SHARING' :
-				case 'TECH_BROKERING' : 
-				case 'RESEARCH' : { 
-					amount = -0.1;
-					break;
-					}
-				// manageable, but shows lack of faith
-				case 'TECH_ALLIANCE' :
-				case 'TRADE' : { 
-					amount = -0.25;
-					break;
-					}
-				// considered a signal of potential aggression
-				case 'CEASEFIRE' :
-				case 'NON_AGGRESSION' : { 
-					amount = -0.3;
-					break;
-					}
-				// pretty big no no
-				case 'ALLIANCE' : {
-					amount = -0.45;
-					break;
-					}
-				default: { 
-					amount = -0.2;
-					break;
-					}
-				}
-			this.BumpLoveNub( civ, amount );	
-			}
-		}
-		
 	// assumes that `civ` is the aggressor and we were attacked
 	DiplomaticEffectOfShipCombat( civ, shipcombat ) { 
 		if ( civ.race.is_monster ) { return; } // monsters dont have feelings
@@ -1184,34 +1214,38 @@ export default class Civ {
 		if ( acct && acct.treaties.has('NON_AGGRESSION') ) { outrage += 0.5; }
 		// alliance?
 		if ( acct && acct.treaties.has('ALLIANCE') ) { outrage = 1.0; }
+		// where happened?
+		let starname = shipcombat.planet ? shipcombat.planet.star.name : null;
+		if ( !starname && shipcombat.teams[0].fleet.star ) { starname = shipcombat.teams[0].fleet.star.name; }
+		if ( !starname && shipcombat.teams[1].fleet.star ) { starname = shipcombat.teams[1].fleet.star.name; }
 		// effect
+		this.LogDiploEvent( civ, -(outrage*100), 'ship_combat', `You attacked our fleet at ${starname}.` );
 		this.BumpLoveNub( civ, -outrage );
 		// cancel treaties if things are really bad
 		if ( acct && !acct.treaties.has('WAR') ) { 
-			let to_cancel = ['CEASEFIRE','TECH_ALLIANCE','SURVEIL'];
-			if ( acct.lovenub < 0.5 ) { 
-				to_cancel.concat(['NO_STAR_SHARING','TECH_BROKERING','RESEARCH','TRADE']);
-				}
-			if ( acct.lovenub < 0.25 || outrage > 0.75 ) { 
-				to_cancel = []; // empty array means just cancel everything
-				}
-			for ( let [type,treaty] of acct.treaties ) { 
-				if ( !to_cancel.length || to_cancel.indexOf(type) > -1 ) {
-					acct.treaties.delete(type);
-					civ.diplo.contacts.get(this).treaties.delete(type);
-					}
-				}
 			// declare war?
 			if ( acct.lovenub <= 0 ) { 
 				this.CreateTreaty( 'WAR', civ );
+				}
+			// withdraw treaties instead
+			else {
+				let to_cancel = ['CEASEFIRE','TECH_ALLIANCE','SURVEIL'];
+				if ( acct.lovenub < 0.5 ) { 
+					to_cancel.concat(['NO_STAR_SHARING','TECH_BROKERING','RESEARCH','TRADE']);
+					}
+				if ( acct.lovenub < 0.25 || outrage > 0.75 ) { 
+					to_cancel = []; // empty array means just cancel everything
+					}
+				for ( let [type,treaty] of acct.treaties ) { 
+					if ( !to_cancel.length || to_cancel.indexOf(type) > -1 ) {
+						this.EndTreaty( type, civ, true ); // true = diplomatic fallout, may not want this
+						}
+					}
 				}
 			// scold the player for attacking us, or make formal declaration of war
 			if ( civ.is_player || this.is_player ) { 
 				acct.attspan -= (acct.lovenub <= 0) ? 1.0 : 0.5; // silent treatment
 				acct.attspan = Math.max(acct.attspan,0);
-				let starname = shipcombat.planet ? shipcombat.planet.star.name : null;
-				if ( !starname && shipcombat.teams[0].fleet.star ) { starname = shipcombat.teams[0].fleet.star.name; }
-				if ( !starname && shipcombat.teams[1].fleet.star ) { starname = shipcombat.teams[1].fleet.star.name; }
 				// we attacked them
 				let message = '';
 				if ( civ.is_player ) {
@@ -1233,11 +1267,12 @@ export default class Civ {
 		}
 		
 	// assumes that `civ` is the aggressor and we were attacked
-	DiplomaticEffectOfGroundCombat( civ, groundcombat ) { 
+	DiplomaticEffectOfGroundCombat( civ, groundcombat ) {
 		this.BumpLoveNub( civ, -1 );
 		const acct = this.diplo.contacts.get(civ);
 		// automatic war
 		if ( acct && !acct.treaties.has('WAR') ) { 
+			this.LogDiploEvent( civ, -200, 'invasion', `You invaded ${groundcombat.planet.name}.` );
 			this.CreateTreaty( 'WAR', civ ); // this also cancels all other treaties
 			// audience / scolding
 			if ( civ.is_player ) { 
@@ -1253,7 +1288,11 @@ export default class Civ {
 				acct.attspan = 0; // silent treatment
 				App.instance.game.QueueAudience( civ, {message} );
 				}					
-			}						
+			}
+		// if we were already at war, less severe diplomatic punishment. we're used to being invaded now.
+		else {
+			this.LogDiploEvent( civ, -50, 'invasion', `You invaded ${groundcombat.planet.name}.` );
+			}
 		}
 		
 	CreateTreaty( type, civ ) { 
@@ -1272,6 +1311,8 @@ export default class Civ {
 		}
 		
 	EndTreaty( type, civ, diplo_fx = true ) { 
+		this.RemoveDiploLogEntry( civ, type );
+		civ.RemoveDiploLogEntry( this, type );
 		const acct1 = this.diplo.contacts.get(civ);
 		if ( acct1 ) { 
 			acct1.treaties.delete( type );
@@ -1280,7 +1321,49 @@ export default class Civ {
 				acct2.treaties.delete( type );
 				}
 			if ( diplo_fx ) { 
-				this.DiplomaticEffectOfBreakingTreaty( civ, type );	
+				let amount = 0;
+				switch ( type ) {
+					// special exception for WAR which isn't actually a treaty
+					case 'WAR' : { break; }
+					// no big deals:
+					case 'SURVEIL' :
+					case 'NO_STAR_SHARING' :
+					case 'TECH_BROKERING' : 
+					case 'RESEARCH' : { 
+						amount = -0.1;
+						break;
+						}
+					// manageable, but shows lack of faith
+					case 'TECH_ALLIANCE' :
+					case 'TRADE' : { 
+						amount = -0.25;
+						break;
+						}
+					// considered a signal of potential aggression
+					case 'CEASEFIRE' :
+					case 'NON_AGGRESSION' : { 
+						amount = -0.3;
+						break;
+						}
+					// pretty big no no
+					case 'ALLIANCE' : {
+						amount = -0.45;
+						break;
+						}
+					default: { 
+						amount = -0.2;
+						break;
+						}
+					}
+				if ( amount ) {
+					if ( type == 'WAR' ) {
+						this.LogDiploEvent( civ, 20, 'broken_war', `You ended a war with us.` );
+						}
+					else {
+						this.LogDiploEvent( civ, amount*100, 'broken_treaty', `You broke your treaty with us.` );
+						}
+					this.BumpLoveNub( civ, amount );
+					}
 				}
 			}
 		}

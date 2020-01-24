@@ -5,7 +5,7 @@ import * as utils from '../util/utils';
 
 // NOTES: treaties are reciprocal. Each civ keeps a 
 // separate copy of the treaty and each copy is evaluated
-// independently. So if a treaty is added, updaed, removed
+// independently. So if a treaty is added, updated, removed
 // or broken, it likely will need two actions to handle, 
 // one from each civ.
 
@@ -44,6 +44,8 @@ export const Treaties = {
 			this.us.BumpLoveNub( this.them, 0.01 );
 			},
 		Init: function() {
+			this.us.RemoveDiploLogEntry( this.them, this.type );
+			this.us.LogDiploEvent( this.them, 15, this.type, this.label, true );
 			// no hard feelin's
 			for ( let i = this.us.ai.objectives.length-1; i >= 0; i-- ) { 
 				let o = this.us.ai.objectives[i];
@@ -63,7 +65,9 @@ export const Treaties = {
 		onTurn: function ( turn_num ) {
 			// this.us.BumpLoveNub( this.them, 0.01 );
 			},
-		Init: function() { 
+		Init: function() {
+			this.us.RemoveDiploLogEntry( this.them, this.type );
+			this.us.LogDiploEvent( this.them, 5, this.type, this.label, true );
 			if ( this.us.is_player ) { 
 				App.instance.game.RecalcStarRanges();
 				App.instance.game.RecalcFleetRanges();
@@ -89,7 +93,10 @@ export const Treaties = {
 			// from that turn. it would become self-referencing here, but it also 
 			// resets each turn, so seems to be okay, but not ideal.
 			},
-		Init: function() { }
+		Init: function() { 
+			this.us.RemoveDiploLogEntry( this.them, this.type );
+			this.us.LogDiploEvent( this.them, 10, this.type, this.label, true );
+			}
 		},
 	TRADE : { 
 		label: 'Trade Agreement',
@@ -107,7 +114,10 @@ export const Treaties = {
 			this.income_last_turn = amount;
 			// Civ::DoAccounting() handles the rest
 			},
-		Init: function() { }
+		Init: function() { 
+			this.us.RemoveDiploLogEntry( this.them, this.type );
+			this.us.LogDiploEvent( this.them, 10, this.type, this.label, true );
+			}
 		},
 	TECH_BROKERING : { 
 		label: 'Technology Rights Agreement',
@@ -117,7 +127,10 @@ export const Treaties = {
 			},
 		onTurn: function ( turn_num ) {
 			},
-		Init: function() { ;; }
+		Init: function() { 
+			this.us.RemoveDiploLogEntry( this.them, this.type );
+			this.us.LogDiploEvent( this.them, 5, this.type, this.label, true );
+			}
 		},
 	NO_STAR_SHARING : { 
 		label: 'Stellar Exclusivity Agreement',
@@ -128,7 +141,10 @@ export const Treaties = {
 		onTurn: function ( turn_num ) {
 			// this.us.BumpLoveNub( this.them, 0.01 );
 			},
-		Init: function() { }
+		Init: function() { 
+			this.us.RemoveDiploLogEntry( this.them, this.type );
+			this.us.LogDiploEvent( this.them, 5, this.type, this.label, true );
+			}
 		},
 	ALLIANCE : { 
 		label: 'Political Alliance',
@@ -140,7 +156,9 @@ export const Treaties = {
 		onTurn: function ( turn_num ) {
 			this.us.BumpLoveNub( this.them, 0.01 );
 			},
-		Init: function() {
+		Init: function() { 
+			this.us.RemoveDiploLogEntry( this.them, this.type );
+			this.us.LogDiploEvent( this.them, 50, this.type, this.label, true );
 			}
 		},
 	TECH_ALLIANCE : { 
@@ -154,6 +172,8 @@ export const Treaties = {
 			this.us.BumpLoveNub( this.them, 0.01 );
 			},
 		Init: function() {
+			this.us.RemoveDiploLogEntry( this.them, this.type );
+			this.us.LogDiploEvent( this.them, 25, this.type, this.label, true );
 			let SwapFunc = function ( civ1, civ2 ) { 
 				// trade all techs between civs
 				for ( let t of civ1.tech.compl ) { 
@@ -184,6 +204,11 @@ export const Treaties = {
 			this.us.BumpLoveNub( this.them, 0.005 );
 			},
 		Init: function() {
+			this.us.RemoveDiploLogEntry( this.them, this.type );
+			this.us.RemoveDiploLogEntry( this.them, 'WAR' );
+			this.us.RemoveDiploLogEntry( this.them, 'recent_war' );
+			this.us.LogDiploEvent( this.them, 15, this.type, this.label, true );
+			this.us.LogDiploEvent( this.them, -100, 'recent_war', 'Recently at war.' );
 			this.us.EndTreaty('WAR',this.them);
 			this.us.BumpLoveNub( this.them, 0.05 );
 			// no hard feelin's
@@ -207,7 +232,6 @@ export const Treaties = {
 			this.us.BumpLoveNub( this.them, -1 );
 			},
 		Init: function() {
-			this.us.BumpLoveNub( this.them, -1 );
 			const acct = this.us.diplo.contacts.get(this.them);
 			// cancel all treaties
 			if ( acct ) {
@@ -215,9 +239,16 @@ export const Treaties = {
 					if ( type != 'WAR' ) { 
 						acct.treaties.delete(type);
 						this.them.diplo.contacts.get(this.us).treaties.delete(type);
+						// clean out any sticky treaties in the reputation log. 
+						// nobody cares how nice you USED to be!
+						this.them.RemoveDiploLogEntry( this.us, type );
+						this.us.RemoveDiploLogEntry( this.them, type );
 						}
 					}
 				}
+			// [!]TODO it KINDA matters who started the war in the first place
+			this.us.LogDiploEvent( this.them, -100, this.type, this.label, 'true' );
+			this.us.BumpLoveNub( this.them, -1 );
 			// [!]TODO How to handle alliances and love triangles?
 			}
 		},

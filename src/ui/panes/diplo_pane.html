@@ -1,14 +1,18 @@
 <template>
 
 	<div id="diplo_pane" class="pane">
-		<p style="float:right;"><button click.delegate="ClosePanel()" class="big">CLOSE</button></p>
+		<p style="float:right;"><button click.delegate="ClosePanel()" class="big bad">CLOSE</button></p>
 		<h1>Diplomacy</h1>
+		
+		<div>
+			Galactic Reputation: <span class="bold ${app.game.myciv.diplo.rep >= 0 ? 'good' : 'bad'}">${app.game.myciv.diplo.rep | round }</span>
+		</div>
 		
 		<div id="civ_list">
 			<template containerless repeat.for="[c,acct] of app.game.myciv.diplo.contacts">
 				<div if.bind="c.diplo.contactable && c.planets.length" 
 					css="border-color: rgb( ${c.color_rgb[0]}, ${c.color_rgb[1]}, ${c.color_rgb[2]} ); 
-						background-color: rgba( ${c.color_rgb[0]}, ${c.color_rgb[1]}, ${c.color_rgb[2]}, 0.55 );
+						background-color: rgba( ${c.color_rgb[0]}, ${c.color_rgb[1]}, ${c.color_rgb[2]}, 0.25 );
 						"
 					class="${!acct.in_range ? 'ghost' : ''}">
 					<img class="flag" src.one-time="c.flag_img" />
@@ -17,6 +21,19 @@
 					<div class="love_nub"><div class="nub" css="margin-left: calc(${acct.lovenub} * (100% - 6em));">${acct.lovenub|loveNub}</div></div>
 					<p>Communication: <b>${acct.comm | starRating : '5' : '★' : '' : 'None' }</b></p>
 					<p if.bind="acct.comm > 0.0">Attention Span: <b>${c.diplo.contacts.get(app.game.myciv).attspan | starRating : 5 : '⚫' : '⚪' : 'Not Available' }</b></p>
+					<p>Memory: <b>${c.diplo.memory | round : 2}</b></p>
+					<p>Emotion: <b>x${c.diplo.emotion*2 | round : 2}</b></p>
+					<p>Our Reputation: <span class="bold ${acct.rep >= 0 ? 'good' : 'bad'}">${acct.rep}</b></p>
+					<p>Their Galactic Reputation: <span class="bold ${c.diplo.rep >= 0 ? 'good' : 'bad'}">${c.diplo.rep}</b></p>
+					Reputation Log:
+					<table>
+						<tr repeat.for="l of acct.replog">
+							<td class="${l.val >= 0 ? 'good' : 'bad'}">${l.val}</td>
+							<!-- <td>${l.tag}</td> -->
+							<!-- <td>${app.game.turn_num - l.start}t</td> -->
+							<td>${l.label}</td>
+						</tr>
+					</table>
 					<p>
 						<span repeat.for="[type,treaty] of acct.treaties" >⚑ ${treaty.label}
 							<span if.bind="type=='TRADE'" class="bold good"> (+$${treaty.income_last_turn})</span>
@@ -31,7 +48,7 @@
 			</template>
 		</div>
 		
-		<p><button click.delegate="ClosePanel()" class="big">CLOSE</button></p>
+		<p><button click.delegate="ClosePanel()" class="big bad">CLOSE</button></p>
 	</div>
 
 </template>

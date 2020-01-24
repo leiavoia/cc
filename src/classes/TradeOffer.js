@@ -47,11 +47,16 @@ export default class TradeOffer {
 		if ( this.score >= this.to.diplo.offer_ok_at ) {
 			result = true;
 			this.status = 'accepted';
+			let msg = 'We made a fair trade.';
 			this.from.BumpLoveNub(0.025);
 			// sweet deal / gift
-			if ( this.score >= this.to.diplo.offer_good_at + 0.5 ) { 
+			if ( this.score >= this.to.diplo.offer_ok_at + 0.5 ) { 
 				this.from.BumpLoveNub(0.075);
+				msg = 'You gave us a generous trade.';
 				}
+			let diploscore = 5 + 3 * ( this.score - this.to.diplo.offer_ok_at );
+			this.to.LogDiploEvent( this.from, diploscore, 'good_trade', msg );
+			this.from.LogDiploEvent( this.to, 5, 'good_trade', 'You accepted our offer.' );
 			this.Exchange();
 			}
 			
@@ -65,9 +70,14 @@ export default class TradeOffer {
 		else {
 			result = false;
 			this.status = 'declined';
+			let msg = 'You refused our offer';
 			if ( this.score < this.to.diplo.offer_bad_at ) {
 				this.from.BumpLoveNub(-0.05);
+				msg = 'Your offer was an insult.';
 				}
+			let diploscore = -5 - 3 * ( this.to.diplo.offer_bad_at - this.score );
+			this.to.LogDiploEvent( this.from, diploscore, 'no_trade', msg );
+			this.from.LogDiploEvent( this.to, -3, 'no_trade', 'You refused our offer.' );
 			}
 		
 		// TODO +/- relationship for tone

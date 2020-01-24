@@ -1414,7 +1414,7 @@ export class AIDiplomacyObjective extends AIObjective {
 			if ( Math.random() > 0.04 ) continue;
 			
 			// if we are at war, let's see if we need to back out.
-			if ( acct.treaties.has('WAR') ) { 
+			if ( acct.treaties.has('WAR') ) {
 				// TODO: need a method of evaluating how the war is going.
 				// for now, just look at the power graph.
 				let ratio = civ.power_score / (c.power_score || 1);
@@ -1443,6 +1443,7 @@ export class AIDiplomacyObjective extends AIObjective {
 							}
 						else if ( result === false ) { 
 							this.note = `${c.name} declined ceasefire; `;
+							civ.LogDiploEvent( c, -5, 'attempted_ceasefire', `You refused to end a war.` );
 							// console.log(`${c.name} declines ceasefire from ${civ.name}`); 
 							}
 						else if ( typeof(result)==='object' ) {
@@ -1453,9 +1454,11 @@ export class AIDiplomacyObjective extends AIObjective {
 								}
 							else {
 								this.note = `${c.name} declined ceasefire; `;
+								civ.LogDiploEvent( c, -5, 'attempted_ceasefire', `You refused to end a war.` );
 								// console.log(`${c.name} declines ceasefire from ${civ.name} after counteroffer`);
 								}
 							}
+						c.LogDiploEvent( civ, 5, 'attempted_ceasefire', `You reached out to us for peace.` );
 						}
 					// trades with player must be queued up for UI interaction
 					else {
@@ -1485,21 +1488,17 @@ export class AIDiplomacyObjective extends AIObjective {
 					// accept counter-offer depending on how desperate we are
 					if ( result === true ) { 
 						this.note = `${c.name} accepted trade; `;
-						// console.log(`:-) ${c.name} accepts trade from ${civ.name}`); 
 						}
 					else if ( result === false ) { 
 						this.note = `${c.name} declined trade; `;
-						// console.log(`${c.name} decline trade from ${civ.name}`); 
 						}
 					else if ( typeof(result)==='object' ) {
 						if ( Math.random() > 0.5 ) {
 							result.Exchange();
 							this.note = `${c.name} accepted trade; `;
-							// console.log(`:-) ${c.name} accepts trade from ${civ.name} after counteroffer`);
 							}
 						else {
 							this.note = `${c.name} declined trade; `;
-							// console.log(`${c.name} declines trade from ${civ.name} after counteroffer`);
 							}
 						}
 					}

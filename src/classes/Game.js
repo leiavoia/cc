@@ -1045,13 +1045,11 @@ export default class Game {
 		for ( let c of this.galaxy.civs ) { 
 			if ( c.is_monster ) { continue; } // no monsters 
 			if ( !c.alive || !c.planets.length ) { continue; } // no zombies 
+			c.RecalcReputation();
 			// note that we evaluate treaties (actually two) from each viewpoint
 			for ( let [civ, acct] of c.diplo.contacts.entries() ) { 
 				// no dead civs - TODO ideally move this to a KILL() function
-				if ( !c.alive || !civ.planets.length ) {
-					// c.diplo.contacts.delete(civ);
-					continue;
-					} 
+				if ( !c.alive || !civ.planets.length ) { continue; } 
 				for ( let t of acct.treaties.values() ) { 
 					if ( 'onTurn' in t ) { 
 						t.onTurn( this.turn_num ); 
