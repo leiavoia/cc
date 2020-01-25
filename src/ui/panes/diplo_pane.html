@@ -23,6 +23,7 @@
 					<p if.bind="acct.comm > 0.0">Attention Span: <b>${c.diplo.contacts.get(app.game.myciv).attspan | starRating : 5 : '⚫' : '⚪' : 'Not Available' }</b></p>
 					<p>Memory: <b>${c.diplo.memory | round : 2}</b></p>
 					<p>Emotion: <b>x${c.diplo.emotion*2 | round : 2}</b></p>
+					<p>Turns in Contact: <b>${(app.game.turn_num - acct.est) + 1}</b></p>
 					<p>Our Reputation: <span class="bold ${acct.rep >= 0 ? 'good' : 'bad'}">${acct.rep}</b></p>
 					<p>Their Galactic Reputation: <span class="bold ${c.diplo.rep >= 0 ? 'good' : 'bad'}">${c.diplo.rep}</b></p>
 					Reputation Log:

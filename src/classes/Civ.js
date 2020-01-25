@@ -129,7 +129,8 @@ export default class Civ {
 	// AKA "AddContact"
 	InitDiplomacyWith( civ ) {
 		if ( !this.diplo.contacts.has(civ) ) {
-			this.diplo.contacts.set( civ, { 
+			this.diplo.contacts.set( civ, {
+				est: App.instance.game.turn_num,
 				attspan: ( this.is_player ? 1.0 : this.diplo.attspan_max ),
 				in_range: true,
 				comm: this.CommOverlapWith( civ ), // when technology changes, you need to update this!
@@ -1163,7 +1164,8 @@ export default class Civ {
 		// TREATIES
 		for ( let k of Object.keys( Treaties ) ) { 
 			const t = Treaties[k];
-			if ( k != 'WAR' ) { 
+			let acct = this.diplo.contacts.get(civ);
+			if ( k != 'WAR' && !acct.treaties.has(k) ) { 
 				items.push({ type:'treaty', label:t.label, obj:t.type, civ:civ, avail:t.AvailTo( this, civ ) });
 				}
 			}
@@ -1347,7 +1349,8 @@ export default class Civ {
 		this.RemoveDiploLogEntry( civ, type );
 		civ.RemoveDiploLogEntry( this, type );
 		const acct1 = this.diplo.contacts.get(civ);
-		if ( acct1 ) { 
+		if ( acct1 ) {
+			let treaty = acct1.treaties.get( type ); // save for later
 			acct1.treaties.delete( type );
 			const acct2 = civ.diplo.contacts.get(this);
 			if ( acct2 ) { 
@@ -1390,10 +1393,10 @@ export default class Civ {
 					}
 				if ( amount ) {
 					if ( type == 'WAR' ) {
-						this.LogDiploEvent( civ, 20, 'broken_war', `You ended a war with us.` );
+						civ.LogDiploEvent( this, 20, 'broken_war', `You ended a war with us.` );
 						}
 					else {
-						this.LogDiploEvent( civ, amount*100, 'broken_treaty', `You broke your treaty with us.` );
+						civ.LogDiploEvent( this, amount*100, 'broken_treaty', `You broke your ${treaty.label} with us.` );
 						}
 					}
 				}

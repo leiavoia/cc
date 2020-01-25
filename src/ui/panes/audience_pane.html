@@ -37,17 +37,18 @@
 				Attention Span Recharge: ${civ.diplo.attspan_recharge|round:2}<br/>
 				Attention Span Max: ${civ.diplo.attspan_max|round:2}<br/>
 				Emotion: x${civ.diplo.emotion*2|round:2}
-				Memory: ${civ.diplo.memory|round:2}
+				Memory: ${civ.diplo.memory|round:2}<br/>
+				Turns in Contact: ${(app.game.turn_num - acct.est) + 1}
 			</p>	
 		</div>
 		
 		<!-- INTRO -->
 		<div id="audience_us" class="slideInRight" if.bind="ambassador_present && mode=='intro'">
-			<div id="speech_them" class="fadeIn" css="color: ${civ.color};">
+			<div id="speech_them" class="fadeIn" css="color: ${civ.color};" if.bind="their_text">
 				<p><b style="font-weight:bold;">${civ.name} Ambassador:</b><p>
 				<div innerhtml.bind="their_text"></div>
 			</div>
-			<div id="speech_us">
+			<div id="speech_us" if.bind="our_text || options.length">
 				<div innerhtml.bind="our_text"></div>
 				<ol>
 					<li repeat.for="option of options"><a href="#" click.delegate="option.func()">${option.text}</a></li>

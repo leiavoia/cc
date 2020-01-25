@@ -33,7 +33,7 @@ export class AudiencePane {
 		this.civ = data.obj;
 		this.data = data.data;
 		
-		this.acct = this.civ.diplo.contacts.get(this.app.game.myciv);
+		this.acct = this.app.game.myciv.diplo.contacts.get(this.civ);
 		if ( !this.acct ) {
 			this.app.CloseMainPanel();
 			return false;
@@ -150,14 +150,14 @@ export class AudiencePane {
 		}
 		
 	DeclareWar() {
-		const acct = this.civ.diplo.contacts.get(this.app.game.myciv);
-		if ( acct && !acct.treaties.has('WAR') ) { 
+		if ( !this.acct.treaties.has('WAR') ) { 
 			this.app.game.myciv.CreateTreaty( 'WAR', this.civ ); // this also cancels all other treaties					
 			}	
 		this.their_text = `<p>You will regret this.</p>`;
 		this.options = [ { text:"End audience.", func: () => this.Exit() } ];
 		this.mood = 'mad';
-		this.ReturnToMainMenu();
+		this.offer = null;
+		this.mode = 'intro';
 		}
 		
 	ListTreatiesToEnd() {
@@ -169,7 +169,8 @@ export class AudiencePane {
 				this.options.push( { text:v.label, func: () => this.EndTreaty(k) } );
 				}
 			}	
-		this.ReturnToMainMenu();
+		this.offer = null;
+		this.mode = 'intro';
 		}
 		
 	EndTreaty( type ) {
