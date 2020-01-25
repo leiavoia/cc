@@ -200,7 +200,7 @@ export const Treaties = {
 			this.us.RemoveDiploLogEntry( this.them, 'WAR' );
 			this.us.RemoveDiploLogEntry( this.them, 'recent_war' );
 			this.us.LogDiploEvent( this.them, 15, this.type, this.label, true );
-			this.us.LogDiploEvent( this.them, -100, 'recent_war', 'Recently at war.' );
+			this.us.LogDiploEvent( this.them, -50, 'recent_war', 'Recently at war.' );
 			this.us.EndTreaty('WAR',this.them);
 			// no hard feelin's
 			for ( let i = this.us.ai.objectives.length-1; i >= 0; i-- ) { 
@@ -233,6 +233,7 @@ export const Treaties = {
 						// nobody cares how nice you USED to be!
 						this.them.RemoveDiploLogEntry( this.us, type );
 						this.us.RemoveDiploLogEntry( this.them, type );
+						this.us.RemoveDiploLogEntry( this.them, 'recent_war' );
 						}
 					}
 				}

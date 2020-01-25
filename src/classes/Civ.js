@@ -144,13 +144,65 @@ export default class Civ {
 			}
 		}
 		
+	FriendsOfOurs() {
+		let arr = [];
+		for ( let [civ,acct] of this.diplo.contacts ) {
+			if ( acct.lovenub > 0.65 || acct.treaties.has('POLITICAL_TREATY') || acct.treaties.has('TRADE') || acct.treaties.has('RESEARCH') ) { arr.push(civ); }
+			}
+		return arr;
+		}
+		
+	EnemiesOfOurs() {
+		let arr = [];
+		for ( let [civ,acct] of this.diplo.contacts ) {
+			if ( acct.lovenub < 0.35 || acct.treaties.has('WAR') || acct.treaties.has('CEASEFIRE') ) { arr.push(civ); }
+			}
+		return arr;
+		}
+	
 	// recalculates reputation with the named civ, or all civs if civ is null.
 	RecalcReputation( civ = null ) {
 		let MAX_MEMORY_TURNS = 100; // [!]MAGICNUMBER
 		let grandtotal = 0;
 		let turn = App.instance.game.turn_num;
+		let my_friends = this.FriendsOfOurs();
+		let my_enemies = this.EnemiesOfOurs();
 		for ( let [c,acct] of this.diplo.contacts ) {
-			if ( c == civ || !civ ) { 
+			if ( c == civ || !civ ) {
+				// check third-party diplomatic relationships
+				// [!]OPTIMIZE - ok to run this only once per turn if it makes things slow,
+				// but leaving it here ensures accuracy.
+				let their_friends = c.FriendsOfOurs();
+				let their_enemies = c.EnemiesOfOurs();
+				let mutual_friends = their_friends.filter( x => my_friends.includes(x) );
+				let mutual_enemies = their_enemies.filter( x => my_enemies.includes(x) );
+				let barbuddies = their_enemies.filter( x => my_friends.includes(x) );
+				let inlaws = their_friends.filter( x => my_enemies.includes(x) );
+				c.RemoveDiploLogEntry( this, 'mutual_friends', false );
+				c.RemoveDiploLogEntry( this, 'mutual_enemies', false );
+				c.RemoveDiploLogEntry( this, 'barbuddies', false );
+				c.RemoveDiploLogEntry( this, 'inlaws', false );
+				c.RemoveDiploLogEntry( this, 'warmonger', false );
+				c.RemoveDiploLogEntry( this, 'peaceful', false );
+				if ( mutual_friends.length ) { 
+					c.LogDiploEvent( this, mutual_friends.length * 10, 'mutual_friends', 'We have mutual friends.', true, false );
+					}
+				if ( mutual_enemies.length ) { 
+					c.LogDiploEvent( this, mutual_enemies.length * 10, 'mutual_enemies', 'We have mutual enemies.', true, false );
+					}
+				if ( barbuddies.length ) { 
+					c.LogDiploEvent( this, barbuddies.length * -10, 'barbuddies', 'You are friendly with our enemies.', true, false );
+					}
+				if ( inlaws.length ) { 
+					c.LogDiploEvent( this, inlaws.length * -10, 'inlaws', 'You are at war with our friends.', true, false );
+					}
+				if ( my_enemies.length > 1 && (my_enemies.length / this.diplo.contacts.size) > 0.5 ) { 
+					c.LogDiploEvent( this, inlaws.length * -10, 'warmonger', 'You are a warmonger.', true, false );
+					}
+				if ( this.diplo.contacts.size > 2 && my_friends.length / this.diplo.contacts.size > 0.5 ) { 
+					c.LogDiploEvent( this, inlaws.length * 15, 'peaceful', 'You are peaceful.', true, false );
+					}
+				// now do totals
 				let total = 0;
 				for ( let i = acct.replog.length-1; i >= 0; i-- ) {
 					let l = acct.replog[i];
@@ -178,7 +230,7 @@ export default class Civ {
 	// `val` can be any numeric value between -100 .. +100.
 	// `tag` is a string you can use to reference the entry in case it needs removal.
 	// `sticky` makes the entry not expire over time.
-	LogDiploEvent( civ, val, tag, label, sticky = false ) {
+	LogDiploEvent( civ, val, tag, label, sticky = false, recalc=true ) {
 		if ( !val ) { return; }
 		// technical: we are accessing THEIR account of US.
 		let acct = civ.diplo.contacts.get(this);
@@ -191,17 +243,17 @@ export default class Civ {
 				label,
 				tag,
 				});
-			civ.RecalcReputation(this);
+			if ( recalc ) { civ.RecalcReputation(this); }
 			}
 		}
 		
 	// remove a log caused by `civ` against us.
-	RemoveDiploLogEntry( civ, tag ) {
+	RemoveDiploLogEntry( civ, tag, recalc=true ) {
 		let acct = civ.diplo.contacts.get(this);
 		if ( acct ) { 
 			let i = acct.replog.findIndex( l => l.tag == tag );
 			if ( i >=0 ) { acct.replog.splice( i, 1 ); }
-			civ.RecalcReputation(this);
+			if ( recalc ) { civ.RecalcReputation(this); }
 			return true;
 			}
 		return false;
