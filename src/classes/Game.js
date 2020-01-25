@@ -1067,9 +1067,6 @@ export default class Game {
 						acct.attspan = c.diplo.attspan_max; 
 						}
 					}
-				// gravitate towards natural disposition (this is called 
-				// once for each civ, so it double dips - be careful)
-				if ( acct.lovenub > c.diplo.dispo ) { c.BumpLoveNub( civ, 0.001 ); }
 				}
 			}
 		}

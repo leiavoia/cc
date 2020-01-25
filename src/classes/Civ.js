@@ -89,21 +89,6 @@ export default class Civ {
 		rep: 0, // our overall galactic reputation
 		};
 		
-	// bumping the lovenub of this civ will actually bump both nubs in sync.
-	// The `emotion` stat will be whichever is greater of the two civs.
-	BumpLoveNub( civ, amount /* 0..1 */ ) {
-		let acct = this.diplo.contacts.get(civ);
-		if ( acct ) { 
-			let emotion = civ.diplo.emotion * 2;
-			if ( !this.is_player ) { emotion = Math.max(emotion, this.diplo.emotion*2); }
-			acct.lovenub = utils.Clamp( acct.lovenub + amount * emotion, 0, 1 );
-			let them = civ.diplo.contacts.get(this);
-			if ( them ) { 
-				them.lovenub = utils.Clamp( them.lovenub + amount * emotion, 0, 1 );
-				}
-			}
-		}
-		
 	CommOverlapWith( civ ) { 
 		if ( !this.diplo.contactable || !civ.diplo.contactable ) { return 0; }
 		let min1 = utils.Clamp( this.diplo.style - this.diplo.skill, 0, 1 );
@@ -144,21 +129,18 @@ export default class Civ {
 	// AKA "AddContact"
 	InitDiplomacyWith( civ ) {
 		if ( !this.diplo.contacts.has(civ) ) {
-			// for two AIs, go with however is grumpier. For player, go with AI.
-			let lovenub = this.is_player ? civ.diplo.dispo :  Math.min( this.diplo.dispo, civ.diplo.dispo );
 			this.diplo.contacts.set( civ, { 
-				lovenub: lovenub,
 				attspan: ( this.is_player ? 1.0 : this.diplo.attspan_max ),
 				in_range: true,
 				comm: this.CommOverlapWith( civ ), // when technology changes, you need to update this!
 				treaties: new Map(),
 				rep: 0, // their opinion of us (our reputation with them)
-				replog: [] // stuff we did to them
+				replog: [], // stuff we did to them
+				lovenub: 0.5 // this is just reputation normalized to 0..1
 				});
 			// first impressions are a blend of our galactic reputation and their natural disposition
-			let value = Math.round(civ.diplo.rep/2) + ( (this.diplo.dispo-0.5) * 50 );
-			this.LogDiploEvent( civ, value, 'first_impressions', 'First impressions' );
-			
+			this.LogDiploEvent( civ, ( (this.diplo.dispo-0.5) * 50 ), 'disposition', 'Disposition', true );
+			this.LogDiploEvent( civ, Math.round(civ.diplo.rep/2), 'first_impressions', 'First impressions' );
 			}
 		}
 		
@@ -184,6 +166,7 @@ export default class Civ {
 					total += l.val;
 					}
 				acct.rep = Math.round( total.clamp( -100, 100 ) );
+				acct.lovenub = utils.Clamp( (acct.rep / 200) + 0.5 , 0, 1 ); // STOP-GAP HACK
 				}
 			grandtotal += acct.rep;
 			}
@@ -1220,7 +1203,6 @@ export default class Civ {
 		if ( !starname && shipcombat.teams[1].fleet.star ) { starname = shipcombat.teams[1].fleet.star.name; }
 		// effect
 		this.LogDiploEvent( civ, -(outrage*100), 'ship_combat', `You attacked our fleet at ${starname}.` );
-		this.BumpLoveNub( civ, -outrage );
 		// cancel treaties if things are really bad
 		if ( acct && !acct.treaties.has('WAR') ) { 
 			// declare war?
@@ -1268,7 +1250,6 @@ export default class Civ {
 		
 	// assumes that `civ` is the aggressor and we were attacked
 	DiplomaticEffectOfGroundCombat( civ, groundcombat ) {
-		this.BumpLoveNub( civ, -1 );
 		const acct = this.diplo.contacts.get(civ);
 		// automatic war
 		if ( acct && !acct.treaties.has('WAR') ) { 
@@ -1362,7 +1343,6 @@ export default class Civ {
 					else {
 						this.LogDiploEvent( civ, amount*100, 'broken_treaty', `You broke your treaty with us.` );
 						}
-					this.BumpLoveNub( civ, amount );
 					}
 				}
 			}

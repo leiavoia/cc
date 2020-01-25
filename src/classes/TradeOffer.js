@@ -48,10 +48,8 @@ export default class TradeOffer {
 			result = true;
 			this.status = 'accepted';
 			let msg = 'We made a fair trade.';
-			this.from.BumpLoveNub(0.025);
 			// sweet deal / gift
 			if ( this.score >= this.to.diplo.offer_ok_at + 0.5 ) { 
-				this.from.BumpLoveNub(0.075);
 				msg = 'You gave us a generous trade.';
 				}
 			let diploscore = 5 + 3 * ( this.score - this.to.diplo.offer_ok_at );
@@ -72,7 +70,6 @@ export default class TradeOffer {
 			this.status = 'declined';
 			let msg = 'You refused our offer';
 			if ( this.score < this.to.diplo.offer_bad_at ) {
-				this.from.BumpLoveNub(-0.05);
 				msg = 'Your offer was an insult.';
 				}
 			let diploscore = -5 - 3 * ( this.to.diplo.offer_bad_at - this.score );

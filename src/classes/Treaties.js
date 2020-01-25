@@ -40,10 +40,9 @@ export const Treaties = {
 		// call this every turn. override to do anything you want.
 		// returns FALSE if it expired and needs removal.
 		onTurn: function ( turn_num ) {
-			// slight benefit to relations: 
-			this.us.BumpLoveNub( this.them, 0.01 );
 			},
 		Init: function() {
+			this.us.RemoveDiploLogEntry( this.them, 'CEASEFIRE' ); // replaces a ceasefire
 			this.us.RemoveDiploLogEntry( this.them, this.type );
 			this.us.LogDiploEvent( this.them, 15, this.type, this.label, true );
 			// no hard feelin's
@@ -63,7 +62,6 @@ export const Treaties = {
 			return acct.lovenub >= 0.6 && !acct.treaties.has(this.type) && acct.comm >= 0.5;
 			},
 		onTurn: function ( turn_num ) {
-			// this.us.BumpLoveNub( this.them, 0.01 );
 			},
 		Init: function() {
 			this.us.RemoveDiploLogEntry( this.them, this.type );
@@ -82,7 +80,6 @@ export const Treaties = {
 			return acct.lovenub >= 0.65 && !acct.treaties.has(this.type) && acct.comm >= 0.7;
 			},
 		onTurn: function ( turn_num ) {
-			this.us.BumpLoveNub( this.them, 0.01 );
 			const maxpct = 0.15; // 15% of our per-turn RP when fully vested
 			let mod = utils.Clamp( ( turn_num - this.created_on ) / 50, 0, 1 );
 			const amount = Math.ceil( this.them.research_income * mod * maxpct );
@@ -103,10 +100,9 @@ export const Treaties = {
 		income_last_turn: 0,
 		AvailTo: function (a,b) { 
 			const acct = a.diplo.contacts.get(b);
-			return acct.lovenub >= 0.42 && !acct.treaties.has(this.type) && acct.comm >= 0.3;
+			return acct.lovenub >= 0.35 && !acct.treaties.has(this.type) && acct.comm >= 0.3;
 			},
 		onTurn: function ( turn_num ) {
-			this.us.BumpLoveNub( this.them, 0.01 );
 			const maxpct = 0.15; // 15% of our per-turn revenue when fully vested
 			let mod = utils.Clamp( ( turn_num - this.created_on ) / 50, 0, 1 );
 			const amount = Math.ceil( this.them.econ.income * mod * maxpct );
@@ -123,7 +119,7 @@ export const Treaties = {
 		label: 'Technology Rights Agreement',
 		AvailTo: function (a,b) { 
 			const acct = a.diplo.contacts.get(b);
-			return acct.lovenub >= 0.45 && !acct.treaties.has(this.type) && acct.comm >= 0.5;
+			return acct.lovenub >= 0.41 && !acct.treaties.has(this.type) && acct.comm >= 0.5;
 			},
 		onTurn: function ( turn_num ) {
 			},
@@ -139,7 +135,6 @@ export const Treaties = {
 			return acct.lovenub >= 0.2 && !acct.treaties.has(this.type) && acct.comm >= 0.3;
 			},
 		onTurn: function ( turn_num ) {
-			// this.us.BumpLoveNub( this.them, 0.01 );
 			},
 		Init: function() { 
 			this.us.RemoveDiploLogEntry( this.them, this.type );
@@ -151,10 +146,9 @@ export const Treaties = {
 		desc: 'Both parties agree to come to each other\'s aid in times of war.',
 		AvailTo: function (a,b) { 
 			const acct = a.diplo.contacts.get(b);
-			return acct.lovenub >= 0.8 && !acct.treaties.has(this.type) && acct.comm >= 0.6;
+			return acct.lovenub >= 0.7 && !acct.treaties.has(this.type) && acct.comm >= 0.6;
 			},
 		onTurn: function ( turn_num ) {
-			this.us.BumpLoveNub( this.them, 0.01 );
 			},
 		Init: function() { 
 			this.us.RemoveDiploLogEntry( this.them, this.type );
@@ -166,10 +160,9 @@ export const Treaties = {
 		desc: '',
 		AvailTo: function (a,b) { 
 			const acct = a.diplo.contacts.get(b);
-			return acct.lovenub >= 0.89 && !acct.treaties.has(this.type) && acct.comm >= 0.8;
+			return acct.lovenub >= 0.75 && !acct.treaties.has(this.type) && acct.comm >= 0.8;
 			},
 		onTurn: function ( turn_num ) {
-			this.us.BumpLoveNub( this.them, 0.01 );
 			},
 		Init: function() {
 			this.us.RemoveDiploLogEntry( this.them, this.type );
@@ -201,7 +194,6 @@ export const Treaties = {
 			return acct.treaties.has('WAR');
 			},
 		onTurn: function ( turn_num ) {
-			this.us.BumpLoveNub( this.them, 0.005 );
 			},
 		Init: function() {
 			this.us.RemoveDiploLogEntry( this.them, this.type );
@@ -210,7 +202,6 @@ export const Treaties = {
 			this.us.LogDiploEvent( this.them, 15, this.type, this.label, true );
 			this.us.LogDiploEvent( this.them, -100, 'recent_war', 'Recently at war.' );
 			this.us.EndTreaty('WAR',this.them);
-			this.us.BumpLoveNub( this.them, 0.05 );
 			// no hard feelin's
 			for ( let i = this.us.ai.objectives.length-1; i >= 0; i-- ) { 
 				let o = this.us.ai.objectives[i];
@@ -229,7 +220,6 @@ export const Treaties = {
 			return !acct.treaties.has('WAR');
 			},
 		onTurn: function ( turn_num ) {
-			this.us.BumpLoveNub( this.them, -1 );
 			},
 		Init: function() {
 			const acct = this.us.diplo.contacts.get(this.them);
@@ -248,7 +238,6 @@ export const Treaties = {
 				}
 			// [!]TODO it KINDA matters who started the war in the first place
 			this.us.LogDiploEvent( this.them, -100, this.type, this.label, 'true' );
-			this.us.BumpLoveNub( this.them, -1 );
 			// [!]TODO How to handle alliances and love triangles?
 			}
 		},
@@ -260,7 +249,6 @@ export const Treaties = {
 // 			return acct.lovenub >= 0.85 && !acct.treaties.has(this.type);
 // 			},
 // 		onTurn: function ( turn_num ) {
-// 			this.us.BumpLoveNub( this.them, 0.01 );
 // 			// TODO
 // 			},
 // 		Init: function() {
@@ -273,7 +261,6 @@ export const Treaties = {
 // 			return acct.status >= 0 && !acct.treaties.has(this.type);
 // 			},
 // 		onTurn: function ( turn_num ) {
-// 			this.us.BumpLoveNub( this.them, 0.01 );
 // 			}
 // 		},
 // 	RESOURCE : { 
@@ -283,7 +270,6 @@ export const Treaties = {
 // 			return acct.status >= 0 && !acct.treaties.has(this.type);
 // 			},
 // 		onTurn: function ( turn_num ) {
-// 			// this.us.BumpLoveNub( this.them, 0.01 );
 // 			},
 // 		Init: function() { }
 // 		},
@@ -294,7 +280,6 @@ export const Treaties = {
 // 			return acct.status >= 0 && !acct.treaties.has(this.type);
 // 			},
 // 		onTurn: function ( turn_num ) {
-// 			// this.us.BumpLoveNub( this.them, 0.01 );
 // 			},
 // 		Init: function() { }
 // 		},
@@ -305,7 +290,6 @@ export const Treaties = {
 // 			return acct.status >= 1 && !acct.treaties.has(this.type);
 // 			},
 // 		onTurn: function ( turn_num ) {
-// 			// this.us.BumpLoveNub( this.them, 0.01 );
 // 			},
 // 		Init: function() { }
 // 		},
