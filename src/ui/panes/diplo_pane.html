@@ -1,55 +1,172 @@
 <template>
 
 	<div id="diplo_pane" class="pane">
-		<p style="float:right;"><button click.delegate="ClosePanel()" class="big bad">CLOSE</button></p>
+		<p class="button_rack marginless" style="float:right; z-index: 10"><button click.delegate="ClosePanel()" class="big bad">CLOSE</button></p>
 		<h1>Diplomacy</h1>
 		
-		<div>
-			Galactic Reputation: <span class="bold ${app.game.myciv.diplo.rep >= 0 ? 'good' : 'bad'}">${app.game.myciv.diplo.rep | round }</span>
-		</div>
-		
+		<div class="statboxes">
+			<div>
+				<output class="${app.game.myciv.power_pctl >= 0.66 ? 'good' : ( app.game.myciv.power_pctl < 0.34 ? 'bad' : 'alert')}">${app.game.myciv.power_rank || 0}</output>
+				<span>Power Rank</span>
+			</div>
+			<div>
+				<output class="${app.game.myciv.diplo.rep >= 0 ? 'good' : 'bad'}">${app.game.myciv.diplo.rep || 0}</output>
+				<span>Galactic Reputation</span>
+			</div>
+			<div>
+				<output>${app.game.myciv.diplo.contacts.size || 0}</output>
+				<span>Contacts</span>
+			</div>
+			<div>
+				<output class="good">${app.game.myciv.diplo.friends.length || 0}</output>
+				<span>Friends</span>
+			</div>
+			<div>
+				<output class="bad">${app.game.myciv.diplo.enemies.length || 0}</output>
+				<span>Enemies</span>
+			</div>
+		</div>					
+								
+								
 		<div id="civ_list">
 			<template containerless repeat.for="[c,acct] of app.game.myciv.diplo.contacts">
 				<div if.bind="c.diplo.contactable && c.planets.length" 
-					css="border-color: rgb( ${c.color_rgb[0]}, ${c.color_rgb[1]}, ${c.color_rgb[2]} ); 
-						background-color: rgba( ${c.color_rgb[0]}, ${c.color_rgb[1]}, ${c.color_rgb[2]}, 0.25 );
-						"
+					css="border-color: ${c.color}; background-color: rgba( ${c.color_rgb[0]}, ${c.color_rgb[1]}, ${c.color_rgb[2]}, 0.25 ); "
 					class="${!acct.in_range ? 'ghost' : ''}">
+					
 					<img class="flag" src.one-time="c.flag_img" />
-					<h2>${c.name}</h2>
-					<img src.one-time="c.diplo_img_small" class="diplo_img ${!acct.comm || !c.diplo.contacts.get(app.game.myciv).attspan ? 'nocomm' : ''}" click.delegate="SpeakTo(c)" />
-					<div class="love_nub"><div class="nub" css="margin-left: calc(${acct.lovenub} * (100% - 6em));">${acct.lovenub|loveNub}</div></div>
-					<p>Communication: <b>${acct.comm | starRating : '5' : '★' : '' : 'None' }</b></p>
-					<p if.bind="acct.comm > 0.0">Attention Span: <b>${c.diplo.contacts.get(app.game.myciv).attspan | starRating : 5 : '⚫' : '⚪' : 'Not Available' }</b></p>
-					<p>Memory: <b>${c.diplo.memory | round : 2}</b></p>
-					<p>Emotion: <b>x${c.diplo.emotion*2 | round : 2}</b></p>
-					<p>Turns in Contact: <b>${(app.game.turn_num - acct.est) + 1}</b></p>
-					<p>Our Reputation: <span class="bold ${acct.rep >= 0 ? 'good' : 'bad'}">${acct.rep}</b></p>
-					<p>Their Galactic Reputation: <span class="bold ${c.diplo.rep >= 0 ? 'good' : 'bad'}">${c.diplo.rep}</b></p>
-					Reputation Log:
-					<table>
-						<tr repeat.for="l of acct.replog">
-							<td class="${l.val >= 0 ? 'good' : 'bad'}">${l.val}</td>
-							<!-- <td>${l.tag}</td> -->
-							<!-- <td>${app.game.turn_num - l.start}t</td> -->
-							<td>${l.label}</td>
-						</tr>
-					</table>
-					<p>
-						<span repeat.for="[type,treaty] of acct.treaties" >⚑ ${treaty.label}
-							<span if.bind="type=='TRADE'" class="bold good"> (+$${treaty.income_last_turn})</span>
-							<span if.bind="type=='RESEARCH'" class="bold good"> (+${treaty.income_last_turn} RP)</span>
-							<br/>
-						</span>
-					</p>
-					<p class="button_rack button_rack_fill">
-						<button click.delegate="SpeakTo(c)" if.bind="c.diplo.contacts.get(app.game.myciv).attspan > 0 && acct.comm">SPEAK TO</button>
-					</p>
+					<h2 css="background-color:${c.color};">${c.name}</h2>
+					
+					<div class="divider">
+						
+						<div>
+							<img src.one-time="c.diplo_img_small" class="diplo_img ${!acct.comm || !c.diplo.contacts.get(app.game.myciv).attspan ? 'nocomm' : ''}" click.delegate="SpeakTo(c)" />
+							<!-- <div class="love_nub small"><div class="nub" css="margin-left: calc(${acct.lovenub} * (100% - 6em));">${acct.lovenub|loveNub}</div></div> -->
+							<!-- <div class="love_nub"><div class="nub" css="margin-left: calc(${acct.lovenub} * (100% - 6em));">${acct.lovenub|loveNub}</div></div> -->
+							<p class="button_rack button_rack_fill">
+								<button click.delegate="ClickInfo(c)" class="cool ${!modes[c.id] || modes[c.id]=='info' ? 'active' : ''}">Info</button>
+								<button click.delegate="ClickLog(c)" class="cool ${modes[c.id]=='log' ? 'active' : ''}">Log</button>
+								<button click.delegate="ClickAbout(c)" class="cool ${modes[c.id]=='about' ? 'active' : ''}">About</button>
+								<button click.delegate="ClickRelations(c)" class="cool ${modes[c.id]=='relations' ? 'active' : ''}">Relations</button>
+								<button click.delegate="SpeakTo(c)" class="${!acct.in_range || !c.diplo.contacts.get(app.game.myciv).attspan || !acct.comm ? 'bad ghost' : ''}">${!acct.in_range || !c.diplo.contacts.get(app.game.myciv).attspan || !acct.comm ? 'Not Available' : 'Audience'}</button>
+							</p>
+							
+							<!-- <p class="button_rack button_rack_fill">
+							</p> -->
+							<p if.bind="app.game.turn_num+0 && !acct.treaties.has('WAR')">
+								<span repeat.for="[type,treaty] of acct.treaties" >⚑ ${treaty.label}
+									<span if.bind="type=='TRADE'" class="bold good"> (+$${treaty.income_last_turn})</span>
+									<span if.bind="type=='RESEARCH'" class="bold good"> (+${treaty.income_last_turn} RP)</span>
+									<br/>
+								</span>
+							</p>
+						</div>
+						
+						<!-- GENERAL INFO -->
+						<div if.bind="!modes[c.id] || modes[c.id] == 'info'">
+							<div class="statboxes">
+								<!-- <div>
+									<output class="${acct.lovenub >= 0.6 ? 'good' : (acct.lovenub < 0.4 ? 'bad' : '')}">${acct.lovenub|loveNub}</output>
+									<span>Status</span>
+								</div> -->
+								<div title="Their current view of us" class="clickable ${app.game.turn_num+0 && acct.treaties.has('WAR') ? 'bad' : (acct.rep==100 ? 'good' : '')}" click.delegate="ClickLog(c)">
+									<output class="bad" if.bind="app.game.turn_num+0 && acct.treaties.has('WAR')">WAR</output>
+									<output else class="${acct.rep >= 0 ? 'good' : 'bad'}">${acct.rep}</output>
+									<span>Relationship</span>
+								</div>
+								<div title="Attention they can devote to a meeting with you" class="${c.diplo.contacts.get(app.game.myciv).attspan==0 ? 'bad' : ''}">
+									<output>${c.diplo.contacts.get(app.game.myciv).attspan | percent}%</output>
+									<span>Attention</span>
+								</div>
+								<div title="Overall civilization rank in the galaxy" class="${c.power_rank==1 ? 'good' : ''}">
+									<output class="${c.power_pctl >= 0.66 ? 'good' : (c.power_pctl < 0.34 ? 'bad' : 'alert')}">${c.power_rank}</output>
+									<span>Power Rank</span>
+								</div>
+								<div title="Their reputation in the galactic community" class="clickable" click.delegate="ClickRelations(c)">
+									<output class="${c.diplo.rep >= 0 ? 'good' : 'bad'}">${c.diplo.rep}</output>
+									<span>Reputation</span>
+								</div>
+								<!-- <div>
+									<output>${(app.game.turn_num - acct.est) + 1}t</output>
+									<span>Contact</span>
+								</div> -->
+								<div title="Ability to communicate with you" class="${!acct.comm ? 'bad' : ''}">
+									<!-- <output>${acct.comm | starRating : '5' : '★' : '' : 'None' }</output> -->
+									<output if.bind="acct.comm" class="${acct.comm >= 0.66 ? 'good' : (acct.comm < 0.2 ? 'bad' : 'alert')}">${acct.comm|percent}%</output>
+									<output else>None</output>
+									<span>Communication</span>
+								</div>
+							</div>
+						</div>
+						
+						<!-- REPUTATION LOG -->
+						<div if.bind="modes[c.id] == 'log'" click.delegate="ClickInfo(c)">
+							<p class="bold">Reputation Log:</p>
+							<table>
+								<tr repeat.for="l of acct.replog">
+									<td class="${l.val >= 0 ? 'good' : 'bad'}">${l.val > 0 ? '+' : ''}${l.val}</td>
+									<td>${l.label}</td>
+								</tr>
+							</table>
+						</div>
+						
+						<!-- ABOUT -->
+						<div if.bind="modes[c.id] == 'about'" click.delegate="ClickInfo(c)">
+							<p>
+								The ${c.name} are lifeforms from the planet <em>${c.homeworld.name}</em>.
+								 
+								Currently, they occupy <em>${c.planets.length}</em> &nbsp;planets.
+								
+								<span if.bind="c.diplo.rep &lt;= -40">They are the scum of the galaxy.</span> 
+								<span if.bind="c.diplo.rep &lt;= -20 && c.diplo.rep &gt;= -40">They are galactic troublemakers.</span> 
+								<span if.bind="c.diplo.rep &gt;= 20 && c.diplo.rep &lt;= 40">They are decent galactic citizens.</span>
+								<span if.bind="c.diplo.rep &gt;= 40">They are excellent galactic citizens.</span>
+								
+								<span if.bind="!c.diplo.contactable">They have refused all contact with foreigners.</span>
+								 
+								<span if.bind="c.diplo.emotion &lt; 0.33">They are very logical beings and tend not to react emotionally.</span> 
+								<span if.bind="c.diplo.emotion &gt; 0.66">They are rather emotional beings.</span>
+								
+								<span if.bind="c.diplo.memory &lt;= 0.33">They have very short memories and are easy to manipulate.</span>
+								<span if.bind="c.diplo.memory &gt;= 0.66">They have long memories and will hold or grudge or keep a friend for a long time.</span>
+								
+								<span if.bind="c.diplo.offer_ok_at &gt; 0.25">They seem to be pretty open to bargaining.</span> 
+								<span if.bind="c.diplo.offer_ok_at &lt; -0.25">They drive a hard bargain, so beware when proposing deals!</span> 
+								
+								<span if.bind="c.diplo.attspan_max &lt;= 0.3">The ${c.name} have a hard time paying attention, so keep your audiences short<span if.bind="c.diplo.attspan_recharge &lt;= 0.025"> and infrequent</span>.</span> 
+								
+							</p>
+						</div>
+						
+						<!-- RELATIONS -->
+						<div if.bind="modes[c.id] == 'relations'" click.delegate="ClickInfo(c)">
+						
+							<p class="bold good">Friends:</p>
+							<ul if.bind="c.diplo.friends.length">
+								<li repeat.for="friend of c.diplo.friends" class="good">${friend.name}</li>
+							</ul>
+							<p else style="margin-left: 2em;">None</p>
+							
+							<p class="bold bad">Enemies:</p>
+							<ul if.bind="c.diplo.enemies.length">
+								<li repeat.for="enemy of c.diplo.enemies" class="bad">${enemy.name}</li>
+							</ul>
+							<p else style="margin-left: 2em;">None</p>
+							
+						</div>
+						
+					</div>
+					
 				</div>
 			</template>
+			<!-- hack to get evenly spaced columns -->
+			<div style="visibility:hidden"></div>
+			<div style="visibility:hidden"></div>
 		</div>
 		
-		<p><button click.delegate="ClosePanel()" class="big bad">CLOSE</button></p>
+		<p if.bind="app.game.myciv.diplo.contacts.size > 3">
+			<button click.delegate="ClosePanel()" class="big bad">CLOSE</button>
+		</p>
 	</div>
 
 </template>

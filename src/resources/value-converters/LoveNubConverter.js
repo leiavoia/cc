@@ -1,6 +1,6 @@
 export class LoveNubValueConverter {
 	toView( value ) {
-		value = Math.round( value * 10 ); // make integers
+		value = Math.ceil( value * 10 ); // make integers
 		switch ( value ) { 
 			case 0: return 'Hostile';
 			case 1: return 'Enmity';

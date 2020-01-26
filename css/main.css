@@ -858,7 +858,7 @@ TABLE.env TD.ideal {
 }
 
 .good { color: #AEA; }
-.bad { color: #D21; }
+.bad { color: #f55c5c; } /* formerly D21 */
 .alert { color: #FCF742; }
 .zero { color: #666; }
 .dim { color: #888; }
@@ -997,10 +997,8 @@ button.cool:hover:active, .button_rack A.cool:hover:active, A.button.cool:hover:
 	background-color: #444;
 	}
 button.active, .button_rack A.active, A.button.active {
-	text-shadow: 1px 1px 1px #000;
-	box-shadow: 
-		0.15em 0.15em 0.15em inset rgba(255,255,255,0.65), 
-		-0.15em -0.15em 0.15em inset rgba(0,0,0,0.65); 
+	color: #333;
+	/* font-weight: bold; */
 	}
 button.ghost, .button_rack A.ghost, A.button.ghost, .ghost {
 	opacity: 0.24;
@@ -3389,42 +3387,152 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	
 
 /* DIPLOMACY PANE */
-#diplo_pane #civ_list {
+#civ_list {
 	display: flex;
 	flex-flow: row wrap;
+	margin: 1em -1em;
 	}
-#diplo_pane #civ_list > DIV {
+#civ_list > DIV {
 	box-sizing: border-box;
 	border: 5px solid #FFF;
 	border-radius: 1.0em;
 	padding: 1em;
-	margin: 2em;
-	flex: 0 1 auto;
-/* 	min-width: 20%; */
-	max-width: 20%;
+	margin: 1em;
+	flex: 1 1 30%;
+	/* overflow: hidden; */
+	min-width: 430px;
+	/* max-width: 800px; */
 	}
-#diplo_pane #civ_list > DIV.ghost {
+#civ_list > DIV.ghost {
 	pointer-events:none; 
 	opacity:0.24;
 	}
 #civ_list > DIV IMG.diplo_img {
 	width: 100%;
 	max-width: 100%;
-	display: inline-block;
-	margin: 0.5em 0;
+	display: block;
+	margin: 0.25em 0 0 0;
 	cursor:pointer;
+	border-radius: 0.5em;
+	/* border-top-left-radius:0.5em;  */
+	/* border-top-right-radius:0.5em; */
 	}
 #civ_list > DIV IMG.diplo_img.nocomm {
 	filter: saturate(0) brightness(0.35);
 	}
 #civ_list > DIV IMG.flag {
-	max-height: 22px;
+	/* display:none; */
+	max-height: 26px;
 	float: right;
-	margin: 0 0 0.5em 0.5em;
+	margin: -0.75rem 0rem 0 0;
 	}
+#civ_list H2 {
+	margin: -1rem -1rem 1rem -1rem;
+	padding: 0.25em 1rem 0.25em 1rem;
+	text-shadow: 1px 1px 1px #000;
+	z-index: 2;
+}
+#civ_list .divider {
+	display: flex;
+	margin: -0.5rem -0.5rem;
+	/* width: 100%; */
+}
+#civ_list .divider > DIV {
+	flex: 1 1 50%;
+	margin: 0 0.5em 0 0.5em;
+}
+#civ_list .divider > DIV:first-child {
+	max-width: 300px;
+	min-width: 200px;
+}
 #civ_list > DIV P {
 	margin: 0.5em 0;
 	}
+#civ_list DIV.love_nub {
+	margin-top: 0; 
+	border-top-left-radius:0; 
+	border-top-right-radius:0;
+}
+
+
+
+#civ_list.compact > DIV {
+	min-width: none;
+	flex: 1 0 12%;
+}
+#civ_list.compact .flag,
+#civ_list.compact .button_rack,
+#civ_list.compact H2 {
+	display:none;
+}
+#civ_list.compact .divider > DIV:first-child {
+	max-width: none;
+	min-width: none;
+}
+.compact .statboxes > DIV {
+	flex: 1 1 100%;
+	text-align: left;
+	padding: 0.1rem;
+	margin: 0.1rem;
+	/* background: none; */
+}
+.compact .statboxes OUTPUT {
+	font-size: 100%;
+	display:inline-block;
+	margin-right: 1em;
+	width:3em;
+	text-align:right;
+}
+.compact .statboxes SPAN {
+	display: inline;
+	font-size: 1rem;
+	text-transform: none;
+	white-space: nowrap;
+	/* color: #CCC; */
+}
+
+
+
+
+
+.statboxes {
+	display: flex;
+	flex-flow: row wrap;
+	margin-left: -0.25rem;
+	margin-right: -0.25rem;
+}
+.statboxes > DIV {
+	flex: 1 1 auto;
+	background: rgba( 255, 255, 255, 0.1 );
+	border-radius: 0.5rem;
+	text-align: center;
+	padding: 0.5rem ;
+	margin: 0.25rem;
+}
+.statboxes OUTPUT {
+	font-size: 200%;
+	display:block;
+	font-weight:bold;
+}
+.statboxes SPAN {
+	text-transform: uppercase;
+	display:block;
+	font-size: 0.8rem;
+	color: #AAA;
+}
+.statboxes > DIV.bad {
+	background: rgb(122, 14, 14);
+}
+.statboxes > DIV.good {
+	background: rgb(9, 97, 23);
+}
+
+
+
+
+
+
+
 
 DIV.love_nub, DIV.annoyometer {
 	box-sizing:border-box;

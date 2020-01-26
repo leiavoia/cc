@@ -40,7 +40,10 @@ export default class Civ {
 	// AI stuff
 	ai = null; // AI object
 		
-	power_score = 1;
+	power_score = 1; // raw score
+	power_rank = 0; // absolute rank
+	power_pct = 1.0; // percentage of current #1 ranked player
+	power_pctl = 1; // 0..1, percentile shows us how we stack up against other civs in general
 	
 	homeworld = null; // a Planet // TODO // necessary?
 	victory_ingredients = []; // list of VictoryIngredient objects
@@ -131,6 +134,8 @@ export default class Civ {
 		if ( !this.diplo.contacts.has(civ) ) {
 			this.diplo.contacts.set( civ, {
 				est: App.instance.game.turn_num,
+				friends: [],
+				enemies: [],
 				attspan: ( this.is_player ? 1.0 : this.diplo.attspan_max ),
 				in_range: true,
 				comm: this.CommOverlapWith( civ ), // when technology changes, you need to update this!
@@ -166,19 +171,19 @@ export default class Civ {
 		let MAX_MEMORY_TURNS = 100; // [!]MAGICNUMBER
 		let grandtotal = 0;
 		let turn = App.instance.game.turn_num;
-		let my_friends = this.FriendsOfOurs();
-		let my_enemies = this.EnemiesOfOurs();
+		this.diplo.friends = this.FriendsOfOurs();
+		this.diplo.enemies = this.EnemiesOfOurs();
 		for ( let [c,acct] of this.diplo.contacts ) {
 			if ( c == civ || !civ ) {
 				// check third-party diplomatic relationships
 				// [!]OPTIMIZE - ok to run this only once per turn if it makes things slow,
 				// but leaving it here ensures accuracy.
-				let their_friends = c.FriendsOfOurs();
-				let their_enemies = c.EnemiesOfOurs();
-				let mutual_friends = their_friends.filter( x => my_friends.includes(x) );
-				let mutual_enemies = their_enemies.filter( x => my_enemies.includes(x) );
-				let barbuddies = their_enemies.filter( x => my_friends.includes(x) );
-				let inlaws = their_friends.filter( x => my_enemies.includes(x) );
+				c.diplo.friends = c.FriendsOfOurs();
+				c.diplo.enemies = c.EnemiesOfOurs();
+				let mutual_friends = c.diplo.friends.filter( x => this.diplo.friends.includes(x) );
+				let mutual_enemies = c.diplo.enemies.filter( x => this.diplo.enemies.includes(x) );
+				let barbuddies = c.diplo.enemies.filter( x => this.diplo.friends.includes(x) );
+				let inlaws = c.diplo.friends.filter( x => this.diplo.enemies.includes(x) );
 				c.RemoveDiploLogEntry( this, 'mutual_friends', false );
 				c.RemoveDiploLogEntry( this, 'mutual_enemies', false );
 				c.RemoveDiploLogEntry( this, 'barbuddies', false );
@@ -197,10 +202,10 @@ export default class Civ {
 				if ( inlaws.length ) { 
 					c.LogDiploEvent( this, inlaws.length * -10, 'inlaws', 'You are at war with our friends.', true, false );
 					}
-				if ( my_enemies.length > 1 && (my_enemies.length / this.diplo.contacts.size) > 0.5 ) { 
+				if ( this.diplo.enemies.length > 1 && (this.diplo.enemies.length / this.diplo.contacts.size) > 0.5 ) { 
 					c.LogDiploEvent( this, inlaws.length * -10, 'warmonger', 'You are a warmonger.', true, false );
 					}
-				if ( this.diplo.contacts.size > 2 && my_friends.length / this.diplo.contacts.size > 0.5 ) { 
+				if ( this.diplo.contacts.size > 2 && this.diplo.friends.length / this.diplo.contacts.size > 0.5 ) { 
 					c.LogDiploEvent( this, inlaws.length * 15, 'peaceful', 'You are peaceful.', true, false );
 					}
 				// now do totals

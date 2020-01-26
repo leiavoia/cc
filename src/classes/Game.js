@@ -447,6 +447,11 @@ export default class Game {
 			}
 		this.top10civs = this.galaxy.civs.filter( c => c.alive && !c.race.is_monster && c.power_score > 0 );
 		this.top10civs.sort( (a,b) => b.power_score - a.power_score );
+		for ( let i=0; i < this.top10civs.length; i++ ) {
+			this.top10civs[i].power_rank = i + 1;
+			this.top10civs[i].power_pct = this.top10civs[i].power_score / this.top10civs[0].power_score;
+			this.top10civs[i].power_pctl = ( this.top10civs.length - i ) / this.top10civs.length;
+			}
 		this.top10civs = this.top10civs.slice(0,10)
 			.map( (c,i) => { return {
 				civ:c, 
