@@ -3559,7 +3559,10 @@ DIV.annoyometer .nub {
 	font-weight: bold;
 	color: #FFF;
 	}
-	
+.love_nub .nub { 
+	transition: margin-left 0.5s ease-out;
+}
+		
 	
 
 
@@ -3635,9 +3638,9 @@ DIV.annoyometer .nub {
 	opacity: 0.5;
 	}
 #audience_pane DIV IMG.flag {
-	max-height: 30px;
+	max-height: 22px;
 	margin: 0 0 0.5em 0;
-	vertical-align:middle;
+	vertical-align:top;
 	}
 #audience_pane DIV H2 {
 	margin-top: 0;
@@ -3653,8 +3656,8 @@ DIV.annoyometer .nub {
 #audience_pane #audience_us OL LI {	
 	list-style-type: decimal;
 	}
-	
-	
+
+
 #audience_pane .createoffer {
 	display: flex; 
 	flex-flow: column nowrap; 

@@ -51,8 +51,6 @@
 								<button click.delegate="SpeakTo(c)" class="${!acct.in_range || !c.diplo.contacts.get(app.game.myciv).attspan || !acct.comm ? 'bad ghost' : ''}">${!acct.in_range || !c.diplo.contacts.get(app.game.myciv).attspan || !acct.comm ? 'Not Available' : 'Audience'}</button>
 							</p>
 							
-							<!-- <p class="button_rack button_rack_fill">
-							</p> -->
 							<p if.bind="app.game.turn_num+0 && !acct.treaties.has('WAR')">
 								<span repeat.for="[type,treaty] of acct.treaties" >⚑ ${treaty.label}
 									<span if.bind="type=='TRADE'" class="bold good"> (+$${treaty.income_last_turn})</span>

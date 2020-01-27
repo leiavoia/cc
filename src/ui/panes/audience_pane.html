@@ -1,45 +1,138 @@
 <template containerless>
 	<div id="audience_pane" class="pane" if.bind="civ && acct">
 	
-		<div id="audience_them" css="border-color: rgb( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]} ); 
-		background-color: rgba( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]}, 0.55 );">
+		<div id="audience_them" 
+			css="border-color: rgb( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]} ); 
+			background-color: rgba( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]}, 0.25 );"
+			show.bind="mode!='create_offer' && mode!=offer_countered" 
+			>
+			
 			<div class="diplo_img_wrapper trekIn" if.bind="ambassador_present">
 				<div class="diplo_img ${mood}" css="background-image: url(${civ.diplo_img_small});"></div>
 			</div>
 			<h2><img class="flag" src.one-time="civ.flag_img" /> ${civ.name}</h2>
-			<p class="button_rack">
-				<button class="big">Relations</button>
-				<button class="big">Info</button>
-				<button class="big" if.bind="!ambassador_present" click.delegate="StartMeeting()" >Audience</button>
-				<button class="big alt" if.bind="ambassador_present" click.delegate="Exit()" >Leave</button>
-			</p>
+
 			<div class="love_nub"><div class="nub" css="margin-left: calc(${acct.lovenub} * (100% - 6em));">${acct.lovenub|loveNub}</div></div>
-			<p>
-				<progress style="width: 100%; height: 8px; margin: 2px 0; color: 181;" value.bind="acct.attspan"></progress>
-				<br/>Attention Span
+			
+			<p class="button_rack big button_rack_fill">
+				<button click.delegate="ClickInfo(c)" class="cool ${!info_panel_mode || info_panel_mode=='info' ? 'active' : ''}">Info</button>
+				<button click.delegate="ClickLog(c)" class="cool ${info_panel_mode=='log' ? 'active' : ''}">Log</button>
+				<button click.delegate="ClickAbout(c)" class="cool ${info_panel_mode=='about' ? 'active' : ''}">About</button>
+				<button click.delegate="ClickRelations(c)" class="cool ${info_panel_mode=='relations' ? 'active' : ''}">Relations</button>
+				<button click.delegate="StartMeeting()" if.bind="!ambassador_present" >Start</button>
+				<button click.delegate="Exit()" if.bind="ambassador_present" class="bad">Leave</button>
 			</p>
-			<div class="trade_item_list" if.bind="app.game.myciv.diplo.contacts.get(civ).treaties.size">
-				<div class="treaty" repeat.for="[type, treaty] of app.game.myciv.diplo.contacts.get(civ).treaties">
-					${treaty.label}
-					<span if.bind="type=='TRADE'" class="bold good"> (+$${treaty.income_last_turn})</span>
-					<span if.bind="type=='RESEARCH'" class="bold good"> (+${treaty.income_last_turn} RP)</span>
+			
+			<!-- GENERAL INFO -->
+			<div if.bind="!info_panel_mode || info_panel_mode == 'info'">
+				<div class="statboxes">
+					<div title="Their current view of us" class="clickable ${app.game.turn_num+0 && acct.treaties.has('WAR') ? 'bad' : (acct.rep==100 ? 'good' : '')}" click.delegate="ClickLog(c)">
+						<output class="bad" if.bind="app.game.turn_num+0 && acct.treaties.has('WAR')">WAR</output>
+						<output else class="${acct.rep >= 0 ? 'good' : 'bad'}">${acct.rep}</output>
+						<span>Relationship</span>
+					</div>
+					<div title="Attention they can devote to a meeting with you" class="${civ.diplo.contacts.get(app.game.myciv).attspan==0 ? 'bad' : ''}">
+						<output>${civ.diplo.contacts.get(app.game.myciv).attspan | percent}%</output>
+						<span>Attention</span>
+					</div>
+					<div title="Overall civilization rank in the galaxy" class="${civ.power_rank==1 ? 'good' : ''}">
+						<output class="${civ.power_pctl >= 0.66 ? 'good' : (civ.power_pctl < 0.34 ? 'bad' : 'alert')}">${civ.power_rank}</output>
+						<span>Power Rank</span>
+					</div>
+					<div title="Their reputation in the galactic community" class="clickable" click.delegate="ClickRelations(c)">
+						<output class="${civ.diplo.rep >= 0 ? 'good' : 'bad'}">${civ.diplo.rep}</output>
+						<span>Reputation</span>
+					</div>
+					<div title="Ability to communicate with you" class="${!acct.comm ? 'bad' : ''}">
+						<!-- <output>${acct.comm | starRating : '5' : '★' : '' : 'None' }</output> -->
+						<output if.bind="acct.comm" class="${acct.comm >= 0.66 ? 'good' : (acct.comm < 0.2 ? 'bad' : 'alert')}">${acct.comm|percent}%</output>
+						<output else>None</output>
+						<span>Communication</span>
+					</div>
+					<!-- <div title="Turns since we first contact them">
+						<output>${(app.game.turn_num - acct.est) + 1} turn${app.game.turn_num - acct.est == 0 ? '' : 's'}</output>
+						<span>Contact Established</span>
+					</div> -->
 				</div>
+				
+				<p if.bind="app.game.turn_num+0 && !acct.treaties.has('WAR')" class="big">
+					<span repeat.for="[type,treaty] of acct.treaties" >⚑ ${treaty.label}
+						<span if.bind="type=='TRADE'" class="bold good"> (+$${treaty.income_last_turn})</span>
+						<span if.bind="type=='RESEARCH'" class="bold good"> (+${treaty.income_last_turn} RP)</span>
+						<br/>
+					</span>
+				</p>
 			</div>
-			<p if.bind="app.options.debug">
-				Communication: ${comm | starRating : '5' : '★' : '' : 'None' }<br/>
-				Preferred Habitat: ${civ.race.env.atm} Atmosphere, ${civ.race.env.temp} Temperature, ${civ.race.env.grav} Gravity<br/>
-				Style: ${c.diplo.style|round:2}<br/>
-				Skill: ${civ.diplo.skill|round:2}<br/>
-				Disposition: ${civ.diplo.dispo|round:2}<br/>
-				Offer OK @ ${civ.diplo.offer_ok_at|round:2}<br/>
-				Offer Counter @ ${civ.diplo.offer_counter_at|round:2}<br/>
-				Offer Bad @ ${civ.diplo.offer_bad_at|round:2}<br/>
-				Attention Span Recharge: ${civ.diplo.attspan_recharge|round:2}<br/>
-				Attention Span Max: ${civ.diplo.attspan_max|round:2}<br/>
-				Emotion: x${civ.diplo.emotion*2|round:2}
-				Memory: ${civ.diplo.memory|round:2}<br/>
-				Turns in Contact: ${(app.game.turn_num - acct.est) + 1}
-			</p>	
+			
+			<!-- REPUTATION LOG -->
+			<div if.bind="info_panel_mode == 'log'" click.delegate="ClickInfo(c)">
+				<p class="bold">Reputation Log:</p>
+				<table>
+					<tr repeat.for="l of acct.replog">
+						<td class="${l.val >= 0 ? 'good' : 'bad'}">${l.val > 0 ? '+' : ''}${l.val}</td>
+						<td>${l.label}</td>
+					</tr>
+				</table>
+			</div>
+			
+			<!-- ABOUT -->
+			<div if.bind="info_panel_mode == 'about'" click.delegate="ClickInfo(c)">
+				<p>
+					The ${civ.name} are lifeforms from the planet <em>${civ.homeworld.name}</em>.
+						
+					Currently, they occupy <em>${civ.planets.length}</em> &nbsp;planets.
+					
+					<span if.bind="civ.diplo.rep &lt;= -40">They are the scum of the galaxy.</span> 
+					<span if.bind="civ.diplo.rep &lt;= -20 && civ.diplo.rep &gt;= -40">They are galactic troublemakers.</span> 
+					<span if.bind="civ.diplo.rep &gt;= 20 && civ.diplo.rep &lt;= 40">They are decent galactic citizens.</span>
+					<span if.bind="civ.diplo.rep &gt;= 40">They are excellent galactic citizens.</span>
+					
+					<span if.bind="!civ.diplo.contactable">They have refused all contact with foreigners.</span>
+						
+					<span if.bind="civ.diplo.emotion &lt; 0.33">They are very logical beings and tend not to react emotionally.</span> 
+					<span if.bind="civ.diplo.emotion &gt; 0.66">They are rather emotional beings.</span>
+					
+					<span if.bind="civ.diplo.memory &lt;= 0.33">They have very short memories and are easy to manipulate.</span>
+					<span if.bind="civ.diplo.memory &gt;= 0.66">They have long memories and will hold or grudge or keep a friend for a long time.</span>
+					
+					<span if.bind="civ.diplo.offer_ok_at &gt; 0.25">They seem to be pretty open to bargaining.</span> 
+					<span if.bind="civ.diplo.offer_ok_at &lt; -0.25">They drive a hard bargain, so beware when proposing deals!</span> 
+					
+					<span if.bind="civ.diplo.attspan_max &lt;= 0.3">The ${civ.name} have a hard time paying attention, so keep your audiences short<span if.bind="civ.diplo.attspan_recharge &lt;= 0.025"> and infrequent</span>.</span> 
+					
+				</p>
+				<p if.bind="app.options.debug">
+					Preferred Habitat: ${civ.race.env.atm} Atmosphere, ${civ.race.env.temp} Temperature, ${civ.race.env.grav} Gravity<br/>
+					Style: ${civ.diplo.style|round:2}<br/>
+					Skill: ${civ.diplo.skill|round:2}<br/>
+					Disposition: ${civ.diplo.dispo|round:2}<br/>
+					Offer OK @ ${civ.diplo.offer_ok_at|round:2}<br/>
+					Offer Counter @ ${civ.diplo.offer_counter_at|round:2}<br/>
+					Offer Bad @ ${civ.diplo.offer_bad_at|round:2}<br/>
+					Attention Span Recharge: ${civ.diplo.attspan_recharge|round:2}<br/>
+					Attention Span Max: ${civ.diplo.attspan_max|round:2}<br/>
+					Emotion: x${civ.diplo.emotion*2|round:2}<br/>
+					Memory: ${civ.diplo.memory|round:2}<br/>
+				</p>					
+			</div>
+			
+			<!-- RELATIONS -->
+			<div if.bind="info_panel_mode == 'relations'" click.delegate="ClickInfo(c)">
+			
+				<p class="bold good">Friends:</p>
+				<ul if.bind="civ.diplo.friends.length">
+					<li repeat.for="friend of civ.diplo.friends" class="good">${friend.name}</li>
+				</ul>
+				<p else style="margin-left: 2em;">None</p>
+				
+				<p class="bold bad">Enemies:</p>
+				<ul if.bind="civ.diplo.enemies.length">
+					<li repeat.for="enemy of civ.diplo.enemies" class="bad">${enemy.name}</li>
+				</ul>
+				<p else style="margin-left: 2em;">None</p>
+				
+			</div>
+							
 		</div>
 		
 		<!-- INTRO -->
@@ -58,78 +151,65 @@
 		
 		<!-- CREATE OFFER -->
 		<div id="audience_us" class="createoffer" if.bind="ambassador_present && mode=='create_offer'">
-			<!-- annoyed - go away -->
-			<template if.bind="acct.attspan < 0.05" containerless>
-				<div id="speech_them" class="fadeIn" css="color: ${civ.color};">
-					<p><b style="font-weight:bold;">${civ.name} Ambassador:</b><p>
-					<div>
-						<p>We will hear no more offers today.</p>
-					</div>
-					<button class="big" click.delegate="ReturnToMainMenu()">OK</button>
-				</div>
-			</template>
-			<!-- lets make a deal -->
-			<template if.bind="acct.attspan >= 0.05" containerless>
+			<div>
+				<button class="right bad" click.delegate="ReturnToMainMenu()">CANCEL</button>
+				<h2>Create an Offer</h2>
+			</div>
+			<div class="divide avail_items">
 				<div>
-					<button class="right bad" click.delegate="ReturnToMainMenu()">CANCEL</button>
-					<h2>Create an Offer</h2>
-				</div>
-				<div class="divide avail_items">
-					<div>
-						<div class="head">
-							<h3>Give:</h3>
-							<p class="button_rack button_rack_fill small">
-								<button>All</button>
-								<button>Cash</button>
-								<button>Tech</button>
-								<button>Treaties</button>
-								<button>Planets</button>
-							</p>
-						</div>
-						<div class="body trade_item_list">
-							<div repeat.for="i of our_trade_items" class="${i.type} ${i.avail ? '' : 'ghost'}" 
-								click.trigger="PutTradeItem(i,our_trade_items,offer.offer,$event)">${i.label}</div>
-						</div>
+					<div class="head">
+						<h3>Give:</h3>
+						<p class="button_rack button_rack_fill small">
+							<button>All</button>
+							<button>Cash</button>
+							<button>Tech</button>
+							<button>Treaties</button>
+							<button>Planets</button>
+						</p>
 					</div>
-					<div>
-						<div class="head">
-							<h3>Ask:</h3>
-						</div>
-						<div class="body trade_item_list">
-							<div repeat.for="i of their_trade_items" class="${i.type} ${i.avail ? '' : 'ghost'}" 
-								click.trigger="PutTradeItem(i,their_trade_items,offer.ask,$event)">${i.label}</div>
-						</div>
+					<div class="body trade_item_list">
+						<div repeat.for="i of our_trade_items" class="${i.type} ${i.avail ? '' : 'ghost'}" 
+							click.trigger="PutTradeItem(i,our_trade_items,offer.offer,$event)">${i.label}</div>
 					</div>
 				</div>
-				<div class="divide tabled_items">
-					<div class="trade_item_list">
-						<div repeat.for="i of offer.offer" class="${i.type}" 
-								click.trigger="PutTradeItem(i,offer.offer,our_trade_items,$event)">
-								${i.label}
-								<input if.bind="i.type=='cash' || i.type=='resource'" value.bind="i.amount" type="range" min="0" max.bind="i.max" class="pretty" />
-								<output if.bind="i.amount" value.bind="i.amount"></output>
-						</div>
+				<div>
+					<div class="head">
+						<h3>Ask:</h3>
 					</div>
-					<div class="trade_item_list">
-						<div repeat.for="i of offer.ask" class="${i.type}" 
-								click.trigger="PutTradeItem(i,offer.ask,their_trade_items,$event)">
-								${i.label}
-								<input if.bind="i.type=='cash' || i.type=='resource'" value.bind="i.amount" type="range" min="0" max.bind="i.max" class="pretty" />
-								<output if.bind="i.amount" value.bind="i.amount"></output>
-						</div>
+					<div class="body trade_item_list">
+						<div repeat.for="i of their_trade_items" class="${i.type} ${i.avail ? '' : 'ghost'}" 
+							click.trigger="PutTradeItem(i,their_trade_items,offer.ask,$event)">${i.label}</div>
 					</div>
 				</div>
-				<p class="button_rack">
-					<button class="big alt" click.delegate="SubmitOffer()">Make Offer</button>
-					<button class="big bad" click.delegate="ReturnToMainMenu()">Cancel</button>
-				</p>
-			</template>
+			</div>
+			<div class="divide tabled_items">
+				<div class="trade_item_list">
+					<div repeat.for="i of offer.offer" class="${i.type}" 
+							click.trigger="PutTradeItem(i,offer.offer,our_trade_items,$event)">
+							${i.label}
+							<input if.bind="i.type=='cash' || i.type=='resource'" value.bind="i.amount" type="range" min="0" max.bind="i.max" class="pretty" />
+							<output if.bind="i.amount" value.bind="i.amount"></output>
+					</div>
+				</div>
+				<div class="trade_item_list">
+					<div repeat.for="i of offer.ask" class="${i.type}" 
+							click.trigger="PutTradeItem(i,offer.ask,their_trade_items,$event)">
+							${i.label}
+							<input if.bind="i.type=='cash' || i.type=='resource'" value.bind="i.amount" type="range" min="0" max.bind="i.max" class="pretty" />
+							<output if.bind="i.amount" value.bind="i.amount"></output>
+					</div>
+				</div>
+			</div>
+			<p class="button_rack">
+				<button class="big alt" click.delegate="SubmitOffer()">Make Offer</button>
+				<button class="big bad" click.delegate="ReturnToMainMenu()">Cancel</button>
+			</p>
 		</div>
 		
 		<!-- CONSIDER OFFER -->
 		<div id="audience_us" if.bind="mode=='consider_offer'">
 			<p style="text-align:center; font-size: 300%; margin-top: 3em;">Considering your offer...</p>
-			<p style="text-align:center; font-size: 300%; margin-top: 3em;">
+			<p style="text-align:center; font-size: 200%; margin-top: 3em;">
 				<progress style="height: 1em; width: 10em;"/>
 			</p>
 			<p if.bind="app.options.debug">
@@ -170,7 +250,7 @@
 			<p class="button_rack">
 				<button click.delegate="AcceptOffer()" class="big">Accept</button>
 				<button click.delegate="DeclineOffer()" class="big bad">Decline</button>
-				<button click.delegate="CounterOffer()" class="big alt ${acct.attspan < 0.05 ? 'disabled' : ''}">Counter-Offer</button>
+				<button click.delegate="CounterOffer()" class="big alt ${acct.attspan < 0.1 ? 'disabled' : ''}">Counter-Offer</button>
 			</p>	
 		</div>
 		

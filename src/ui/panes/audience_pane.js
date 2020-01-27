@@ -16,6 +16,7 @@ export class AudiencePane {
 		this.on_exit = ''; // can be '' or 'diplo' or any other main panel 
 		// --------------------
 		this.mode = 'intro';
+		this.info_panel_mode = 'info';
 		this.mood = ''; // for portrait visual FX
 		this.our_trade_items = [];
 		this.their_trade_items = [];
@@ -69,6 +70,22 @@ export class AudiencePane {
 		return "replace";
 		}
 				
+	ClickInfo( civ ) {
+		this.info_panel_mode = 'info';
+		}
+		
+	ClickLog( civ ) {
+		this.info_panel_mode = 'log';
+		}
+		
+	ClickAbout( civ ) {
+		this.info_panel_mode = 'about';
+		}
+		
+	ClickRelations( civ ) {
+		this.info_panel_mode = 'relations';
+		}
+						
 	CreateTradeItemLists() { 
 		this.our_trade_items = this.app.game.myciv.AI_ListItemsForTrade( this.civ );
 		this.their_trade_items = this.civ.AI_ListItemsForTrade( this.app.game.myciv );
@@ -184,7 +201,7 @@ export class AudiencePane {
 	SetStandardOptions() { 
 		this.options = [];
 		if ( this.acct && this.comm > 0 ) { 
-			if ( this.acct.attspan >= 0.05 ) {
+			if ( this.civ.diplo.contacts.get(this.app.game.myciv).attspan >= 0.1 ) {
 				this.options.push({ text:"Let's make a deal.", func: () => this.StartTradeOffer() });
 				}
 			if ( this.acct.treaties.size && !this.acct.treaties.has('WAR') ) {
@@ -236,10 +253,9 @@ export class AudiencePane {
 	SubmitOffer() {
 		this.mode = 'consider_offer';
 		this.mood = 'away';
-		let result = this.offer.Evaluate();
-		// console.log( `${this.offer.status} @ ${this.offer.score}`);
 		setTimeout( () => {
 			this.mood = '';
+			let result = this.offer.Evaluate();
 			if ( this.offer.status == 'countered' ) { 
 				this.offer = result;
 				this.mode = 'offer_countered';
@@ -284,9 +300,12 @@ export class AudiencePane {
 		}
 		
 	Exit() { 
-		if ( this.acct ) { // cost of audience 
-			this.acct.attspan -= 0.05;
-			if ( this.acct.attspan < 0 ) { this.acct.attspan = 0; }
+		if ( this.civ ) { // cost of audience 
+			let acct = this.civ.diplo.contacts.get( this.app.game.myciv );
+			if ( acct ) { 
+				acct.attspan -= 0.05;
+				if ( acct.attspan < 0 ) { acct.attspan = 0; }
+				}
 			}	
 		this.app.SwitchMainPanel( this.on_exit );
 		}

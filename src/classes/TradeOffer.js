@@ -34,7 +34,7 @@ export default class TradeOffer {
 			return false; 
 			}
 		// attention span?
-		if ( this.to.diplo.contacts.get(this.from).attspan < 0.05 ) { 
+		if ( this.to.diplo.contacts.get(this.from).attspan < 0.1 ) { 
 			this.status = 'annoyed'; 
 			return false; 
 			}
