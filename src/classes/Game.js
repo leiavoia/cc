@@ -1052,7 +1052,7 @@ export default class Game {
 			if ( !c.alive || !c.planets.length ) { continue; } // no zombies 
 			c.RecalcReputation();
 			// note that we evaluate treaties (actually two) from each viewpoint
-			for ( let [civ, acct] of c.diplo.contacts.entries() ) { 
+			for ( let [civ, acct] of c.diplo.contacts ) { 
 				// no dead civs - TODO ideally move this to a KILL() function
 				if ( !c.alive || !civ.planets.length ) { continue; } 
 				for ( let t of acct.treaties.values() ) { 
@@ -1066,12 +1066,9 @@ export default class Game {
 						}	
 					}
 				// regain attention span
-				if ( !c.is_player ) { 
-					acct.attspan += c.diplo.attspan_recharge; 
-					if ( acct.attspan > c.diplo.attspan_max ) { 
-						acct.attspan = c.diplo.attspan_max; 
-						}
-					}
+				// note: this actually fiddles with the player's own account but doesn't hurt				
+				acct.attspan += civ.diplo.focus * 0.20; 
+				if ( acct.attspan > 1 ) { acct.attspan = 1; }
 				}
 			}
 		}

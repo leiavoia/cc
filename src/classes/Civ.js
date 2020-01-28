@@ -85,8 +85,7 @@ export default class Civ {
 		offer_counter_at: -0.5, // anything beteen this and `ok` gets an automatic counter-offer 
 		offer_bad_at: -1.0, // anything between this and `counter` gets refused
 		// anything less than `bad` get refused and treated as an insult
-		attspan_recharge: 0.05, // how much their attention space recharges each turn
-		attspan_max: 0.8, // maximum attention span
+		focus: 0.5, // 0..1 how fast their attention span recharges and how slow it depletes
 		emotion: 0.5, // how much to multiply diplomatic effects		
 		memory: 1.0, // 0..1, how long they remember diplomatic events
 		rep: 0, // our overall galactic reputation
@@ -136,13 +135,13 @@ export default class Civ {
 				est: App.instance.game.turn_num,
 				friends: [],
 				enemies: [],
-				attspan: ( this.is_player ? 1.0 : this.diplo.attspan_max ),
 				in_range: true,
 				comm: this.CommOverlapWith( civ ), // when technology changes, you need to update this!
 				treaties: new Map(),
 				rep: 0, // their opinion of us (our reputation with them)
 				replog: [], // stuff we did to them
-				lovenub: 0.5 // this is just reputation normalized to 0..1
+				lovenub: 0.5, // this is just reputation normalized to 0..1
+				attspan: 1.0
 				});
 			// first impressions are a blend of our galactic reputation and their natural disposition
 			this.LogDiploEvent( civ, ( (this.diplo.dispo-0.5) * 50 ), 'disposition', 'Disposition', true );
@@ -693,8 +692,7 @@ export default class Civ {
 		civ.diplo.skill = utils.BiasedRand(0.05, 0.25, 0.10, 0.5);
 		civ.diplo.dispo = utils.BiasedRand(0.2, 0.8, 0.5, 0.75);
 		civ.diplo.emotion = utils.BiasedRand(0.25, 0.8, 0.5, 0.8);
-		civ.diplo.attspan_recharge = utils.BiasedRand(0.005, 0.1, 0.035, 0.5);
-		civ.diplo.attspan_max = utils.BiasedRandInt(2, 10, 6, 0.5) / 10;
+		civ.diplo.focus = utils.BiasedRand(0, 1, 0.5, 0.5);
 		civ.diplo.offer_ok_at = (0.3 * Math.random() - 0.11); // anything over this is a good deal
 		civ.diplo.offer_counter_at = ( ( civ.diplo.offer_ok_at - 0.3 ) + ( Math.random() * 0.2 ) ); // anything beteen this and `ok` gets an automatic counter-offer 
 		civ.diplo.offer_bad_at = ( ( civ.diplo.offer_counter_at - 0.3 ) + ( Math.random() * 0.2 ) ); // anything between this and `counter` gets refused

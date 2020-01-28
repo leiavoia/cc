@@ -40,7 +40,7 @@
 					<div class="divider">
 						
 						<div>
-							<img src.one-time="c.diplo_img_small" class="diplo_img ${!acct.comm || !c.diplo.contacts.get(app.game.myciv).attspan ? 'nocomm' : ''}" click.delegate="SpeakTo(c)" />
+							<img src.one-time="c.diplo_img_small" class="diplo_img ${!acct.comm || !acct.attspan ? 'nocomm' : ''}" click.delegate="SpeakTo(c)" />
 							<!-- <div class="love_nub small"><div class="nub" css="margin-left: calc(${acct.lovenub} * (100% - 6em));">${acct.lovenub|loveNub}</div></div> -->
 							<!-- <div class="love_nub"><div class="nub" css="margin-left: calc(${acct.lovenub} * (100% - 6em));">${acct.lovenub|loveNub}</div></div> -->
 							<p class="button_rack button_rack_fill">
@@ -48,7 +48,7 @@
 								<button click.delegate="ClickLog(c)" class="cool ${modes[c.id]=='log' ? 'active' : ''}">Log</button>
 								<button click.delegate="ClickAbout(c)" class="cool ${modes[c.id]=='about' ? 'active' : ''}">About</button>
 								<button click.delegate="ClickRelations(c)" class="cool ${modes[c.id]=='relations' ? 'active' : ''}">Relations</button>
-								<button click.delegate="SpeakTo(c)" class="${!acct.in_range || !c.diplo.contacts.get(app.game.myciv).attspan || !acct.comm ? 'bad ghost' : ''}">${!acct.in_range || !c.diplo.contacts.get(app.game.myciv).attspan || !acct.comm ? 'Not Available' : 'Audience'}</button>
+								<button click.delegate="SpeakTo(c)" class="${!acct.in_range || !acct.attspan || !acct.comm ? 'bad ghost' : ''}">${!acct.in_range || !acct.attspan || !acct.comm ? 'Not Available' : 'Audience'}</button>
 							</p>
 							
 							<p if.bind="app.game.turn_num+0 && !acct.treaties.has('WAR')">
@@ -72,8 +72,8 @@
 									<output else class="${acct.rep >= 0 ? 'good' : 'bad'}">${acct.rep}</output>
 									<span>Relationship</span>
 								</div>
-								<div title="Attention they can devote to a meeting with you" class="${c.diplo.contacts.get(app.game.myciv).attspan==0 ? 'bad' : ''}">
-									<output>${c.diplo.contacts.get(app.game.myciv).attspan | percent}%</output>
+								<div title="Attention they can devote to a meeting with you" class="${acct.attspan==0 ? 'bad' : ''}">
+									<output>${acct.attspan | percent}%</output>
 									<span>Attention</span>
 								</div>
 								<div title="Overall civilization rank in the galaxy" class="${c.power_rank==1 ? 'good' : ''}">
@@ -131,7 +131,7 @@
 								<span if.bind="c.diplo.offer_ok_at &gt; 0.25">They seem to be pretty open to bargaining.</span> 
 								<span if.bind="c.diplo.offer_ok_at &lt; -0.25">They drive a hard bargain, so beware when proposing deals!</span> 
 								
-								<span if.bind="c.diplo.attspan_max &lt;= 0.3">The ${c.name} have a hard time paying attention, so keep your audiences short<span if.bind="c.diplo.attspan_recharge &lt;= 0.025"> and infrequent</span>.</span> 
+								<span if.bind="c.diplo.focus &lt;= 0.3">The ${c.name} have a hard time paying attention, so keep your audiences short and infrequent.</span> 
 								
 							</p>
 						</div>

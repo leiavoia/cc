@@ -1459,6 +1459,9 @@ export class AIDiplomacyObjective extends AIObjective {
 								}
 							}
 						c.LogDiploEvent( civ, 5, 'attempted_ceasefire', `You reached out to us for peace.` );
+						// lower attention span
+						acct.attspan -= (1-c.diplo.focus) * 0.2; // TODO vary amount by how interaction went
+						if ( acct.attspan < 0 ) { acct.attspan = 0; }
 						}
 					// trades with player must be queued up for UI interaction
 					else {
@@ -1501,6 +1504,9 @@ export class AIDiplomacyObjective extends AIObjective {
 							this.note = `${c.name} declined trade; `;
 							}
 						}
+					// lower attention span
+					acct.attspan -= (1-c.diplo.focus) * 0.2; // TODO vary amount by how interaction went
+					if ( acct.attspan < 0 ) { acct.attspan = 0; }						
 					}
 				// trades with player must be queued up for UI interaction
 				else {
@@ -1524,6 +1530,7 @@ export class AIDiplomacyObjective extends AIObjective {
 					app.game.QueueAudience( civ, {offer,message} );
 					}				
 				}
+			
 			}
 		}	
 	}

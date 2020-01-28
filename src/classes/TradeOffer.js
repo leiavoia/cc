@@ -21,7 +21,7 @@ export default class TradeOffer {
 		
 	// returns true, false, or counter-offer (new TradeOffer)
 	Evaluate() { 
-		let acct = this.to.diplo.contacts.get(this.from);
+		let acct = this.from.diplo.contacts.get(this.to);
 		
 		// can these two civ's contact each other?
 		if ( !this.from.InRangeOfCiv(this.to) ) { 
@@ -34,7 +34,7 @@ export default class TradeOffer {
 			return false; 
 			}
 		// attention span?
-		if ( this.to.diplo.contacts.get(this.from).attspan < 0.1 ) { 
+		if ( acct.attspan < 0.1 ) { 
 			this.status = 'annoyed'; 
 			return false; 
 			}
@@ -79,8 +79,9 @@ export default class TradeOffer {
 		
 		// TODO +/- relationship for tone
 		
-		// be annoyed
-		acct.attspan -= 0.4;
+		// lower attention span
+		// TODO - amount depends on how big of a deal it was
+		acct.attspan -= 1 - this.to.diplo.focus;
 		if ( acct.attspan < 0 ) { acct.attspan = 0; }
 		
 		return result;

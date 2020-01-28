@@ -31,8 +31,8 @@
 						<output else class="${acct.rep >= 0 ? 'good' : 'bad'}">${acct.rep}</output>
 						<span>Relationship</span>
 					</div>
-					<div title="Attention they can devote to a meeting with you" class="${civ.diplo.contacts.get(app.game.myciv).attspan==0 ? 'bad' : ''}">
-						<output>${civ.diplo.contacts.get(app.game.myciv).attspan | percent}%</output>
+					<div title="Attention they can devote to a meeting with you" class="${acct.attspan==0 ? 'bad' : ''}">
+						<output>${acct.attspan | percent}%</output>
 						<span>Attention</span>
 					</div>
 					<div title="Overall civilization rank in the galaxy" class="${civ.power_rank==1 ? 'good' : ''}">
@@ -98,7 +98,7 @@
 					<span if.bind="civ.diplo.offer_ok_at &gt; 0.25">They seem to be pretty open to bargaining.</span> 
 					<span if.bind="civ.diplo.offer_ok_at &lt; -0.25">They drive a hard bargain, so beware when proposing deals!</span> 
 					
-					<span if.bind="civ.diplo.attspan_max &lt;= 0.3">The ${civ.name} have a hard time paying attention, so keep your audiences short<span if.bind="civ.diplo.attspan_recharge &lt;= 0.025"> and infrequent</span>.</span> 
+					<span if.bind="civ.diplo.focus &lt;= 0.3">The ${civ.name} have a hard time paying attention, so keep your audiences short and infrequent.</span> 
 					
 				</p>
 				<p if.bind="app.options.debug">
@@ -109,8 +109,7 @@
 					Offer OK @ ${civ.diplo.offer_ok_at|round:2}<br/>
 					Offer Counter @ ${civ.diplo.offer_counter_at|round:2}<br/>
 					Offer Bad @ ${civ.diplo.offer_bad_at|round:2}<br/>
-					Attention Span Recharge: ${civ.diplo.attspan_recharge|round:2}<br/>
-					Attention Span Max: ${civ.diplo.attspan_max|round:2}<br/>
+					Focus: ${civ.diplo.focus|round:2}<br/>
 					Emotion: x${civ.diplo.emotion*2|round:2}<br/>
 					Memory: ${civ.diplo.memory|round:2}<br/>
 				</p>					
