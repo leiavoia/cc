@@ -1230,8 +1230,9 @@ export default class Civ {
 	// assumes that `civ` is the aggressor and we were attacked
 	DiplomaticEffectOfShipCombat( civ, shipcombat ) { 
 		if ( civ.race.is_monster ) { return; } // monsters dont have feelings
+		
 		let outrage = 0.1;
-		const acct = this.diplo.contacts.get(civ);
+		const acct = civ.diplo.contacts.get(this);
 		// figure out if this was a small skirmish or an act of war.
 		const stats = shipcombat.stats[ shipcombat.teams[1].label ];
 // 		const myfleet = shipcombat.teams[1].fleet;
@@ -1244,74 +1245,103 @@ export default class Civ {
 		let starname = shipcombat.planet ? shipcombat.planet.star.name : null;
 		if ( !starname && shipcombat.teams[0].fleet.star ) { starname = shipcombat.teams[0].fleet.star.name; }
 		if ( !starname && shipcombat.teams[1].fleet.star ) { starname = shipcombat.teams[1].fleet.star.name; }
-		// effect
-		this.LogDiploEvent( civ, -(outrage*100), 'ship_combat', `You attacked our fleet at ${starname}.` );
-		// cancel treaties if things are really bad
-		if ( acct && !acct.treaties.has('WAR') ) { 
-			// declare war?
-			if ( acct.lovenub <= 0 ) { 
+		
+		// if we are the player, no automatic response. However, this function
+		// also handles AI surprise attacks, so make a special anouncement here.
+		// AI does not currently have any intuition about starting wars, so it
+		// uses ship and groundcombat as a reminder to itself that it is starting war.
+		if ( this.is_player && !App.instance.options.soak ) { 
+			// they attacked us and it led to war. surprise!
+			if ( !acct.treaties.has('WAR') && outrage >= 0.5 ) {
 				this.CreateTreaty( 'WAR', civ );
-				}
-			// withdraw treaties instead
-			else {
-				let to_cancel = ['CEASEFIRE','TECH_ALLIANCE','SURVEIL'];
-				if ( acct.lovenub < 0.5 ) { 
-					to_cancel.concat(['NO_STAR_SHARING','TECH_BROKERING','RESEARCH','TRADE']);
-					}
-				if ( acct.lovenub < 0.25 || outrage > 0.75 ) { 
-					to_cancel = []; // empty array means just cancel everything
-					}
-				for ( let [type,treaty] of acct.treaties ) { 
-					if ( !to_cancel.length || to_cancel.indexOf(type) > -1 ) {
-						this.EndTreaty( type, civ, true ); // true = diplomatic fallout, may not want this
+				if ( civ.diplo.contactable && this.diplo.contactable ) { 
+					if ( acct.treaties.has('CEASEFIRE') ) {
+						message = `Consider our ceasefire agreement null and void. It will be easier to simply exterminate you.`;
 						}
-					}
-				}
-			// scold the player for attacking us, or make formal declaration of war
-			if ( civ.is_player || this.is_player ) { 
-				acct.attspan -= (acct.lovenub <= 0) ? 1.0 : 0.5; // silent treatment
-				acct.attspan = Math.max(acct.attspan,0);
-				// we attacked them
-				let message = '';
-				if ( civ.is_player ) {
-					if ( acct.lovenub <= 0 ) {
-						message = `Your attack on ${starname} was unfortunate... <i>for you</i>. Now your suffering will be legendary. To war!`;
+					else{
+						message = `Now the game has truly begun. We will accept your surrender any time.`;
 						}
-					else {
-						message = `The attack on our forces at ${starname} was hopefully some kind of accident. If it was not, you are leading our civilizations down the path to war.`;
-						}
-					App.instance.game.QueueAudience( this, {message} );
-					}
-				// they attacked us and it led to war. surprise!
-				else if ( acct.lovenub <= 0 ) {
-					message = `Now the game has truly begun. We will accept your surrender any time.`;
 					App.instance.game.QueueAudience( civ, {message} );
 					}
 				}
-			}						
+			else if ( acct.treaties.has('CEASEFIRE') || acct.treaties.has('NON_AGGRESSION') ) {
+				this.CreateTreaty( 'WAR', civ );
+				if ( civ.diplo.contactable && this.diplo.contactable ) { 
+					message = `Our agreement is no longer convenient. Your continued presence in the galaxy is a thorn in our side that will soon to be removed.`;
+					App.instance.game.QueueAudience( civ, {message} );
+					}
+				}
+			}
+			
+		// AI response
+		else {
+			// effect
+			this.LogDiploEvent( civ, -(outrage*100), 'ship_combat', `You attacked our fleet at ${starname}.` );
+			// declare war or cancel treaties
+			if ( acct && !acct.treaties.has('WAR') ) {
+				// declare war?
+				let war_trigger_value = (1-this.ai.strat.posture)*0.5;
+				if ( acct.lovenub <= war_trigger_value ) { 
+					this.CreateTreaty( 'WAR', civ );
+					}
+				// withdraw treaties instead
+				else {
+					let to_cancel = ['NON_AGGRESSION','CEASEFIRE','TECH_ALLIANCE','SURVEIL'];
+					if ( acct.lovenub < war_trigger_value + 0.25 || outrage > 0.75 ) { 
+						to_cancel = []; // empty array means just cancel everything
+						}
+					else if ( acct.lovenub < war_trigger_value + 0.5 ) { 
+						to_cancel.concat(['NO_STAR_SHARING','TECH_BROKERING','RESEARCH','TRADE']);
+						}
+					for ( let [type,treaty] of acct.treaties ) { 
+						if ( !to_cancel.length || to_cancel.indexOf(type) > -1 ) {
+							this.EndTreaty( type, civ, true ); // true = diplomatic fallout, may not want this
+							}
+						}
+					}
+				// scold the player for attacking us, or make formal declaration of war
+				if ( civ.is_player || this.is_player ) { 
+					acct.attspan -= (acct.lovenub <= war_trigger_value+0.25) ? 1.0 : 0.5; // silent treatment
+					acct.attspan = Math.max(acct.attspan,0);
+					// we attacked them
+					let message = '';
+					if ( civ.is_player && civ.diplo.contactable && this.diplo.contactable ) {
+						if ( acct.treaties.has('WAR') ) {
+							message = `Your attack on ${starname} was unfortunate... <i>for you</i>. Now your suffering will be legendary. To war!`;
+							}
+						else {
+							message = `The attack on our forces at ${starname} was hopefully some kind of accident. If it was not, you are leading our civilizations down the path to war.`;
+							}
+						App.instance.game.QueueAudience( this, {message} );
+						}
+					}
+				}
+			}
 		}
 		
 	// assumes that `civ` is the aggressor and we were attacked
 	DiplomaticEffectOfGroundCombat( civ, groundcombat ) {
-		const acct = this.diplo.contacts.get(civ);
+		const acct = civ.diplo.contacts.get(this);
 		// automatic war
 		if ( acct && !acct.treaties.has('WAR') ) { 
-			this.LogDiploEvent( civ, -200, 'invasion', `You invaded ${groundcombat.planet.name}.` );
+			this.LogDiploEvent( civ, -100, 'invasion', `You invaded ${groundcombat.planet.name}.` );
 			this.CreateTreaty( 'WAR', civ ); // this also cancels all other treaties
-			// audience / scolding
-			if ( civ.is_player ) { 
-				let message = `Invading ${groundcombat.planet.name} will be remembered as the greatest of your mistakes. Prepare for your demise. To war!`;
-				acct.attspan = 0; // silent treatment
-				App.instance.game.QueueAudience( this, {message} );
+			if ( civ.diplo.contactable && this.diplo.contactable ) { 
+				// audience / scolding
+				if ( civ.is_player ) { 
+					let message = `Invading ${groundcombat.planet.name} will be remembered as the greatest of your mistakes. Prepare for your demise. To war!`;
+					acct.attspan = 0; // silent treatment
+					App.instance.game.QueueAudience( this, {message} );
+					}
+				// surprise attack!					
+				else if ( this.is_player ) {
+					// TODO: this might also be a good opportunity to try extortion.
+					// Propose trade for planet in exchange for not going to war.
+					let message = `In a unanimous vote, we have decided this galaxy is too small for the both of us. The time for your extermination has arrived.`;
+					acct.attspan = 0; // silent treatment
+					App.instance.game.QueueAudience( civ, {message} );
+					}
 				}
-			// surprise attack!					
-			else if ( this.is_player ) {
-				// TODO: this might also be a good opportunity to try extortion.
-				// Propose trade for planet in exchange for not going to war.
-				let message = `In a unanimous vote, we have decided this galaxy is too small for the both of us. The time for your extermination has arrived.`;
-				acct.attspan = 0; // silent treatment
-				App.instance.game.QueueAudience( civ, {message} );
-				}					
 			}
 		// if we were already at war, less severe diplomatic punishment. we're used to being invaded now.
 		else {
