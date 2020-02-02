@@ -40,7 +40,7 @@
 					<div class="divider">
 						
 						<div>
-							<img src.one-time="c.diplo_img_small" class="diplo_img ${!acct.comm || !acct.attspan ? 'nocomm' : ''}" click.delegate="SpeakTo(c)" />
+							<img src.one-time="c.diplo_img_small" class="diplo_img ${!acct.comm || acct.attspan < 0.1 ? 'nocomm' : ''}" click.delegate="SpeakTo(c)" />
 							<!-- <div class="love_nub small"><div class="nub" css="margin-left: calc(${acct.lovenub} * (100% - 6em));">${acct.lovenub|loveNub}</div></div> -->
 							<!-- <div class="love_nub"><div class="nub" css="margin-left: calc(${acct.lovenub} * (100% - 6em));">${acct.lovenub|loveNub}</div></div> -->
 							<p class="button_rack button_rack_fill">
@@ -48,7 +48,7 @@
 								<button click.delegate="ClickLog(c)" class="cool ${modes[c.id]=='log' ? 'active' : ''}">Log</button>
 								<button click.delegate="ClickAbout(c)" class="cool ${modes[c.id]=='about' ? 'active' : ''}">About</button>
 								<button click.delegate="ClickRelations(c)" class="cool ${modes[c.id]=='relations' ? 'active' : ''}">Relations</button>
-								<button click.delegate="SpeakTo(c)" class="${!acct.in_range || !acct.attspan || !acct.comm ? 'bad ghost' : ''}">${!acct.in_range || !acct.attspan || !acct.comm ? 'Not Available' : 'Audience'}</button>
+								<button click.delegate="SpeakTo(c)" class="${!acct.in_range || acct.attspan < 0.1 || !acct.comm ? 'bad ghost' : ''}">${!acct.in_range || acct.attspan < 0.1 || !acct.comm ? 'Not Available' : 'Audience'}</button>
 							</p>
 							
 							<p if.bind="app.game.turn_num+0 && !acct.treaties.has('WAR')">
@@ -72,7 +72,7 @@
 									<output else class="${acct.rep >= 0 ? 'good' : 'bad'}">${acct.rep}</output>
 									<span>Relationship</span>
 								</div>
-								<div title="Attention they can devote to a meeting with you" class="${acct.attspan==0 ? 'bad' : ''}">
+								<div title="Attention they can devote to a meeting with you" class="${acct.attspan < 0.1 ? 'bad' : ''}">
 									<output>${acct.attspan | percent}%</output>
 									<span>Attention</span>
 								</div>

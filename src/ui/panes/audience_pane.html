@@ -27,11 +27,11 @@
 			<div if.bind="!info_panel_mode || info_panel_mode == 'info'">
 				<div class="statboxes">
 					<div title="Their current view of us" class="clickable ${app.game.turn_num+0 && acct.treaties.has('WAR') ? 'bad' : (acct.rep==100 ? 'good' : '')}" click.delegate="ClickLog(c)">
-						<output class="bad" if.bind="app.game.turn_num+0 && acct.treaties.has('WAR')">WAR</output>
+						<output class="bad" if.bind="acct.rep+1 && acct.treaties.has('WAR')">WAR</output>
 						<output else class="${acct.rep >= 0 ? 'good' : 'bad'}">${acct.rep}</output>
 						<span>Relationship</span>
 					</div>
-					<div title="Attention they can devote to a meeting with you" class="${acct.attspan==0 ? 'bad' : ''}">
+					<div title="Attention they can devote to a meeting with you" class="${acct.attspan < 0.1 ? 'bad' : ''}">
 						<output>${acct.attspan | percent}%</output>
 						<span>Attention</span>
 					</div>

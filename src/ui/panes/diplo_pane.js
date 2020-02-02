@@ -13,8 +13,8 @@ export class DiploPane {
 		}
 
 	SpeakTo( civ ) { 
-		let acct = civ.diplo.contacts.get(this.app.game.myciv);
-		if ( acct.attspan && acct.comm ) {
+		let acct = this.app.game.myciv.diplo.contacts.get(civ);
+		if ( acct && acct.attspan >= 0.1 && acct.comm ) {
 			this.app.SwitchMainPanel( 'audience', civ, {on_exit:'diplo'}, true );
 			}
 		}
