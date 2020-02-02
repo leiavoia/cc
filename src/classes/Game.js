@@ -579,21 +579,24 @@ export default class Game {
 			if ( star.fleets.length > 1 ) { 
 				for ( let fleet_a=0; fleet_a < star.fleets.length-1; fleet_a++ ) {
 					for ( let fleet_b=1; fleet_b < star.fleets.length; fleet_b++ ) {
-					if ( star.fleets[fleet_a].AIWantToAttackFleet(star.fleets[fleet_b]) ||
-						star.fleets[fleet_b].AIWantToAttackFleet(star.fleets[fleet_a]) 
-						) {
-						// NOTE: fleet may want to attack planet, not just the fleet
-						// NOTE 2: defender should get the chance to select a planet to hide behind
-						// 	if the attacker does not choose any.
-						// If the attacker (fleet_a) is the player, skip. Players initiate all combat manually.
-						if ( !star.fleets[fleet_a].owner.is_player || this.app.options.soak ) {
-							this.QueueShipCombat( star.fleets[fleet_a], star.fleets[fleet_b], null );
+						let ok_a = star.fleets[fleet_a].AIWantToAttackFleet(star.fleets[fleet_b]);
+						let ok_b = star.fleets[fleet_b].AIWantToAttackFleet(star.fleets[fleet_a]);
+						if ( ok_a || ok_b ) {
+							// NOTE: fleet may want to attack planet, not just the fleet
+							// NOTE 2: defender should get the chance to select a planet to hide behind
+							// 	if the attacker does not choose any.
+							// If the attacker is the player, skip. Players initiate all combat manually.
+							if ( ok_a && (!star.fleets[fleet_a].owner.is_player || this.app.options.soak) ) {
+								this.QueueShipCombat( star.fleets[fleet_a], star.fleets[fleet_b], null );
+								}
+							else if ( ok_b && (!star.fleets[fleet_b].owner.is_player || this.app.options.soak) ) {
+								this.QueueShipCombat( star.fleets[fleet_b], star.fleets[fleet_a], null );
+								}
 							}
 						}
 					}
 				}
-			}
-		});
+			});
 		
 		// Fight!
 		for ( let c = this.shipcombats.length-1; c >= 0; c-- ) { 
