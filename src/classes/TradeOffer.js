@@ -6,6 +6,10 @@ export default class TradeOffer {
 	tone = 'neutral'; // threat, insist, neutral, favor, beg
 	status = 'pending'; // pending, accepted, declined, countered
 	score = 0; // how recipient valued the deal
+	ask_score = 0; // raw score of asking items
+	offer_score = 0; // raw score of offer items
+	total_score = 0; // ask + offer. gives an idea of the general weight of the deal.
+	importance = 0; // weight of the deal.
 	raw_diff = 0; // difference in scoring the deal. used for counter offers.
 	hash = 0; // for quickly comparing two deals
 	
@@ -40,7 +44,7 @@ export default class TradeOffer {
 			}
 		
 		// do we like the deal?
-		this.score = this.to.AI_ScoreTradeOffer(this);
+		this.to.AI_ScoreTradeOffer(this);
 		let result = false;
 		
 		// accepted
@@ -80,8 +84,7 @@ export default class TradeOffer {
 		// TODO +/- relationship for tone
 		
 		// lower attention span
-		// TODO - amount depends on how big of a deal it was
-		acct.attspan -= 1 - this.to.diplo.focus;
+		acct.attspan -= ( 1 - this.to.diplo.focus ) * ( this.importance.clamp( 15, 100 ) / 35 ) ; // somewhat arbitrary numbers
 		if ( acct.attspan < 0 ) { acct.attspan = 0; }
 		
 		return result;

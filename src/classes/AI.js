@@ -1411,7 +1411,7 @@ export class AIDiplomacyObjective extends AIObjective {
 			// respect contact range, communication ability, and current attention span
 			if ( acct.attspan < 0.2 || !acct.comm || !acct.in_range ) continue;
 			// consider an audience
-			if ( Math.random() > 0.04 ) continue;
+			if ( Math.random() > 0.04 * ( c.is_player ? 1 : (acct.attspan+0.25) ) ) continue;
 			
 			// if we are at war, let's see if we need to back out.
 			if ( acct.treaties.has('WAR') ) {

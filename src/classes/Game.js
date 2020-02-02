@@ -1067,7 +1067,7 @@ export default class Game {
 					}
 				// regain attention span
 				// note: this actually fiddles with the player's own account but doesn't hurt				
-				acct.attspan += civ.diplo.focus * 0.20; 
+				acct.attspan += utils.Clamp( civ.diplo.focus * 0.08, 0.01, 1 ); 
 				if ( acct.attspan > 1 ) { acct.attspan = 1; }
 				}
 			}

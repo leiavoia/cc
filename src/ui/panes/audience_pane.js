@@ -222,6 +222,7 @@ export class AudiencePane {
 		
 	AcceptOffer() {
 		this.offer.Exchange();
+		this.LogOffer( this.offer );
 		this.BeMoody('happy');
 		this.their_text = `<p>Very well!</p>`;
 		this.our_text = '';
@@ -230,6 +231,7 @@ export class AudiencePane {
 		
 	DeclineOffer() {
 		this.offer = null;
+		this.LogOffer( this.offer );
 		this.BeMoody('mad');
 		this.their_text = `<p>So be it.</p>`;
 		this.our_text = '';
@@ -256,6 +258,7 @@ export class AudiencePane {
 		setTimeout( () => {
 			this.mood = '';
 			let result = this.offer.Evaluate();
+			this.LogOffer( this.offer );
 			if ( this.offer.status == 'countered' ) { 
 				this.offer = result;
 				this.mode = 'offer_countered';
@@ -272,6 +275,18 @@ export class AudiencePane {
 				this.ReturnToMainMenu();
 				}
 			}, 2500 );
+		}
+		
+	LogOffer( offer ) { 
+		if ( this.app.options.debug ) {
+			console.log(
+				'score', offer.score,
+				'offer score', offer.offer_score,
+				'ask score', offer.ask_score,
+				'total score', offer.total_score,
+				'weight', offer.importance
+				);
+			}
 		}
 		
 	PutTradeItem( item, fromlist, tolist, event ) {

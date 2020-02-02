@@ -957,6 +957,8 @@ export default class Civ {
 			}
 		// better deals for better relationships
 		their_score *= 0.75 + this.LoveNub(deal.from) * 0.5;
+		// more likely to say yes if attention span is high
+		their_score *= utils.Clamp( 0.25 + deal.from.diplo.contacts.get(deal.to).attspan, deal.to.diplo.focus, 1 );
 		// what would it take to make us say yes?
 		deal.raw_diff = our_score - their_score;
 		// the score is positive or negative depending on how it is viewed. 
@@ -965,13 +967,19 @@ export default class Civ {
 		let their_score_norm = their_score / (our_score + their_score);
 		let score = our_score_norm - their_score_norm;
 		// console.log(`TRADE SCORE: ${our_score_norm} - ${their_score_norm} = ${score} `);
+		deal.offer_score = our_score;
+		deal.ask_score = their_score;
+		deal.total_score = Math.abs( their_score ) + Math.abs( our_score );
+		deal.importance = Math.sqrt( deal.total_score );
+		deal.score = score;
 		return score;
 		}
 		
 	AI_ScoreTradeItem( i, civ ) { 
 		switch ( i.type ) {
 			case 'cash' : {
-				return parseFloat(i.amount) * this.ai.needs.cash;
+				let supply_val = ( 1 / ( this.resource_supply.$ || 1.0 ) );
+				return parseFloat(i.amount) * supply_val;
 				}
 			case 'resource' : {
 				let intrinsic_val = 1.0;
@@ -1053,30 +1061,8 @@ export default class Civ {
 					}
 				let team_power_ratio = my_team_power / their_team_power;
 				
-// 				// (?) Will this get me in trouble with friends?
-// 				let mutual_contacts = 0;
-// 				let mutual_friends = 0;
-// 				let mutual_enemies = 0;
-// 				let mutual_conflicts = 0; // our friends do not get along with their friends
-// 				for ( let [civ,our_acct] of this.diplo.contacts ) {
-// 					const their_acct = civ.diplo.contacts.get(civ);
-// 					if ( thier_account ) {
-// 						mutual_contacts++;
-// 						if ( their_acct.lovenub > 0.65 && our_acct.lovenub > 0.65 ) { 
-// 							mutual_friends++;
-// 							}
-// 						else if ( their_acct.lovenub < 0.35 && our_acct.lovenub < 0.35 ) { 
-// 							mutual_enemies++;
-// 							}
-// 						else if ( their_acct.lovenub > 0.65 && our_acct.lovenub < 0.35 ) { 
-// 							mutual_conflicts++;
-// 							}
-// 						else if ( their_acct.lovenub < 0.35 && our_acct.lovenub > 0.65 ) { 
-// 							mutual_conflicts++;
-// 							}
-// 						}
-// 					}
-					
+				// (?) Will this get me in trouble with friends?
+				
 				// (?) Do i want to be friends with you
 				
  				// (?) Am i planning to conquer you soon?
@@ -1100,11 +1086,11 @@ export default class Civ {
 					// if we want to go in deep
 					// but not help too much
 					case 'TECH_ALLIANCE' : { 
-						score = 10000 * ( rp_spread + 0.1 ); // 0.1 is our ego
+						score = 7000 * ( rp_spread + 0.1 ); // 0.1 is our ego
 						break;
 						}  
 					case 'ECON_ALLIANCE' : { 
-						score = 10000 * ( econ_spread + 0.3 ); // generally no risk - TODO: need a reason to avoid econ alliance
+						score = 7000 * ( econ_spread + 0.3 ); // generally no risk - TODO: need a reason to avoid econ alliance
 						break;
 						}  
 

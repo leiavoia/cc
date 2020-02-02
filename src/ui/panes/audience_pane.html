@@ -4,7 +4,7 @@
 		<div id="audience_them" 
 			css="border-color: rgb( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]} ); 
 			background-color: rgba( ${civ.color_rgb[0]}, ${civ.color_rgb[1]}, ${civ.color_rgb[2]}, 0.25 );"
-			show.bind="mode!='create_offer' && mode!=offer_countered" 
+			show.bind="mode!='create_offer'" 
 			>
 			
 			<div class="diplo_img_wrapper trekIn" if.bind="ambassador_present">
@@ -210,13 +210,6 @@
 			<p style="text-align:center; font-size: 300%; margin-top: 3em;">Considering your offer...</p>
 			<p style="text-align:center; font-size: 200%; margin-top: 3em;">
 				<progress style="height: 1em; width: 10em;"/>
-			</p>
-			<p if.bind="app.options.debug">
-				<b>${offer.score|round:3} SCORE </b><br/>
-				${civ.diplo.offer_ok_at|round:3} Offer OK @ <br/>
-				${civ.diplo.offer_counter_at|round:3} Offer Counter @<br/>
-				${civ.diplo.offer_bad_at|round:3} Offer Bad @<br/>
-				x${civ.diplo.emotion*2|round:3} Emotion
 			</p>
 		</div>
 			
