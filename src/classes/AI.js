@@ -1484,6 +1484,7 @@ export class AIDiplomacyObjective extends AIObjective {
 				// put all treaties on the "give" side for UI consistency
 				give = give.concat( ask.filter( i => i.type == 'treaty' ) );
 				ask = ask.filter( i => i.type != 'treaty' );
+				if ( !ask.length && !give.length ) { continue; }
 				let offer = new TradeOffer( civ, c, give, ask );
 				// AI-AI trades happen instantly
 				if ( !c.is_player || app.options.soak ) { 

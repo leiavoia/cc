@@ -222,7 +222,6 @@ export class AudiencePane {
 		
 	AcceptOffer() {
 		this.offer.Exchange();
-		this.LogOffer( this.offer );
 		this.BeMoody('happy');
 		this.their_text = `<p>Very well!</p>`;
 		this.our_text = '';
@@ -231,7 +230,6 @@ export class AudiencePane {
 		
 	DeclineOffer() {
 		this.offer = null;
-		this.LogOffer( this.offer );
 		this.BeMoody('mad');
 		this.their_text = `<p>So be it.</p>`;
 		this.our_text = '';
@@ -278,7 +276,7 @@ export class AudiencePane {
 		}
 		
 	LogOffer( offer ) { 
-		if ( this.app.options.debug ) {
+		if ( offer && this.app.options.debug ) {
 			console.log(
 				'score', offer.score,
 				'offer score', offer.offer_score,
