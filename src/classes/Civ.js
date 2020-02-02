@@ -615,6 +615,8 @@ export default class Civ {
 				}
 			obj.diplo.contacts[ k.id ] = contact;
 			}
+		obj.diplo.friends = []; // dont need to save
+		obj.diplo.enemies = [];
 		obj.tech = Object.assign( {}, this.tech ); // dont overwrite original object
 		obj.tech.techs = this.tech.techs.map( t => t.key );	
 		obj.tech.avail = this.tech.avail.map( t => ({key:t.node.key, rp:t.rp}) );

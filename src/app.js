@@ -479,8 +479,13 @@ export class App {
 				newgame.galaxy.fleets = Fleet.all_fleets;
 				// install new game 
 				app.game = newgame; 
-				newgame.SetMyCiv( newgame.galaxy.civs.find( x => x.is_player ) ); 
-				app.ChangeState('play', function() { app.FocusMap( newgame.myciv.homeworld, true ) } ) ;
+				newgame.SetMyCiv( newgame.galaxy.civs.find( x => x.is_player ) );
+				// [!]HACK - reset diplomacy stats
+				for ( let c of app.game.galaxy.civs ) { c.RecalcReputation(); }
+				let focus_planet = newgame.myciv.homeworld.owner == newgame.myciv 
+					? newgame.myciv.homeworld
+					: newgame.myciv.planets[0];
+				app.ChangeState('play', function() { app.FocusMap( focus_planet, true ) } ) ;
 				});
 	
 			}
