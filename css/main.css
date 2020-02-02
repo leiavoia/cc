@@ -4231,25 +4231,23 @@ DIV.annoyometer .nub {
 			)
 		;
 	}
-planet .env_box .target { border-width: 0 !important; }
-planet .env_box .target .grav {
-	border-color: black;
-	border-style: ridge; 	
+.planet .env_box .target { border-width: 0 !important; }
+.planet .env_box .target .grav {
 	position:absolute;
 	width: 100%;
 	height: 100%;
-	border: 1px solid #000;
+	border: 1px ridge #666;
 	margin-left: 0;
 	margin-top: 0;
 	box-sizing: border-box; 
 	border-radius: 2px;
 	z-index: 5;
 	}
-planet.grav0 .env_box .target .grav { border-width: 2px; }
-planet.grav1 .env_box .target .grav { border-width: 6px; }
-planet.grav2 .env_box .target .grav { border-width: 10px; }
-planet.grav3 .env_box .target .grav { border-width: 15px; }
-planet.grav4 .env_box .target .grav { border-width: 19px; }
+.planet.grav0 .env_box .target .grav { border-width: 2px; }
+.planet.grav1 .env_box .target .grav { border-width: 6px; }
+.planet.grav2 .env_box .target .grav { border-width: 10px; }
+.planet.grav3 .env_box .target .grav { border-width: 15px; }
+.planet.grav4 .env_box .target .grav { border-width: 20px; }
 
 .env_box .a { 
 	box-sizing: border-box; 
