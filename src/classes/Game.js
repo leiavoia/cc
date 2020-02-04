@@ -57,6 +57,7 @@ export default class Game {
 			planet: x.planet.id
 			}) );
 		obj.audiences = []; // you lost your chance
+		obj.victory_recipes = this.victory_recipes.map( x => x.key );
 		return obj;
 		}
 						
@@ -79,6 +80,7 @@ export default class Game {
 			x.planet = catalog[x.planet];
 			return x;
 			} );
+		this.victory_recipes = this.victory_recipes.map( k => VictoryRecipes[k] );
 		}
 				
 	CheckForCivDeath() { 
@@ -497,7 +499,12 @@ export default class Game {
 		
 		// autosave
 		if ( this.app.options.autosave && !this.app.options.soak ) {
-			this.app.SaveGame('Auto-Save');
+			let result = this.app.SaveGame('Auto-Save');
+			if ( !result ) { 
+				this.app.AddNote('bad','Could not auto-save.', 'Not enough memory in HTML5 localStorage. Download file manually and clear up space by deleting old games in localStorage. Auto-save has been disabled.');
+				this.app.options.autosave = false;
+				this.app.SaveOptions();
+				}
 			}
 			 
 		this.processing_turn = false;

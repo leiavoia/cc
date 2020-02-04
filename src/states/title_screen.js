@@ -8,7 +8,10 @@ export class TitleState {
 	constructor( app ) {
 		this.app = app;
 		this.show_loading_panel = false;
-		// see if we have saved game:
+		this.LoadGameList();
+		}
+		
+	LoadGameList() { 
 		this.saved_games = this.app.SavedGameList();
 		if ( this.saved_games ) {
 			for ( let i of this.saved_games ) { 
@@ -61,6 +64,13 @@ export class TitleState {
 		document.body.appendChild(element);
 		element.click();
 		document.body.removeChild(element);
+		return false;
+		}
+
+	DeleteSavedGame(g,event) {
+		event.stopPropagation(); 
+		this.app.DeleteSavedGame( g.key );
+		this.LoadGameList();
 		return false;
 		}
 		

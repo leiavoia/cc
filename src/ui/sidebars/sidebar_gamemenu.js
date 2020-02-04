@@ -25,6 +25,9 @@ export class GameMenuPane {
 			this.app.ReturnToMap();
 			this.app.AddNote( 'good', 'Game Saved', name, null, 2000 );
 			}
+		else {
+			this.app.AddNote('bad','Could not save.', 'Not enough memory in HTML5 localStorage. Download file manually and clear up space by deleting old games in localStorage.');
+			}
 		}
 		
 	SaveGameFast() {
@@ -33,6 +36,9 @@ export class GameMenuPane {
 			this.saved_game_name = 'Quick Save';
 			this.app.ReturnToMap();
 			this.app.AddNote( 'good', 'Game Saved', name, null, 2000 );
+			}
+		else {
+			this.app.AddNote('bad','Could not save.', 'Not enough memory in HTML5 localStorage. Download file manually and clear up space by deleting old games in localStorage.');
 			}
 		}
 		

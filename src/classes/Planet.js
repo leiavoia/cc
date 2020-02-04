@@ -94,16 +94,22 @@ export default class Planet {
 		if ( star && 'xpos' in star ) { 
 			this.star = star; 
 			this.name = ( name || RandomName() ).uppercaseFirst();
+			this.mods = new Modlist;
 			this.id = utils.UUID();
 			}
 		// also takes alternate "fromJSON" data blob as first arg	
 		else if ( star ) { 
 			Object.assign( this, star );
 			if ( this.zones.length ) {
-				this.zones = this.zones.map( x => new Zone(x) );
+				this.zones = this.zones.map( x => { 
+					let z = new Zone(x);
+					z.output_rec = x.output_rec;
+					z.resource_rec = x.resource_rec;
+					z.resource_estm = x.resource_estm;
+					return z;
+					} );
 				} 
 			}
-		this.mods = new Modlist;
 		}
 	
 	toJSON() { 

@@ -160,7 +160,7 @@ export class App {
 		this.SaveOptions();
 		}
 
-	SaveOptions() { 
+	SaveOptions() {
 		window.localStorage.setItem( 
 			'options',
 			JSON.stringify(this.options)
@@ -355,7 +355,9 @@ export class App {
 			content = content.replace(/\.0+,/g,","); // hack off unnecessary zeroes
 			// console.log('Saving ' + content.length + ' bytes ...' );
 			// save to html5 localStorage
-			if ( content.length < 5000000 && !force_download ) {
+			if ( !force_download ) {
+				// too big to fit. do NOT automatically resort to downloading file.
+				if ( content.length > 5000000 ) { return false; }
 				localStorage.setItem( name, content );
 				// log to games list
 				let gameslist = this.SavedGameList();
@@ -453,7 +455,10 @@ export class App {
 			// numbers are easier to read and take up less space in JSON
 			let maxuuid = 0;
 			for ( let k of Object.keys(catalog) ) {
-				maxuuid = Math.max( maxuuid, parseInt(k) ); 
+				let i = parseInt(k);
+				if ( Number.isInteger(i) ) { 
+					maxuuid = Math.max( maxuuid, i ); 
+					}
 				} 			
 			utils.UUID( maxuuid + 1 ); // reset counter
 			// dereference all objects
@@ -490,6 +495,13 @@ export class App {
 	
 			}
 		// console.timeEnd('LOAD GAME');
+		}
+			
+	DeleteSavedGame( key ) {
+		key = 'Game: ' + key;
+		localStorage.removeItem(key);
+		let games = this.SavedGameList().filter( x => x.key != key );
+		localStorage.setItem( 'games', JSON.stringify(games) );
 		}
 			
 	PurgeUnlistedSavedGames() { 

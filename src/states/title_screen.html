@@ -48,6 +48,9 @@
 						<p class="button_rack">
 							<button class="cool small" click.trigger="ExportSavedGame(g,$event)">EXPORT</button>
 						</p>
+						<p class="button_rack" style="float:left;">
+							<button class="bad small" click.trigger="DeleteSavedGame(g,$event)">DELETE</button>
+						</p>
 						<p class="bold marginless">${g.key}</p>
 						<p class="dim marginless">
 							${g.time}<br/> 

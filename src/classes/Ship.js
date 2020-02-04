@@ -57,6 +57,9 @@ export class Ship {
 		}	
 
 	Unpack( catalog ) {
+		// can be called multiple times from different sources, 
+		// so check to make sure only unpacked once.
+		if ( !Number.isInteger(this.bp) ) { return; }
 		this.bp = catalog[this.bp];
 		this.bp.Unpack(catalog); // ensures blueprint weapons are available
 		this.troops = this.troops.map( x => catalog[x] );
@@ -208,7 +211,7 @@ export class ShipBlueprint {
 
 	Unpack( catalog ) {
 		// can be called multiple times from different sources, 
-		// so check to to make sure only unpacked once.
+		// so check to make sure only unpacked once.
 		if ( this.mods instanceof Modlist ) { return; }
 		this.comps = this.comps.map( x => ShipComponentList[x] );
 		this.weapons = this.weapons.map( x => {

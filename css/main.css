@@ -4380,6 +4380,10 @@ DIV.annoyometer .nub {
 	margin: 0; 
 	padding: 0;
 	}
+#layout_ui_main.title_screen #games_list DIV .button_rack:first-child {
+	left: 0;
+	right: auto;
+	}
 #layout_ui_main.title_screen #games_list DIV.clickable:hover {
 	background-color: #4BA5CC;
 	}
