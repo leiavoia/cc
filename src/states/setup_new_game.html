@@ -105,6 +105,14 @@
 					<output show.bind="!app.options.setup.AIs_randomize">${app.options.setup.AIs}</output>
 					<output show.bind="app.options.setup.AIs_randomize" class="random">Random</output>
 				</div>
+				
+				<div class="option">
+					<button class="${app.options.setup.shape_randomize ? 'alt' : ''}" 
+						click.delegate="app.options.setup.shape_randomize = !app.options.setup.shape_randomize"
+					 >Randomize</button>
+					<label for="shape">Stellar Shaping</label>
+					<button repeat.for="shape of shapes" click.delegate="ClickShape(shape)" class="cool ${app.options.setup.shape==shape ? 'active' : ''} ${app.options.setup.shape_randomize ? 'disabled' : ''}">${shape}</button>
+				</div>
 			</div>
 			
 			<div id="ui_setup_pane" class="window" show.bind="mode == 'ui'">

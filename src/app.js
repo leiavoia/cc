@@ -71,6 +71,8 @@ export class App {
 			galaxy_age_randomize: false,
 			density: 0.5,
 			density_randomize: false,
+			shape: 'shuffle',
+			shape_randomize: false,
 			difficulty: 0.5,
 			difficulty_randomize: false,
 			events: 0.5, 

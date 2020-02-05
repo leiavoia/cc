@@ -14,7 +14,8 @@ export class SetupNewGameState {
 		this.app.options.setup.color = this.app.options.setup.color.map( c => parseInt(c) );
 		this.color_r = this.app.options.setup.color[0];
 		this.color_g = this.app.options.setup.color[1];
-		this.color_b = this.app.options.setup.color[2];	
+		this.color_b = this.app.options.setup.color[2];
+		this.shapes = ['attraction','shuffle','heightmap'];
 		}
 
 	ChangePanel(panel) {
@@ -61,6 +62,11 @@ export class SetupNewGameState {
 	EnvDisplayName( a, t, g ) {
 		return Planet.GravNames()[g] + ' ' + Planet.EnvNames()[t][a];
 		}
+		
+	ClickShape( shape ) {
+		this.app.options.setup.shape = shape;
+		}
+		
 	}
 
 	

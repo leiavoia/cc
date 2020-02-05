@@ -66,12 +66,16 @@ export default class Galaxy {
 						
 	// size is in number of sectors, 
 	// where sector is 400px and max one star per sector
-	Make( sectors, density, galaxy_age = 0.5, crazy = 0 ) {
+	// strategy can be [attraction,shuffle,heightmap,random]
+	Make( sectors, density, galaxy_age = 0.5, crazy = 0, strategy = 'heightmap' ) {
 		
 		const sectors_requested = sectors;
-		const strategy = 'attraction'; // [attraction,shuffle]
 		const cell_size = 400;
 		const min_edge = 4;
+		
+		if ( strategy == 'random' ) {
+			strategy = ['attraction','shuffle','heightmap'].pickRandom();
+			}
 		
 		// reset data
 		this.stars = [];
@@ -107,21 +111,83 @@ export default class Galaxy {
 		let stars_wanted = Math.ceil( sectors * Math.max( 0.05, density ) );
 		if ( sectors < stars_wanted ) { stars_wanted = sectors; }
 		let remainder = sectors - stars_wanted;
-		// anomalies cover 50% of un-starred space or 30% of total space, 
+		// anomalies cover 50% of un-starred space or 30% of stars, 
 		// whichever is less.
-		let num_anoms = Math.min( Math.floor( remainder * 0.5 ), Math.floor( sectors * 0.3) );
+		let num_anoms = Math.min( Math.floor( remainder * 0.5 ), Math.floor( stars_wanted * 0.3) );
 		remainder -= num_anoms;
 		let arr = [];
 		
 		// this is where the shape of the galaxy is determined. 
-		if ( strategy == 'attraction' ) { 
+		if ( strategy == 'heightmap' ) { 
+				
+			// random attractors
+			let num_attractors = 3 + 10 * crazy; // need at least 3 for interesting results	
+			let attractors = [];
+			for ( let a=0; a < num_attractors ; a++ ) { 
+				let attractor = { 
+					x: utils.RandomInt( 2, map_size_x-2 ), 
+					y: utils.RandomInt( 2, map_size_y-2 ), 
+					s: utils.BiasedRandInt( 
+						(( map_size_x + map_size_y ) * -1),
+						// 0,
+						(( map_size_x + map_size_y ) * 2 ),
+						// (( map_size_x + map_size_y ) ),
+						0,
+						0.5
+						)
+					}; 
+				attractors.push( attractor );			
+				}
+			
+			// make a list of points with associated "height" value
+			let points = [];
+			for ( let x = 0; x < map_size_x; x++ ) { 
+				for ( let y = 0; y < map_size_y; y++ ) { 
+					let h = Math.random() * 6 - 3; // random wobble
+					for ( let attractor of attractors ) { 
+						let dx = Math.abs( x - attractor.x ); 
+						let dy = Math.abs( y - attractor.y );
+						let dist = Math.sqrt( dx*dx + dy*dy );
+						let force = attractor.s / Math.pow(dist,1.1);
+						h += force;
+						}
+					h /= attractors.length;
+					points.push({x,y,h});
+					}
+				}
+			// sort all of the points by height and populate the galaxy
+			points.sort( (a,b) => a.h - b.h );			
+			let num_blanks = Math.min( remainder, stars_wanted * 0.1 ); // shooting blanks makes it less dense
+			let things_to_place = [];
+			for ( let i=0; i < stars_wanted; i++ ) { things_to_place.push(1); }
+			for ( let i=0; i < num_anoms; i++ ) { things_to_place.push(2); }
+			for ( let i=0; i < num_blanks; i++ ) { things_to_place.push(0); }
+			things_to_place.shuffle();
+			for ( let i=0; i < things_to_place.length; i++ ) {
+				let p = points.pop();
+				let index = p.x * map_size_y + p.y;
+				arr[index] = things_to_place[i];
+				}
+					
+			// random scattering
+			for ( let i = 0; i < sectors*0.14; i++ ) {
+				let one = utils.RandomInt( 0, sectors-1 );
+				let two = utils.RandomInt( 0, sectors-1 );
+				let temp = arr[two];
+				arr[two] = arr[one];
+				arr[one] = temp;
+				}
+			}
+		
+		// this is where the shape of the galaxy is determined. 
+		else if ( strategy == 'attraction' ) { 
 				
 			arr = new Array(sectors);
 			let avail_indexes = new Array(sectors);
 			for ( let i=0; i < sectors; i++  ) { avail_indexes[i] = i; }
 			avail_indexes.shuffle();
 			
-			let num_attractors = 10 * crazy;	
+			let num_attractors = 1 + 10 * crazy;	
 			let attractors = [];
 			for ( let a=0; a < num_attractors ; a++ ) { 
 				let attractor = { 

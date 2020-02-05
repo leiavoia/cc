@@ -224,8 +224,12 @@ export default class Game {
 			: parseFloat(this.app.options.setup.galaxy_age);
 		const density = 
 			this.app.options.setup.density_randomize
-			? (utils.RandomInt(0,10) / 10).toPrecision(1)
+			? (utils.RandomInt(2,7) / 10).toPrecision(1)
 			: parseFloat(this.app.options.setup.density);
+		const shape = 
+			this.app.options.setup.shape_randomize
+			? 'random'
+			: this.app.options.setup.shape;
 		const crazy = 
 			this.app.options.setup.crazy_randomize
 			? (utils.RandomInt(0,10) / 10).toPrecision(1)
@@ -238,7 +242,7 @@ export default class Game {
 		// create initial state
 		this.app.ResetEverything();
 		this.galaxy = new Galaxy();
-		this.galaxy.Make( galaxy_size, density, age, crazy );
+		this.galaxy.Make( galaxy_size, density, age, crazy, shape );
 		
 		// this adds a standard game setup. However, this would also be a good place
 		// to add alternate setups for faster debugging, perhaps based on query string params.
