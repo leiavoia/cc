@@ -186,6 +186,14 @@ export class AudiencePane {
 				this.options.push( { text:v.label, func: () => this.EndTreaty(k) } );
 				}
 			}	
+		this.options.push( { 
+			text:'Never mind ...', 
+			func: () => { 
+				this.their_text = 'Anything else?'; 
+				this.our_text = null;
+				this.ReturnToMainMenu(); 
+				} 
+			} );
 		this.offer = null;
 		this.mode = 'intro';
 		}
