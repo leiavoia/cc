@@ -1,4 +1,4 @@
-<template>
+<template containerless>
 
 	<div class="planet atm${planet.atm} tmp${planet.temp} grav${planet.grav}" css="min-height:${(planet.size)|idealplanetsize}px; background-size: auto ${(planet.size)|idealplanetsize}px; background-position: 50% -${planet.size/2}px ;"><!-- calc(100% + ${planet.size}px) -->
 		
@@ -48,6 +48,24 @@
 					<img src.bind="planet.morale | moraleToMoodIcon"  style="width: 1.1em; height: 1.1em;" /><br/>
 				</span> -->
 			</div>
+			<!-- <div class="statboxes dark">
+				<div if.bind="planet.owner">
+					<output class="pop">${planet.total_pop|ceil} / ${planet.maxpop|ceil}</output>
+					<span class="pop">POPULATION</span>
+				</div>
+				<div>
+					<output class="size">${planet.size}</output>
+					<span class="size">SIZE</span>
+				</div>
+				<div>
+					<output class="en">${planet.energy}</output>			
+					<span class="en">ENERGY</span>
+				</div>
+				<div class="${habitable ? '' : 'bad'}">
+					<output class="${habitable ? 'good' : 'bad'}">${(adaptation > 0 ? '+' : '')}${adaptation}</output>
+					<span class="${habitable ? 'good' : 'bad'}">${habitable ? "HABITAT" : "UNINHABITABLE"}</span>
+				</div>
+			</div>			 -->
 			<div class="resources">
 				<template repeat.for="k of planet.resources|props" containerless>
 					<span repeat.for="i of planet.resources[k]" class="${k}"></span>
@@ -148,7 +166,7 @@
 			<div class="data wrapper resources" if.bind="planet.owner" click.delegate="OpenDetailsPane()">
 				<span class="${k=='$'?'cash':k}" repeat.for="k of ['$','o','r','c', 'hou','s','g','y',  'res','m','b','v', 'ship','def']"
 					style="width: 23%; margin: 0.5%; padding: 0.5%; border-radius:2px; display: inline-block; height:0.8em;line-height:0.8em;">
-					<b class="${planet.acct_total[k] > 0.001 ? 'good' : (planet.acct_total[k] && planet.acct_total[k] < 0.001 ? 'bad' : 'zero')}">${planet.acct_total[k]|round}</b>
+					<b class="${planet.acct_total[k] > 0.001 ? 'good' : (planet.acct_total[k] && planet.acct_total[k] < 0.001 ? 'bad' : 'zero')}"> ${planet.acct_total[k]|round}</b>
 				</span>			
 			</div>
 			

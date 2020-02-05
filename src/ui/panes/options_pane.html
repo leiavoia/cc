@@ -1,71 +1,80 @@
 <template>
 	<div id="options_pane" class="pane">
-		<p style="float:right;"><button click.delegate="ClosePanel()" class="big">CLOSE</button></p>
-		<h1>Options</h1>
+		<p style="float:right; margin:0;"><button click.delegate="ClosePanel()" class="big">CLOSE</button></p>
+		<br />
+		<br />
+		<br />
 		
-		<h2>UI</h2>
+		<h2>UI Options</h2>
 		
-		<p><button click.delegate="app.ToggleOption('dim_unexplored')" class="${app.options.dim_unexplored ? 'alt' : 'cool'}">
-			Dim Unexplored Stars
-		</button></p>
-		<p><button click.delegate="app.ToggleOption('show_sectors')" class="${app.options.show_sectors ? 'alt' : 'cool'}">
-			Show Sector Lines
-		</button></p>
-		<p><button click.delegate="app.ToggleOption('see_all')" class="${app.options.see_all ? 'alt' : 'cool'}">
-			See Everything (Debug)
-		</button></p>
-		<p><button click.delegate="app.ToggleOption('always_show_range')" class="${app.options.always_show_range ? 'alt' : 'cool'}">
-			Show Ship Range Circles
-		</button></p>
-		<p><button click.delegate="app.ToggleOption('show_staging_pts')" class="${app.options.show_staging_pts ? 'alt' : 'cool'}">
-			Show Staging Points
-		</button></p>
-		<p><button click.delegate="app.ToggleOption('ship_scaling')" class="${app.options.ship_scaling ? 'alt' : 'cool'}">
-			Dynamically Scaled Ship Images
-		</button></p>
-		<p><button click.delegate="app.ToggleOption('autosave')" class="${app.options.autosave ? 'alt' : 'cool'}">
-			Auto-Save Each Turn
-		</button></p>
-		<p><button click.delegate="app.ToggleOption('graph_history')" class="${app.options.graph_history ? 'alt' : 'cool'}">
-			Record History Graph (memory insensive)
-		</button></p>
-
-		<p class="button_rack">
+		<p class="button_rack fill quarters">
+			<button click.delegate="app.ToggleOption('dim_unexplored')" class="${app.options.dim_unexplored ? 'alt' : 'cool'}">
+				Dim Unexplored Stars
+			</button>
+			<button click.delegate="app.ToggleOption('show_sectors')" class="${app.options.show_sectors ? 'alt' : 'cool'}">
+				Show Sector Lines
+			</button>
+			<button click.delegate="app.ToggleOption('see_all')" class="${app.options.see_all ? 'alt' : 'cool'}">
+				See Everything (Debug)
+			</button>
+			<button click.delegate="app.ToggleOption('always_show_range')" class="${app.options.always_show_range ? 'alt' : 'cool'}">
+				Show Ship Range Circles
+			</button>
+			<button click.delegate="app.ToggleOption('show_staging_pts')" class="${app.options.show_staging_pts ? 'alt' : 'cool'}">
+				Show Staging Points
+			</button>
+			<button click.delegate="app.ToggleOption('ship_scaling')" class="${app.options.ship_scaling ? 'alt' : 'cool'}">
+				Dynamically Scaled Ship Images
+			</button>
+			<button click.delegate="app.ToggleOption('autosave')" class="${app.options.autosave ? 'alt' : 'cool'}">
+				Auto-Save Each Turn
+			</button>
+			<button click.delegate="app.ToggleOption('graph_history')" class="${app.options.graph_history ? 'alt' : 'cool'}">
+				Record History Graph (memory insensive)
+			</button>
+			<span></span>
+			<span></span>
+		</p>
+		<p class="big">
 			<b>Background Brightness</b><br/>
-			<input id="bg_bright" type="range" min="0.0" max="1.0" step="0.01" value.bind="app.options.bg_bright" /> 
+			<input id="bg_bright" class="bigger" type="range" min="0.0" max="1.0" step="0.01" value.bind="app.options.bg_bright" /> 
 		</p>
 		
 		
 		<h2>Notifications</h2>
-		<p><button click.delegate="app.ToggleNotification('explore')" class="${app.options.notify.explore ? 'alt' : 'cool'}">
-			New star system explored
-		</button></p>
-		<p><button click.delegate="app.ToggleNotification('settle')" class="${app.options.notify.settle ? 'alt' : 'cool'}">
-			Planet settled
-		</button></p>
-		<p><button click.delegate="app.ToggleNotification('contact')" class="${app.options.notify.contact ? 'alt' : 'cool'}">
-			Civilization contacted
-		</button></p>
-		<p><button click.delegate="app.ToggleNotification('lost_contact')" class="${app.options.notify.lost_contact ? 'alt' : 'cool'}">
-			Civilization contact lost
-		</button></p>
-		<p><button click.delegate="app.ToggleNotification('research')" class="${app.options.notify.research ? 'alt' : 'cool'}">
-			Technology acquired (notice)
-		</button></p>
-		<p><button click.delegate="app.ToggleNotification('research_announce')" class="${app.options.notify.research_announce ? 'alt' : 'cool'}">
-			Technology acquired (anouncement)
-		</button></p>
-		<p><button click.delegate="app.ToggleNotification('anom')" class="${app.options.notify.anom ? 'alt' : 'cool'}">
-			Anomaly researched
-		</button></p>
-		<p><button click.delegate="app.ToggleNotification('combat')" class="${app.options.notify.combat ? 'alt' : 'cool'}">
-			Ground combat resolution
-		</button></p>
-		<p><button click.delegate="app.ToggleNotification('colony_ship_arrived')" class="${app.options.notify.colony_ship_arrived ? 'alt' : 'cool'}">
-			Colony ship arrived
-		</button></p>
-		<p><button click.delegate="app.ToggleNotification('build_queue')" class="${app.options.notify.build_queue ? 'alt' : 'cool'}">
-			Build queue item completed
-		</button></p>
+		<p class="button_rack fill quarters">
+			<button click.delegate="app.ToggleNotification('explore')" class="${app.options.notify.explore ? 'alt' : 'cool'}">
+				New star system explored
+			</button>
+			<button click.delegate="app.ToggleNotification('settle')" class="${app.options.notify.settle ? 'alt' : 'cool'}">
+				Planet settled
+			</button>
+			<button click.delegate="app.ToggleNotification('contact')" class="${app.options.notify.contact ? 'alt' : 'cool'}">
+				Civilization contacted
+			</button>
+			<button click.delegate="app.ToggleNotification('lost_contact')" class="${app.options.notify.lost_contact ? 'alt' : 'cool'}">
+				Civilization contact lost
+			</button>
+			<button click.delegate="app.ToggleNotification('research')" class="${app.options.notify.research ? 'alt' : 'cool'}">
+				Technology acquired (notice)
+			</button>
+			<button click.delegate="app.ToggleNotification('research_announce')" class="${app.options.notify.research_announce ? 'alt' : 'cool'}">
+				Technology acquired (anouncement)
+			</button>
+			<button click.delegate="app.ToggleNotification('anom')" class="${app.options.notify.anom ? 'alt' : 'cool'}">
+				Anomaly researched
+			</button>
+			<button click.delegate="app.ToggleNotification('combat')" class="${app.options.notify.combat ? 'alt' : 'cool'}">
+				Ground combat resolution
+			</button>
+			<button click.delegate="app.ToggleNotification('colony_ship_arrived')" class="${app.options.notify.colony_ship_arrived ? 'alt' : 'cool'}">
+				Colony ship arrived
+			</button>
+			<button click.delegate="app.ToggleNotification('build_queue')" class="${app.options.notify.build_queue ? 'alt' : 'cool'}">
+				Build queue item completed
+			</button>
+			<span></span>
+			<span></span>
+		</p>
 	</div>
 </template>

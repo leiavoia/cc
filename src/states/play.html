@@ -349,7 +349,7 @@
 			<div id="layout_ui_news" class="fadeIn" if.bind="!app.main_panel_mode">
 				<p class="button_rack fill"><button class="micro cool" click.delegate="app.ClearNotes()" if.bind="app.notes.length">Clear Messages</button></p>
 				<div repeat.for="note of app.notes" class="${note.type} trekIn" click.trigger="app.ClickNote(note)">
-					<button class="x" click.trigger="app.ClickNote(note,true,false)">🗙</button>
+					<button class="x" click.trigger="app.ClickNote(note,true,false)">X</button>
 					<h3 if.one-time="note.title">${note.title}</h3>
 					<div if.one-time="note.content" innerhtml.bind="note.content"></div>
 				</div>
@@ -369,27 +369,26 @@
 
 		<!-- FOOTER -->
 		<div id="layout_ui_footer" class="fadeIn" if.bind="!app.main_panel_mode">
-			<a href="#" click.delegate="app.MapZoomIn()" title="zoom in" class="button cool bold">+</a>
-			<a href="#" click.delegate="app.MapZoomOut()" title="zoom out" class="button cool bold">-</a>
-			<a href="#" click.delegate="app.MapScroll(0,-400)" title="scroll up" class="button cool">▲</a>
-			<a href="#" click.delegate="app.MapScroll(0,400)" title="scroll down" class="button cool">▼</a>
-			<a href="#" click.delegate="app.MapScroll(-400,0)" title="scroll left" class="button cool">◀</a>
-			<a href="#" click.delegate="app.MapScroll(400,0)" title="scroll right" class="button cool">▶</a>
-			<a href="#" click.delegate="app.ToggleOption('always_show_range')" title="always show ship range" class="button ${app.options.always_show_range ? 'alt' : 'cool'}">◯</a>
-			<a href="#" click.delegate="app.ToggleOption('show_sectors')" title="show sector grid" class="button ${app.options.show_sectors ? 'alt' : 'cool'}">⛶</a>
-			<a href="#" click.delegate="app.ToggleOption('show_staging_pts')" title="show staging points" class="button ${app.options.show_staging_pts ? 'alt' : 'cool'}">✜</a>
-			<a href="#" click.delegate="app.ToggleOption('see_all')" title="see everything (cheat mode)" class="button ${app.options.see_all ? 'alt' : 'cool'}">★</a>
-			<a href="#" click.delegate="app.ToggleOption('show_xtreme_fleets')" title="show fleets when zoomed out" class="button ${app.options.show_xtreme_fleets ? 'alt' : 'cool'}">▪</a>
-			<a href="#" click.delegate="app.ToggleOption('show_xtreme_anoms')" title="show anomalies when zoomed out" class="button ${app.options.show_xtreme_anoms ? 'alt' : 'cool'}">▰</a>
-			<a href="#" click.delegate="app.ToggleOption('ship_scaling')" title="dynamically scale ships when viewing fleets" class="button ${app.options.ship_scaling ? 'alt' : 'cool'}">DS</a>
-			<a href="#" click.delegate="app.ToggleOption('debug')" title="debug mode" class="button ${app.options.debug ? 'alt' : 'cool'}">🐞</a>
-			<template containerless if.bind="app.options.debug">
-				<a href="#" click.delegate="app.ToggleOption('show_objectives')" title="show AI objectives" class="button ${app.options.show_objectives ? 'alt' : 'cool'}">OBJ</a>				
-				<a href="#" click.delegate="app.ToggleOption('show_threats')" title="show AI threat detection" class="button ${app.options.show_threats ? 'alt' : 'cool'}">THR</a>
-				<a href="#" click.delegate="app.game.RotateMyCiv()" title="switch civs" class="button cool">SwCiv</a>
-				<a href="#" click.delegate="app.ToggleOption('ai')" title="process AI each turn" class="button ${app.options.ai ? 'alt' : 'cool'}">AI</a>
-				<a href="#" click.delegate="app.ToggleOption('soak')" title="uninterupted autoplay" class="button ${app.options.soak ? 'alt' : 'cool'}">Soak</a>
-			</template>
+			<button click.delegate="app.MapZoomIn()" title="zoom in" class="button cool bold">+</button>
+			<button click.delegate="app.MapZoomOut()" title="zoom out" class="button cool bold">-</button>
+			<button click.delegate="app.MapScroll(0,-400)" title="scroll up" class="button cool">&#9650;&#xFE0E;</button>
+			<button click.delegate="app.MapScroll(0,400)" title="scroll down" class="button cool">&#9660;&#xFE0E;</button>
+			<button click.delegate="app.MapScroll(-400,0)" title="scroll left" class="button cool">&#9664;&#xFE0E;</button>
+			<button click.delegate="app.MapScroll(400,0)" title="scroll right" class="button cool">&#9654;&#xFE0E;</button>
+			<button click.delegate="app.ToggleOption('always_show_range')" title="always show ship range" class="button cool ${app.options.always_show_range ? 'active' : ''}">◯</button>
+			<button click.delegate="app.ToggleOption('show_sectors')" title="show sector grid" class="button cool ${app.options.show_sectors ? 'active' : ''}">&#11034;&#xFE0E;</button>
+			<button click.delegate="app.ToggleOption('show_staging_pts')" title="show staging points" class="button cool ${app.options.show_staging_pts ? 'active' : ''}">✜</button>
+			<button click.delegate="app.ToggleOption('show_xtreme_fleets')" title="show fleets when zoomed out" class="button cool ${app.options.show_xtreme_fleets ? 'active' : ''}">&#9632;&#xFE0E;</button>
+			<button click.delegate="app.ToggleOption('show_xtreme_anoms')" title="show anomalies when zoomed out" class="button cool ${app.options.show_xtreme_anoms ? 'active' : ''}">▰</button>
+			<button click.delegate="app.ToggleOption('debug')" title="debug mode" class="button cool ${app.options.debug ? 'active' : ''}">🐞</button>
+			<span show.bind="app.options.debug">
+				<button click.delegate="app.ToggleOption('see_all')" title="see everything (cheat mode)" class="button cool ${app.options.see_all ? 'active' : ''}">★</button>
+				<button click.delegate="app.ToggleOption('show_objectives')" title="show AI objectives" class="button cool ${app.options.show_objectives ? 'active' : ''}">OBJ</button>
+				<button click.delegate="app.ToggleOption('show_threats')" title="show AI threat detection" class="button cool ${app.options.show_threats ? 'active' : ''}">THR</button>
+				<button click.delegate="app.ToggleOption('ai')" title="process AI each turn" class="button cool ${app.options.ai ? 'active' : ''}">AI</button>
+				<button click.delegate="app.ToggleOption('soak')" title="uninterupted autoplay" class="button cool ${app.options.soak ? 'active' : ''}">Soak</button>
+				<button click.delegate="app.game.RotateMyCiv()" title="switch civs" class="button cool">SwCiv</button>
+			</span>
 		</div>
 		
 	</div>

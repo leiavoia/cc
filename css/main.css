@@ -311,6 +311,7 @@ body,html {
 	height: 100%;
 	z-index: -10;
 	opacity: 0.08;
+	pointer-events: none;
 	}
 #layout_map #range_layer DIV {
 	position: absolute;
@@ -353,7 +354,7 @@ body,html {
 	flex-flow: column nowrap;
 	
 	/* allows click-though to map space when child elements are hidden */
-	pointer-events: none;
+	 if.bind="app.options.debug"
 	}
 	
 #layout_ui_visor {
@@ -374,6 +375,14 @@ body,html {
 	padding: 0.3em 1.5em 0.3em 0.5em ;
 	line-height: 1.2em; /* fixes problems with unicode / emojis */
 	pointer-events: auto; /* capture click events */
+	whitespace: 
+	}
+#layout_ui_footer BUTTON {
+	min-width: 2.25em;
+	margin: 2px 1px 0 0;
+	}
+#layout_ui_footer BUTTON.active {
+	background-color: #54B848;
 	}
 #layout_ui_center {
 	position:relative;
@@ -605,12 +614,19 @@ where each item has an icon and some text data.
 	margin:0 -1px 0 0;
 	transform-style: preserve-3d;
 	transform: translate3d(0, 0, 0);
-	overflow-y: auto;
+	/* overflow-y: auto; */
 	overflow-x: hidden;
+    overflow-y: scroll;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
 	pointer-events: auto; /* capture click events */
 /* 	visibility:hidden; */
 	}
-#layout_ui_side > DIV { padding: 1em; width: 370px !important; }
+#layout_ui_side::-webkit-scrollbar { /* WebKit */
+    width: 0;
+    height: 0;
+}
+#layout_ui_side > DIV { padding: 1em;  }
 
 #layout_ui_nav { 
 	margin:0;
@@ -960,7 +976,7 @@ button, .button_rack A, A.button {
 button:hover, .button_rack A:hover, A.button:hover {
 	background-color: #6cbee0;
 	}
-button:hover:active, .button_rack A:hover:active, A.button:hover:active {
+button:hover:active, .button_rack A:hover:active, A.button:hover:active, button.active, A.button.active {
 	background-color: #2f6c86;
 	}
 button.alt, A.button.alt, .button_rack A.alt,
@@ -972,8 +988,8 @@ button.alt:hover, A.button.alt:hover, .button_rack A.alt:hover,
 button.good:hover, A.button.good:hover, .button_rack A.good:hover {
 	background-color: #59cf4c;
 	}
-button.alt:hover:active, A.button.alt:hover:active, .button_rack A.alt:hover:active,
-button.good:hover:active, A.button.good:hover:active, .button_rack A.good:hover:active {
+button.alt:hover:active, A.button.alt:hover:active, .button_rack A.alt:hover:active, button.alt.active, A.button.alt.active,
+button.good:hover:active, A.button.good:hover:active, .button_rack A.good:hover:active, button.good.active, A.good.button.active {
 	background-color: #2d7924;
 	}
 button.bad, A.button.bad, .button_rack A.bad {
@@ -983,7 +999,7 @@ button.bad, A.button.bad, .button_rack A.bad {
 button.bad:hover, A.button.bad:hover, .button_rack A.bad:hover {
 	background-color: #e4718a;
 	}
-button.bad:hover:active, A.button.bad:hover:active, .button_rack A.bad:hover:active {
+button.bad:hover:active, A.button.bad:hover:active, .button_rack A.bad:hover:active, button.bad.active, a.button.bad.active {
 	background-color: #9b2a43;
 	}
 button.cool, .button_rack A.cool, A.button.cool {
@@ -993,12 +1009,8 @@ button.cool, .button_rack A.cool, A.button.cool {
 button.cool:hover, .button_rack A.cool:hover, A.button.cool:hover {
 	background-color: #BBB;
 	}
-button.cool:hover:active, .button_rack A.cool:hover:active, A.button.cool:hover:active {
+button.cool:hover:active, .button_rack A.cool:hover:active, A.button.cool:hover:active, button.cool.active, a.button.cool.active {
 	background-color: #444;
-	}
-button.active, .button_rack A.active, A.button.active {
-	color: #333;
-	/* font-weight: bold; */
 	}
 button.ghost, .button_rack A.ghost, A.button.ghost, .ghost {
 	opacity: 0.24;
@@ -1024,6 +1036,18 @@ button.small, .button_rack.small A, .button_rack A.small, A.button.small, .butto
 	flex: 1;
 	margin: 0.125em;
 	}
+.button_rack.fill.halves > * {
+	flex: 1 1 46%;
+}
+.button_rack.fill.thirds > * {
+	flex: 1 1 30%;
+}
+.button_rack.fill.quarters > * {
+	flex: 1 1 22%;
+}
+.button_rack.fill.fifths > * {
+	flex: 1 1 18%;
+}
 	
 button.right { float: right; margin: 0 0 1em 1em; }	
 
@@ -1469,6 +1493,7 @@ SELECT:disabled:hover, SELECT[aria-disabled=true] {
 	opacity: 0.3;
 	padding: 0;
 	box-sizing: border-box;
+	pointer-events: none;
 	}
 .ai_caret.small {	
 	width: 150px;
@@ -1675,7 +1700,7 @@ invisible when unexplored, dim when explored */
 	border-radius: 0;
 	}
 .xtreme_zoom .fleet_en_route:before {
-	content:'◼';
+	content:'\25A0\FE0E'; /* ◼ */
 	font-size:40px;
 	text-decoration:none;
 	}
@@ -1807,6 +1832,18 @@ invisible when unexplored, dim when explored */
 	text-align:center;
 /* 	clear:right; */
 	}
+
+#layout_ui_side > .star {
+	overflow-x: hidden;
+    overflow-y: scroll;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+	}
+#layout_ui_side > .star::-webkit-scrollbar { /* WebKit */
+    width: 0;
+    height: 0;
+	}
+
 #layout_ui_side .star .phys {
 	text-align:left;
 	margin-top: -0.25em;
@@ -1868,11 +1905,6 @@ invisible when unexplored, dim when explored */
 /*#layout_ui_side .star .phys DIV.size SPAN > SPAN {
  	display:none; 
 	}*/
-.phys DIV.size SPAN.pop { color: #FAA; }
-.phys DIV.size SPAN.inf { color: #FF3; }
-.phys DIV.size SPAN.size { color: #29F; }
-.phys DIV.size SPAN.mine { color: #E68200; }
-.phys DIV.size SPAN.en { color: #FF59FC; }
 .phys DIV.size DIV { 
 	box-shadow: 2px 2px 2px rgba(0,0,0,0.75); 
 	background-color: #FFF; 
@@ -1882,9 +1914,11 @@ invisible when unexplored, dim when explored */
 	margin: 3px 1em 3px 0; 
 	clear:left;
 	}
-.phys DIV.size DIV.pop { background-color: #FAA; }
-.phys DIV.size DIV.inf { background-color: #FF3; }
-.phys DIV.size DIV.size { background-color: #29F; }
+.phys .pop { color: #FAA; }
+.phys .inf { color: #FF3; }
+.phys .size { color: #29F; }
+.phys .mine { color: #E68200; }
+.phys .en { color: #FF59FC; }
 
 .phys P.special {
 	font-style:italic;
@@ -2125,13 +2159,14 @@ DIV.planet.atm4.tmp4 { background-image: url(../img/planets/planet_22.png); }
 	overflow:hidden;
 	font-size: 8px;
 	padding-left: 2px;
-	/* transition: opacity 0.35s; */
 	}
 .planet .zones DIV SPAN {
 	opacity: 0.7;
+	position:relative;
+	z-index:2;
 	}
 .planet .zone.empty {
-	border: 1px solid #333;
+	border: 1px solid #666;
 	background: none;
 	cursor: cell;
 	}
@@ -2396,7 +2431,7 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	}
 	
 /* progress bar */
-.planet .zones DIV:after { 
+/* .planet .zones DIV:before { 
 	content: '';
 	display:block;
 	width:100%;
@@ -2409,43 +2444,43 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	}	
 .planet .zone.pct0, 
 .planet .zone.pct00 { opacity: 0.5; }
-.planet .zone.pct0:after, 
-.planet .zone.pct00:after { top: 100%; }
-.planet .zone.pct10:after { top: 90%; }
-.planet .zone.pct20:after { top: 80%; }
-.planet .zone.pct30:after { top: 70%; }
-.planet .zone.pct40:after { top: 60%; }
-.planet .zone.pct50:after { top: 50%; }
-.planet .zone.pct60:after { top: 40%; }
-.planet .zone.pct70:after { top: 30%; }
-.planet .zone.pct80:after { top: 20%; }
-.planet .zone.pct90:after { top: 10%; }
-.planet .zone.pct100:after { top: 100%; }
+.planet .zone.pct0:before, 
+.planet .zone.pct00:before { top: 100%; }
+.planet .zone.pct10:before { top: 90%; }
+.planet .zone.pct20:before { top: 80%; }
+.planet .zone.pct30:before { top: 70%; }
+.planet .zone.pct40:before { top: 60%; }
+.planet .zone.pct50:before { top: 50%; }
+.planet .zone.pct60:before { top: 40%; }
+.planet .zone.pct70:before { top: 30%; }
+.planet .zone.pct80:before { top: 20%; }
+.planet .zone.pct90:before { top: 10%; }
+.planet .zone.pct100:before { top: 100%; } */
 
 	
-/*.planet .zone:after { 
+.planet .zones DIV:before { 
 	content: '';
 	display:block;
 	width:100%;
 	left: 0;
 	right: 0;
-	bottom: 100%;
+	bottom: 0%;
 	top: 0%;
 	background-color: rgba(0,0,0,0.35);
 	position:absolute;
 	}	
-.planet .zone.pct0:after { bottom: 0%; }
-.planet .zone.pct10:after { bottom: 10%; }
-.planet .zone.pct20:after { bottom: 20%; }
-.planet .zone.pct30:after { bottom: 30%; }
-.planet .zone.pct40:after { bottom: 40%; }
-.planet .zone.pct50:after { bottom: 50%; }
-.planet .zone.pct60:after { bottom: 60%; }
-.planet .zone.pct70:after { bottom: 70%; }
-.planet .zone.pct80:after { bottom: 80%; }
-.planet .zone.pct90:after { bottom: 90%; }	
-.planet .zone.pct100:after { bottom: 100%; }*/
-	
+.planet .zone.pct0:before { bottom: 0%; }
+.planet .zone.pct00:before { bottom: 0%; }
+.planet .zone.pct10:before { bottom: 10%; }
+.planet .zone.pct20:before { bottom: 20%; }
+.planet .zone.pct30:before { bottom: 30%; }
+.planet .zone.pct40:before { bottom: 40%; }
+.planet .zone.pct50:before { bottom: 50%; }
+.planet .zone.pct60:before { bottom: 60%; }
+.planet .zone.pct70:before { bottom: 70%; }
+.planet .zone.pct80:before { bottom: 80%; }
+.planet .zone.pct90:before { bottom: 90%; }	
+.planet .zone.pct100:before { display:none; }
 	
 .planet .zone_detail {
 	display: flex;
@@ -3509,6 +3544,12 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	padding: 0.5rem ;
 	margin: 0.25rem;
 }
+.statboxes.dark > DIV {
+	background: rgba( 0, 0, 0, 0.35 );
+}
+.statboxes.transp > DIV {
+	background: none;
+}
 .statboxes OUTPUT {
 	font-size: 200%;
 	display:block;
@@ -4319,7 +4360,7 @@ DIV.annoyometer .nub {
 	opacity: 1.0;
 }
 #victory_pane #recipes LI.gotcha:before {
-	content:'🗹';
+	content:'\2611\FE0E';
 }
 
 #victory_pane #ranks TABLE TD:first-child {
