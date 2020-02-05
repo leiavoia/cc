@@ -51,7 +51,7 @@
 								<button click.delegate="SpeakTo(c)" class="${!acct.in_range || acct.attspan < 0.1 || !acct.comm ? 'bad ghost' : ''}">${!acct.in_range || acct.attspan < 0.1 || !acct.comm ? 'Not Available' : 'Audience'}</button>
 							</p>
 							
-							<p if.bind="app.game.turn_num+0 && !acct.treaties.has('WAR')">
+							<p if.bind="acct.treaties.size && app.game.turn_num+1 && !acct.treaties.has('WAR')">
 								<span repeat.for="[type,treaty] of acct.treaties" >⚑ ${treaty.label}
 									<span if.bind="type=='TRADE'" class="bold good"> (+$${treaty.income_last_turn})</span>
 									<span if.bind="type=='RESEARCH'" class="bold good"> (+${treaty.income_last_turn} RP)</span>
@@ -67,8 +67,8 @@
 									<output class="${acct.lovenub >= 0.6 ? 'good' : (acct.lovenub < 0.4 ? 'bad' : '')}">${acct.lovenub|loveNub}</output>
 									<span>Status</span>
 								</div> -->
-								<div title="Their current view of us" class="clickable ${app.game.turn_num+0 && acct.treaties.has('WAR') ? 'bad' : (acct.rep==100 ? 'good' : '')}" click.delegate="ClickLog(c)">
-									<output class="bad" if.bind="app.game.turn_num+0 && acct.treaties.has('WAR')">WAR</output>
+								<div title="Their current view of us" class="clickable ${acct.treaties.size && app.game.turn_num+1 && acct.treaties.has('WAR') ? 'bad' : (acct.rep==100 ? 'good' : '')}" click.delegate="ClickLog(c)">
+									<output class="bad" if.bind="acct.treaties.size && app.game.turn_num+1 && acct.treaties.has('WAR')">WAR</output>
 									<output else class="${acct.rep >= 0 ? 'good' : 'bad'}">${acct.rep}</output>
 									<span>Relationship</span>
 								</div>
@@ -132,16 +132,16 @@
 								<span if.bind="c.diplo.focus &lt;= 0.3">The ${c.name} have a hard time paying attention, so keep your audiences short and infrequent.</span> 
 							</p>
 							<p if.bind="app.options.debug">
-								Preferred Habitat: ${civ.race.env.atm} Atmosphere, ${civ.race.env.temp} Temperature, ${civ.race.env.grav} Gravity<br/>
-								Style: ${civ.diplo.style|round:2}<br/>
-								Skill: ${civ.diplo.skill|round:2}<br/>
-								Disposition: ${civ.diplo.dispo|round:2}<br/>
-								Offer OK @ ${civ.diplo.offer_ok_at|round:2}<br/>
-								Offer Counter @ ${civ.diplo.offer_counter_at|round:2}<br/>
-								Offer Bad @ ${civ.diplo.offer_bad_at|round:2}<br/>
-								Focus: ${civ.diplo.focus|round:2}<br/>
-								Emotion: x${civ.diplo.emotion*2|round:2}<br/>
-								Memory: ${civ.diplo.memory|round:2}<br/>
+								Preferred Habitat: ${c.race.env.atm} Atm, ${c.race.env.temp} Temp, ${c.race.env.grav} Grav<br/>
+								Style: ${c.diplo.style|round:2}<br/>
+								Skill: ${c.diplo.skill|round:2}<br/>
+								Disposition: ${c.diplo.dispo|round:2}<br/>
+								Offer OK @ ${c.diplo.offer_ok_at|round:2}<br/>
+								Offer Counter @ ${c.diplo.offer_counter_at|round:2}<br/>
+								Offer Bad @ ${c.diplo.offer_bad_at|round:2}<br/>
+								Focus: ${c.diplo.focus|round:2}<br/>
+								Emotion: x${c.diplo.emotion*2|round:2}<br/>
+								Memory: ${c.diplo.memory|round:2}<br/>
 								Last Audience: ${app.game.turn_num - acct.last_aud} turns ago<br/>
 							</p>								
 						</div>

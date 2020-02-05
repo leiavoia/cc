@@ -257,17 +257,30 @@ export class PlanetDetailPane {
 		if ( !this.planet || this.planet.settled || this.planet.owner || !this.local_fleet
 			|| !this.planet.Habitable(this.local_fleet.owner.race) ) { return false; }
 		let ship = this.local_fleet.ships.find( s => s.bp.colonize );
-		if ( ship ) { 
-			this.planet.Settle( this.local_fleet.owner );
-			this.local_fleet.RemoveShip( ship );
-			if ( !this.local_fleet.ships.length ) { 
-				this.local_fleet.Kill();
-				}
+		if ( ship ) {
+			let DoIt = () => {
+				this.planet.Settle( this.local_fleet.owner );
+				this.local_fleet.RemoveShip( ship );
+				if ( !this.local_fleet.ships.length ) { 
+					this.local_fleet.Kill();
+					}
+				else {
+					this.local_fleet.FireOnUpdate();
+					}
+				this.app.CloseSideBar();
+				this.app.SwitchMainPanel('colonize',this.planet);
+				};
+			// check for any treaties this may affect
+			let civs = this.local_fleet.star.CivsWithNoStarSharingTreaties( this.local_fleet.owner );
+			if ( !civs.length ) DoIt();
 			else {
-				this.local_fleet.FireOnUpdate();
-				}
-			this.app.CloseSideBar();
-			this.app.SwitchMainPanel('colonize',this.planet);
+				let names = civs.map( c => c.name ).join(' and ');
+				this.app.ShowDialog(
+					`Stellar Exclusivity`,
+					`<p>Colonizing ${p.name} will break your Stellar Exclusivity Agreement with the ${names}. Are you sure you really want to do this?</p>`,
+					[ { text: "Colonize!", class: "alt", cb: DoIt }, { text: "Never Mind...", class: "bad", cb: null }, ]
+					);
+				}				
 			}		
 		}
 	// for clicking attack planet with a local player fleet

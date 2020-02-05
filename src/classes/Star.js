@@ -180,6 +180,18 @@ export default class Star {
 			}
 		}
 		
+	CivsWithNoStarSharingTreaties( civ ) {
+		let civs = [];
+		for ( let p of this.planets ) {
+			if ( !p.owner || p.owner==civ ) continue;
+			let acct = civ.diplo.contacts.get( p.owner );
+			if ( acct && acct.treaties.has('NO_STAR_SHARING') && !civs.contains(p.owner) ) {
+				civs.push(p.owner);
+				}
+			}
+		return civs;
+		}
+	
 	get colorDesc() { 
 		switch ( this.color ) { 
 			case 'blue' : return 'Blue stars are very young and violently hot, making life difficult.';

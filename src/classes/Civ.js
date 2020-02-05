@@ -1140,6 +1140,7 @@ export default class Civ {
 		
 	AI_ListItemsForTrade( civ, inc_not_avail = true ) {
 		const comm = this.CommOverlapWith(civ);
+		let acct = this.diplo.contacts.get(civ);
 		
 		let items = [];
 		
@@ -1156,7 +1157,6 @@ export default class Civ {
 		// TREATIES
 		for ( let k of Object.keys( Treaties ) ) { 
 			const t = Treaties[k];
-			let acct = this.diplo.contacts.get(civ);
 			if ( k != 'WAR' && !acct.treaties.has(k) ) { 
 				items.push({ type:'treaty', label:t.label, obj:t.type, civ:civ, avail:t.AvailTo( this, civ ) });
 				}
@@ -1177,7 +1177,6 @@ export default class Civ {
 			if ( civ.tech.compl_keys[t.node.key] ) { continue; }
 			// tech brokering agreement in effect?
 			if ( 'source' in t && t.source ) {
-				let acct = this.diplo.contacts.get( t.source );
 				if ( acct && acct.treaties.has('TECH_BROKERING') ) {
 					continue;
 					}
@@ -1188,14 +1187,18 @@ export default class Civ {
 			}
 		
 		// PLANETS
-		this.planets.forEach( p => {
-			if ( p.ValueTo(civ) // habitable and in range
-				&& p != this.homeworld // never trade our homeworld away
-				) { 
+		if ( this.planets.length > 3 ) { 
+			for ( let p of this.planets ) {
+				if ( p == this.homeworld ) continue; // never trade our homeworld away
+				if ( !p.ValueTo(civ) ) continue;  // uninhabitable or out of range
+				if ( p.score >= 500 ) continue; // don't give away the game
+				// dont list planets that would violate stellar exclusivity agreement
+				if ( acct && acct.treaties.has('NO_STAR_SHARING') ) {
+					if ( p.star.planets.filter( p2 => p2.owner==this ).length >= 2 ) continue;
+					}
 				items.push({ type:'planet', obj:p, label:p.name, avail:(comm >= 0.6) });
-				}
-			// TODO: perhaps we only want to trade the stinkers?
-			});
+				};
+			}
 			
 		return inc_not_avail ? items : items.filter( i => i.avail );
 		}
@@ -1230,6 +1233,19 @@ export default class Civ {
 
 		}
 		
+	// this can be called if a planet is settled, conquered, or traded
+	DiplomaticEffectOfAcquiringPlanet( p ) { 
+		// neighbors may not like our being here
+		let civs = p.star.CivsWithNoStarSharingTreaties(this);
+		for ( let civ of civs ) {
+			this.EndTreaty( 'NO_STAR_SHARING', civ, true ); // automatically handles reputation log 
+			}
+		let neighbors = p.star.planets.filter( p => p.owner && p.owner!=this ).map( p => p.owner ).unique();
+		for ( let civ of neighbors ) {
+			civ.LogDiploEvent( this, -5, 'starmates', `You settled planet ${p.name} in our turf.` );
+			}
+		}
+	
 	// assumes that `civ` is the aggressor and we were attacked
 	DiplomaticEffectOfShipCombat( civ, shipcombat ) { 
 		if ( civ.race.is_monster ) { return; } // monsters dont have feelings

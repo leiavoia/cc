@@ -197,21 +197,34 @@ export class FleetDetailPane {
 			}
 		return selected || first;
 		}
-	ChoosePlanetToColonize( p ) { 
-		let ship = this.GetFirstColonyShip();
-		if ( ship ) { 
-			p.Settle( this.app.game.myciv );
-			this.fleet.RemoveShip( ship );
-			if ( !this.fleet.ships.length ) { 
-				this.fleet.Kill();
+	ChoosePlanetToColonize( p ) {
+		let DoIt = () => {
+			let ship = this.GetFirstColonyShip();
+			if ( ship ) { 
+				p.Settle( this.app.game.myciv );
+				this.fleet.RemoveShip( ship );
+				if ( !this.fleet.ships.length ) { 
+					this.fleet.Kill();
+					}
+				else {
+					this.fleet.FireOnUpdate();
+					}
+				this.app.options.show_range = false;
+				this.mode = 'fleet';
+				this.app.CloseSideBar();
+				this.app.SwitchMainPanel('colonize',p);
 				}
-			else {
-				this.fleet.FireOnUpdate();
-				}
-			this.app.options.show_range = false;
-			this.mode = 'fleet';
-			this.app.CloseSideBar();
-			this.app.SwitchMainPanel('colonize',p);
+			};
+		// check for any treaties this may affect
+		let civs = this.fleet.star.CivsWithNoStarSharingTreaties( this.fleet.owner );
+		if ( !civs.length ) DoIt();
+		else {
+			let names = civs.map( c => c.name ).join(' and ');
+			this.app.ShowDialog(
+				`Stellar Exclusivity`,
+				`<p>Colonizing ${p.name} will break your Stellar Exclusivity Agreement with the ${names}. Are you sure you really want to do this?</p>`,
+				[ { text: "Colonize!", class: "alt", cb: DoIt }, { text: "Never Mind...", class: "bad", cb: null }, ]
+				);
 			}
 		}
 	Recalc() { 
