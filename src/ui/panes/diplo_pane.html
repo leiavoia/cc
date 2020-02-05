@@ -112,9 +112,7 @@
 						<div if.bind="modes[c.id] == 'about'" click.delegate="ClickInfo(c)">
 							<p>
 								The ${c.name} are lifeforms from the planet <em>${c.homeworld.name}</em>.
-								 
 								Currently, they occupy <em>${c.planets.length}</em> &nbsp;planets.
-								
 								<span if.bind="c.diplo.rep &lt;= -40">They are the scum of the galaxy.</span> 
 								<span if.bind="c.diplo.rep &lt;= -20 && c.diplo.rep &gt;= -40">They are galactic troublemakers.</span> 
 								<span if.bind="c.diplo.rep &gt;= 20 && c.diplo.rep &lt;= 40">They are decent galactic citizens.</span>
@@ -132,8 +130,20 @@
 								<span if.bind="c.diplo.offer_ok_at &lt; -0.25">They drive a hard bargain, so beware when proposing deals!</span> 
 								
 								<span if.bind="c.diplo.focus &lt;= 0.3">The ${c.name} have a hard time paying attention, so keep your audiences short and infrequent.</span> 
-								
 							</p>
+							<p if.bind="app.options.debug">
+								Preferred Habitat: ${civ.race.env.atm} Atmosphere, ${civ.race.env.temp} Temperature, ${civ.race.env.grav} Gravity<br/>
+								Style: ${civ.diplo.style|round:2}<br/>
+								Skill: ${civ.diplo.skill|round:2}<br/>
+								Disposition: ${civ.diplo.dispo|round:2}<br/>
+								Offer OK @ ${civ.diplo.offer_ok_at|round:2}<br/>
+								Offer Counter @ ${civ.diplo.offer_counter_at|round:2}<br/>
+								Offer Bad @ ${civ.diplo.offer_bad_at|round:2}<br/>
+								Focus: ${civ.diplo.focus|round:2}<br/>
+								Emotion: x${civ.diplo.emotion*2|round:2}<br/>
+								Memory: ${civ.diplo.memory|round:2}<br/>
+								Last Audience: ${app.game.turn_num - acct.last_aud} turns ago<br/>
+							</p>								
 						</div>
 						
 						<!-- RELATIONS -->

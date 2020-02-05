@@ -1245,9 +1245,10 @@ export default class Civ {
 		// alliance?
 		if ( acct && acct.treaties.has('ALLIANCE') ) { outrage = 1.0; }
 		// where happened?
-		let starname = shipcombat.planet ? shipcombat.planet.star.name : null;
-		if ( !starname && shipcombat.teams[0].fleet.star ) { starname = shipcombat.teams[0].fleet.star.name; }
-		if ( !starname && shipcombat.teams[1].fleet.star ) { starname = shipcombat.teams[1].fleet.star.name; }
+		let star = shipcombat.planet ? shipcombat.planet.star : null;
+		if ( !star && shipcombat.teams[0].fleet.star ) { star = shipcombat.teams[0].fleet.star; }
+		if ( !star && shipcombat.teams[1].fleet.star ) { star = shipcombat.teams[1].fleet.star; }
+		let starname = star ? star.name : '';
 		
 		let message = '';
 		
@@ -1282,6 +1283,21 @@ export default class Civ {
 		else {
 			// effect
 			this.LogDiploEvent( civ, -(outrage*100), 'ship_combat', `You attacked our fleet at ${starname}.` );
+			// third-party side effects
+			for ( let c of this.diplo.friends ) {
+				// if the third party has a planet in the system where combat happened
+				// and is at war with attacker, this gets extra points as an act of protection.
+				let acct3p = c.diplo.contacts.get(civ);
+				if ( star && star.planets.filter( p => p.owner==c ).length && acct3p && acct3p.treaties.has('WAR') ) {
+					c.LogDiploEvent( civ, -7, 'ship_combat', `You defended us against the ${civ.name} at ${starname}.` );
+					}
+				else {
+					c.LogDiploEvent( civ, -4, 'ship_combat', `You attacked the ${this.name}.` );
+					}
+				}
+			for ( let c of this.diplo.enemies ) {
+				c.LogDiploEvent( civ, +4, 'ship_combat', `You attacked the ${this.name}.` );
+				}
 			// declare war or cancel treaties
 			if ( acct && !acct.treaties.has('WAR') ) {
 				// declare war?
@@ -1350,6 +1366,13 @@ export default class Civ {
 		// if we were already at war, less severe diplomatic punishment. we're used to being invaded now.
 		else {
 			this.LogDiploEvent( civ, -50, 'invasion', `You invaded ${groundcombat.planet.name}.` );
+			}
+		// third-party side effects
+		for ( let c of this.diplo.friends ) {
+			c.LogDiploEvent( civ, -10, 'invasion', `You invaded ${groundcombat.planet.name} of the ${this.name}.` );
+			}
+		for ( let c of this.diplo.enemies ) {
+			c.LogDiploEvent( civ, +10, 'invasion', `You invaded ${groundcombat.planet.name} of the ${this.name}.` );
 			}
 		}
 		
