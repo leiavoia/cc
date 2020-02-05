@@ -273,6 +273,24 @@
 				<br/>
 				<b>${app.game.audiences.length}</b> audiences
 				<br/>
+				
+				<!-- relationship matrix -->
+				<table>
+					<tr>
+						<td></td>
+						<td repeat.for="c1 of app.game.galaxy.civs" css="background-color: ${c1.color}; color: #FFF;">${c1.name[0]}</td>
+					</tr>
+					<tr repeat.for="c1 of app.game.galaxy.civs">
+						<td css="background-color: ${c1.color}; color: #FFF;">${c1.name[0]}</td>
+						<template containerless repeat.for="c2 of app.game.galaxy.civs">
+							<td if.bind="c2.id > c1.id" class="${app.game.turn_num+1 && c2.diplo.contacts.get(c1).rep < 0 ? 'bad':'good'}">
+								${app.game.turn_num+1 && c2.diplo.contacts.get(c1).treaties.has('WAR') ? 'WAR' : ( app.game.turn_num+1 && c2.diplo.contacts.get(c1).treaties.has('ALLIANCE') ? 'ALLY' : c2.diplo.contacts.get(c1).rep) }
+							</td>
+							<td else></td>
+						</template>
+					</tr>
+				</table>
+				
 			</div>
 	
 				
@@ -331,11 +349,11 @@
 				<span repeat.for="o of app.game.myciv.ai.objectives">
 					[${o.type}]
 					=&gt;  
-					<span if.bind="o.target" click.delegate="app.SwitchSideBar(o.target)" class="clickable">${o.target.name}</span>
-					<span if.bind="o.fleet" click.delegate="app.SwitchSideBar(o.fleet)" class="clickable ${o.fleet.killme ? 'strike' : ''}">F.${o.fleet.id}</span>
-					<span if.bind="o.ttl > -1">TTL.${o.ttl}</span>
-					<span if.bind="o.delay">DL.${o.delay}</span>
-					<i>${o.note}</i>
+					<span if.bind="o.target" click.delegate="app.SwitchSideBar(o.target)" class="clickable">${o.target.name} </span>
+					<span if.bind="o.fleet" click.delegate="app.SwitchSideBar(o.fleet)" class="clickable ${o.fleet.killme ? 'strike' : ''}">F.${o.fleet.id} </span>
+					<span if.bind="o.ttl > -1">TTL.${o.ttl} </span>
+					<span if.bind="o.delay">DL.${o.delay} </span>
+					<i>${o.note} </i>
 					<br/>
 				</span>
 				<br/>completed: <br/>
