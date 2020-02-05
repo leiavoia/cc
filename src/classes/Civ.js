@@ -141,7 +141,8 @@ export default class Civ {
 				rep: 0, // their opinion of us (our reputation with them)
 				replog: [], // stuff we did to them
 				lovenub: 0.5, // this is just reputation normalized to 0..1
-				attspan: 1.0
+				attspan: 1.0,
+				last_aud: 0, // last time we met
 				});
 			// first impressions are a blend of our galactic reputation and their natural disposition
 			this.LogDiploEvent( civ, ( (this.diplo.dispo-0.5) * 50 ), 'disposition', 'Disposition', true );
@@ -1248,6 +1249,8 @@ export default class Civ {
 		if ( !starname && shipcombat.teams[0].fleet.star ) { starname = shipcombat.teams[0].fleet.star.name; }
 		if ( !starname && shipcombat.teams[1].fleet.star ) { starname = shipcombat.teams[1].fleet.star.name; }
 		
+		let message = '';
+		
 		// if we are the player, no automatic response. However, this function
 		// also handles AI surprise attacks, so make a special anouncement here.
 		// AI does not currently have any intuition about starting wars, so it
@@ -1306,7 +1309,6 @@ export default class Civ {
 					acct.attspan -= (acct.lovenub <= war_trigger_value+0.25) ? 1.0 : 0.5; // silent treatment
 					acct.attspan = Math.max(acct.attspan,0);
 					// we attacked them
-					let message = '';
 					if ( civ.is_player && civ.diplo.contactable && this.diplo.contactable ) {
 						if ( acct.treaties.has('WAR') ) {
 							message = `Your attack on ${starname} was unfortunate... <i>for you</i>. Now your suffering will be legendary. To war!`;

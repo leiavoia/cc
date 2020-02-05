@@ -313,8 +313,10 @@ export class AudiencePane {
 		}
 		
 	Exit() { 
-		if ( this.civ && this.acct ) { // cost of audience 
-			this.acct.attspan -= (1-this.civ.diplo.focus) * 0.2;
+		if ( this.civ && this.acct ) { 
+			this.acct.last_aud = this.app.game.turn_num;
+			this.civ.diplo.contacts.get(this.app.game.myciv).last_aud = this.app.game.turn_num;
+			this.acct.attspan -= (1-this.civ.diplo.focus) * 0.2; // cost of audience
 			if ( this.acct.attspan < 0 ) { this.acct.attspan = 0; }
 			}	
 		this.app.SwitchMainPanel( this.on_exit );

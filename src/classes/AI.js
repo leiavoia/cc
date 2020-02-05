@@ -1411,7 +1411,10 @@ export class AIDiplomacyObjective extends AIObjective {
 			// respect contact range, communication ability, and current attention span
 			if ( acct.attspan < 0.2 || !acct.comm || !acct.in_range ) continue;
 			// consider an audience
-			if ( Math.random() > 0.04 * ( c.is_player ? 1 : (acct.attspan+0.25) ) ) continue;
+			let time_since_last_aud = app.game.turn_num - acct.last_aud;
+			let chance = time_since_last_aud * 0.06 * ( c.is_player ? 0.5 : (acct.attspan+0.25) );
+			let roll = Math.random();
+			if ( roll > chance ) continue;
 			
 			// if we are at war, let's see if we need to back out.
 			if ( acct.treaties.has('WAR') ) {
@@ -1532,6 +1535,9 @@ export class AIDiplomacyObjective extends AIObjective {
 					}				
 				}
 			
+			acct.last_aud = app.game.turn_num;
+			c.diplo.contacts.get(civ).last_aud = app.game.turn_num;
+						
 			}
 		}	
 	}
