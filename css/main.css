@@ -354,7 +354,7 @@ body,html {
 	flex-flow: column nowrap;
 	
 	/* allows click-though to map space when child elements are hidden */
-	 if.bind="app.options.debug"
+	pointer-events: none;
 	}
 	
 #layout_ui_visor {
@@ -375,7 +375,6 @@ body,html {
 	padding: 0.3em 1.5em 0.3em 0.5em ;
 	line-height: 1.2em; /* fixes problems with unicode / emojis */
 	pointer-events: auto; /* capture click events */
-	whitespace: 
 	}
 #layout_ui_footer BUTTON {
 	min-width: 2.25em;
@@ -3488,7 +3487,11 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	border-top-left-radius:0; 
 	border-top-right-radius:0;
 }
-
+#civ_list .desc EM, #audience_them .desc EM {
+	color: #AEA;
+	font-weight:bold;
+	font-style: normal;
+}
 
 
 #civ_list.compact > DIV {

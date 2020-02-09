@@ -25,6 +25,7 @@ export class App {
 	starclick_echo = false; // kinda hacky: lets us know if a widget somewhere responded to a starclick
 	game = null;
 	notes = [];
+	configs = {}; // loaded from external files for modding support
 	options = {
 		dim_unexplored: true,
 		show_sectors: false,
@@ -136,18 +137,45 @@ export class App {
 		// 		return 'Close your game?'; // For Safari
 		// 		};
 		// 	}
-		// debug shortcut
-		if ( this.options.debug ) {
-			this.game = new Game(this);
-			this.game.InitGalaxy();
-			this.ChangeState('play');
-			}
-		// normal startup
-		else {
-			this.ChangeState('title_screen');
-			}
 		}
-		
+			
+	activate() {
+		// load external config files
+		try {
+			return fetch('config/races.json')
+			.then( rsp => rsp.json() )
+			.then( data => {
+				if ( data && data.races ) {
+					this.configs.races = data.races;
+					console.info("loaded " + this.configs.races.length + ' races from races.json');
+					// let tags = {};
+					// for ( let row of this.race_list ) {
+						// for ( let t of row.types ) { tags[t] = (tags[t] || 0) + 1; }
+						// for ( let t of row.tags ) { tags[t] = (tags[t] || 0) + 1; }
+						// }
+					// console.log( tags );
+					}
+				})
+			.then( _ => { 
+				// debug startup shortcut
+				if ( this.options.debug ) {
+					this.game = new Game(this);
+					this.game.InitGalaxy();
+					this.ChangeState('play');
+					}
+				// normal startup
+				else {
+					this.ChangeState('title_screen');
+					}
+				});		
+			}
+		catch ( ex ) { 
+			alert('could not read races.json config file. please check syntax.');
+			console.error(ex);
+			}
+			
+		}
+				
 	CurrentState() {
 		return ( this.state_obj && this.state_obj.currentViewModel ) ? this.state_obj.currentViewModel : null;
 		}

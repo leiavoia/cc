@@ -5,6 +5,7 @@ import Civ from './Civ';
 import Fleet from './Fleet';
 import * as utils from '../util/utils';
 import {Ship,ShipBlueprint} from './Ship';
+import {App} from '../app';
 
 export default class Galaxy {
 	id = null;
@@ -17,6 +18,7 @@ export default class Galaxy {
 	height = 2000;
 	age = 0.5;
 	bg_img = 'img/map/bg/spacebg_031.jpg';
+	
 	stats = {
 		x: 0,
 		y: 0,
@@ -361,10 +363,13 @@ export default class Galaxy {
 		return this.civs[0].homeworld.star;
 		}	
 		
-	MakeCivs( num_civs, difficulty ) { 
+	MakeCivs( num_civs, difficulty ) {
+		// races are loaded by the main app from config/races.json
+		let race_list = App.instance.configs.races.slice().shuffle();
 		this.civs = [];
-		for ( let i=0; i < num_civs; i++ ) { 
-			this.civs.push( Civ.Random( difficulty ) );
+		for ( let i=0; i < num_civs; i++ ) {
+			let civ = new Civ( race_list.pop() );
+			this.civs.push( civ );
 			}
 		this.historical_civs = [...this.civs];
 		}

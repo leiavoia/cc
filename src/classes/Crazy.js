@@ -10,7 +10,6 @@ export function AddGreenMites( app ) {
 	civ.diplo.contactable = false;
 	civ.name = 'Planevore Mite';
 	civ.diplo_img = 'img/ships/monsters/mite_green_crop.png';
-	civ.diplo_img_small = 'img/ships/monsters/mite_green_crop.png';
 	civ.color_rgb = [116, 175, 77];
 	civ.color = '#' + utils.DecToHex(civ.color_rgb[0]) + utils.DecToHex(civ.color_rgb[1]) + utils.DecToHex(civ.color_rgb[2]);
 			
@@ -50,7 +49,6 @@ export function AddBlueSpaceAmoeba( app ) {
 	civ.diplo.contactable = false;
 	civ.name = 'Blue Space Amoebas';
 	civ.diplo_img = 'img/races/space_amoeba_blue.jpg';
-	civ.diplo_img_small = 'img/races/space_amoeba_blue.jpg';
 	civ.color_rgb = [20,100,230];
 	civ.color = '#' + utils.DecToHex(civ.color_rgb[0]) + utils.DecToHex(civ.color_rgb[1]) + utils.DecToHex(civ.color_rgb[2]);
 			
@@ -83,7 +81,6 @@ export function AddGiantSpaceAmoeba( app ) {
 	civ.diplo.contactable = false;
 	civ.name = 'Giant Space Amoebas';
 	civ.diplo_img = 'img/races/space_amoeba_yellow.jpg';
-	civ.diplo_img_small = 'img/races/space_amoeba_yellow.jpg';
 	civ.color_rgb = [240,240,50];
 	civ.color = '#' + utils.DecToHex(civ.color_rgb[0]) + utils.DecToHex(civ.color_rgb[1]) + utils.DecToHex(civ.color_rgb[2]);
 	app.game.galaxy.civs.push( civ ) ;
@@ -116,7 +113,6 @@ export function AddRedSpaceAmoeba( app ) {
 	civ.diplo.contactable = false;
 	civ.name = 'Red Space Amoebas';
 	civ.diplo_img = 'img/races/space_amoeba_red.jpg';
-	civ.diplo_img_small = 'img/races/space_amoeba_red.jpg';
 	civ.color_rgb = [230,40,10];
 	civ.color = '#' + utils.DecToHex(civ.color_rgb[0]) + utils.DecToHex(civ.color_rgb[1]) + utils.DecToHex(civ.color_rgb[2]);
 	app.game.galaxy.civs.push( civ ) ;

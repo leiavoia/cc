@@ -8,7 +8,7 @@
 			>
 			
 			<div class="diplo_img_wrapper trekIn" if.bind="ambassador_present">
-				<div class="diplo_img ${mood}" css="background-image: url(${civ.diplo_img_small});"></div>
+				<div class="diplo_img ${mood}" css="background-image: url(${civ.diplo_img});"></div>
 			</div>
 			<h2><img class="flag" src.one-time="civ.flag_img" /> ${civ.name}</h2>
 
@@ -77,29 +77,26 @@
 			
 			<!-- ABOUT -->
 			<div if.bind="info_panel_mode == 'about'" click.delegate="ClickInfo(c)">
-				<p>
-					The ${civ.name} are lifeforms from the planet <em>${civ.homeworld.name}</em>.
+				<p class="desc">
+					The ${civ.name} are <em>${civ.race.type}</em>&nbsp;lifeforms from the star system <em>${civ.homeworld.star.name}</em>.
+					Currently, they occupy <em>${civ.planets.length} planet${civ.planets.length>1?'s':''}</em>.
+					<span if.bind="civ.diplo.rep &lt;= -40">They are the <em>scum of the galaxy</em>.</span> 
+					<span if.bind="civ.diplo.rep &lt;= -20 && civ.diplo.rep &gt;= -40">They are <em>galactic troublemakers</em>.</span> 
+					<span if.bind="civ.diplo.rep &gt;= 20 && civ.diplo.rep &lt;= 40">They are <em>decent galactic citizens</em>.</span>
+					<span if.bind="civ.diplo.rep &gt;= 40">They are <em>excellent galactic citizens</em>.</span>
+					
+					<span if.bind="!civ.diplo.contactable">They have <em>refused all contact</em>&nbsp;with foreigners.</span>
 						
-					Currently, they occupy <em>${civ.planets.length}</em> &nbsp;planets.
+					<span if.bind="civ.diplo.emotion &lt; 0.33">They are very <em>logical</em>&nbsp;beings and tend not to react emotionally.</span> 
+					<span if.bind="civ.diplo.emotion &gt; 0.66">They are rather <em>emotional</em>&nbsp;beings.</span>
 					
-					<span if.bind="civ.diplo.rep &lt;= -40">They are the scum of the galaxy.</span> 
-					<span if.bind="civ.diplo.rep &lt;= -20 && civ.diplo.rep &gt;= -40">They are galactic troublemakers.</span> 
-					<span if.bind="civ.diplo.rep &gt;= 20 && civ.diplo.rep &lt;= 40">They are decent galactic citizens.</span>
-					<span if.bind="civ.diplo.rep &gt;= 40">They are excellent galactic citizens.</span>
+					<span if.bind="civ.diplo.memory &lt;= 0.33">They tend to be <em>forgetful</em>&nbsp;and are easy to manipulate.</span>
+					<span if.bind="civ.diplo.memory &gt;= 0.66">They have a <em>strong memory</em>&nbsp;of the actions of others.</span>
 					
-					<span if.bind="!civ.diplo.contactable">They have refused all contact with foreigners.</span>
-						
-					<span if.bind="civ.diplo.emotion &lt; 0.33">They are very logical beings and tend not to react emotionally.</span> 
-					<span if.bind="civ.diplo.emotion &gt; 0.66">They are rather emotional beings.</span>
+					<span if.bind="civ.diplo.offer_ok_at &gt; 0.25">They seem to be pretty <em>open to bargaining</em>.</span> 
+					<span if.bind="civ.diplo.offer_ok_at &lt; -0.25">They <em>drive a hard bargain</em>, so beware when proposing deals!</span> 
 					
-					<span if.bind="civ.diplo.memory &lt;= 0.33">They have very short memories and are easy to manipulate.</span>
-					<span if.bind="civ.diplo.memory &gt;= 0.66">They have long memories and will hold or grudge or keep a friend for a long time.</span>
-					
-					<span if.bind="civ.diplo.offer_ok_at &gt; 0.25">They seem to be pretty open to bargaining.</span> 
-					<span if.bind="civ.diplo.offer_ok_at &lt; -0.25">They drive a hard bargain, so beware when proposing deals!</span> 
-					
-					<span if.bind="civ.diplo.focus &lt;= 0.3">The ${civ.name} have a hard time paying attention, so keep your audiences short and infrequent.</span> 
-					
+					<span if.bind="civ.diplo.focus &lt;= 0.3">The ${civ.name} have a <em>short attention span</em>, so keep your audiences short and infrequent.</span> 
 				</p>
 				<p if.bind="app.options.debug">
 					Preferred Habitat: ${civ.race.env.atm} Atmosphere, ${civ.race.env.temp} Temperature, ${civ.race.env.grav} Gravity<br/>

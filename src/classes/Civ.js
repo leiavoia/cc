@@ -26,8 +26,8 @@ export default class Civ {
 	is_player = false; // set to true to indicate who the human is
 	alive = true; // dead indicates civ is out of play
 	
-	// we'll flesh this out later
 	race = {
+		type: 'organic',
 		env: { // natural habitat
 			atm: 2,
 			temp: 2,
@@ -62,7 +62,6 @@ export default class Civ {
 	
 	flag_img = 'img/workshop/flag_mock.gif';
 	diplo_img = 'img/races/alien_000.jpg';
-	diplo_img_small = 'img/races/alien_000.jpg';
 	color = '#FFFFFF';
 	color_rgb = [255,255,255];
 	
@@ -564,31 +563,91 @@ export default class Civ {
 			}
 		}
 
-	constructor( name ) {
+	constructor( data ) {
 		// 'fromJSON' data bundle in first arg
-		if ( name && typeof(name)==='object' && 'name' in name ) { 
-			Object.assign( this, name );
+		if ( data && typeof(data)==='object' && 'mods' in data ) { 
+			Object.assign( this, data );
 			}
-		// regular constructor
+		// regular constructor can take data from config file.
 		else {
-			this.name = ( name || RandomName() ).uppercaseFirst();
-			Civ.IncTotalNumCivs();
-			this.id = utils.UUID();
 			// internal flag roster picks unique flags for each race
 			if ( !Civ.flag_id_roster ) { 
 				Civ.flag_id_roster = [];
 				for ( let i=0; i<=30; i++ ) { Civ.flag_id_roster.push(i); }
 				Civ.flag_id_roster.shuffle();
-				Civ.img_id_roster = [];
-				for ( let i=0; i<=454 ; i++ ) { Civ.img_id_roster.push(i); }
-				Civ.img_id_roster.shuffle();
 				}
-			this.flag_img = 'img/flags/flag_' + ("000" + Civ.flag_id_roster[Civ.total_civs]).slice(-3) + '.png';
-			this.diplo_img = 'img/races/alien_' + ("000" + Civ.img_id_roster[Civ.total_civs]).slice(-3) + '.jpg';
-			this.diplo_img_small = 'img/races/alien_' + ("000" + Civ.img_id_roster[Civ.total_civs]).slice(-3) + '.jpg';
-			// TODO: the race can also have a modlist when Races Picks are implemented
+			Civ.IncTotalNumCivs();
+			this.id = utils.UUID();
 			this.mods = new Modlist( /*this.race*/ );
 			this.ai = new AI.CivAI(this);
+				
+			// random default values
+			this.name = RandomName().uppercaseFirst();
+			this.flag_img = 'img/flags/flag_' + ("000" + Civ.flag_id_roster[Civ.total_civs]).slice(-3) + '.png';
+			this.diplo_img = ( data && data.img ) ? data.img : 'img/races/alien_000.jpg';
+			this.color_rgb = Civ.PickNextStandardColor();
+			this.color = '#' + utils.DecToHex(this.color_rgb[0]) + utils.DecToHex(this.color_rgb[1]) + utils.DecToHex(this.color_rgb[2]);
+			// race
+			this.race.type = ( data && data.type ) ? data.type : 'organic'; // singular type option
+			this.race.type = ( data && data.types ) ? data.types.pickRandom() : this.race.type; // multiple types to choose from
+			this.race.env.atm = utils.BiasedRandInt(0, 4, 2, 0.5);
+			this.race.env.temp = utils.BiasedRandInt(0, 4, 2, 0.5);
+			this.race.env.grav = utils.BiasedRandInt(0, 4, 2, 0.5);
+			// diplomatic personality
+			this.diplo.style = Math.random();
+			this.diplo.memory = utils.BiasedRand(0, 1, 0.75, 0.5); // 0..1, how long they remember events
+			this.diplo.skill = utils.BiasedRand(0.05, 0.25, 0.10, 0.5);
+			this.diplo.dispo = utils.BiasedRand(0.2, 0.8, 0.5, 0.75);
+			this.diplo.emotion = utils.BiasedRand(0.25, 0.8, 0.5, 0.8);
+			this.diplo.focus = utils.BiasedRand(0, 1, 0.5, 0.5);
+			this.diplo.offer_ok_at = (0.3 * Math.random() - 0.11); // anything over this is a good deal
+			this.diplo.offer_counter_at = ( ( this.diplo.offer_ok_at - 0.3 ) + ( Math.random() * 0.2 ) ); // anything beteen this and `ok` gets an automatic counter-offer 
+			this.diplo.offer_bad_at = ( ( this.diplo.offer_counter_at - 0.3 ) + ( Math.random() * 0.2 ) ); // anything between this and `counter` gets refused
+			// anything below offer_bad_at is an insult
+			// AI combat strategy traits
+			this.ai.strat.def = ['balanced', 'triage'/*, 'equal', null*/][ utils.RandomInt(0,1) ];
+			this.ai.strat.def_threat_weight = Math.random();
+			this.ai.strat.def_planetvalue_weight = 1 - this.ai.strat.def_threat_weight;
+			this.ai.strat.offense_ratio = Math.random();
+			this.ai.strat.risk = Math.random();
+			this.ai.strat.posture = Math.random();
+			// how AI weights various levels of zoning needs
+			this.ai.strat.zoning_weights = {
+				local: utils.BiasedRandInt(1, 5, 4, 0.2),
+				global: utils.BiasedRandInt(1, 5, 3, 0.2),
+				ai: utils.BiasedRandInt(1, 5, 3, 0.2)
+				};
+			let zoning_weight_total = 0;
+			for ( let k in this.ai.strat.zoning_weights ) { zoning_weight_total += this.ai.strat.zoning_weights[k]; }
+			for ( let k in this.ai.strat.zoning_weights ) { this.ai.strat.zoning_weights[k] /= zoning_weight_total; }
+			// ideal zoning preference ("play style")
+			this.ai.strat.ideal_zoning = {
+				housing: utils.BiasedRandInt(6, 12, 5, 0.5),
+				mining: utils.BiasedRandInt(5, 12, 5, 0.5),
+				stardock: utils.BiasedRandInt(5, 12, 5, 0.5),
+				economy: utils.BiasedRandInt(3, 9, 5, 0.5),
+				research: utils.BiasedRandInt(6, 12, 5, 0.5),			
+				military: utils.BiasedRandInt(6, 12, 5, 0.5),			
+				}
+			let ideal_zone_total = 0;
+			for ( let k in this.ai.strat.ideal_zoning ) { ideal_zone_total += this.ai.strat.ideal_zoning[k]; }
+			for ( let k in this.ai.strat.ideal_zoning ) { this.ai.strat.ideal_zoning[k] /= ideal_zone_total; }
+			// zone remodeling
+			this.ai.strat.zone_remodel_freq = utils.BiasedRandInt(15, 40, 30, 0.5);
+			this.ai.strat.zone_remodel = 'recycle'; // strategy for remodeling [wipe,rand,semirand,recycle,smart]
+			this.ai.strat.zone_remodel = ['recycle','wipe','rand','semirand'][ utils.RandomInt(0,3) ]; 
+			this.ai.strat.zone_remodel_rand_chance = utils.BiasedRand(0.1, 0.7, 0.35, 0.75);
+			// ship designing
+			this.ai.strat.ship_des_freq = utils.BiasedRand(0.1, 0.9, 0.5, 0.75);
+			this.ai.strat.ship_size = utils.BiasedRand(0.0, 1.0, 0.2, 0.75);
+			
+			// if there was config data provided, overlay that
+			// if ( data && typeof(data)=='object' ) {
+			// 	Object.assign( this, data );
+			// 	}
+				
+			// start researching
+			this.InitResearch();				
 			}
 		}
 	
@@ -682,65 +741,6 @@ export default class Civ {
 		this.tech.compl = this.tech.compl.map( t => ({ node: Tech.TechNodes[t.key], rp:t.rp, source:(t.source?catalog[t.source]:null) }) );
 		}
 						
-	static Random( difficulty = 0.5 ) {
-		let civ = new Civ;
-		civ.color_rgb = Civ.PickNextStandardColor();
-		civ.color = '#' + utils.DecToHex(civ.color_rgb[0]) + utils.DecToHex(civ.color_rgb[1]) + utils.DecToHex(civ.color_rgb[2]);
-		civ.race.env.atm = utils.BiasedRandInt(0, 4, 2, 0.5);
-		civ.race.env.temp = utils.BiasedRandInt(0, 4, 2, 0.5);
-		civ.race.env.grav = utils.BiasedRandInt(0, 4, 2, 0.5);
-		// diplomatic personality
-		civ.diplo.style = Math.random();
-		civ.diplo.memory = utils.BiasedRand(0, 1, 0.75, 0.5); // 0..1, how long they remember events
-		civ.diplo.skill = utils.BiasedRand(0.05, 0.25, 0.10, 0.5);
-		civ.diplo.dispo = utils.BiasedRand(0.2, 0.8, 0.5, 0.75);
-		civ.diplo.emotion = utils.BiasedRand(0.25, 0.8, 0.5, 0.8);
-		civ.diplo.focus = utils.BiasedRand(0, 1, 0.5, 0.5);
-		civ.diplo.offer_ok_at = (0.3 * Math.random() - 0.11); // anything over this is a good deal
-		civ.diplo.offer_counter_at = ( ( civ.diplo.offer_ok_at - 0.3 ) + ( Math.random() * 0.2 ) ); // anything beteen this and `ok` gets an automatic counter-offer 
-		civ.diplo.offer_bad_at = ( ( civ.diplo.offer_counter_at - 0.3 ) + ( Math.random() * 0.2 ) ); // anything between this and `counter` gets refused
-		// anything below offer_bad_at is an insult
-		// AI combat strategy traits
-		civ.ai.strat.def = ['balanced', 'triage'/*, 'equal', null*/][ utils.RandomInt(0,1) ];
-		civ.ai.strat.def_threat_weight = Math.random();
-		civ.ai.strat.def_planetvalue_weight = 1 - civ.ai.strat.def_threat_weight;
-		civ.ai.strat.offense_ratio = Math.random();
-		civ.ai.strat.risk = Math.random();
-		civ.ai.strat.posture = Math.random();
-		// how AI weights various levels of zoning needs
-		civ.ai.strat.zoning_weights = {
-			local: utils.BiasedRandInt(1, 5, 4, 0.2),
-			global: utils.BiasedRandInt(1, 5, 3, 0.2),
-			ai: utils.BiasedRandInt(1, 5, 3, 0.2)
-			};
-		let zoning_weight_total = 0;
-		for ( let k in civ.ai.strat.zoning_weights ) { zoning_weight_total += civ.ai.strat.zoning_weights[k]; }
-		for ( let k in civ.ai.strat.zoning_weights ) { civ.ai.strat.zoning_weights[k] /= zoning_weight_total; }
-		// ideal zoning preference ("play style")
-		civ.ai.strat.ideal_zoning = {
-			housing: utils.BiasedRandInt(6, 12, 5, 0.5),
-			mining: utils.BiasedRandInt(5, 12, 5, 0.5),
-			stardock: utils.BiasedRandInt(5, 12, 5, 0.5),
-			economy: utils.BiasedRandInt(3, 9, 5, 0.5),
-			research: utils.BiasedRandInt(6, 12, 5, 0.5),			
-			military: utils.BiasedRandInt(6, 12, 5, 0.5),			
-			}
-		let ideal_zone_total = 0;
-		for ( let k in civ.ai.strat.ideal_zoning ) { ideal_zone_total += civ.ai.strat.ideal_zoning[k]; }
-		for ( let k in civ.ai.strat.ideal_zoning ) { civ.ai.strat.ideal_zoning[k] /= ideal_zone_total; }
-		// zone remodeling
-		civ.ai.strat.zone_remodel_freq = utils.BiasedRandInt(15, 40, 30, 0.5);
-		civ.ai.strat.zone_remodel = 'recycle'; // strategy for remodeling [wipe,rand,semirand,recycle,smart]
-		civ.ai.strat.zone_remodel = ['recycle','wipe','rand','semirand'][ utils.RandomInt(0,3) ]; 
-		civ.ai.strat.zone_remodel_rand_chance = utils.BiasedRand(0.1, 0.7, 0.35, 0.75);
-		// ship designing
-		civ.ai.strat.ship_des_freq = utils.BiasedRand(0.1, 0.9, 0.5, 0.75);
-		civ.ai.strat.ship_size = utils.BiasedRand(0.0, 1.0, 0.2, 0.75);
-		// start researching
-		civ.InitResearch();
-		return civ;
-		}
-		
 	// marks civ as "dead" and cleans up.
 	Kill() { 
 		this.alive = false;
