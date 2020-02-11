@@ -30,7 +30,7 @@ export default class Planet {
 	
 	// PHYSICAL ATTRIBUTES -------------------------------
 	energy = 1.0; // speeds up zone development
-	size = 0;
+	size = 0; // base number of sectors planet can support
 	atm = 0;
 	temp = 0;
 	grav = 0;
@@ -53,6 +53,7 @@ export default class Planet {
 	ai_min_troops = 0; // minimum number of troops AI wants to keep to defend planet
 	
 	// ECONOMY -------------------------------------------
+	sectors = 0; // based on size and modified by race and tech
 	zones = [];
 	zoned = 0; // number of sectors that have been zoned 
 	output_rec = { $:0, o:0, s:0, m:0, r:0, g:0, b:0, c:0, v:0, y:0, ship:0, def:0, hou:0, esp:0, res:0 };
@@ -318,7 +319,7 @@ export default class Planet {
 	// returns zone on success, false on failure
 	AddZone( key ) {
 		let o = new Zone(key);
-		if ( o.minsect > this.size - this.zoned ) { return false; }
+		if ( o.minsect > this.sectors - this.zoned ) { return false; }
 		this.zoned += o.sect;
 		// some zones are "instant" and do not grow to size.
 		if ( !o.gf ) { o.val = 1; }
@@ -944,7 +945,8 @@ export default class Planet {
 		this.ship_dest = null;
 		this.acct_ledger = [];
 		this.acct_total = {};
-		this.acct_hist = []; 
+		this.acct_hist = [];
+		this.sectors = this.size;
 		if ( !keep_pop ) { 
 			this.total_pop = 0;
 			this.settled = false;
@@ -984,7 +986,13 @@ export default class Planet {
 		
 	// in case of a change in ownership, call this function to run 
 	// necessary housekeeping stuff
-	UpdateOwnership() { 
+	UpdateOwnership() {
+		// do NOT lower the sector size if the previous resident had a sector size bonus.
+		// consider this as being like the spoils of war. Shrinking int back down also
+		// causes weird logical issues with upgrading zones when you are over the sector limit.
+		// we'll call this a feature and not a bug. In the future, we may better represent
+		// this feature by directly referencing the inhabiting race type and not the owning civ.
+		this.sectors = Math.max( this.sectors, this.owner.mods.Apply( this.size, 'sectors' ) );
 		this.owner.planets.push( this );
 		this.star.UpdateOwnershipTitleColorCSS();
 		if ( this.star.accts.has(this.owner) ) {

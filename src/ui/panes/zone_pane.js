@@ -68,15 +68,17 @@ export class ZonePane {
 			let sect = this.zone.sect;
 			this.planet.RemoveZone( this.zone );
 			let newzone = this.planet.AddZone(z.key);
-			newzone.Grow( sect - newzone.minsect );
-			newzone.val = v;
-			this.planet.zoned += sect - newzone.minsect;
-			this.app.CloseMainPanel();
-			Signals.Send('turn'); // forces update on sidebar
+			if ( newzone ) { 
+				newzone.Grow( sect - newzone.minsect );
+				newzone.val = v;
+				this.planet.zoned += sect - newzone.minsect;
+				this.app.CloseMainPanel();
+				Signals.Send('turn'); // forces update on sidebar
+				}
 			}
 		else { // add
 			this.planet.AddZone( z.key );
-			if ( this.planet.size == this.planet.zoned ) {
+			if ( this.planet.sectors == this.planet.zoned ) {
 				this.app.CloseMainPanel();
 				}
 			}

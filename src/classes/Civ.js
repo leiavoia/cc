@@ -650,7 +650,7 @@ export default class Civ {
 					}
 				case 'plant' : {
 					this.diplo.style = utils.BiasedRand(0, 1, 0.25, 0.75); 
-					
+					this.race.mods.Add( new Mod('sectors', '+', 5, 'plant race', 'race' ) );
 					}
 				case 'silicate' : {
 					this.diplo.style = utils.BiasedRand(0, 1, 0, 0.75); 

@@ -100,7 +100,7 @@
 						<span if.bind="s==0">${z.size * z.val | ceil}</span>
 					</div>
 				</template>
-				<div repeat.for="z of (planet.size - planet.zoned)" class="zone empty" click.delegate="ClickEmptyZone()"></div>
+				<div repeat.for="z of (planet.sectors - planet.zoned)" class="zone empty" click.delegate="ClickEmptyZone()"></div>
 			</div>
 			<div class="button_rack fill" if.bind="planet.zones.length==1">
 				<button click.delegate="planet.ZonePlanet()">Auto-Zone Planet</button>

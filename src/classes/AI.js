@@ -1007,7 +1007,7 @@ export class AIPlanetsObjective extends AIObjective {
 		// planet zoning
 		for ( let p of civ.planets ) {
 			// zone any planets not already zoned
-			if ( p.zoned < p.size ) { 
+			if ( p.zoned < p.sectors ) { 
 				this.ZonePlanet(p);
 				}
 			// remodeling / upgrades
@@ -1057,9 +1057,11 @@ export class AIPlanetsObjective extends AIObjective {
 					let sect = zone.sect;
 					p.RemoveZone( zone );
 					let newzone = p.AddZone(upgrade.key);
-					newzone.Grow( sect - newzone.minsect );
-					newzone.val = v;
-					p.zoned += sect - newzone.minsect;
+					if ( newzone ) { 
+						newzone.Grow( sect - newzone.minsect );
+						newzone.val = v;
+						p.zoned += sect - newzone.minsect;
+						}
 					}
 				}				
 			}
@@ -1246,7 +1248,7 @@ export class AIPlanetsObjective extends AIObjective {
 		
 	// returns a list of zone *types* in preferred order of building
 	ZoneSuggester( p ) { 
-		if ( p.zoned == p.size ) { return null; }
+		if ( p.zoned == p.sectors ) { return null; }
 					
 		// 1) LOCAL:
 		// 		Resources available
@@ -1331,7 +1333,7 @@ export class AIPlanetsObjective extends AIObjective {
 		let actual = {};
 		for ( let z of p.zones ) { 
 			if ( z.type == 'government' ) { continue; }
-			actual[z.type] = (actual[z.type]||0) + (z.sect / (p.size-1)); // factor out civ capital
+			actual[z.type] = (actual[z.type]||0) + (z.sect / (p.sectors-1)); // factor out civ capital
 			}
 		// sort the neediest of the bunch
 		let need = [];
@@ -1354,7 +1356,7 @@ export class AIPlanetsObjective extends AIObjective {
 				}	
 			return true;
 			} );
-		while ( p.zoned < p.size ) { 
+		while ( p.zoned < p.sectors ) { 
 			let starting_size = p.zoned; // while-loop safety net
 			// the zone suggester will indicate what general type of zone we should build next
 			// and how many of those zones we ideally need.
@@ -1363,7 +1365,7 @@ export class AIPlanetsObjective extends AIObjective {
 			for ( let need of needs ) { 
 				let ztype = need[0];
 				// find all zones that fit in the space left, with some room for splurging
-				let maxsize = Math.min( Math.ceil(need[1] * p.size * 1.5 ), p.size - p.zoned );
+				let maxsize = Math.min( Math.ceil(need[1] * p.sectors * 1.5 ), p.sectors - p.zoned );
 				let candidates = zones_avail.filter( z => z.type == ztype && z.minsect <= maxsize );
 				// if choosing a mining zone, make sure we have those resources available
 				if ( ztype == 'mining' ) { 
