@@ -521,6 +521,7 @@ export default class Planet {
 	Adaptation( race ) {
 		if ( !race && !this.owner ) { return 0; }
 		if ( !race && this.owner ) { race = this.owner.race; }
+		if ( race.type == 'silicate' ) { return 1; }
 		return -( (Math.abs( this.atm - race.env.atm ) + Math.abs( this.temp - race.env.temp )  + Math.abs( this.grav - race.env.grav ) ) )
 	 		+ race.env.adaptation;
 		}
@@ -528,6 +529,7 @@ export default class Planet {
 	Habitable( race ) { 
 		if ( !race && !this.owner ) { return false; }
 		if ( !race && this.owner ) { race = this.owner.race; }
+		if ( race.type == 'silicate' ) { return true; }
 		return -( (Math.abs( this.atm - race.env.atm ) + Math.abs( this.temp - race.env.temp )  + Math.abs( this.grav - race.env.grav ) ) )
 	 		+ race.env.adaptation 
 	 		> 0;	

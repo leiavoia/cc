@@ -84,6 +84,7 @@ export class App {
 			civ_name: 'Human',
 			homeworld: 'Earth',
 			homestar: 'Sol',
+			racetype: 'organic',
 			color: [0,128,0],
 			race_atm: 2,
 			race_temp: 2,

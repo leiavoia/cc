@@ -364,10 +364,13 @@ export default class Galaxy {
 		}	
 		
 	MakeCivs( num_civs, difficulty ) {
+		this.civs = [];
+		// the first civ needs to use player's settings
+		let player = new Civ( { type: App.instance.options.setup.racetype } );
+		this.civs.push( player );
 		// races are loaded by the main app from config/races.json
 		let race_list = App.instance.configs.races.slice().shuffle();
-		this.civs = [];
-		for ( let i=0; i < num_civs; i++ ) {
+		for ( let i=0; i < num_civs-1; i++ ) {
 			let civ = new Civ( race_list.pop() );
 			this.civs.push( civ );
 			}

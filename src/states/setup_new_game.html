@@ -198,6 +198,18 @@
 							<label for="grav">Adaptation</label>
 							<input id="grav" type="range" min="1" max="3" step="1" value.bind="app.options.setup.race_adapt" /> 
 						</div>
+						<div class="option">
+							<label for="racetype">Race Type</label>
+							<select id="racetype" value.bind="app.options.setup.racetype">
+								<option value="organic">Organic</option>
+								<option value="cybernetic">Cybernetic</option>
+								<option value="robotic">Robotic</option>
+								<option value="plant">Plant</option>
+								<option value="silicate">Silicate</option>
+								<option value="astral">Astral</option>
+								<option value="transdimensional">Transdimensional</option>
+							</select>
+						</div>
 					</div>
 					<div class="" style="flex: 1 1 auto; margin-left: 1em;">
 						<div class="planet grav${app.options.setup.race_grav} tmp${app.options.setup.race_temp} atm${app.options.setup.race_atm}" style="height: 200px; width: 200px; background-size: contain;"></div>

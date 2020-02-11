@@ -34,6 +34,7 @@ export default class Civ {
 			grav: 2,
 			adaptation: 1, // levels to shift the habitability scale
 			},
+		mods: null, // ModList
 		is_monster: false, // true for space monsters. changes some UI formating.
 		};
 	
@@ -578,7 +579,8 @@ export default class Civ {
 				}
 			Civ.IncTotalNumCivs();
 			this.id = utils.UUID();
-			this.mods = new Modlist( /*this.race*/ );
+			this.race.mods = new Modlist();
+			this.mods = new Modlist( this.race.mods );
 			this.ai = new AI.CivAI(this);
 				
 			// random default values
@@ -641,6 +643,35 @@ export default class Civ {
 			this.ai.strat.ship_des_freq = utils.BiasedRand(0.1, 0.9, 0.5, 0.75);
 			this.ai.strat.ship_size = utils.BiasedRand(0.0, 1.0, 0.2, 0.75);
 			
+			// race type special configs
+			switch ( this.race.type ) {
+				case 'organic' : {
+					this.diplo.style = utils.BiasedRand(0, 1, 0.50, 0.75); 
+					}
+				case 'plant' : {
+					this.diplo.style = utils.BiasedRand(0, 1, 0.25, 0.75); 
+					
+					}
+				case 'silicate' : {
+					this.diplo.style = utils.BiasedRand(0, 1, 0, 0.75); 
+					this.race.mods.Add( new Mod('adaptation', '=', 1, 'silicate adaptation', 'race' ) );
+					}
+				case 'robotic' : {
+					this.diplo.style = utils.BiasedRand(0, 1, 1, 0.75); 
+					
+					}
+				case 'cybernetic' : {
+					this.diplo.style = utils.BiasedRand(0, 1, 0.75, 0.75); 
+					
+					}
+				case 'transdimensional' : {
+					
+					}
+				case 'astral' : {
+					
+					}
+				}
+				
 			// if there was config data provided, overlay that
 			// if ( data && typeof(data)=='object' ) {
 			// 	Object.assign( this, data );
@@ -664,6 +695,8 @@ export default class Civ {
 		obj.avail_ship_weapons = this.avail_ship_weapons.map( x => x.tag );
 		obj.avail_zones = this.avail_zones.map( x => x.key );
 		obj.victory_ingredients = this.victory_ingredients.map( x => x.key );
+		obj.race = Object.assign( {}, this.race ); // dont overwrite original object
+		obj.race.mods = this.race.mods.toJSON();
 		obj.diplo = Object.assign( {}, this.diplo ); // dont overwrite original object
 		obj.diplo.contacts = {}; 
 		for ( let [k,v] of this.diplo.contacts ) {
@@ -711,8 +744,11 @@ export default class Civ {
 		this.avail_ship_weapons = this.avail_ship_weapons.map( x => WeaponList[x] );
 		this.avail_zones = this.avail_zones.map( x => ZoneList[x] );
 		this.victory_ingredients = this.victory_ingredients.map( x => VictoryIngredients[x] );
+		this.race.mods = new Modlist(this.race.mods);
+		this.race.mods.Unpack( catalog );
 		this.mods = new Modlist(this.mods);
 		this.mods.Unpack( catalog );
+		this.mods.parent = this.race.mods;
 		this.ai = this.ai._classname=='CivAI' 
 			? ( new AI.CivAI(this.ai) ) // playable civs use CivAI
 			: ( new AI.AI(this.ai) ); // space monsters and shill civs use regular AI 

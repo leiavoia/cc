@@ -175,7 +175,7 @@ export class Mod {
 			case '/': { return `÷ ${this.val.toFixed(precision)}, ${this.label}`; }
 			case '+': { return `+ ${this.val.toFixed(precision)}, ${this.label}`; }
 			case '-': { return `- ${this.val.toFixed(precision)}, ${this.label}`; }
-			case '=': { return `${this.val.toFixed(precision)}, ${this.label}`; } // per se "is" (i.e. "ends with")
+			case '=': { return `=${this.val.toFixed(precision)}, ${this.label}`; } // per se "is" (i.e. "ends with")
 			case 'B': { return `Base value of ${this.val.toFixed(precision)}, ${this.label}`; } // [B]ase value (i.e. "starts with")
 			case '%': { return `${this.val.toFixed(precision)}%, ${this.label}`; }
 			case '*': { 
@@ -196,7 +196,7 @@ export class Mod {
 			case '/': { return `÷${this.val.toFixed(precision)} ${this.abil}`; }
 			case '+': { return `+${this.val.toFixed(precision)} ${this.abil}`; }
 			case '-': { return `-${this.val.toFixed(precision)} ${this.abil}`; }
-			case '=': { return `${this.val.toFixed(precision)} ${this.abil}`; } // per se "is" (i.e. "ends with")
+			case '=': { return `=${this.val.toFixed(precision)} ${this.abil}`; } // per se "is" (i.e. "ends with")
 			case 'B': { return `Base of ${this.val.toFixed(precision)} ${this.abil}`; } // [B]ase value (i.e. "starts with")
 			case '%': { return `${this.val.toFixed(precision)}% ${this.abil}`; }
 			case '*': { 

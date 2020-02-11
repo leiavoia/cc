@@ -254,12 +254,15 @@
 						<td>⚡${row.civ.ai.total_milval}</td>
 						<td>r${row.civ.ai.strat.risk|round:2}</td>
 						<td>${row.civ.ai.strat.def}</td>
-						<td>${row.civ.ai.strat.zone_remodel}@${row.civ.ai.strat.zone_remodel_freq}</td>
+						<td>${row.civ.race.type}</td>
 						<td>${row.pct|percent}%</td>
 						<td><div css="height:8px; width:${row.pct*200}px; background-color: green;"></div></td>
 					</tr>
 				</table>
 				
+				<br />
+				
+				<p repeat.for="m of game.myciv.race.mods.mods">${m.toString()}</p>
 			</div>
 		
 			<!-- AI DEBUG CENTER -->
