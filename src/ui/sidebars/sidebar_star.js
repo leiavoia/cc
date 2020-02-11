@@ -30,8 +30,8 @@ export class StarDetailPane {
 		if ( this.star ) { 
 			for ( let p of this.star.planets ) { 
 				this.calc_vals[p.id] = {
-					adapt: p.Adaptation( this.app.game.myciv.race ),
-					hab: p.Habitable( this.app.game.myciv.race )
+					adapt: p.Adaptation( this.app.game.myciv ),
+					hab: p.Habitable( this.app.game.myciv )
 					};
 				}
 			this.fleets = this.star.fleets.map( f => ({ fleet:f, models: f.ListUniqueModels() }) );

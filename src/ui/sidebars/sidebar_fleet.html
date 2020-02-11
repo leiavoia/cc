@@ -170,7 +170,7 @@
 	<div class="star star_${fleet.star.color}" if.bind="fleet && mode == 'colonize'">
 		<h2>Colonize ${fleet.star.name}</h2>
 		<p style="font-weight:bold; color: #FAA;" >Choose a planet to colonize:</p>
-		<div repeat.for="p of fleet.star.planets" class="smallplanetbg hilite_wrapper smallplanetbg" if.bind="!p.owner && p.Habitable(fleet.owner.race)" click.delegate="ChoosePlanetToColonize(p)">
+		<div repeat.for="p of fleet.star.planets" class="smallplanetbg hilite_wrapper smallplanetbg" if.bind="!p.owner && p.Habitable(fleet.owner)" click.delegate="ChoosePlanetToColonize(p)">
 			<div class="planet atm${p.atm} tmp${p.temp} grav${p.grav}" css.one-time="PlanetSizeCSS(p)">
 				<h3 css="color: ${p.owner ? p.owner.color : 'inherit'};">${p.name}</h3>
 				<p class="env_label" style="font-size: 80%; text-align:left; float:none; width: 100%">${p.gravDisplayName}  ${p.envDisplayName}</p>
@@ -181,8 +181,8 @@
 					<div class="size" style="margin: 0; padding: 0;">
 						<span class="size">${p.size}<br/><span class="size">SIZE</span></span>							
 						<span class="en">${p.energy}x<br/><span class="en">ENERGY</span></span>
-						<span class="${p.Habitable(app.game.myciv.race) ? (p.Adaptation( app.game.myciv.race ) < 0 ? 'alert' : 'good') : 'bad'}">
-							${(p.Adaptation( app.game.myciv.race ) >= 0 ? '+' : '')}${p.Adaptation( app.game.myciv.race )}<br/>
+						<span class="${p.Habitable(app.game.myciv) ? (p.Adaptation( app.game.myciv ) < 0 ? 'alert' : 'good') : 'bad'}">
+							${(p.Adaptation( app.game.myciv ) >= 0 ? '+' : '')}${p.Adaptation( app.game.myciv )}<br/>
 							<span class="">ENV</span>
 						</span>	
 					</div>
@@ -306,7 +306,7 @@
 						<br/>
 						<span style="color: #999">Odds: <b>${CalculateChanceOfGroundVictory(p) * 100 | round}%</b></span>
 						<i class="bad" if.bind="p.OwnerFleet() && p.OwnerFleet().milval"><br/>Defending fleet in orbit</i>
-						<span class="bad bold" if.bind="!p.Habitable(fleet.owner.race)"><br/>Uninhabitable</span>
+						<span class="bad bold" if.bind="!p.Habitable(fleet.owner)"><br/>Uninhabitable</span>
 						<span class="good bold" if.bind="!p.troops.length"><br/>No ground forces!</span>
 					</p>
 					<div repeat.for="[bp,count] of p.ListUniqueGroundUnits()" style="display:inline-block;">

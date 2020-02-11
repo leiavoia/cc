@@ -40,7 +40,7 @@
 					<td class="name" css="color: ${p.owner ? p.owner.color : 'inherit'};">${p.name}</td>
 					<td class="owner" css="color: ${p.owner ? p.owner.color : 'inherit'};">${p.owner ? p.owner.name : ''}</td>
 					<td class="size">${p.size}</td>
-					<td class="hab ${p.Habitable(app.game.myciv.race) ? (p.Adaptation(app.game.myciv.race) < 0 ? 'alert' : 'good') : 'bad'}">${p.Adaptation(app.game.myciv.race)}</td>
+					<td class="hab ${p.Habitable(app.game.myciv) ? (p.Adaptation(app.game.myciv) < 0 ? 'alert' : 'good') : 'bad'}">${p.Adaptation(app.game.myciv)}</td>
 					<td class="resources">
 						<template repeat.for="k of p.resources|props" containerless>
 							<span repeat.for="i of p.resources[k]" class="${k}"></span>

@@ -791,7 +791,7 @@ export class AIOffenseObjective extends AIObjective {
 			if ( civ == c || c.race.is_monster ) { continue; }
 			// diplo status is important, but we wont write off something 
 			// really juicy just because we're "friends"
-			for ( let p of c.planets.filter( p => p.Habitable(civ.race) ) ) { 
+			for ( let p of c.planets.filter( p => p.Habitable(civ) ) ) { 
 				let score = p.ValueTo(civ);
 				if ( score ) { // must be habitable at least
 					//
@@ -907,7 +907,7 @@ export class AIColonizeObjective extends AIObjective {
 		for ( let s of app.game.galaxy.stars ) { 
 			for ( let p of s.planets ) {
 				// accessible?
-				if ( p.owner || !p.Habitable( civ.race ) || !civ.InRangeOf(p.star.xpos, p.star.ypos) ) { continue; }
+				if ( p.owner || !p.Habitable( civ ) || !civ.InRangeOf(p.star.xpos, p.star.ypos) ) { continue; }
 				// treaties apply? 
 				let has_treaty = false;
 				for ( let p2 of p.star.planets ) { 
@@ -933,7 +933,7 @@ export class AIColonizeObjective extends AIObjective {
 						if ( s.bp.colonize ) { 
 							// can i settle anything where i am?
 							for ( let p of f.star.planets ) { 
-								if ( !p.owner && p.Habitable( civ.race ) ) { 
+								if ( !p.owner && p.Habitable( civ ) ) { 
 									p.Settle( civ );
 									f.RemoveShip( s );
 									if ( !f.ships.length ) { f.Kill(); }
@@ -1292,7 +1292,7 @@ export class AIPlanetsObjective extends AIObjective {
 			}
 		
 		// housing situation?
-		local_zoning.housing += 2 * p.Adaptation( p.owner.race );
+		local_zoning.housing += 2 * p.Adaptation( p.owner );
 		// normalize
 		let local_zone_total = 0;
 		for ( let k in local_zoning ) { local_zone_total += local_zoning[k]; }
@@ -1630,7 +1630,7 @@ export class AIInvadeObjective extends AIObjective {
 			let other_targets = this.target.star.planets.filter( p => 
 				p != this.target 
 				&& p.owner != civ
-				&& p.Habitable(civ.race) 
+				&& p.Habitable(civ) 
 				&& !p.troops.length
 				&& ( !p.OwnerFleet() || !p.OwnerFleet().milval )
 				);

@@ -105,15 +105,13 @@ export class Modlist {
 	// modify a value by all applicable mods in the list.
 	// use_parent: if TRUE, uses builtin this.parent.
 	// 	if set to Modlist object, uses that object directly :-)
-	Apply( value, ability, use_parent = true ) { 
-		// if i have a parent modlist, apply those first
-		if ( use_parent instanceof Modlist ) { 
-			value = use_parent.Apply( value, ability );
-			}
-		else if ( use_parent && this.parent && this.parent instanceof Modlist ) { 
-			value = this.parent.Apply( value, ability );
-			}
-		for ( let m of this.mods ) {
+	Apply( value, ability, use_parent = true ) {
+		// TODO: OPTIMIZATION HINT: we could theoretically keep a flattened, sorted 
+		// list of mods at the ready to avoid doing this every time. Having each ModList
+		// call Apply() against its parent is faster, but creates problems with sorting,
+		// especially with Base (B) and Equals (=), among others. 
+		let mods = this.CollectMods(use_parent).sort( Modlist.SortMods );
+		for ( let m of mods ) {
 			if ( m.abil == ability ) {
 				value = m.Apply(value);
 				}
@@ -121,6 +119,20 @@ export class Modlist {
 		return value;
 		}
 		
+	// returns my mods and my parents' mods recursively.
+	CollectMods( use_parent = true ) {
+		let parent = null;
+		// if i have a parent modlist, get those mods too
+		if ( use_parent instanceof Modlist ) { 
+			parent = use_parent;
+			}
+		else if ( use_parent && this.parent && this.parent instanceof Modlist ) { 
+			parent = this.parent
+			}
+		if ( !parent ) { return this.mods; } // shortcut
+		return this.mods.slice().concat( parent.CollectMods(true) );
+		}
+	
 	static SortMods( a, b ) {
 		let op_order = ['B','^','*','%','/','+','-','L','H','=']; // first .. last
 		let a_op = op_order.indexOf( a.op );

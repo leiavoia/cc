@@ -51,7 +51,7 @@ export class PlanetsPane {
 			switch ( this.sort_by ) {
 				case 'name': return x.name;
 				case 'size': return x.size;
-				case 'hab': return x.Adaptation(this.app.game.myciv.race) || 0;
+				case 'hab': return x.Adaptation(this.app.game.myciv) || 0;
 				case 'energy': return x.energy;
 				case 'pop': return x.total_pop || 0;
 				case 'popmax': return x.maxpop || 0;

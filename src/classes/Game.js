@@ -395,7 +395,7 @@ export default class Game {
 					}
 				// notice to player if fleet has colony ship and there is colonizable planet
 				if ( f.owner.is_player && !this.app.options.soak && this.app.options.notify.colony_ship_arrived && f.colonize && f.star && !f.dest && 'planets' in f.star &&  f.star.planets.length ) {
-					if ( f.star.planets.filter( p => !p.owner && p.Habitable(f.owner.race) ).length ) {
+					if ( f.star.planets.filter( p => !p.owner && p.Habitable(f.owner) ).length ) {
 						this.app.AddNote(
 							'neutral',
 							`Settle ${f.star.name}?`,
@@ -524,7 +524,7 @@ export default class Game {
 					let goods = 0;
 					let occupied = 0;
 					for ( let p of f.star.planets ) {
-						if ( p.Habitable(f.owner.race) ) { 
+						if ( p.Habitable(f.owner) ) { 
 							goods++;
 							if ( p.owner ) { occupied++; }
 							}

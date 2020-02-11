@@ -518,24 +518,23 @@ export default class Planet {
 		}
 		
   	// returns an integer value which may be negative
-	Adaptation( race ) {
-		if ( !race && !this.owner ) { return 0; }
-		if ( !race && this.owner ) { race = this.owner.race; }
-		if ( race.type == 'silicate' ) { return 1; }
-		return -( (Math.abs( this.atm - race.env.atm ) + Math.abs( this.temp - race.env.temp )  + Math.abs( this.grav - race.env.grav ) ) )
-	 		+ race.env.adaptation;
+	Adaptation( civ ) {
+		// TODO: we may wish to differentiate between a civ as a planet owner and
+		// the type of population that actually lives here. There may be differences in 
+		// natural adaptability not related to technology.
+		if ( !civ && !this.owner ) { return 0; }
+		if ( !civ && this.owner ) { civ = this.owner; }
+		// if ( civ.race.type == 'silicate' ) { return 1; } // use this to optimize for speed if using mods is too slow
+		let diff = civ.race.env.adaptation
+			-( Math.abs( this.atm - civ.race.env.atm ) + Math.abs( this.temp - civ.race.env.temp ) + Math.abs( this.grav - civ.race.env.grav ) );
+		return Math.round( civ.mods.Apply(diff,'adaptation') );
 		}
   	// returns true if the planet can be settled by the race
-	Habitable( race ) { 
-		if ( !race && !this.owner ) { return false; }
-		if ( !race && this.owner ) { race = this.owner.race; }
-		if ( race.type == 'silicate' ) { return true; }
-		return -( (Math.abs( this.atm - race.env.atm ) + Math.abs( this.temp - race.env.temp )  + Math.abs( this.grav - race.env.grav ) ) )
-	 		+ race.env.adaptation 
-	 		> 0;	
+	Habitable( civ ) {
+		return this.Adaptation( civ ) > 0;	
 		}
-	HabitationBonus( race ) { 
-		let x = this.Adaptation( race );
+	HabitationBonus( civ ) { 
+		let x = this.Adaptation( civ );
 // 		let y = ( 2 / ( 1 + Math.pow( Math.exp(1), -0.52*x ) ) ) - 1; // sigmoid function
 // 		return Math.round( y * 20 ) / 20; // this part rounds off to the nearest 5%
 		// lets keep this simple: -20% for each negative, +10% for each positive
@@ -757,7 +756,7 @@ export default class Planet {
 			};
 		// environment
 		factors.env = {
-			fx: this.Adaptation( this.owner.race ),
+			fx: this.Adaptation( this.owner ),
 			weight: 5.0
 			};
 		// crowding (sigmoid function)
@@ -821,7 +820,7 @@ export default class Planet {
 		// popmax is actually our current infrastructure level from Housing zones.
 		// This means that if Housing zones are removed or underfunded, infrastructure
 		// crumbles and we can have more pops than popmax (causing unhappiness).
-		this.maxpop = this.popmax_contrib + this.size + this.Adaptation( this.owner.race );
+		this.maxpop = this.popmax_contrib + this.size + this.Adaptation( this.owner );
 		this.maxpop = this.mods.Apply( this.maxpop, 'maxpop' );
 		this.popmax_contrib = 0;
 		// growth rate is square root of difference between max pop and current pop, divided by 60.
@@ -872,7 +871,7 @@ export default class Planet {
 	// colonize or capture
 	ValueTo( civ ) {
 		// even habitable?
-		if ( !this.Habitable( civ.race ) ) { 
+		if ( !this.Habitable( civ ) ) { 
 			return 0;
 			}
 		// not in range? not worth anything 
@@ -882,7 +881,7 @@ export default class Planet {
 		// natural environmental score
 		let score = this.score;
 		// adaptation
-		score += this.Adaptation( civ.race ) * 3; 
+		score += this.Adaptation( civ ) * 3; 
 		// distance from emperical center (not actually that important)
 		let bx = civ.empire_box.x1 + ( ( civ.empire_box.x2 - civ.empire_box.x1 ) * 0.5 );
 		let by = civ.empire_box.y1 + ( ( civ.empire_box.y2 - civ.empire_box.y1 ) * 0.5 );
@@ -903,7 +902,7 @@ export default class Planet {
 		this.econ.GDP = 0;
 		this.econ.PCI = this.base_PCI + this.bonus_PCI;
 		this.econ.GF = 1.0;
-		this.maxpop = this.size + this.Adaptation( this.owner.race );
+		this.maxpop = this.size + this.Adaptation( this.owner );
 		this.maxpop = this.mods.Apply( this.maxpop, 'maxpop' );
 		if ( !this.zones.length ) { 
 			if ( !owner.planets.length ) { 

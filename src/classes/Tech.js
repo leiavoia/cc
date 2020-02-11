@@ -262,31 +262,43 @@ export let Techs = {
 		name: "Basic Terraforming",
 		desc: '<b>+1 Adaptation</b>.',
 		tags: ['biology'],
-		onComplete( civ ) { civ.race.env.adaptation += 1; } /* TODO: hibitation tech should not affect the civ's race directly */
+		onComplete( civ ) { 
+			civ.mods.Add( new Mod('adaptation', '+', 1, this.name, 'technology' ) );
+			civ.race.env.adaptation = civ.mods.Apply( 1, 'adaptation' );
+			}
 		},
 	ADAPTATION2: {
 		name: "Advanced Terraforming",
 		desc: '<b>+2 Adaptation</b>.',
 		tags: ['biology'],
-		onComplete( civ ) { civ.race.env.adaptation += 2; } /* TODO: hibitation tech should not affect the civ's race directly */
-		},
+		onComplete( civ ) { 
+			civ.mods.Add( new Mod('adaptation', '+', 2, this.name, 'technology' ) );
+			civ.race.env.adaptation = civ.mods.Apply( 1, 'adaptation' );
+			}		},
 	ADAPTATION3: {
 		name: "Superior Terraforming",
 		desc: '<b>+3 Adaptation</b>.',
 		tags: ['biology'],
-		onComplete( civ ) { civ.race.env.adaptation += 3; } /* TODO: hibitation tech should not affect the civ's race directly */
-		},
+		onComplete( civ ) { 
+			civ.mods.Add( new Mod('adaptation', '+', 3, this.name, 'technology' ) );
+			civ.race.env.adaptation = civ.mods.Apply( 1, 'adaptation' );
+			}		},
 	ADAPTATION4: {
 		name: "Ultra Terraforming",
 		desc: '<b>+3 Adaptation</b>.',
 		tags: ['biology'],
-		onComplete( civ ) { civ.race.env.adaptation += 3; } /* TODO: hibitation tech should not affect the civ's race directly */
-		},
+		onComplete( civ ) { 
+			civ.mods.Add( new Mod('adaptation', '+', 3, this.name, 'technology' ) );
+			civ.race.env.adaptation = civ.mods.Apply( 1, 'adaptation' );
+			}		},
 	ADAPTATION5: {
 		name: "Perfect Terraforming",
 		desc: '<b>+6 Adaptation</b>.',
 		tags: ['biology'],
-		onComplete( civ ) { civ.race.env.adaptation += 6; } /* TODO: hibitation tech should not affect the civ's race directly */
+		onComplete( civ ) { 
+			civ.mods.Add( new Mod('adaptation', '+', 6, this.name, 'technology' ) );
+			civ.race.env.adaptation = civ.mods.Apply( 1, 'adaptation' );
+			}		
 		},
 		
 	XENOCOMM1: {

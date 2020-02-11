@@ -51,8 +51,8 @@ export class PlanetDetailPane {
 		// elements (the sidebar) and binding its data. 
 		// Sniff the "planet" to make sure it really is such.
 		if ( planet && 'size' in planet ) { 
-			this.adaptation = planet.Adaptation( this.app.game.myciv.race );
-			this.habitable = planet.Habitable( this.app.game.myciv.race );
+			this.adaptation = planet.Adaptation( this.app.game.myciv );
+			this.habitable = planet.Habitable( this.app.game.myciv );
 			this.local_fleet = planet.star.FleetFor( this.app.game.myciv );
 			this.CompileBuildQueueItemList();
 			this.ground_units = planet.ListUniqueGroundUnits(); // Map
@@ -255,7 +255,7 @@ export class PlanetDetailPane {
 		}
 	ColonizePlanet() {
 		if ( !this.planet || this.planet.settled || this.planet.owner || !this.local_fleet
-			|| !this.planet.Habitable(this.local_fleet.owner.race) ) { return false; }
+			|| !this.planet.Habitable(this.local_fleet.owner) ) { return false; }
 		let ship = this.local_fleet.ships.find( s => s.bp.colonize );
 		if ( ship ) {
 			let DoIt = () => {

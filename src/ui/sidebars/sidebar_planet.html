@@ -77,13 +77,13 @@
 		</div> 
 					
 		<!-- attack option --> 
-		<p class="button_rack button_rack_fill" if.bind="planet.settled && !planet.owner.is_player && local_fleet && planet.Habitable(local_fleet.owner.race)">
+		<p class="button_rack button_rack_fill" if.bind="planet.settled && !planet.owner.is_player && local_fleet && planet.Habitable(local_fleet.owner)">
 			<button class="${local_fleet.fp_remaining || local_fleet.troops ? 'alt' : 'ghost'}" click.delegate="AttackTargetWithLocalFleet()">ATTACK</button>
 		</p>
 						
 		<!-- colonize planet option --> 
 		<p class="button_rack button_rack_fill" if.bind="!planet.settled && !planet.owner && local_fleet && local_fleet.colonize">
-			<button class="${planet.Habitable(local_fleet.owner.race) ? 'alt' : 'ghost'}" click.delegate="ColonizePlanet()">COLONIZE</button>
+			<button class="${planet.Habitable(local_fleet.owner) ? 'alt' : 'ghost'}" click.delegate="ColonizePlanet()">COLONIZE</button>
 		</p>
 				
 		<template containerless if.bind="app.options.see_all || planet.owner == app.game.myciv">

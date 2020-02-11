@@ -53,7 +53,7 @@ export default class GroundCombat {
 			// modlist parent is the planet for the defender, civ for the attacker
 			let parent = team.planet ? team.planet : team.fleet.owner;
 			team.mods = new Modlist(parent);
-			let adaptation = this.teams[1].planet.Adaptation( team.owner.race );
+			let adaptation = this.teams[1].planet.Adaptation( team.owner );
 			if ( adaptation ) { 
 				team.mods.Add( 
 					new Mod( 'ground_roll', '*', 1+(adaptation*0.1), 'Environment' )

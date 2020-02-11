@@ -254,12 +254,12 @@ export class FleetDetailPane {
 		// mark abilites with ===0 as a signal to look further
 		if ( this.fleet.star && 'planets' in this.fleet.star && this.fleet.star.planets.length ) {
 			for ( let p of this.fleet.star.planets ) { 
-				if ( !p.owner && p.Habitable( this.fleet.owner.race ) && !this.fleet.owner.race.is_monster ) { 
+				if ( !p.owner && p.Habitable( this.fleet.owner ) && !this.fleet.owner.race.is_monster ) { 
 					this.can_colonize = 0; 
 					}
 				else if ( p.owner && !p.owner.is_player ) { 
 					this.can_bomb = 0; 
-					if ( p.Habitable( this.fleet.owner.race ) ) { 
+					if ( p.Habitable( this.fleet.owner ) ) { 
 						this.can_invade = 0;
 						}
 					}
@@ -439,7 +439,7 @@ export class FleetDetailPane {
 			}
 		}
 	ClickPlanetToInvade(p) { 
-		if ( !p.owner || p.owner == this.fleet.owner || !p.Habitable(this.fleet.owner.race) ) { return false; }
+		if ( !p.owner || p.owner == this.fleet.owner || !p.Habitable(this.fleet.owner) ) { return false; }
 		// do this no matter what
 		let cb = () => {
 			// if the planet has a defending fleet, switch to ship combat
