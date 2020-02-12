@@ -68,6 +68,42 @@ export let Techs = {
 			civ.groundunit_blueprints.push( troop1 );				
 			}
 		},		
+	
+	BASE_ORGANIC: {
+		name: "Base Organic Technologies",
+		onComplete( civ ) { 
+			}
+		},		
+	BASE_PLANT: {
+		name: "Base Plant Technologies",
+		onComplete( civ ) { 
+			}
+		},		
+	BASE_SILICATE: {
+		name: "Base Silicate Technologies",
+		onComplete( civ ) { 
+			}
+		},		
+	BASE_ROBOTIC: {
+		name: "Base Robotic Technologies",
+		onComplete( civ ) { 
+			}
+		},		
+	BASE_CYBERNETIC: {
+		name: "Base Cybernetic Technologies",
+		onComplete( civ ) { 
+			}
+		},		
+	BASE_ASTRAL: {
+		name: "Base Astral Technologies",
+		onComplete( civ ) { 
+			}
+		},		
+	BASE_TRANSDIMENSIONAL: {
+		name: "Base Trandimensional Technologies",
+		onComplete( civ ) { 
+			}
+		},		
 
 	FLEETSPEED1: {
 		name: "Fleet Warp Bubble",
@@ -378,6 +414,34 @@ export let TechNodes = {
 	BASE: {
 		rp: 0,
 		hidden: true, // dont display in UI
+		},
+	BASE_ORGANIC: {
+		rp: -1, // prevents it from autoloading for everyone. require manual assignment
+		hidden: true, // dont display in UI
+		},
+	BASE_PLANT: {
+		rp: -1,
+		hidden: true,
+		},
+	BASE_ROBOTIC: {
+		rp: -1,
+		hidden: true,
+		},
+	BASE_CYBERNETIC: {
+		rp: -1,
+		hidden: true,
+		},
+	BASE_SILICATE: {
+		rp: -1,
+		hidden: true,
+		},
+	BASE_ASTRAL: {
+		rp: -1,
+		hidden: true,
+		},
+	BASE_TRANSDIMENSIONAL: {
+		rp: -1,
+		hidden: true,
 		},
 			
 		

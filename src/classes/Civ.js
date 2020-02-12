@@ -312,6 +312,10 @@ export default class Civ {
 				this.CompleteTechNode( { node:Tech.TechNodes[key], rp:0, source:null}, null, false );
 				}
 			}
+		// race-type specific starting techs must be manually assigned here:
+		if ( Tech.TechNodes.hasOwnProperty( ['BASE_' + this.race.type.toUpperCase()] ) )   {
+			this.CompleteTechNode( { node:Tech.TechNodes['BASE_' + this.race.type.toUpperCase()], rp:0, source:null}, null, false );
+			}
 		this.RecalcAvailableTechNodes();
 		}
 		
