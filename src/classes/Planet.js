@@ -588,7 +588,7 @@ export default class Planet {
 					let maxpct = 1 - item_pct; // account for partially completed items
 					for ( let k in item.cost ) {
 						let resource_avail = ( k == 'labor' ) ? labor_avail : this.owner.resources[k];
-						let cost = ( k == 'labor' ) ? item.cost[k] : this.mods.Apply( item.cost[k], `resource_efficiency` );
+						let cost = ( k == 'labor' ) ? item.cost[k] : this.mods.Apply( item.cost[k], `resources_consumed` );
 						maxpct = Math.min( maxpct, 1.0, resource_avail/cost );
 						}
 					
@@ -603,7 +603,7 @@ export default class Planet {
 							}
 						else { 
 							est[k] = (est[k]||0) + (maxpct * item.cost[k]);
-							est[k] = this.mods.Apply( est[k], `resource_efficiency` )
+							est[k] = this.mods.Apply( est[k], `resources_consumed` )
 							}
 						}
 					
@@ -657,7 +657,7 @@ export default class Planet {
 						maxpct = Math.min( maxpct, 1.0, (ship_labor_avail+def_labor_avail)/item.cost[k] );
 						}
 					else { 
-						maxpct = Math.min( maxpct, 1.0, this.owner.resources[k] / this.mods.Apply( item.cost[k], `resource_efficiency` ) );
+						maxpct = Math.min( maxpct, 1.0, this.owner.resources[k] / this.mods.Apply( item.cost[k], `resources_consumed` ) );
 						}
 					}
 					
@@ -692,7 +692,7 @@ export default class Planet {
 							}
 						}
 					else { 
-						let total = maxpct * this.mods.Apply( item.cost[k], `resource_efficiency` );
+						let total = maxpct * this.mods.Apply( item.cost[k], `resources_consumed` );
 						this.owner.resources[k] -= total;
 						this.owner.resource_spent[k] += total;
 						accounting[k] = (accounting[k]||0) - total;

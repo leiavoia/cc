@@ -26,17 +26,17 @@
 			<br/>
 			<a href="#" click.delegate="app.ChangeState('play')">RESCUE ME</a>
 		</div>
-		<div style="color: #E2D43D; border: 1px solid #E2D43D; border-radius:2rem; padding: 1rem; flex: 1 1 40%; margin:2rem;">		
-			<table class="right" style="margin: 0 0 0 0;">	
+		<div style="color: #E2D43D; border: 1px solid #E2D43D; border-radius:2rem; padding: 1rem; flex: 1 1 40%; margin:2rem;">	<table class="right" style="margin: 0 0 0 0;">	
 				<tr repeat.for="row of app.game.top10civs">
 					<td css="color:#FFF; background-color:${row.civ.color};">${row.civ.name}</td>
 					<td><b>${row.rank}</b></td>
 					<td>${row.score}</td>
 					<td>◉${row.civ.planets.length}</td>
+					<td>🟊${row.civ.victory_ingredients.length}</td>
 					<td>⚡${row.civ.ai.total_milval}</td>
 					<td>r${row.civ.ai.strat.risk|round:2}</td>
 					<td>${row.civ.ai.strat.def}</td>
-					<td>${row.civ.ai.strat.zone_remodel}@${row.civ.ai.strat.zone_remodel_freq}</td>
+					<td>${row.civ.race.type}</td>
 					<td>${row.pct|percent}%</td>
 					<td><div css="height:8px; width:${row.pct*200}px; background-color: #E2D43D;"></div></td>
 				</tr>

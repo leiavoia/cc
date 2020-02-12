@@ -657,28 +657,59 @@ export default class Civ {
 			switch ( this.race.type ) {
 				case 'organic' : {
 					this.diplo.style = utils.BiasedRand(0, 1, 0.50, 0.75); 
+					this.race.mods.Add( new Mod('research_biology', '*', 0.75, 'Biology expertise', 'race' ) );
+					this.race.mods.Add( new Mod('zone_output_research', '*', 1.25, 'Expert scientists', 'race' ) );
+					this.race.mods.Add( new Mod('pop_growth', '*', 1.25, 'Fast breaders', 'race' ) );
+					break;
 					}
 				case 'plant' : {
 					this.diplo.style = utils.BiasedRand(0, 1, 0.25, 0.75); 
 					this.race.mods.Add( new Mod('sectors', '+', 5, 'Plant race', 'race' ) );
+					this.race.mods.Add( new Mod('research_biology', '*', 0.5, 'Biology expertise', 'race' ) );
+					this.race.mods.Add( new Mod('resources_consumed', '*', 0.5, 'Ultra-Efficient', 'race' ) );
+					this.race.mods.Add( new Mod('pop_growth', '*', 2, 'Fast breaders', 'race' ) );
+					break;
 					}
 				case 'silicate' : {
 					this.diplo.style = utils.BiasedRand(0, 1, 0, 0.75); 
 					this.race.mods.Add( new Mod('adaptation', '=', 1, 'Silicate adaptation', 'race' ) );
+					this.race.mods.Add( new Mod('research_biology', '*', 2, 'Silicate biological research', 'race' ) );
+					this.race.mods.Add( new Mod('research_mining', '*', 0.5, 'Mining expertise', 'race' ) );
+					this.race.mods.Add( new Mod('zone_output_mining', '*', 1.5, 'Silicate mining', 'race' ) );
+					this.race.mods.Add( new Mod('zone_output_research', '*', 0.75, 'Dumb as a rock', 'race' ) );
+					this.race.mods.Add( new Mod('pop_growth', '*', 0.5, 'Slow breaders', 'race' ) );
+					break;
 					}
 				case 'robotic' : {
 					this.diplo.style = utils.BiasedRand(0, 1, 1, 0.75); 
-					
+					this.race.mods.Add( new Mod('zone_output_stardock', '*', 1.5, 'Robotic shipyards', 'race' ) );
+					this.race.mods.Add( new Mod('zone_output_military', '*', 1.5, 'Robotic armies', 'race' ) );
+					this.race.mods.Add( new Mod('ship_maint', '=', 0, 'Free ship maintenance', 'race' ) );
+					this.race.mods.Add( new Mod('pop_growth', '*', 1.5, 'Fast breaders', 'race' ) );
+					break;
 					}
 				case 'cybernetic' : {
 					this.diplo.style = utils.BiasedRand(0, 1, 0.75, 0.75); 
-					
+					this.race.mods.Add( new Mod('diplo_skill', 'B', 0.5, 'Cybernetik translation', 'race' ) );
+					this.race.mods.Add( new Mod('resources_consumed', '*', 0.75, 'Efficient', 'race' ) );
+					break;
 					}
 				case 'transdimensional' : {
-					
+					this.race.mods.Add( new Mod('research_propulsion', '*', 2, 'Propulsion expertise', 'race' ) );
+					this.race.mods.Add( new Mod('mapspeed', '=', 10000, 'Transdimensional warp', 'race' ) );
+					this.race.mods.Add( new Mod('zone_output', '*', 0.5, 'Productivity-challenged', 'race' ) );
+					this.race.mods.Add( new Mod('pop_growth', '*', 0.75, 'Fast breaders', 'race' ) );
+					this.race.mods.Add( new Mod('troop_maint', '*', 2, 'Expensive troop maintenance', 'race' ) );
+					this.race.mods.Add( new Mod('ship_maint', '*', 2, 'Expensive ship maintenance', 'race' ) );
+					break;
 					}
 				case 'astral' : {
-					
+					this.race.mods.Add( new Mod('resources_consumed', '*', 2, 'Wasteful', 'race' ) );
+					this.race.mods.Add( new Mod('zone_growth', '*', 3, 'Astral turbo-growth', 'race' ) );
+					this.race.mods.Add( new Mod('zone_output', '*', 1.25, 'Productive', 'race' ) );
+					this.race.mods.Add( new Mod('pop_growth', '*', 0.5, 'Fast breaders', 'race' ) );
+					this.race.mods.Add( new Mod('troop_maint', '=', 0, 'Free troop maintenance', 'race' ) );
+					break;
 					}
 				}
 				
