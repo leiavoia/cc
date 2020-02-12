@@ -33,16 +33,16 @@
 						<!-- if researching, show turns remaining -->
 						<span if.bind="app.game.myciv.research_income">
 							<b if.bind="t.rp">
-								${(t.node.rp - t.rp) / app.game.myciv.research_income | ceil}
+								${(t.rpcost - t.rp) / app.game.myciv.research_income | ceil}
 							</b>
 							<!-- otherwise show turns estimated -->
 							<b else>
-								${t.node.rp / app.game.myciv.research_income | ceil}
+								${t.rpcost / app.game.myciv.research_income | ceil}
 							</b> Turns  &nbsp;&nbsp; 
 						</span>
-						<b>${t.node.rp|round}</b> RP  &nbsp;&nbsp; 
+						<b>${t.rpcost|round}</b> RP  &nbsp;&nbsp; 
 					</p>
-					<progress value="${t.rp}" max="${t.node.rp}" if.bind="t.rp"></progress>
+					<progress value="${t.rp}" max="${t.rpcost}" if.bind="t.rp"></progress>
 				</div>
 			</div>
 			
@@ -62,7 +62,7 @@
 				<p class="tagicons">
 					<span repeat.for="t of featured_node.node.tags" class="tagicon ${t}">${t|uppercaseFirst}</span>
 				</p>
-				<p class="desc bold good">${featured_node.node.rp} RP</p>
+				<p class="desc bold good">${featured_node.rpcost || featured_node.node.rp} RP</p>
 				<!-- <img src.bind="featured_node.node.img" /> -->
 				<div class="desc" innerhtml.bind="featured_node.node.desc"></div>
 				<template containerless if.bind="featured_node.node.yields.length > 1">

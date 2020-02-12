@@ -100,7 +100,7 @@ export let Techs = {
 			}
 		},		
 	BASE_TRANSDIMENSIONAL: {
-		name: "Base Trandimensional Technologies",
+		name: "Base Transdimensional Technologies",
 		onComplete( civ ) { 
 			}
 		},		

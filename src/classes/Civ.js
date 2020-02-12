@@ -297,7 +297,7 @@ export default class Civ {
 	
 	tech = {
 		techs: [], // links to items in the master Techs list
-		avail: [], // { node: <TechNode>, rp: <research points committed> }
+		avail: [], // { node: <TechNode>, rp: <research points committed>, rpcost: <RPs we pay, different from node.rp> }
 		avail_keys: {}, /// TechNode.key => bool
 		compl: [], // { node: <TechNode>, rp: <research points committed>, source: <civ_id or null> }
 		compl_keys: {}, /// TechNode.key => bool
@@ -320,11 +320,13 @@ export default class Civ {
 		
 	RecalcAvailableTechNodes() {
 		nodescannerloop:
-		for ( let key in Tech.TechNodes ) { 
+		for ( let key in Tech.TechNodes ) {
+			let t = Tech.TechNodes[key];
+			// ignore unresearchable techs
+			if ( t.rp <= 0 || t.hidden ) { continue; }
 			// if it isn't in either of our lists ...
 			if ( !this.tech.avail_keys[key] && !this.tech.compl_keys[key] ) { 
 				// check the prerequisites against our completed nodes
-				let t = Tech.TechNodes[key];
 				if ( t.requires && t.requires.length ) { 
 					for ( let req of t.requires ) { 
 						if ( !this.tech.compl_keys[req] ) { 
@@ -333,14 +335,19 @@ export default class Civ {
 						}
 					}
 				// all prerequisites met. add the node to available list
-				this.tech.avail.push( { node: t, rp: 0 } );
+				// RP cost can possibly be discounted per-type
+				let rpcost = t.rp;
+				for ( let tag of t.tags ) { 
+					rpcost = this.mods.Apply( rpcost, 'research_' + tag.toLowerCase() );
+					}
+				this.tech.avail.push( { node: t, rp: 0, rpcost:rpcost } );
 				this.tech.avail_keys[key] = true;
 				}
 			}
 		// sort project list
 		if ( !this.is_player || ( App.instance.options.soak && App.instance.options.ai ) ) {
 			// TODO: sort according to AI preference
-			let SortFunc = (a,b) => a.node.rp - b.node.rp;
+			let SortFunc = (a,b) => a.rpcost - b.rpcost;
 			this.tech.avail.sort(SortFunc);
 			}
 		}
@@ -350,11 +357,11 @@ export default class Civ {
 		this.research = this.research_income; // add to total for record keeping
 		let sanity_counter = 0;
 		while ( income > 0.001 && this.tech.avail.length && ++sanity_counter < 5 ) { 
-			let rp_applied = Math.min( income, this.tech.avail[0].node.rp - this.tech.avail[0].rp );
+			let rp_applied = Math.min( income, this.tech.avail[0].rpcost - this.tech.avail[0].rp );
 			income -= rp_applied;
 			this.tech.avail[0].rp += rp_applied;
 			// project completed?
-			if ( this.tech.avail[0].rp >= this.tech.avail[0].node.rp ) { 					
+			if ( this.tech.avail[0].rp >= this.tech.avail[0].rpcost ) { 					
 				// wrap it up
 				let cp = this.tech.avail[0];
 				this.CompleteTechNode( cp );
@@ -653,11 +660,11 @@ export default class Civ {
 					}
 				case 'plant' : {
 					this.diplo.style = utils.BiasedRand(0, 1, 0.25, 0.75); 
-					this.race.mods.Add( new Mod('sectors', '+', 5, 'plant race', 'race' ) );
+					this.race.mods.Add( new Mod('sectors', '+', 5, 'Plant race', 'race' ) );
 					}
 				case 'silicate' : {
 					this.diplo.style = utils.BiasedRand(0, 1, 0, 0.75); 
-					this.race.mods.Add( new Mod('adaptation', '=', 1, 'silicate adaptation', 'race' ) );
+					this.race.mods.Add( new Mod('adaptation', '=', 1, 'Silicate adaptation', 'race' ) );
 					}
 				case 'robotic' : {
 					this.diplo.style = utils.BiasedRand(0, 1, 1, 0.75); 
@@ -715,7 +722,7 @@ export default class Civ {
 		obj.diplo.enemies = [];
 		obj.tech = Object.assign( {}, this.tech ); // dont overwrite original object
 		obj.tech.techs = this.tech.techs.map( t => t.key );	
-		obj.tech.avail = this.tech.avail.map( t => ({key:t.node.key, rp:t.rp}) );
+		obj.tech.avail = this.tech.avail.map( t => ({key:t.node.key, rp:t.rp, rpcost:t.rpcost}) );
 		obj.tech.compl = this.tech.compl.map( t => ({key:t.node.key, rp:t.rp, source:(t.source ? t.source.id : null)}) );
 		delete(obj.tech.avail_keys);
 		delete(obj.tech.compl_keys);
@@ -774,7 +781,7 @@ export default class Civ {
 		this.tech.techs = this.tech.techs.map( t => Tech.Techs[t] );
 		this.tech.avail_keys = {};
 		for ( let t of this.tech.avail ) { this.tech.avail_keys[t.key] = true; }
-		this.tech.avail = this.tech.avail.map( t => ({ node: Tech.TechNodes[t.key], rp:t.rp }) );
+		this.tech.avail = this.tech.avail.map( t => ({ node: Tech.TechNodes[t.key], rp:t.rp, rpcost:t.rpcost }) );
 		this.tech.compl_keys = {};
 		for ( let t of this.tech.compl ) { this.tech.compl_keys[t.key] = true; }
 		this.tech.compl = this.tech.compl.map( t => ({ node: Tech.TechNodes[t.key], rp:t.rp, source:(t.source?catalog[t.source]:null) }) );
@@ -1212,6 +1219,8 @@ export default class Civ {
 			avg_rp = total_rp / civ.tech.compl.length;
 			}
 		for ( let t of this.tech.compl ) { 
+			// untradeable?
+			if ( t.node.hidden || t.node.rp <= 0 ) { continue; }
 			// trading partner already has this? 
 			if ( civ.tech.compl_keys[t.node.key] ) { continue; }
 			// tech brokering agreement in effect?

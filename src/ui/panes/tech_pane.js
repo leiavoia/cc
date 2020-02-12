@@ -60,7 +60,7 @@ export class TechPane {
 		this.announce = null;
 		this.announce_msg = null;
 		this.tech_avail = this.app.game.myciv.tech.avail; // reference
-		this.tech_compl = this.app.game.myciv.tech.compl.map( x => x ).filter( x => !x.node.hidden ).reverse();
+		this.tech_compl = this.app.game.myciv.tech.compl.map( x => x ).filter( x => !x.node.hidden && x.node.rp > 0 ).reverse();
 		if ( this.mode == 'available' ) { 
 			this.featured_node = this.tech_avail.length ? this.tech_avail[0] : null;
 			}
