@@ -49,6 +49,7 @@ export class Zone {
 		let funding_pct = ( this.val + growth_pct ) * min_resource_ratio;
 		for ( let k of Object.keys(this.inputs) ) {
 			let amount = this.inputs[k] * this.size * funding_pct * planet.throttle_input;
+			amount = planet.mods.Apply( amount, `resource_efficiency` );
 			this.resource_rec[k] = amount;
 			planet.resource_rec[k] += amount; // assume it gets zero'd out before this function is called
 			planet.acct_total[k] = (planet.acct_total[k] || 0 ) - amount;
@@ -98,6 +99,7 @@ export class Zone {
 						}
 					// check planetary and civ mods
 					amount = planet.mods.Apply( amount, `zone_output_${this.type}` );
+					amount = planet.mods.Apply( amount, `zone_output` );
 					standard_outputs[type]( planet, amount ); // do it
 					this.output_rec[type] = amount; 
 					planet.output_rec[type] += amount; // assume it gets zero'd out before this function is called
@@ -117,8 +119,10 @@ export class Zone {
 			);
 		let ratio_requesting = planet.throttle_input * ( this.val + growth );
 		for ( let k of Object.keys(this.inputs) ) {
-			this.resource_estm[k] = this.inputs[k] * this.size * ratio_requesting;
-		}
+			let amount = this.inputs[k] * this.size * ratio_requesting;
+			amount = planet.mods.Apply( amount, `resource_efficiency` );
+			this.resource_estm[k] = amount;
+			}
 		if ( this.log ) { console.log('Estimate, growth:',growth,'ratio_requesting:',ratio_requesting); }
 		return this.resource_estm;
 		}	

@@ -7,7 +7,7 @@ import * as AI from './AI';
 export function AddGreenMites( app ) { 
 	let civ = new Civ();
 	civ.race.is_monster = true;
-	civ.diplo.contactable = false;
+	civ.diplo.skill = false;
 	civ.name = 'Planevore Mite';
 	civ.diplo_img = 'img/ships/monsters/mite_green_crop.png';
 	civ.color_rgb = [116, 175, 77];
@@ -46,7 +46,7 @@ export function AddGreenMites( app ) {
 export function AddBlueSpaceAmoeba( app ) { 
 	let civ = new Civ();
 	civ.race.is_monster = true;
-	civ.diplo.contactable = false;
+	civ.diplo.skill = false;
 	civ.name = 'Blue Space Amoebas';
 	civ.diplo_img = 'img/races/space_amoeba_blue.jpg';
 	civ.color_rgb = [20,100,230];
@@ -78,7 +78,7 @@ export function AddBlueSpaceAmoeba( app ) {
 export function AddGiantSpaceAmoeba( app ) { 
 	let civ = new Civ();
 	civ.race.is_monster = true;
-	civ.diplo.contactable = false;
+	civ.diplo.skill = false;
 	civ.name = 'Giant Space Amoebas';
 	civ.diplo_img = 'img/races/space_amoeba_yellow.jpg';
 	civ.color_rgb = [240,240,50];
@@ -110,7 +110,7 @@ export function AddGiantSpaceAmoeba( app ) {
 export function AddRedSpaceAmoeba( app ) { 
 	let civ = new Civ();
 	civ.race.is_monster = true;
-	civ.diplo.contactable = false;
+	civ.diplo.skill = false;
 	civ.name = 'Red Space Amoebas';
 	civ.diplo_img = 'img/races/space_amoeba_red.jpg';
 	civ.color_rgb = [230,40,10];

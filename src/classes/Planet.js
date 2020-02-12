@@ -588,7 +588,8 @@ export default class Planet {
 					let maxpct = 1 - item_pct; // account for partially completed items
 					for ( let k in item.cost ) {
 						let resource_avail = ( k == 'labor' ) ? labor_avail : this.owner.resources[k];
-						maxpct = Math.min( maxpct, 1.0, resource_avail/item.cost[k] );
+						let cost = ( k == 'labor' ) ? item.cost[k] : this.mods.Apply( item.cost[k], `resource_efficiency` );
+						maxpct = Math.min( maxpct, 1.0, resource_avail/cost );
 						}
 					
 					// no work can be done; skip item
@@ -602,6 +603,7 @@ export default class Planet {
 							}
 						else { 
 							est[k] = (est[k]||0) + (maxpct * item.cost[k]);
+							est[k] = this.mods.Apply( est[k], `resource_efficiency` )
 							}
 						}
 					
@@ -655,7 +657,7 @@ export default class Planet {
 						maxpct = Math.min( maxpct, 1.0, (ship_labor_avail+def_labor_avail)/item.cost[k] );
 						}
 					else { 
-						maxpct = Math.min( maxpct, 1.0, this.owner.resources[k]/item.cost[k]  );
+						maxpct = Math.min( maxpct, 1.0, this.owner.resources[k] / this.mods.Apply( item.cost[k], `resource_efficiency` ) );
 						}
 					}
 					
@@ -690,7 +692,7 @@ export default class Planet {
 							}
 						}
 					else { 
-						let total = maxpct * item.cost[k];
+						let total = maxpct * this.mods.Apply( item.cost[k], `resource_efficiency` );
 						this.owner.resources[k] -= total;
 						this.owner.resource_spent[k] += total;
 						accounting[k] = (accounting[k]||0) - total;
@@ -1083,13 +1085,13 @@ export default class Planet {
 export const PlanetAttrs = {
 	PHARMACOPIA: { 
 		name: 'Pharmacopia',
-		desc: 'This world has an abundance of medicinal organisms.',
+		desc: '+50% population growth',
 		chance: 100,
 		mods: [ new Mod( 'pop_growth', '*', 1.5, '', this ) ],
 		},
 	TOXIC_FLORA: { 
 		name: 'Toxic Flora',
-		desc: '-50% Pop Growth',
+		desc: '-50% population growth',
 		chance: 100,
 		mods: [ new Mod( 'pop_growth', '*', 0.5, '', this ) ],
 		},

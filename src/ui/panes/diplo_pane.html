@@ -30,7 +30,7 @@
 								
 		<div id="civ_list">
 			<template containerless repeat.for="[c,acct] of app.game.myciv.diplo.contacts">
-				<div if.bind="c.diplo.contactable && c.planets.length" 
+				<div if.bind="c.diplo.skill && c.planets.length" 
 					css="border-color: ${c.color}; background-color: rgba( ${c.color_rgb[0]}, ${c.color_rgb[1]}, ${c.color_rgb[2]}, 0.25 ); "
 					class="${!acct.in_range ? 'ghost' : ''}">
 					
@@ -118,7 +118,7 @@
 								<span if.bind="c.diplo.rep &gt;= 20 && c.diplo.rep &lt;= 40">They are <em>decent galactic citizens</em>.</span>
 								<span if.bind="c.diplo.rep &gt;= 40">They are <em>excellent galactic citizens</em>.</span>
 								
-								<span if.bind="!c.diplo.contactable">They have <em>refused all contact</em>&nbsp;with foreigners.</span>
+								<span if.bind="!c.diplo.skill">They have <em>refused all contact</em>&nbsp;with foreigners.</span>
 								 
 								<span if.bind="c.diplo.emotion &lt; 0.33">They are very <em>logical</em>&nbsp;beings and tend not to react emotionally.</span> 
 								<span if.bind="c.diplo.emotion &gt; 0.66">They are rather <em>emotional</em>&nbsp;beings.</span>

@@ -110,7 +110,7 @@ export let Techs = {
 		desc: '<b>+50 Ship Speed</b>. Makes all ships go faster.',
 		tags: ['propulsion'],
 		onComplete( civ ) { 
-			civ.mods.Add( new Mod('speed', '+', 50, this.name) );
+			civ.mods.Add( new Mod('mapspeed', '+', 50, this.name) );
 			civ.fleets.forEach( f => f.ReevaluateStats() );
 			}
 		},
@@ -119,7 +119,7 @@ export let Techs = {
 		desc: '<b>+100 Ship Speed</b>. Makes all ships go even faster.',
 		tags: ['propulsion'],
 		onComplete( civ ) { 
-			civ.mods.Add( new Mod('speed', '+', 100, this.name) );
+			civ.mods.Add( new Mod('mapspeed', '+', 100, this.name) );
 			civ.fleets.forEach( f => f.ReevaluateStats() );
 			}
 		},
@@ -128,7 +128,7 @@ export let Techs = {
 		desc: '<b>+200 Ship Speed</b>. Makes all ships go screaming fast.',
 		tags: ['propulsion'],
 		onComplete( civ ) { 
-			civ.mods.Add( new Mod('speed', '+', 200, this.name) );
+			civ.mods.Add( new Mod('mapspeed', '+', 200, this.name) );
 			civ.fleets.forEach( f => f.ReevaluateStats() );
 			}
 		},
@@ -137,7 +137,7 @@ export let Techs = {
 		desc: '<b>+350 Ship Speed</b>. Makes all ships go like a flying mammal out of the underworld.',
 		tags: ['propulsion'],
 		onComplete( civ ) { 
-			civ.mods.Add( new Mod('speed', '+', 350, this.name) );
+			civ.mods.Add( new Mod('mapspeed', '+', 350, this.name) );
 			civ.fleets.forEach( f => f.ReevaluateStats() );
 			}
 		},
@@ -339,10 +339,11 @@ export let Techs = {
 		
 	XENOCOMM1: {
 		name: "Xeno Communication Skills",
-		desc: '<b>+1 Communication</b>.',
+		desc: '<b>+1 Communication Skills</b>.',
 		tags: ['socialogy'],
-		onComplete( civ ) { 
-			civ.diplo.skill += 0.1; 
+		onComplete( civ ) {
+			civ.mods.Add( new Mod('diplo_skill', '+', 0.1, this.name, 'technology' ) );
+			civ.diplo.skill = civ.mods.Apply( 0, 'diplo_skill' );
 			for ( let [contact,acct] of civ.diplo.contacts ) {
 				const overlap = civ.CommOverlapWith(contact);
 				acct.comm = overlap;
@@ -352,10 +353,11 @@ export let Techs = {
 		},
 	XENOCOMM2: {
 		name: "Xeno Linguistic Mastery",
-		desc: '<b>+1 Communication</b>.',
+		desc: '<b>+1 Communication Skills</b>.',
 		tags: ['socialogy'],
 		onComplete( civ ) { 
-			civ.diplo.skill += 0.1; 
+			civ.mods.Add( new Mod('diplo_skill', '+', 0.1, this.name, 'technology' ) );
+			civ.diplo.skill = civ.mods.Apply( 0, 'diplo_skill' );
 			for ( let [contact,acct] of civ.diplo.contacts ) {
 				const overlap = civ.CommOverlapWith(contact);
 				acct.comm = overlap;
@@ -364,11 +366,12 @@ export let Techs = {
 			} 
 		},
 	XENOCOMM3: {
-		name: "Alien Negotiation Skills",
-		desc: '<b>+1 Communication</b>.',
+		name: "Universal Communications",
+		desc: '<b>Communicate with any civilization.</b>.',
 		tags: ['socialogy'],
 		onComplete( civ ) { 
-			civ.diplo.skill += 0.1; 
+			civ.mods.Add( new Mod('diplo_skill', '=', 1, this.name, 'technology' ) );
+			civ.diplo.skill = civ.mods.Apply( 0, 'diplo_skill' );
 			for ( let [contact,acct] of civ.diplo.contacts ) {
 				const overlap = civ.CommOverlapWith(contact);
 				acct.comm = overlap;

@@ -2280,8 +2280,8 @@ export class AIShipDesignObjective extends AIObjective {
 		let engine = civ.avail_ship_comps
 			.filter( c => c.type=='engine' )
 			.sort( (a,b) => {
-				const a_val = a.mods.filter( m => m.abil=='speed' ).pop() || 0;
-				const b_val = b.mods.filter( m => m.abil=='speed' ).pop() || 0;
+				const a_val = a.mods.filter( m => m.abil=='mapspeed' ).pop() || 0;
+				const b_val = b.mods.filter( m => m.abil=='mapspeed' ).pop() || 0;
 				return a_val - b_val;
 				})
 			.pop();

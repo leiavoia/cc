@@ -224,7 +224,7 @@ let anom_list = {
 		onComplete: function (fleet) {
 			this.name = 'Hyperspace Wrinkle';
 			let amount = Math.random() > 0.5 ? 50 : 100;
-			fleet.owner.mods.Add( new Mod('speed', '+', amount, this.name) );
+			fleet.owner.mods.Add( new Mod('mapspeed', '+', amount, this.name) );
 			fleet.owner.fleets.forEach( f => f.ReevaluateStats() );
 			this.post_desc = this.post_desc.replace('{AMOUNT}',amount);
 			}

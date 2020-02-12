@@ -77,9 +77,8 @@ export default class Civ {
 	// rocks - plants - organic - cyborgs - robots - energy - trandimensional
 	diplo = {
 		contacts: new Map(), // civ => { lovenub, attspan, treaties, etc. }
-		contactable: true,
 		style: 0.5, // 0..1, what kind of communication type this race uses 
-		skill: 0.25, // 0..1, the range of communication skills this race has.
+		skill: 0.25, // 0..1, the range of communication skills this race has. Zero indicates inability to communicate.
 		dispo: 0.5, // 0..1, lovenub starting disposition when we meet other races.
 		offer_ok_at: 0, // anything over is a good deal
 		offer_counter_at: -0.5, // anything beteen this and `ok` gets an automatic counter-offer 
@@ -92,7 +91,7 @@ export default class Civ {
 		};
 		
 	CommOverlapWith( civ ) { 
-		if ( !this.diplo.contactable || !civ.diplo.contactable ) { return 0; }
+		if ( !this.diplo.skill || !civ.diplo.skill ) { return 0; }
 		let min1 = utils.Clamp( this.diplo.style - this.diplo.skill, 0, 1 );
 		let max1 = utils.Clamp( this.diplo.style + this.diplo.skill, 0, 1 );
 		let range1 = max1 - min1;
@@ -298,9 +297,9 @@ export default class Civ {
 	
 	tech = {
 		techs: [], // links to items in the master Techs list
-		avail: [], // { node: <TechNode>, rp: <research point committed> }
+		avail: [], // { node: <TechNode>, rp: <research points committed> }
 		avail_keys: {}, /// TechNode.key => bool
-		compl: [], // { node: <TechNode>, rp: <research point committed>, source: <civ_id or null> }
+		compl: [], // { node: <TechNode>, rp: <research points committed>, source: <civ_id or null> }
 		compl_keys: {}, /// TechNode.key => bool
 		Current() { return this.avail.length ? this.avail[0] : null; }
 		};
@@ -1316,7 +1315,7 @@ export default class Civ {
 			// they attacked us and it led to war. surprise!
 			if ( !acct.treaties.has('WAR') && outrage >= 0.5 ) {
 				this.CreateTreaty( 'WAR', civ );
-				if ( civ.diplo.contactable && this.diplo.contactable ) { 
+				if ( civ.diplo.skill && this.diplo.skill ) { 
 					if ( acct.treaties.has('CEASEFIRE') ) {
 						message = `Consider our ceasefire agreement null and void. It will be easier to simply exterminate you.`;
 						}
@@ -1328,7 +1327,7 @@ export default class Civ {
 				}
 			else if ( acct.treaties.has('CEASEFIRE') || acct.treaties.has('NON_AGGRESSION') ) {
 				this.CreateTreaty( 'WAR', civ );
-				if ( civ.diplo.contactable && this.diplo.contactable ) { 
+				if ( civ.diplo.skill && this.diplo.skill ) { 
 					message = `Our agreement is no longer convenient. Your continued presence in the galaxy is a thorn in our side that will soon to be removed.`;
 					App.instance.game.QueueAudience( civ, {message} );
 					}
@@ -1381,7 +1380,7 @@ export default class Civ {
 					acct.attspan -= (acct.lovenub <= war_trigger_value+0.25) ? 1.0 : 0.5; // silent treatment
 					acct.attspan = Math.max(acct.attspan,0);
 					// we attacked them
-					if ( civ.is_player && civ.diplo.contactable && this.diplo.contactable ) {
+					if ( civ.is_player && civ.diplo.skill && this.diplo.skill ) {
 						if ( acct.treaties.has('WAR') ) {
 							message = `Your attack on ${starname} was unfortunate... <i>for you</i>. Now your suffering will be legendary. To war!`;
 							}
@@ -1402,7 +1401,7 @@ export default class Civ {
 		if ( acct && !acct.treaties.has('WAR') ) { 
 			this.LogDiploEvent( civ, -100, 'invasion', `You invaded ${groundcombat.planet.name}.` );
 			this.CreateTreaty( 'WAR', civ ); // this also cancels all other treaties
-			if ( civ.diplo.contactable && this.diplo.contactable ) { 
+			if ( civ.diplo.skill && this.diplo.skill ) { 
 				// audience / scolding
 				if ( civ.is_player ) { 
 					let message = `Invading ${groundcombat.planet.name} will be remembered as the greatest of your mistakes. Prepare for your demise. To war!`;
@@ -1529,17 +1528,19 @@ export default class Civ {
 				p.RecordHistory();
 				}
 			for ( let t of p.troops ) { 
-				this.econ.troop_maint += t.bp.cost.labor * 0.15; // HACK TODO tech and civ stats may change
+				this.econ.troop_maint += t.bp.cost.labor * 0.15; // [!]MAGICNUMBER
 				}
 			}
 		for ( let f of this.fleets ) {
 			for ( let s of f.ships ) { 
-				this.econ.ship_maint += s.bp.cost.labor * 0.015; // HACK TODO tech and civ stats may change
+				this.econ.ship_maint += s.bp.cost.labor * 0.015; // [!]MAGICNUMBER
 				for ( let t of s.troops ) { 
-					this.econ.troop_maint += t.bp.cost.labor * 0.15; // HACK TODO tech and civ stats may change
+					this.econ.troop_maint += t.bp.cost.labor * 0.15; // [!]MAGICNUMBER
 					}
 				}
 			}
+		this.econ.troop_maint = this.mods.Apply( this.econ.troop_maint, 'troop_maint' );
+		this.econ.ship_maint = this.mods.Apply( this.econ.ship_maint, 'ship_maint' );
 		// treaty income
 		for ( let [k,contact] of this.diplo.contacts ) { 
 			if ( contact.treaties.has('TRADE') ) {

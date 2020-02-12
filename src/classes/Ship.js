@@ -335,7 +335,7 @@ export class ShipBlueprint {
 		this.armor = Math.floor( this.mods.Apply( this.hull, 'armor', null ) ) - this.hull;
 		this.shield = Math.floor( this.mods.Apply( 0, 'shield', parent ) );
 		this.combatspeed = Math.floor( this.mods.Apply( 1, 'combatspeed', parent ) );
-		this.speed = Math.floor( this.mods.Apply( 100, 'speed', parent ) );
+		this.speed = Math.floor( this.mods.Apply( 100, 'mapspeed', parent ) );
 		this.colonize = Math.floor( this.mods.Apply( 0, 'colonize', parent ) );
 		this.research = Math.floor( this.mods.Apply( 0, 'research', parent ) ); 
 		this.troopcap = Math.floor( this.mods.Apply( 0, 'troopcap', parent ) ); 

@@ -19,7 +19,7 @@ export const ShipComponentList = {
 		type: 'engine',
 		mx: 'engine',
 		mods: [
-			new Mod( 'speed', '=', 250, '', null ),
+			new Mod( 'mapspeed', '=', 250, '', null ),
 			new Mod( 'mass', '*', 2.0, '', null ),
 			],
 		scaled: true,
@@ -31,7 +31,7 @@ export const ShipComponentList = {
 		type: 'engine',
 		mx: 'engine',
 		mods: [
-			new Mod( 'speed', '=', 400, '', null ),
+			new Mod( 'mapspeed', '=', 400, '', null ),
 			new Mod( 'mass', '*', 1.4, '', null ),
 			],
 		scaled: true,
@@ -43,7 +43,7 @@ export const ShipComponentList = {
 		type: 'engine',
 		mx: 'engine',
 		mods: [
-			new Mod( 'speed', '=', 600, '', null ),
+			new Mod( 'mapspeed', '=', 600, '', null ),
 			new Mod( 'mass', '*', 1.5, '', null ),
 			],
 		scaled: true,

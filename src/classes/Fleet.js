@@ -140,7 +140,7 @@ export default class Fleet {
 			this.health += ship.hull + ship.armor;
 			this.healthmax += ship.bp.hull + ship.bp.armor;
 			}
-		this.speed = this.mods.Apply( this.speed, 'speed' );
+		this.speed = this.mods.Apply( this.speed, 'mapspeed' );
 		this.FireOnUpdate();
 		}
 		
