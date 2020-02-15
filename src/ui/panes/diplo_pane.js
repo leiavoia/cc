@@ -1,9 +1,9 @@
 export class DiploPane {
 
-	
 	modes = {}; // maps civ_id to current panel mode for each civ panel
 	
 	activate(data) {
+		if ( !data ) { return false; }
 		this.app = data.app;
 		}
 		
