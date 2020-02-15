@@ -339,6 +339,8 @@ export default class Game {
 		for ( let s of this.galaxy.stars ) { 
 			for ( let p of s.planets ) {
 				if ( p.owner ) {  					
+					// OPTIMIZATION: flush precomputed values
+					p.adaptation_precomp = null;
 					// HACK zone production; TODO: MOVE THIS TO planet.js
 					for ( let k in p.acct_total ) { p.acct_total[k] = 0; }
 					for ( let k in p.output_rec ) { p.output_rec[k] = 0; }

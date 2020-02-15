@@ -25,6 +25,7 @@ Usage:
 export class Modlist {
 	mods = [];
 	parent = null;
+	cache = {};
 	
 	constructor ( parent = null ) { 
 		if ( parent ) { 
@@ -65,6 +66,7 @@ export class Modlist {
 	Add( mod ) {
 		this.mods.push(mod);
 		this.mods.sort( Modlist.SortMods );
+		this.ClearCache( mod.abil );
 		}
 		
 	// It MUST match ability.
@@ -80,11 +82,20 @@ export class Modlist {
 			if ( value && value != m.val ) { continue; }
 			this.mods.splice( k, 1 );
 			}
+		this.ClearCache( ability );
 		}
 		
+	ClearCache( ability ) {
+		this.BootCacheIfEmpty( ability );
+		this.cache[ability].key++;
+		}
+		 
 	Remove( m ) { 
 		let i = this.mods.indexOf(m);
-		if ( i >= 0 ) { this.mods.splice( i, 1 ); }
+		if ( i >= 0 ) { 
+			this.mods.splice( i, 1 ); 
+			this.ClearCache( ability );
+			}
 		}
 		
 	// get a list of mods
@@ -106,31 +117,49 @@ export class Modlist {
 	// use_parent: if TRUE, uses builtin this.parent.
 	// 	if set to Modlist object, uses that object directly :-)
 	Apply( value, ability, use_parent = true ) {
-		// TODO: OPTIMIZATION HINT: we could theoretically keep a flattened, sorted 
-		// list of mods at the ready to avoid doing this every time. Having each ModList
-		// call Apply() against its parent is faster, but creates problems with sorting,
-		// especially with Base (B) and Equals (=), among others. 
-		let mods = this.CollectMods(use_parent).sort( Modlist.SortMods );
-		for ( let m of mods ) {
-			if ( m.abil == ability ) {
-				value = m.Apply(value);
-				}
+		let p = this.QualifyParent( use_parent );
+		// if the cache has changed since last time, reacquire the mods and set the cache
+		let strkey = this.StrKey( ability, p ); // also starts cache if not set
+		let cache = this.cache[ability];
+		if ( strkey != cache.strkey ) {
+			// console.log('caching ' + ability);
+			cache.mods = 
+				this.CollectMods(p)
+				.filter( m => m.abil === ability )
+				.sort( Modlist.SortMods );
+			cache.strkey = strkey;
 			}
+		else {
+			// console.log('hit ' + ability);
+			}
+		// now modify the value
+		for ( let m of cache.mods ) { value = m.Apply(value); }
 		return value;
 		}
 		
+	StrKey( ability, p ) {
+		this.BootCacheIfEmpty( ability );
+		p = (p instanceof Modlist) ? p : this.parent;
+		return this.cache[ability].key + '-' + ( p ? p.StrKey() : '');
+		}
+		
+	BootCacheIfEmpty( ability ) { 
+		if ( !this.cache.hasOwnProperty(ability) ) { 
+			this.cache[ability] = { key: 0, strkey: 0, mods: [] };
+			}
+		}
+		
+	QualifyParent( p ) {
+		if ( p instanceof Modlist ) { return p; }
+		else if ( p && this.parent && this.parent instanceof Modlist ) { return this.parent; }
+		return null;
+		}
+	
 	// returns my mods and my parents' mods recursively.
 	CollectMods( use_parent = true ) {
-		let parent = null;
-		// if i have a parent modlist, get those mods too
-		if ( use_parent instanceof Modlist ) { 
-			parent = use_parent;
-			}
-		else if ( use_parent && this.parent && this.parent instanceof Modlist ) { 
-			parent = this.parent
-			}
-		if ( !parent ) { return this.mods; } // shortcut
-		return this.mods.slice().concat( parent.CollectMods(true) );
+		let p = this.QualifyParent( use_parent );
+		if ( !p ) { return this.mods; } // shortcut
+		return this.mods.slice().concat( p.CollectMods(true) );
 		}
 	
 	static SortMods( a, b ) {
@@ -151,6 +180,18 @@ export class Modlist {
 	
 	};
 
+const func_map = {
+	'H': function(v,m) { return m > v ? m : v; }, // highest of
+	'L': function(v,m) { return m < v ? m : v; }, // lowest of
+	'^': function(v,m) { return Math.pow( v, m ); }, // to the power of (i.e. "exponent")
+	'%': function(v,m) { return v * (m / 100); },
+	'*': function(v,m) { return v * m; },
+	'/': function(v,m) { return v / m; },
+	'+': function(v,m) { return v + m; },
+	'-': function(v,m) { return v - m; },
+	'=': function(v,m) { return m; }, // per se "is" (i.e. "ends with")
+	'B': function(v,m) { return m; }, // [B]ase value (i.e. "starts with")
+	};
 export class Mod { 
 	abil = null; // (string) what this mod affects
 	label = ''; // (string)
@@ -165,19 +206,7 @@ export class Mod {
 		this.prov = provider;
 		}
 	Apply( value ) { 
-		switch ( this.op ) { 
-			case 'H': { return this.val > value ? this.val : value; } // highest of
-			case 'L': { return this.val < value ? this.val : value; } // lowest of
-			case '^': { return Math.pow( value, this.val ); } // to the power of (i.e. "exponent")
-			case '%': { return value * (this.val / 100); }
-			case '*': { return value * this.val; }
-			case '/': { return value / this.val; }
-			case '+': { return value + this.val; }
-			case '-': { return value - this.val; }
-			case '=': { return this.val; } // per se "is" (i.e. "ends with")
-			case 'B': { return this.val; } // [B]ase value (i.e. "starts with")
-			default: { return value; }
-			}
+		return func_map[this.op]( value, this.val );
 		}
 	toDisplay( precision = 0 ) { 
 		switch ( this.op ) { 

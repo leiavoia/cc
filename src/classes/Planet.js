@@ -520,15 +520,21 @@ export default class Planet {
 		
   	// returns an integer value which may be negative
 	Adaptation( civ ) {
+		// OPTIMIZATION: This function gets called so much it needs to be omptimized.
+		// We precompute values for the owning civ, and take a shortcut for silicates.
+		// It would also be helpful if code calling this function would cache the result.
 		// TODO: we may wish to differentiate between a civ as a planet owner and
 		// the type of population that actually lives here. There may be differences in 
 		// natural adaptability not related to technology.
 		if ( !civ && !this.owner ) { return 0; }
 		if ( !civ && this.owner ) { civ = this.owner; }
-		// if ( civ.race.type == 'silicate' ) { return 1; } // use this to optimize for speed if using mods is too slow
+		if ( civ.race.type == 'silicate' ) { return 1; } // use this to optimize for speed if using mods is too slow
+		if ( civ == this.owner && this.adaptation_precomp!==null ) { return this.adaptation_precomp; }
 		let diff = civ.race.env.adaptation
 			-( Math.abs( this.atm - civ.race.env.atm ) + Math.abs( this.temp - civ.race.env.temp ) + Math.abs( this.grav - civ.race.env.grav ) );
-		return Math.round( civ.mods.Apply(diff,'adaptation') );
+		diff = this.mods.Apply( diff, 'adaptation' );
+		if ( civ == this.owner ) { this.adaptation_precomp = diff; }
+		return diff;
 		}
   	// returns true if the planet can be settled by the race
 	Habitable( civ ) {
@@ -905,10 +911,11 @@ export default class Planet {
 		this.econ.GDP = 0;
 		this.econ.PCI = this.base_PCI + this.bonus_PCI;
 		this.econ.GF = 1.0;
+		this.UpdateOwnership();
 		this.maxpop = this.size + this.Adaptation( this.owner );
 		this.maxpop = this.mods.Apply( this.maxpop, 'maxpop' );
 		if ( !this.zones.length ) { 
-			if ( !owner.planets.length ) { 
+			if ( owner.planets.length <= 1 ) { 
 				this.AddZone( 'CIVCAPITOL', 1 ); 
 				}
 			else {
@@ -916,7 +923,6 @@ export default class Planet {
 				}
 			}
 		this.AddBuildQueueMakeworkProject('tradegoods');
-		this.UpdateOwnership();
 		this.established = App.instance.game.turn_num;
 		if ( !App.instance.options.soak && this.owner.is_player ) { 
 			App.instance.game.RecalcStarRanges();
