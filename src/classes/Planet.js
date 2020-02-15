@@ -981,6 +981,15 @@ export default class Planet {
 		this.AddBuildQueueMakeworkProject('tradegoods'); 
 		this.owner = invader;
 		this.UpdateOwnership();
+		// strip out any zones that do not meet our adaptation level.
+		// this happens when conquering an advanced civilization. 
+		// We may actually want to retain this as a "feature", but not sure.
+		let adapt = this.Adaptation(this.owner);
+		for ( let i = this.zones.length-1; i >= 0; i-- ) {
+			if ( this.zones[i].type == 'government' ) { continue; }
+			if ( this.zones[i].minsect > adapt ) { this.zones.splice(i,1); }
+			else if ( this.zones[i].sect > adapt ) { this.zones[i].Trim( this.zones[i].sect - adapt ); }
+			}
 		if ( !App.instance.options.soak && ( previous_owner.isplayer && this.star.accts.get(previous_owner).planets == 0 ) ) { 
 			App.instance.game.RecalcStarRanges();
 			}

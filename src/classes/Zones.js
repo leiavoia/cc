@@ -134,10 +134,10 @@ export class Zone {
 		z.val = v / z.size;
 		}
 				
-	Trim() { 
+	Trim( n=1 ) { 
 		if ( this.sect > this.minsect ) { 
 			let v = this.val * this.size;
-			this.sect--;
+			this.sect -= n;
 			this.size = FastFactorial( this.sect );	
 			// uncomment if you want to preserve developed infrastructure:
 			// this.val = Math.max( 1, v / this.size );
@@ -429,7 +429,7 @@ export const ZoneList = {
 		desc: 'Allows troops to be trained.',
 		inputs: { $: 8 },
 		outputs: { def: 10 },
-		minsect:2,
+		minsect:1,
 		maxsect:8,
 		gf: 15,
 		tier: 0
@@ -440,7 +440,7 @@ export const ZoneList = {
 		desc: 'Allows troops to be trained.',
 		inputs: { $: 16, g:1, b:1, c:1 },
 		outputs: { def: 30 },
-		minsect:4,
+		minsect:3,
 		maxsect:12,
 		gf: 25,
 		tier: 1

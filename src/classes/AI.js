@@ -1346,8 +1346,10 @@ export class AIPlanetsObjective extends AIObjective {
 		
 	// Completely zones a planet. Can be used for AI or automation settings
 	ZonePlanet( p ) {
+		let adapt = p.Adaptation();
 		// no zones that require special resources we don't have or shortly wont have
 		let zones_avail = p.owner.avail_zones.filter( z => {
+			if ( z.minsect > adapt ) { return false; } 
 			for ( let k in z.inputs ) {
 				let income = p.owner.resource_income[k] - p.owner.resource_spent[k];
 				if ( ( k != '$' && p.owner.resources[k] <= 0 ) 
