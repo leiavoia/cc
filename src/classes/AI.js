@@ -1304,7 +1304,7 @@ export class AIPlanetsObjective extends AIObjective {
 		// put issues of current strategic importantce here
 		// TODO: this could be moved up a layer and done once per turn instead.
 		let global_zoning = {
-			housing: 3,
+			housing: 5,
 			mining: 3,
 			stardock: 2,
 			economy: 1,
@@ -1378,10 +1378,17 @@ export class AIPlanetsObjective extends AIObjective {
 					if ( candidates.length ) { 
 						// let natural_values = { o:3, s:1, m:2, r:4, g:4, b:4, c:7, v:9, y:8, };
 						let zone = candidates.sort( (a,b) => {
-							let a_total = 0, b_total = 0;
-							for ( let k in a.outputs ) { a_total += p.resources[k] * (5/p.owner.resource_supply[k]); }
-							for ( let k in b.outputs ) { b_total += p.resources[k] * (5/p.owner.resource_supply[k]); }
-							return a_total - b_total;
+							let a_total = 0, b_total = 0; // resources available weighted by current supply/demand
+							let a_raw = 0, b_raw = 0; // raw head-count of resources available in case of tie
+							for ( let k in a.outputs ) { 
+								a_total += (a.outputs[k] * p.resources[k]) * ( p.owner.resource_estm[k] > 0 ? (5/p.owner.resource_supply[k]) : 1 );
+								a_raw += p.resources[k] * a.outputs[k]; 
+								}
+							for ( let k in b.outputs ) { 
+								b_total += (b.outputs[k] * p.resources[k]) * ( p.owner.resource_estm[k] > 0 ? (5/p.owner.resource_supply[k]) : 1 );
+								b_raw += p.resources[k] * b.outputs[k]; 
+								}
+							return (a_total - b_total) || (a_raw - b_raw);
 							}).pop();
 						p.AddZone(zone.key);
 						break;

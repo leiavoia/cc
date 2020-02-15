@@ -2229,6 +2229,7 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 .planet .zone.SHIP2 { background-image: url(../img/icons/svg/stardock01.svg); }
 .planet .zone.SHIP3 { background-image: url(../img/icons/svg/stardock02.svg); }
 .planet .zone.SHIP4 { background-image: url(../img/icons/svg/moon.svg); }
+.planet .zone.MINE0_OMNIMINER { background-image: url(../img/icons/svg/hexagon2.svg); }
 .planet .zone.MINE0A { background-image: url(../img/icons/svg/cube01.svg); }
 .planet .zone.MINE0B { background-image: url(../img/icons/svg/cube01.svg); }
 .planet .zone.MINE0C { background-image: url(../img/icons/svg/cube01.svg); }

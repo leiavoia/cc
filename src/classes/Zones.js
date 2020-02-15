@@ -245,8 +245,63 @@ export const ZoneList = {
 		},		
 		
 	// ------[ HOUSING ]-----------------\/------------------------
-	HOUSING0A: {
-		name: 'Low-Density Housing',
+	HOUSING_BASE_ORGANIC: {
+		name: 'Organic Housing',
+		type: 'housing',
+		desc: 'Provides basic civil services, allowing population to grow.',
+		inputs: { o: 2, s: 0.5, m: 0.5 },
+		outputs: { hou: 2 },
+		minsect:1,
+		maxsect:8,
+		gf: 10,
+		tier: 0
+		},
+	HOUSING_BASE_PLANT: {
+		name: 'Plantae Housing',
+		type: 'housing',
+		desc: 'Provides basic civil services, allowing population to grow.',
+		inputs: { o: 1.5, s: 1.5 },
+		outputs: { hou: 2 },
+		minsect:1,
+		maxsect:8,
+		gf: 10,
+		tier: 0
+		},
+	HOUSING_BASE_ROBOTIC: {
+		name: 'Robotic Housing',
+		type: 'housing',
+		desc: 'Provides basic civil services, allowing population to grow.',
+		inputs: { o: 0.5, m: 2.5 },
+		outputs: { hou: 2 },
+		minsect:1,
+		maxsect:8,
+		gf: 10,
+		tier: 0
+		},
+	HOUSING_BASE_CYBERNETIC: {
+		name: 'Cybernetic Housing',
+		type: 'housing',
+		desc: 'Provides basic civil services, allowing population to grow.',
+		inputs: { o: 1.5, m: 1.5 },
+		outputs: { hou: 2 },
+		minsect:1,
+		maxsect:8,
+		gf: 10,
+		tier: 0
+		},
+	HOUSING_BASE_SILICATE: {
+		name: 'Silicate Housing',
+		type: 'housing',
+		desc: 'Provides basic civil services, allowing population to grow.',
+		inputs: { s: 3 },
+		outputs: { hou: 2 },
+		minsect:1,
+		maxsect:8,
+		gf: 10,
+		tier: 0
+		},
+	HOUSING_BASE_ASTRAL: {
+		name: 'Astral Housing',
 		type: 'housing',
 		desc: 'Provides basic civil services, allowing population to grow.',
 		inputs: { o: 1, s: 1, m: 1 },
@@ -256,11 +311,33 @@ export const ZoneList = {
 		gf: 10,
 		tier: 0
 		},
+	HOUSING_BASE_TRANSDIMENSIONAL: {
+		name: 'Transdimensional Housing',
+		type: 'housing',
+		desc: 'Provides basic civil services, allowing population to grow.',
+		inputs: { o: 1.5, s: 1.5, m: 1.5 },
+		outputs: { hou: 2 },
+		minsect:1,
+		maxsect:8,
+		gf: 10,
+		tier: 0
+		},
+	// HOUSING0A: {
+	// 	name: 'Low-Density Housing',
+	// 	type: 'housing',
+	// 	desc: 'Provides basic civil services, allowing population to grow.',
+	// 	inputs: { o: 1, s: 1, m: 1 },
+	// 	outputs: { hou: 2 },
+	// 	minsect:1,
+	// 	maxsect:8,
+	// 	gf: 10,
+	// 	tier: 0
+	// 	},
 	HOUSING0B: {
 		name: 'High-Density Housing',
 		type: 'housing',
-		desc: 'Improved higher density housing requires more metal but less cash.',
-		inputs: { o: 2, s: 2, m: 1 },
+		desc: 'Improved higher density housing requires more materials.',
+		inputs: { o: 2, s: 2, m: 2 },
 		outputs: { hou: 4 },
 		minsect:2,
 		maxsect:12,
@@ -271,7 +348,7 @@ export const ZoneList = {
 		name: 'Metropolis',
 		type: 'housing',
 		desc: 'A metropolis is expensive to maintain but greatly increases maximum population.',
-		inputs: { o: 2, s: 2, m: 2, g:1 },
+		inputs: { o: 2, s: 2, m: 2, g:2 },
 		outputs: { hou: 7 },
 		minsect:4,
 		maxsect:16,
@@ -323,6 +400,17 @@ export const ZoneList = {
 		maxsect:8,
 		gf: 15,
 		tier: 2
+		},
+	MINE0_OMNIMINER: {
+		name: 'Omni-Miner',
+		type: 'mining',
+		desc: 'Mines all resources types, but none very well.',
+		inputs: { $: 5 },
+		outputs: { o: 1, s: 1, m: 1, g:0.5, b:0.5, r:0.5, c:0.2, y:0.2, v:0.2 },
+		minsect:1,
+		maxsect:1,
+		gf: 10,
+		tier: 0
 		},
 		
 	// ------[ RESEARCH ]-----------------\/------------------------

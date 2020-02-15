@@ -686,6 +686,7 @@ export default class Civ {
 					this.race.mods.Add( new Mod('zone_output_mining', '*', 1.5, 'Silicate mining', 'race' ) );
 					this.race.mods.Add( new Mod('zone_output_research', '*', 0.75, 'Dumb as a rock', 'race' ) );
 					this.race.mods.Add( new Mod('pop_growth', '*', 0.5, 'Slow breaders', 'race' ) );
+					this.ai.strat.ideal_zoning.housing *= 5;
 					break;
 					}
 				case 'robotic' : {

@@ -13,6 +13,7 @@ export class PlanetsPane {
 	mode = 'basic' // 'basic', 'output'
 	
 	activate(data) {
+		if ( !data ) { return false; }
 		this.app = data.app;
 		this.myciv = this.app.game.myciv;
 		this.turn_subscription = Signals.Listen( 'turn', data => this.UpdatePlanets() );

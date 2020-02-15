@@ -14,7 +14,6 @@ export let Techs = {
 		name: "Base Technologies",
 		onComplete( civ ) { 
 			// zones
-			civ.AddAvailZoneType(ZoneList.HOUSING0A);
 			civ.AddAvailZoneType(ZoneList.MINE0A);
 			civ.AddAvailZoneType(ZoneList.RES0);
 			civ.AddAvailZoneType(ZoneList.ECON0);
@@ -71,37 +70,45 @@ export let Techs = {
 	
 	BASE_ORGANIC: {
 		name: "Base Organic Technologies",
-		onComplete( civ ) { 
+		onComplete( civ ) {
+			civ.AddAvailZoneType(ZoneList.HOUSING_BASE_ORGANIC);
 			}
 		},		
 	BASE_PLANT: {
 		name: "Base Plant Technologies",
 		onComplete( civ ) { 
+			civ.AddAvailZoneType(ZoneList.HOUSING_BASE_PLANT);
 			}
 		},		
 	BASE_SILICATE: {
 		name: "Base Silicate Technologies",
 		onComplete( civ ) { 
+			civ.AddAvailZoneType(ZoneList.HOUSING_BASE_SILICATE);
+			civ.AddAvailZoneType(ZoneList.MINE0_OMNIMINER);
 			}
 		},		
 	BASE_ROBOTIC: {
 		name: "Base Robotic Technologies",
 		onComplete( civ ) { 
+			civ.AddAvailZoneType(ZoneList.HOUSING_BASE_ROBOTIC);
 			}
 		},		
 	BASE_CYBERNETIC: {
 		name: "Base Cybernetic Technologies",
 		onComplete( civ ) { 
+			civ.AddAvailZoneType(ZoneList.HOUSING_BASE_CYBERNETIC);
 			}
 		},		
 	BASE_ASTRAL: {
 		name: "Base Astral Technologies",
 		onComplete( civ ) { 
+			civ.AddAvailZoneType(ZoneList.HOUSING_BASE_ASTRAL);
 			}
 		},		
 	BASE_TRANSDIMENSIONAL: {
 		name: "Base Transdimensional Technologies",
 		onComplete( civ ) { 
+			civ.AddAvailZoneType(ZoneList.HOUSING_BASE_TRANSDIMENSIONAL);
 			}
 		},		
 
@@ -300,7 +307,7 @@ export let Techs = {
 		tags: ['biology'],
 		onComplete( civ ) { 
 			civ.mods.Add( new Mod('adaptation', '+', 1, this.name, 'technology' ) );
-			civ.race.env.adaptation = civ.mods.Apply( 1, 'adaptation' );
+			// civ.race.env.adaptation = civ.mods.Apply( 1, 'adaptation' );
 			}
 		},
 	ADAPTATION2: {
@@ -309,7 +316,7 @@ export let Techs = {
 		tags: ['biology'],
 		onComplete( civ ) { 
 			civ.mods.Add( new Mod('adaptation', '+', 2, this.name, 'technology' ) );
-			civ.race.env.adaptation = civ.mods.Apply( 1, 'adaptation' );
+			// civ.race.env.adaptation = civ.mods.Apply( 1, 'adaptation' );
 			}		},
 	ADAPTATION3: {
 		name: "Superior Terraforming",
@@ -317,7 +324,7 @@ export let Techs = {
 		tags: ['biology'],
 		onComplete( civ ) { 
 			civ.mods.Add( new Mod('adaptation', '+', 3, this.name, 'technology' ) );
-			civ.race.env.adaptation = civ.mods.Apply( 1, 'adaptation' );
+			// civ.race.env.adaptation = civ.mods.Apply( 1, 'adaptation' );
 			}		},
 	ADAPTATION4: {
 		name: "Ultra Terraforming",
@@ -325,7 +332,7 @@ export let Techs = {
 		tags: ['biology'],
 		onComplete( civ ) { 
 			civ.mods.Add( new Mod('adaptation', '+', 3, this.name, 'technology' ) );
-			civ.race.env.adaptation = civ.mods.Apply( 1, 'adaptation' );
+			// civ.race.env.adaptation = civ.mods.Apply( 1, 'adaptation' );
 			}		},
 	ADAPTATION5: {
 		name: "Perfect Terraforming",
@@ -333,7 +340,18 @@ export let Techs = {
 		tags: ['biology'],
 		onComplete( civ ) { 
 			civ.mods.Add( new Mod('adaptation', '+', 6, this.name, 'technology' ) );
-			civ.race.env.adaptation = civ.mods.Apply( 1, 'adaptation' );
+			// civ.race.env.adaptation = civ.mods.Apply( 1, 'adaptation' );
+			}		
+		},
+	ADAPTATION_SILICATE: {
+		name: "Silicate Subterraneanism",
+		desc: '<b>+1 Adaptation</b>.',
+		tags: ['biology'],
+		untradeable: true,
+		onComplete( civ ) { 
+			// civ.race.mods.RemoveMatching( 'adaptation', '=' );
+			civ.mods.Add( new Mod('adaptation', '=', 2, this.name, 'technology' ) );
+			// civ.race.env.adaptation = civ.mods.Apply( 1, 'adaptation' );
 			}		
 		},
 		
@@ -454,14 +472,14 @@ export let TechNodes = {
 	// ZONES ---------\/-----------------------------
 	
 	ZONE_HOUSING0B: {
-		rp: 150,
+		rp: 300,
 		},
 	ZONE_HOUSING1A: {
-		rp: 400,
+		rp: 900,
 		requires: ['ZONE_HOUSING0B','MINE1A'], 
 		},
 	ZONE_HOUSING2A: {
-		rp: 1200,
+		rp: 2000,
 		requires: ['ZONE_HOUSING1A','MINE2A'], 
 		},		
 
@@ -584,6 +602,10 @@ export let TechNodes = {
 	ADAPTATION5: { 
 		rp: 9500,
 		requires: ['ADAPTATION4'], 
+		},
+	ADAPTATION_SILICATE: { 
+		rp: 650,
+		requires: ['BASE_SILICATE'], 
 		},
 		
 	XENOCOMM1: { 

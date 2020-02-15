@@ -167,7 +167,7 @@
 				${(app.game.turn_num*0) + ( app.game.myciv.tech.avail[0].rp / app.game.myciv.tech.avail[0].rpcost) | percent}% of 	
 				${(app.game.turn_num?'':'') + app.game.myciv.tech.avail[0].node.name}  
 			</span>
-			<span if.bind="app.options.debug">ADAPT: ${app.game.myciv.race.env.adaptation}</span>
+			<span if.bind="app.options.debug">ADAPT: ${(app.game.turn_num*0) + app.game.myciv.mods.Apply(1,'adaptation')}</span>
 			<span if.bind="app.options.debug">MAXSPD: ${app.game.myciv.max_ship_speed}</span>
 			<span if.bind="app.options.debug">MAXRANGE: ${app.game.myciv.ship_range}</span>
 		</div>
@@ -259,11 +259,6 @@
 						<td><div css="height:8px; width:${row.pct*200}px; background-color: green;"></div></td>
 					</tr>
 				</table>
-				
-				<br />
-				
-				<p repeat.for="m of game.myciv.race.mods.mods">${m.toString()}</p>
-				<p repeat.for="m of game.myciv.mods.mods">${m.toString()}</p>
 			</div>
 		
 			<!-- AI DEBUG CENTER -->

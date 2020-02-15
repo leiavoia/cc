@@ -27,6 +27,7 @@ export default class Planet {
 	morale = 1.0;	// multiplier, default 1.0, range 0-2
 	troops = []; // list of GroundUnits defending planet.
 	prod_q = []; // { type, obj (blueprint), name, cost (labor), qty, turns_left, pct }
+	adaptation_precomp = null; // cpu optimization
 	
 	// PHYSICAL ATTRIBUTES -------------------------------
 	energy = 1.0; // speeds up zone development
@@ -520,7 +521,7 @@ export default class Planet {
 		
   	// returns an integer value which may be negative
 	Adaptation( civ ) {
-		// OPTIMIZATION: This function gets called so much it needs to be omptimized.
+		// OPTIMIZATION: This function gets called so much it needs to be opmtimized.
 		// We precompute values for the owning civ, and take a shortcut for silicates.
 		// It would also be helpful if code calling this function would cache the result.
 		// TODO: we may wish to differentiate between a civ as a planet owner and
@@ -528,11 +529,10 @@ export default class Planet {
 		// natural adaptability not related to technology.
 		if ( !civ && !this.owner ) { return 0; }
 		if ( !civ && this.owner ) { civ = this.owner; }
-		if ( civ.race.type == 'silicate' ) { return 1; } // use this to optimize for speed if using mods is too slow
 		if ( civ == this.owner && this.adaptation_precomp!==null ) { return this.adaptation_precomp; }
 		let diff = civ.race.env.adaptation
 			-( Math.abs( this.atm - civ.race.env.atm ) + Math.abs( this.temp - civ.race.env.temp ) + Math.abs( this.grav - civ.race.env.grav ) );
-		diff = this.mods.Apply( diff, 'adaptation' );
+		diff = civ.mods.Apply( diff, 'adaptation' ); // NOTE: this skips the planet's mods
 		if ( civ == this.owner ) { this.adaptation_precomp = diff; }
 		return diff;
 		}
@@ -934,6 +934,7 @@ export default class Planet {
 	// Use in case empire is destroyed or some accident happens.
 	// Also removes planet from owner's list of planets
 	Reset( keep_pop=true ) {
+		this.adaptation_precomp = null;
 		if ( this.owner ) {
 			for ( let a of this.physattrs ) { 
 				if ( 'onUnsettle' in a ) a.onUnsettle(this);

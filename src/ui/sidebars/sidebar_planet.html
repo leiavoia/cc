@@ -127,7 +127,7 @@
 							<i style="color: #D11;">Needed:</i> <span class="${k=='$'?'cash':k}" repeat.for="k of sel_zone.resource_estm|props">${sel_zone.resource_estm[k]|round:1}</span>
 							<br/>
 						</template>
-						Output: <span class="${k=='$'?'cash':k}" repeat.for="k of sel_zone.output_rec|props">${sel_zone.output_rec[k]|round:1}</span>
+						Output: <span class="${k=='$'?'cash':k}" repeat.for="k of sel_zone.output_rec|props">${sel_zone.output_rec[k]|round:1} </span>
 					</p>
 					<p if.bind="sel_zone.insuf" class="nag bad"> ⚠️ ${sel_zone_culprits ? sel_zone_culprits : 'Zone in Decline'} </p>
 					<p if.bind="app.options.debug"><button click.delegate="sel_zone.log = sel_zone.log ? false : true" class="${sel_zone.log ? 'alt' : 'cool'}">LOG ME</button></p>

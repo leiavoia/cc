@@ -122,15 +122,11 @@ export class Modlist {
 		let strkey = this.StrKey( ability, p ); // also starts cache if not set
 		let cache = this.cache[ability];
 		if ( strkey != cache.strkey ) {
-			// console.log('caching ' + ability);
 			cache.mods = 
 				this.CollectMods(p)
 				.filter( m => m.abil === ability )
 				.sort( Modlist.SortMods );
 			cache.strkey = strkey;
-			}
-		else {
-			// console.log('hit ' + ability);
 			}
 		// now modify the value
 		for ( let m of cache.mods ) { value = m.Apply(value); }
@@ -140,7 +136,7 @@ export class Modlist {
 	StrKey( ability, p ) {
 		this.BootCacheIfEmpty( ability );
 		p = (p instanceof Modlist) ? p : this.parent;
-		return this.cache[ability].key + '-' + ( p ? p.StrKey() : '');
+		return this.cache[ability].key + '-' + ( p ? p.StrKey(ability) : '');
 		}
 		
 	BootCacheIfEmpty( ability ) { 
@@ -151,7 +147,7 @@ export class Modlist {
 		
 	QualifyParent( p ) {
 		if ( p instanceof Modlist ) { return p; }
-		else if ( p && this.parent && this.parent instanceof Modlist ) { return this.parent; }
+		else if ( this.parent && this.parent instanceof Modlist ) { return this.parent; }
 		return null;
 		}
 	

@@ -19,7 +19,7 @@
 							<br/>
 							Costs: <span class="${k=='$'?'cash':k}" repeat.for="k of z.inputs|props">${z.inputs[k] * planet.throttle_input|round:1}</span>
 							<br/>
-							Output: <span class="${k=='$'?'cash':k}" repeat.for="k of z.outputs|props">${z.outputs[k] * planet.throttle_output|round:1}</span>
+							Output: <span class="${k=='$'?'cash':k}" repeat.for="k of z.outputs|props">${z.outputs[k] * planet.throttle_output|round:1} </span>
 						</p>
 						<p class="resources big bold" if.bind="zone">
 							COST TO UPGRADE:
