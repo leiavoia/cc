@@ -144,7 +144,15 @@ export default class Civ {
 				last_aud: 0, // last time we met
 				});
 			// first impressions are a blend of our galactic reputation and their natural disposition
-			this.LogDiploEvent( civ, ( (this.diplo.dispo-0.5) * 50 ), 'disposition', 'Disposition', true );
+			if ( this.race.type != civ.race.type && this.diplo.dispo < 0.5 ) { 
+				this.LogDiploEvent( civ, ( (this.diplo.dispo-0.5) * 150 ), 'disposition', `We hate ${civ.race.type}s` , true )
+				}
+			else if ( this.race.type == civ.race.type && this.diplo.dispo > 0.5 ) { 
+				this.LogDiploEvent( civ, ( (this.diplo.dispo-0.5) * 150 ), 'disposition', `We love ${civ.race.type}s!`, true )
+				}
+			else {
+				this.LogDiploEvent( civ, ( (this.diplo.dispo-0.5) * 50 ), 'disposition', 'Disposition', true )
+				}
 			this.LogDiploEvent( civ, Math.round(civ.diplo.rep/2), 'first_impressions', 'First impressions' );
 			}
 		}

@@ -342,8 +342,9 @@ export let Techs = {
 		desc: '<b>+1 Communication Skills</b>.',
 		tags: ['socialogy'],
 		onComplete( civ ) {
-			civ.mods.Add( new Mod('diplo_skill', '+', 0.1, this.name, 'technology' ) );
-			civ.diplo.skill = civ.mods.Apply( 0, 'diplo_skill' );
+			// civ.mods.Add( new Mod('diplo_skill', '+', 0.1, this.name, 'technology' ) );
+			// civ.diplo.skill = civ.mods.Apply( 0, 'diplo_skill' );
+			civ.diplo.skill += 0.1;
 			for ( let [contact,acct] of civ.diplo.contacts ) {
 				const overlap = civ.CommOverlapWith(contact);
 				acct.comm = overlap;
@@ -356,8 +357,9 @@ export let Techs = {
 		desc: '<b>+1 Communication Skills</b>.',
 		tags: ['socialogy'],
 		onComplete( civ ) { 
-			civ.mods.Add( new Mod('diplo_skill', '+', 0.1, this.name, 'technology' ) );
-			civ.diplo.skill = civ.mods.Apply( 0, 'diplo_skill' );
+			// civ.mods.Add( new Mod('diplo_skill', '+', 0.1, this.name, 'technology' ) );
+			// civ.diplo.skill = civ.mods.Apply( 0, 'diplo_skill' );
+			civ.diplo.skill += 0.1;
 			for ( let [contact,acct] of civ.diplo.contacts ) {
 				const overlap = civ.CommOverlapWith(contact);
 				acct.comm = overlap;
@@ -370,8 +372,9 @@ export let Techs = {
 		desc: '<b>Communicate with any civilization.</b>.',
 		tags: ['socialogy'],
 		onComplete( civ ) { 
-			civ.mods.Add( new Mod('diplo_skill', '=', 1, this.name, 'technology' ) );
-			civ.diplo.skill = civ.mods.Apply( 0, 'diplo_skill' );
+			// civ.mods.Add( new Mod('diplo_skill', '=', 1, this.name, 'technology' ) );
+			// civ.diplo.skill = civ.mods.Apply( 0, 'diplo_skill' );
+			civ.diplo.skill = 1;
 			for ( let [contact,acct] of civ.diplo.contacts ) {
 				const overlap = civ.CommOverlapWith(contact);
 				acct.comm = overlap;
