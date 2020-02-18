@@ -341,12 +341,18 @@ export class ShipBlueprint {
 		this.troopcap = Math.floor( this.mods.Apply( 0, 'troopcap', parent ) ); 
 		this.fp = this.CalcFirepowerTotal();
 		this.milval = this.CalcMilitaryValue();
-		// class size
+		// size class
 		this.sizeclass ='A';
 		let sizes = ['A','B','C','D','E','F','G','H','I','J','K','L'];
 		for ( let max=50, i=1; this.hull > max; max*=2, i++ ) {
 			this.sizeclass = sizes[i];
 			}
+		// firepower class
+		this.fpclass = this.fp ? '1' : '0';
+		for ( let max=100, i=1; this.fp > max; max*=2, i++ ) {
+			this.fpclass = i;
+			}
+		
 		// primary role
 		if ( this.colonize ) { this.role = 'colonizer'; }
 		else if ( this.research ) { this.role = 'research'; }

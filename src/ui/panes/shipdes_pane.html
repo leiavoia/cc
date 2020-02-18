@@ -22,7 +22,7 @@
 					<div class="info">
 						<p>${shipbp.name}</p>
 						<p class="subtext">
-							${shipbp.sizeclass}-Class${shipbp.research ? ', Research' : ''}${shipbp.colonize ? ', Colonizer' : ''}${shipbp.troopcap ? ', Carrier' : ''}<span containerless if.bind="shipbp.fp">, ${shipbp.fp} Firepower</span>
+							${shipbp.sizeclass}${shipbp.fpclass}-Class${shipbp.research ? ', Research' : ''}${shipbp.colonize ? ', Colonizer' : ''}${shipbp.troopcap ? ', Carrier' : ''}<span containerless if.bind="shipbp.fp">, ${shipbp.fp} Firepower</span>
 						</p>
 					</div>
 				</div>
@@ -48,8 +48,8 @@
 					<tr>
 						<th>Mass</th>	
 						<td>${bp.mass}</td>
-						<th>Size Class</th>	
-						<td>${bp.sizeclass}</td>
+						<th>Class</th>	
+						<td>${bp.sizeclass}${bp.fpclass}</td>
 					</tr>
 					<tr>
 						<th>Hull</th>	
@@ -166,8 +166,8 @@
 					<tr>
 						<th>Mass</th>	
 						<td>${newbp.mass}</td>
-						<th>Size Class</th>	
-						<td>${newbp.sizeclass}</td>
+						<th>Class</th>	
+						<td>${newbp.sizeclass}${newbp.fpclass}</td>
 					</tr>
 					<tr>
 						<th>Hull</th>	

@@ -3190,7 +3190,7 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 	}
 	
 /* always display the top */
-.shipgrid .ship .top *, 
+/* .shipgrid .ship .top *,  */
 .shipgrid .ship .top { display:flex !important; }	
 
 .shipgrid .ship {
@@ -3237,21 +3237,21 @@ right in the zone data and use Aurelia css="background-image: ${zone.img}"
 .shipgrid .ship > .top {
 	text-align: left;
 	}	
-.shipgrid .ship > .infobar {
+/* .shipgrid .ship > .top {
 	text-align: right;
 	width: 100%;
 	margin: 0.1em 0 -0.7em 0;
 	padding: 0;
 	display: flex;
-	}	
-.shipgrid .ship > .infobar > * {
+	}	 */
+.shipgrid .ship > .top > * {
 	flex: 1;
 	text-align:left;	
-	color: yellow;
+	/* color: yellow; */
 	}
-.shipgrid .ship > .infobar > *:last-child {
+.shipgrid .ship > .top > *:last-child {
 	text-align:right;
-	color: cyan;
+	/* color: cyan; */
 	}
 .shipgrid .ship > .size {
 	text-align: left;
