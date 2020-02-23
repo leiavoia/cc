@@ -1,6 +1,7 @@
 import {inject} from 'aurelia-framework';
 import {App} from '../app';
 import * as Signals from '../util/signals';
+import FileSaver from 'file-saver';
 
 @inject(App)
 export class TitleState {
@@ -57,13 +58,9 @@ export class TitleState {
 		let key = 'Game: ' + g.key;
 		let str = localStorage.getItem( key );
 		if ( !str ) { return false; }
-		let element = document.createElement('a');
-		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(str));
-		element.setAttribute('download', 'ConstellationControl_t' + g.turn_num + '_' + g.time.replace(/( |\s)+/ig,'_') + '.game');
-		element.style.display = 'none';
-		document.body.appendChild(element);
-		element.click();
-		document.body.removeChild(element);
+		let filename = 'ConstellationControl_t' + g.turn_num + '_' + g.time.replace(/( |\s)+/ig,'_') + '.game';
+		let blob = new Blob([str], {type: "text/plain;charset=utf-8"});
+		saveAs(blob, filename);
 		return false;
 		}
 

@@ -95,7 +95,12 @@
             "name": "chart.js",
             "path": "../node_modules/chart.js/dist",
             "main": "Chart.min.js"
-          }          
+          },          
+          {
+            "name": "file-saver",
+            "path": "../node_modules/file-saver/dist",
+            "main": "FileSaver.js"
+          }
         ]
       }
     ],

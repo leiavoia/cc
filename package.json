@@ -13,6 +13,7 @@
     "aurelia-bootstrapper": "^2.3.2",
     "chart.js": "^2.9.3",
     "fastpriorityqueue": "^0.6.3",
+    "file-saver": "^2.0.2",
     "panzoom": "^8.7.5"
   },
   "devDependencies": {
