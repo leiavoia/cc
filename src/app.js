@@ -200,15 +200,24 @@ export class App {
 		
 	LoadOptions() { 
 		try { 
-			let json = window.localStorage.getItem( 'options' );
-			if ( json ) { 
-				json = JSON.parse( json );
+			// sometimes old options cause conflicts.
+			// manually reset to default options if we find a query string flag.
+			if ( window.location.search.match(/.*reset.*/) ) {
+				this.SaveOptions();
+				console.info('resetting options to default');
+				}
+			// normal loading routine
+			else {
+				let json = window.localStorage.getItem( 'options' );
 				if ( json ) { 
-					// using object.assign lets us slip in new settings over time
-					this.options = Object.assign(this.options,json);
+					json = JSON.parse( json );
+					if ( json ) { 
+						// using object.assign lets us slip in new settings over time
+						this.options = Object.assign(this.options,json);
+						}
+					// nofx defaults to off; this is mainly for debug
+					this.options.nofx = false;
 					}
-				// nofx defaults to off; this is mainly for debug
-				this.options.nofx = false;
 				}
 			}
 		catch ( ex ) {
