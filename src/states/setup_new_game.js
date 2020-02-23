@@ -7,6 +7,7 @@ import * as Signals from '../util/signals';
 @inject(App)
 export class SetupNewGameState {
 	mode = 'galaxy';
+	mode_queue = ['galaxy','race','ui']; // improves UI experience by making user click through all panes
 	
 	constructor( app ) {
 		this.app = app;
@@ -16,12 +17,20 @@ export class SetupNewGameState {
 		this.color_g = this.app.options.setup.color[1];
 		this.color_b = this.app.options.setup.color[2];
 		this.shapes = ['attraction','shuffle','heightmap'];
+		this.ClickNext(); // sets first mode view
 		}
 
 	ChangePanel(panel) {
 		this.mode = panel;
 		}
 		
+	ClickNext() {
+		if ( !this.mode_queue.length ) {
+			this.ConfirmSetup();
+			}
+		else { this.mode = this.mode_queue.shift(); }
+		}
+	
 	ConfirmSetup() {
 		this.app.options.setup.galaxy_size = Number.parseInt( this.app.options.setup.galaxy_size );
 		this.app.options.setup.galaxy_age = Number.parseFloat( this.app.options.setup.galaxy_age );
@@ -38,17 +47,21 @@ export class SetupNewGameState {
 		this.app.options.setup.color[1] = Number.parseInt( this.color_g );
 		this.app.options.setup.color[2] = Number.parseInt( this.color_b );
 
-		// create initial state
-		this.app.ResetEverything();
-		this.app.game = new Game(this.app);
-		this.app.game.InitGalaxy();
-		
-		// small UI tweek
-		if ( this.app.options.setup.density == 0.05 ) { this.app.options.setup.density = 0; }
-		this.app.SaveOptions();
-		
-		this.app.last_saved_game_key = '';
-		this.app.ChangeState('play', /* optional post-loading callback here */ );
+		this.app.ChangeState('loading_screen', () => {
+			setTimeout( () => { // allows loading screen to appear before CPU takes up thread creating galaxy
+				// create initial state
+				this.app.ResetEverything();
+				this.app.game = new Game(this.app);
+				this.app.game.InitGalaxy();
+				
+				// small UI tweek
+				if ( this.app.options.setup.density == 0.05 ) { this.app.options.setup.density = 0; }
+				this.app.SaveOptions();
+				
+				this.app.ChangeState('play');
+				this.last_saved_game_key = '';
+				}, 50 );
+			});
 		}
 		
 	CancelSetup() {

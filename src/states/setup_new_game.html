@@ -5,11 +5,11 @@
 		<div id="setup_pane">
 			<p class="button_rack" style="float:right; padding: 0; margin: 0;" >
 				<!-- <button class="button big ${mode == 'game' ? '' : 'cool'}" click.trigger="ChangePanel('game')">Game Setup</button> -->
-				<button class="big ${mode == 'galaxy' ? '' : 'cool'}" click.trigger="ChangePanel('galaxy')">Galaxy</button>
-				<button class="big ${mode == 'ui' ? '' : 'cool'}" click.trigger="ChangePanel('ui')">UI</button>
-				<button class="big ${mode == 'race' ? '' : 'cool'}" click.trigger="ChangePanel('race')">Race</button>
+				<button class="big cool ${mode == 'galaxy' ? 'active' : ''}" click.trigger="ChangePanel('galaxy')">Galaxy</button>
+				<button class="big cool ${mode == 'race' ? 'active' : ''}" click.trigger="ChangePanel('race')">Race</button>
+				<button class="big cool ${mode == 'ui' ? 'active' : ''}" click.trigger="ChangePanel('ui')">UI</button>
 				<button class="big bad" click.delegate="CancelSetup()">CANCEL</button>				
-				<button class="big alt" click.delegate="ConfirmSetup()">MAKE IT SO</button>
+				<button class="big alt" click.delegate="ClickNext()">${!mode_queue.length ? 'MAKE IT SO' : 'NEXT'}</button>
 			</p>
 			<h1>New Game</h1>
 			
