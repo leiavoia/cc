@@ -285,6 +285,79 @@ export default class Galaxy {
 				}
 			}
 
+		// this produces a random view of a 2 different julia sets,
+		// and then averages them together. Using two gives a better chance of getting something
+		// that isn't just a giant blob. We place stars OUTSIDE of the julia set, which means
+		// that the we get natural holes INSIDE the julia set. 
+		else if ( strategy == 'julia' ) { 
+				
+			let r1 = Math.random()*2 - 1;
+			let im1 = Math.random()*2 - 1;
+			let r2 = Math.random()*2 - 1;
+			let im2 = Math.random()*2 - 1;
+			
+			function remap( x, t1, t2, s1, s2 ) {
+				var f = ( x - t1 ) / ( t2 - t1 ),
+					g = f * ( s2 - s1 ) + s1;
+				return g;
+			}
+			
+			function julia2( x, y, w, h, r, im ) {
+				let maxrounds = 25;
+				let minX = -1, maxX = 1;
+				let minY = -1, maxY = 1;
+				var a, as, za, b, bs, zb, cnt;
+				a = remap( x, 0, w, minX, maxX )
+				b = remap( y, 0, h, minY, maxY )
+				cnt = 0;
+				while ( ++cnt < maxrounds ) {
+					za = a * a; zb = b * b;
+					if ( za + zb > 4 ) break;
+					as = za - zb; 
+					bs = 2 * a * b;
+					a = as + r; 
+					b = bs + im;
+				}
+				if ( cnt < maxrounds ) { return cnt; }
+				return 0;
+			}
+						
+			// make a list of points with associated "height" value
+			let points = [];
+			for ( let x = 0; x < map_size_x; x++ ) { 
+				for ( let y = 0; y < map_size_y; y++ ) { 
+					let h = (julia2( x, y, map_size_x, map_size_y, r1, im1 ) 
+						+ julia2( y, x, map_size_y, map_size_x, r2, im2 )) / 2;
+					// if it comes back zero, give it the tiniest random wobble to prevent "caking"
+					if ( !h ) { h = Math.random() * 0.1 - 0.05; }
+					points.push({x,y,h});
+					}
+				}
+				
+			// sort all of the points by height and populate the galaxy
+			points.sort( (a,b) => a.h - b.h );			
+			let num_blanks = Math.min( remainder, stars_wanted * 0.1 ); // shooting blanks makes it less dense
+			let things_to_place = [];
+			for ( let i=0; i < stars_wanted; i++ ) { things_to_place.push(1); }
+			for ( let i=0; i < num_anoms; i++ ) { things_to_place.push(2); }
+			for ( let i=0; i < num_blanks; i++ ) { things_to_place.push(0); }
+			things_to_place.shuffle();
+			for ( let i=0; i < things_to_place.length; i++ ) {
+				let p = points.pop();
+				let index = p.x * map_size_y + p.y;
+				arr[index] = things_to_place[i];
+				}
+					
+			// random scattering
+			for ( let i = 0; i < sectors*0.14; i++ ) {
+				let one = utils.RandomInt( 0, sectors-1 );
+				let two = utils.RandomInt( 0, sectors-1 );
+				let temp = arr[two];
+				arr[two] = arr[one];
+				arr[one] = temp;
+				}
+			}
+			
 		else /*if ( strategy == 'shuffle' )*/ { 
 			arr = new Array( stars_wanted ).fill(1).concat( // stars
 				new Array( num_anoms ).fill(2).concat( // anomalies

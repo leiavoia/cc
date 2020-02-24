@@ -16,7 +16,7 @@ export class SetupNewGameState {
 		this.color_r = this.app.options.setup.color[0];
 		this.color_g = this.app.options.setup.color[1];
 		this.color_b = this.app.options.setup.color[2];
-		this.shapes = ['attraction','shuffle','heightmap'];
+		this.shapes = ['attraction','shuffle','heightmap','julia'];
 		this.ClickNext(); // sets first mode view
 		}
 
