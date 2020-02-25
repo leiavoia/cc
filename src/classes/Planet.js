@@ -417,7 +417,7 @@ export default class Planet {
 		}
 		
 	AddBuildQueueShipBlueprint( bp, qty =1 ) { 
-		qty = utils.Clamp( qty, 1, 5 );
+		qty = qty == -1 ? qty : utils.Clamp( qty, 1, 5 );
 		let item = {
 			type: 'ship',
 			obj: bp,
@@ -433,7 +433,7 @@ export default class Planet {
 		}
 		
 	AddBuildQueueGroundUnitBlueprint( bp, qty = 1 ) { 
-		qty = utils.Clamp( qty, 1, 5 );
+		qty = qty == -1 ? qty : utils.Clamp( qty, 1, 5 );
 		let item = {
 			type: 'groundunit',
 			obj: bp,
@@ -508,6 +508,8 @@ export default class Planet {
 		this.prod_q.sort( (a,b) => { 
 			if ( a.qty == -1 && b.qty != -1 ) { return 1; }
 			else if ( b.qty == -1 && a.qty != -1 ) { return -1; }
+			else if ( a.type!='makework' && b.type=='makework' ) { return -1; }
+			else if ( a.type=='makework' && b.type!='makework' ) { return 1; }
 			return 0;
 			});
 		}

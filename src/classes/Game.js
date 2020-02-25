@@ -291,6 +291,23 @@ export default class Game {
 		// room, and better or worse position as defined by the natural score of all
 		// planets within a "starting circle", then sort star systems by their totals.
 		
+		// QoL - lets do a few things the player was going to do anyway.
+		let fighter = this.myciv.ship_blueprints.filter( bp => bp.fp ).pop();
+		if ( fighter ) { homeworld.AddBuildQueueShipBlueprint( fighter, -1 ); }
+		let colonizer = this.myciv.ship_blueprints.filter( bp => bp.colonize ).pop();
+		if ( colonizer ) { homeworld.AddBuildQueueShipBlueprint( colonizer ); }
+		let avail = this.app.game.myciv.tech.avail;
+		let biotech = avail.filter( t => t.node.tags.contains('biology') ).pop();
+		if ( biotech ) {
+			let i = avail.indexOf(biotech);
+			if ( i > 0 ) { 
+				let temp = avail[i-1];
+				avail.splice( i-1, 2, biotech, temp );
+				}
+			}
+			
+			
+			
 		this.RecalcStarRanges();
 		this.RecalcFleetRanges();
 		this.RecalcCivContactRange();
