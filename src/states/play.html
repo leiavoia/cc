@@ -207,6 +207,27 @@
 				
 				<br/>
 				
+				<b>Civs: ${app.game.galaxy.civs.length}</b>
+				<br/>
+				<table class="right" style="margin: 0 0 0 0;">	
+					<tr repeat.for="row of app.game.top10civs">
+						<td css="color:#FFF; background-color:${row.civ.color};" click.delegate="app.game.SetMyCiv(row.civ)" class="clickable">${row.civ.name}</td>
+						<td><b>${row.rank}</b></td>
+						<td>${row.score}</td>
+						<td>◉${row.civ.planets.length}</td>
+						<td>🟊${row.civ.victory_ingredients.length}</td>
+						<td>⚡${row.civ.ai.total_milval}</td>
+						<td>r${row.civ.ai.strat.risk|round:2}</td>
+						<td>${row.civ.ai.strat.def}</td>
+						<td>${row.civ.race.type}</td>
+						<td>${row.pct|percent}%</td>
+						<td><div css="height:8px; width:${row.pct*200}px; background-color: green;"></div></td>
+					</tr>
+				</table>
+				
+				
+				<br/>
+				
 				<!-- category financial expenses -->
 				<b>CATEGORY EXPENSES</b><br/>
 				<table class="right" style="margin: 0 0 0 0;">	
@@ -231,6 +252,17 @@
 				
 				<br/>
 				
+				<!-- tech weights -->
+				<b>TECH PREFERENCE</b><br/>
+				<table class="right" style="margin: 0 0 0 0;">	
+					<tr repeat.for="k of app.game.myciv.ai.strat.tech_weights|props">
+						<td>${app.game.myciv.ai.strat.tech_weights[k]|percent}%</td>
+						<td>${k}&nbsp;</td>
+					</tr>
+				</table>
+				
+				<br/>
+				
 				<!-- ideal zoning -->
 				<b>ZONING PRIORITY</b><br/>
 				<table class="right" style="margin: 0 0 0 0;">	
@@ -239,26 +271,7 @@
 						<td>${k}&nbsp;</td>
 					</tr>
 				</table>
-				
-				<br/>
-				
-				<b>Civs: ${app.game.galaxy.civs.length}</b>
-				<br/>
-				<table class="right" style="margin: 0 0 0 0;">	
-					<tr repeat.for="row of app.game.top10civs">
-						<td css="color:#FFF; background-color:${row.civ.color};" click.delegate="app.game.SetMyCiv(row.civ)" class="clickable">${row.civ.name}</td>
-						<td><b>${row.rank}</b></td>
-						<td>${row.score}</td>
-						<td>◉${row.civ.planets.length}</td>
-						<td>🟊${row.civ.victory_ingredients.length}</td>
-						<td>⚡${row.civ.ai.total_milval}</td>
-						<td>r${row.civ.ai.strat.risk|round:2}</td>
-						<td>${row.civ.ai.strat.def}</td>
-						<td>${row.civ.race.type}</td>
-						<td>${row.pct|percent}%</td>
-						<td><div css="height:8px; width:${row.pct*200}px; background-color: green;"></div></td>
-					</tr>
-				</table>
+								
 			</div>
 		
 			<!-- AI DEBUG CENTER -->
@@ -337,9 +350,7 @@
 				strat.risk: ${app.game.myciv.ai.strat.risk|round:2}<br/>
 				strat.posture: ${app.game.myciv.ai.strat.posture|round:2}<br/>
 				strat.min_assault: ${app.game.myciv.ai.strat.min_assault_score|round}<br/>
-				strat.zone_remodel: ${app.game.myciv.ai.strat.zone_remodel}<br/>
 				strat.zone_remodel_freq: ${app.game.myciv.ai.strat.zone_remodel_freq|round}<br/>
-				strat.zone_remodel_rand_chance: ${app.game.myciv.ai.strat.zone_remodel_rand_chance|round:2}<br/>		
 				strat.ship_des_freq: ${app.game.myciv.ai.strat.ship_des_freq|round:2}<br/>		
 				strat.ship_size: ${app.game.myciv.ai.strat.ship_size|round:2}<br/>		
 				<br/>

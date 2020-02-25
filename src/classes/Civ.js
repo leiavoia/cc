@@ -354,8 +354,8 @@ export default class Civ {
 			}
 		// sort project list
 		if ( !this.is_player || ( App.instance.options.soak && App.instance.options.ai ) ) {
-			// TODO: sort according to AI preference
-			let SortFunc = (a,b) => a.rpcost - b.rpcost;
+			let SortFunc = (a,b) => ( a.rpcost * (this.ai.strat.tech_weights[a.node.tags[0]]||1) ) 
+				- ( b.rpcost * (this.ai.strat.tech_weights[b.node.tags[0]]||1) );
 			this.tech.avail.sort(SortFunc);
 			}
 		}
@@ -649,14 +649,19 @@ export default class Civ {
 				research: utils.BiasedRandInt(6, 12, 5, 0.5),			
 				military: utils.BiasedRandInt(6, 12, 5, 0.5),			
 				}
+			this.ai.strat.tech_weights = {
+				propulsion: utils.BiasedRand(0.5, 2, 0.9, 0.5),		
+				weapons: utils.BiasedRand(0.5, 2, 0.9, 0.5),		
+				engineering: utils.BiasedRand(0.5, 2, 0.9, 0.5),		
+				physics: utils.BiasedRand(0.5, 2, 0.9, 0.5),		
+				biology: utils.BiasedRand(0.5, 2, 0.9, 0.5),		
+				socialogy: utils.BiasedRand(0.5, 2, 0.9, 0.5),	
+				}
 			let ideal_zone_total = 0;
 			for ( let k in this.ai.strat.ideal_zoning ) { ideal_zone_total += this.ai.strat.ideal_zoning[k]; }
 			for ( let k in this.ai.strat.ideal_zoning ) { this.ai.strat.ideal_zoning[k] /= ideal_zone_total; }
 			// zone remodeling
 			this.ai.strat.zone_remodel_freq = utils.BiasedRandInt(15, 40, 30, 0.5);
-			this.ai.strat.zone_remodel = 'recycle'; // strategy for remodeling [wipe,rand,semirand,recycle,smart]
-			this.ai.strat.zone_remodel = ['recycle','wipe','rand','semirand'][ utils.RandomInt(0,3) ]; 
-			this.ai.strat.zone_remodel_rand_chance = utils.BiasedRand(0.1, 0.7, 0.35, 0.75);
 			// ship designing
 			this.ai.strat.ship_des_freq = utils.BiasedRand(0.1, 0.9, 0.5, 0.75);
 			this.ai.strat.ship_size = utils.BiasedRand(0.0, 1.0, 0.2, 0.75);
@@ -1121,8 +1126,9 @@ export default class Civ {
 				if ( this.diplo.contacts.get(civ).treaties.has('TECH_BROKERING') ) { 
 					score *= 0.75;
 					}
+				// AI tech preference
+				score *= this.ai.strat.tech_weights[ i.obj.tags[0] ] || 1;
 				// TODO: check for obsolete tiered techs
-				// TODO: AI tech preference
 				return score;
 				}
 			case 'treaty' : {

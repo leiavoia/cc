@@ -131,8 +131,6 @@ export class CivAI extends AI {
 		posture: 0.5, // 0..1 balance between turtling (0) and mindless offense (1).
 		min_assault_score: 10000, // TODO: not a strategy, move this somewhere else
 		zone_remodel_freq: 30,
-		zone_remodel: 'recycle', // strategy for remodeling [wipe,rand,semirand,recycle,smart]
-		zone_remodel_rand_chance: 0.35,
 		ship_size: 0.5, // 1=biggest, 0=smallest
 		ship_des_freq: 0.5 // 0=often, 1=rarely
 		};
