@@ -10,12 +10,12 @@ export class BuildPane {
 		this.makework = this.planet.ListMakeworkProjects();
 		}
 		
-	ClickShip( x, qty=1 ) {
+	ClickShip( x, qty=-1 ) {
 		this.planet.AddBuildQueueShipBlueprint( x, qty );
 		this.app.CloseMainPanel();
 		}
 		
-	ClickGroundUnit( x, qty=1 ) {
+	ClickGroundUnit( x, qty=-1 ) {
 		this.planet.AddBuildQueueGroundUnitBlueprint( x, qty );
 		this.app.CloseMainPanel();
 		}
