@@ -21,6 +21,8 @@ export class SetupNewGameState {
 		}
 
 	ChangePanel(panel) {
+		let i = this.mode_queue.indexOf(panel);
+		if ( i > -1 ) { this.mode_queue.splice(i,1); }
 		this.mode = panel;
 		}
 		
