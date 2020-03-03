@@ -1,6 +1,7 @@
 export class FleetsPane {
 
 	activate(data) {
+		if ( !data ) { return false; }
 		this.app = data.app;
 		this.fleets = this.app.game.myciv.fleets;//.map( x => x );
 		}

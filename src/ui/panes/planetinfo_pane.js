@@ -29,6 +29,7 @@ export class PlanetinfoPane {
 	// 	};
 	
 	activate(data) {
+		if ( !data ) { return false; }
 		this.app = data.app;
 		this.planet = data.obj;
 		

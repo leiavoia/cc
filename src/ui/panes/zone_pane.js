@@ -7,6 +7,7 @@ export class ZonePane {
 	eligible_zones = []; // parallel array with `zones`
 	
 	activate(data) {
+		if ( !data ) { return false; }
 		this.app = data.app;
 		this.planet = data.obj;
 		this.adapt = this.planet.Adaptation();

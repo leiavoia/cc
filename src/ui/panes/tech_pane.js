@@ -24,6 +24,7 @@ export class TechPane {
 	//	announce_title: <optional string>
 	//	}
 	activate(data) {
+		if ( !data ) { return false; }
 		this.app = data.app;
 		this.mode = 'available';
 		this.turn_subscription = Signals.Listen( 'turn', data => this.UpdateData() );

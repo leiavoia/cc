@@ -32,6 +32,7 @@ export class VictoryPane {
 		}
 		
 	activate(data) {
+		if ( !data ) { return false; }
 		this.app = data.app;
 		if ( this.app.options.history_mode ) { 
 			this.mode = this.app.options.history_mode;

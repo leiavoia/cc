@@ -32,6 +32,7 @@ export class GameOverPane {
 		}
 		
 	activate(data) {
+		if ( !data ) { return false; }
 		this.app = data.app;
 		this.winning_civ = data.data && data.data.civ ? data.data.civ : null; 
 		this.msg = data.data && data.data.msg ? data.data.msg : null; 

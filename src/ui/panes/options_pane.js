@@ -1,6 +1,7 @@
 export class OptionsPane {
 
 	activate(data) {
+		if ( !data ) { return false; }
 		this.app = data.app;
 		}
 

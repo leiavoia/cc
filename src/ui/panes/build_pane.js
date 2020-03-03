@@ -1,6 +1,7 @@
 export class BuildPane {
 
 	activate(data) {
+		if ( !data ) { return false; }
 		this.app = data.app;
 		this.planet = data.obj;
 		// make a list of things we can build

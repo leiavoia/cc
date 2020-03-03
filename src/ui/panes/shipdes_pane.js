@@ -18,6 +18,7 @@ export class ShipDesignPane {
 	 	}
 
 	activate(data) {
+		if ( !data ) { return false; }
 		this.app = data.app;
 		this.bps = this.app.game.myciv.ship_blueprints.reverse();
 	 	if ( this.bps.length ) {
