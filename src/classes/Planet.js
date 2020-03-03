@@ -325,7 +325,11 @@ export default class Planet {
 		// some zones are "instant" and do not grow to size.
 		if ( !o.gf ) { o.val = 1; }
 		this.zones.push(o);
-		this.zones.sort( (a,b) => a.type=='government' ? -1 : (a.type > b.type) );
+		this.zones.sort( (a,b) => { 
+			if ( a.type=='government' ) return -1;
+			else if ( b.type=='government' ) return +1;
+			else return a.type > b.type;
+			});
 		return o;
 		}
 	
