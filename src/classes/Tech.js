@@ -274,31 +274,31 @@ export let Techs = {
 		name: "Improved Warp Drive",
 		desc: '<b>1000 Ship Range</b>. Basic FTL, or "warp drive", got us into deep space. Now improvements on this basic system will allows us to explore further into space.',
 		tags: ['propulsion'],
-		onComplete( civ ) { civ.ship_range = 1000; civ.RecalcEmpireBox(); }
+		onComplete( civ ) { civ.ship_range += 250; civ.RecalcEmpireBox(); }
 		},
 	SHIPRANGE2: {
 		name: "Advanced Warp Drive",
 		desc: '<b>1250 Ship Range</b>. Further refinements in warp drive technology have yielded this pinnacle achievement. This is likely as far as we can take warp technology without rethinking FTL entirely.',
 		tags: ['propulsion'],
-		onComplete( civ ) { civ.ship_range = 1250; civ.RecalcEmpireBox(); }
+		onComplete( civ ) { civ.ship_range += 250; civ.RecalcEmpireBox(); }
 		},
 	SHIPRANGE3: {
 		name: "Hyperdrive",
 		desc: '<b>1750 Ship Range</b>. Hyperdrives work on entirely different principal than Warp Drives, using low areas in hypersapce topology to quickly navigate through normal space.',
 		tags: ['propulsion'],
-		onComplete( civ ) { civ.ship_range = 1750; civ.RecalcEmpireBox(); }
+		onComplete( civ ) { civ.ship_range += 500; civ.RecalcEmpireBox(); }
 		},
 	SHIPRANGE4: {
 		name: "Turbo Hyperdrive",
 		desc: '<b>2500 Ship Range</b>. This ultra-advanced Hyperdrive uses predictive hyperspace pathfinding to squeeze every bit of efficiency out of hyperspace travel. In a nutshell, it\'s wicked fast.',
 		tags: ['propulsion'],
-		onComplete( civ ) { civ.ship_range = 2500; civ.RecalcEmpireBox(); }
+		onComplete( civ ) { civ.ship_range += 750; civ.RecalcEmpireBox(); }
 		},
 	SHIPRANGE5: {
 		name: "Ultimate Drive",
 		desc: '<b>3500 Ship Range</b>. It just works.',
 		tags: ['propulsion'],
-		onComplete( civ ) { civ.ship_range = 3500; civ.RecalcEmpireBox(); }
+		onComplete( civ ) { civ.ship_range += 2000; civ.RecalcEmpireBox(); }
 		},
 		
 	ADAPTATION1: {

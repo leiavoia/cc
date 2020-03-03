@@ -715,6 +715,8 @@ export default class Civ {
 					this.race.mods.Add( new Mod('pop_growth', '*', 0.75, 'Fast breaders', 'race' ) );
 					this.race.mods.Add( new Mod('troop_maint', '*', 2, 'Expensive troop maintenance', 'race' ) );
 					this.race.mods.Add( new Mod('ship_maint', '*', 2, 'Expensive ship maintenance', 'race' ) );
+					this.ship_range = 1250; 
+					this.RecalcEmpireBox();
 					break;
 					}
 				case 'astral' : {
