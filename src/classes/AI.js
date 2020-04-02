@@ -69,7 +69,7 @@ export class AI {
 	Unpack( catalog ) { 
 		this.civ = catalog[this.civ];
 		this.objectives = this.objectives.map( x => {
-			let o = eval('new ' + x._classname + '()');
+			let o = AI.createObjective( x.type );
 			o = Object.assign( o, x );
 			o.target = x.target ? catalog[x.target] : null;
 			o.fleet = x.fleet ? catalog[x.fleet] : null;
@@ -110,7 +110,15 @@ export class AI {
 			);
 		}		
 	}
-	
+AI.constructor_registry = {};
+AI.createObjective = ( type, target = null, fleet = null, ttl = -1, delay = 0, priority = 100 ) => {
+	let cb = AI.constructor_registry[ type ];
+	if ( typeof(cb) === 'function' ) {
+		return cb(target,fleet,ttl,delay,priority);
+		}
+	return null;
+	}
+		
 export class CivAI extends AI {
 	threats = new Map; // fleet => threat value
 	staging_pts = []; // stars to send newly built ships, AKA "accumulators"
@@ -162,7 +170,7 @@ export class CivAI extends AI {
 		obj.staging_pts = this.staging_pts.map( x => x.id );
 		obj.objectives = this.objectives.map( x => { 
 			let o = {}; // [!]TECHNICAL: using Object.assign causes "too much recursion" if `civ` is present
-			o._classname = x.constructor.name; // "analyze" => "AIAnalyzeObjective"
+			o.type = x.type;
 			o.target = x.target ? x.target.id : null;
 			o.fleet = x.fleet ? x.fleet.id : null;
 			if ( 'bootstrapped' in x ) { o.bootstrapped = x.bootstrapped; } // [!]HACK
@@ -184,7 +192,7 @@ export class CivAI extends AI {
 		this.civ = catalog[this.civ];
 		this.staging_pts = this.staging_pts.map( x => catalog[x] );
 		this.objectives = this.objectives.map( x => {
-			let o = eval('new ' + x._classname + '()');
+			let o = AI.createObjective( x.type );
 			o = Object.assign( o, x );
 			o.target = x.target ? catalog[x.target] : null;
 			o.fleet = x.fleet ? catalog[x.fleet] : null;
@@ -201,7 +209,7 @@ export class CivAI extends AI {
 		}		
 	}
 
-	
+AI.constructor_registry.none = ( ...params ) => new AIObjective( params );
 export class AIObjective {
 	type = 'none';
 	target = null;
@@ -288,8 +296,8 @@ export class AIObjective {
 		}
 	}
 
-
 // MAIN - This bootstraps the entire AI for sandbox civilizations.
+AI.constructor_registry.main = ( ...params ) => new AIMainObjective( params );
 export class AIMainObjective extends AIObjective { 	
 	type = 'main';
 	priority = 0;
@@ -316,6 +324,7 @@ export class AIMainObjective extends AIObjective {
 // The player does not run this AI function. Other civs need data on the player
 // to make comparison s. (milval, total_troops, etc) 
 //
+AI.constructor_registry.analyze = ( ...params ) => new AIAnalyzeObjective( params );
 export class AIAnalyzeObjective extends AIObjective { 	
 	type = 'analyze';
 	priority = 1;
@@ -458,6 +467,7 @@ export class AIAnalyzeObjective extends AIObjective {
 
 
 // STAGING POINTS - Makes sure we have reasonable number of staging points
+AI.constructor_registry.staging = ( ...params ) => new AIMaintainStagingPtsObjective( params );
 export class AIMaintainStagingPtsObjective extends AIObjective { 	
 	type = 'staging';
 	priority = 5;
@@ -529,6 +539,7 @@ export class AIMaintainStagingPtsObjective extends AIObjective {
 
 	
 // DEFENSE
+AI.constructor_registry.defense = ( ...params ) => new AIDefenseObjective( params );
 export class AIDefenseObjective extends AIObjective { 	
 	type = 'defense';
 	priority = 20;
@@ -689,6 +700,7 @@ export class AIDefenseObjective extends AIObjective {
 
 
 // OFFENSE
+AI.constructor_registry.offense = ( ...params ) => new AIOffenseObjective( params );
 export class AIOffenseObjective extends AIObjective { 	
 	type = 'offense';
 	priority = 10;
@@ -896,6 +908,7 @@ export class AIOffenseObjective extends AIObjective {
 
 
 // COLONIZE
+AI.constructor_registry.colonize = ( ...params ) => new AIColonizeObjective( params );
 export class AIColonizeObjective extends AIObjective { 	
 	type = 'colonize';
 	priority = 30;
@@ -997,6 +1010,7 @@ export class AIColonizeObjective extends AIObjective {
 
 
 // PLANETS
+AI.constructor_registry.planets = ( ...params ) => new AIPlanetsObjective( params );
 export class AIPlanetsObjective extends AIObjective { 	
 	type = 'planets';
 	priority = 50;
@@ -1411,6 +1425,7 @@ export class AIPlanetsObjective extends AIObjective {
 
 
 // DIPLOMACY - Find good deals and negotiate with other civs
+AI.constructor_registry.diplomacy = ( ...params ) => new AIDiplomacyObjective( params );
 export class AIDiplomacyObjective extends AIObjective { 	
 	type = 'diplomacy';
 	priority = 60;
@@ -1553,6 +1568,7 @@ export class AIDiplomacyObjective extends AIObjective {
 	
 	
 // PICKUPTROOPS - Fleet will navigate to target star and pick up troops
+AI.constructor_registry.pickuptroops = ( ...params ) => new AIPickupTroopsObjective( params );
 export class AIPickupTroopsObjective extends AIObjective { 	
 	type = 'pickuptroops';
 	EvaluateFunc( app, civ ) { 
@@ -1591,6 +1607,7 @@ export class AIPickupTroopsObjective extends AIObjective {
 	
 	
 // GUARD - Fleet will navigate to target star and sit there until TTL expires.
+AI.constructor_registry.guard = ( ...params ) => new AIGuardObjective( params );
 export class AIGuardObjective extends AIObjective { 	
 	type = 'guard';
 	EvaluateFunc( app, civ ) { 
@@ -1623,6 +1640,7 @@ export class AIGuardObjective extends AIObjective {
 
 
 // INVADE - Navigate to and invade a planet
+AI.constructor_registry.invade = ( ...params ) => new AIInvadeObjective( params );
 export class AIInvadeObjective extends AIObjective { 	
 	type = 'invade';
 // 	min_milval_needed = 1;
@@ -1910,6 +1928,7 @@ export class AIInvadeObjective extends AIObjective {
 	}
 
 // INTERCEPT - Navigate to and destroy enemy fleet
+AI.constructor_registry.intercept = ( ...params ) => new AIInterceptObjective( params );
 export class AIInterceptObjective extends AIObjective { 	
 	type = 'intercept';
 	EvaluateFunc( app, civ ) { 
@@ -1917,6 +1936,7 @@ export class AIInterceptObjective extends AIObjective {
 	}
 
 // BERZERK - Make trouble for the enemy in unpredictable ways
+AI.constructor_registry.berzerk = ( ...params ) => new AIBerzerkObjective( params );
 export class AIBerzerkObjective extends AIObjective { 	
 	type = 'berzerk';
 	EvaluateFunc( app, civ ) { 
@@ -1924,6 +1944,7 @@ export class AIBerzerkObjective extends AIObjective {
 	}
 
 // BOMBARD - Navigate to and destroy enemy colony
+AI.constructor_registry.bombard = ( ...params ) => new AIBombardObjective( params );
 export class AIBombardObjective extends AIObjective { 	
 	type = 'bombard';
 	EvaluateFunc( app, civ ) { 
@@ -1931,6 +1952,7 @@ export class AIBombardObjective extends AIObjective {
 	}
 
 // SETTLE - Navigate to and settle a planet
+AI.constructor_registry.settle = ( ...params ) => new AISettleObjective( params );
 export class AISettleObjective extends AIObjective { 	
 	type = 'settle';
 	EvaluateFunc( app, civ ) { 
@@ -1938,6 +1960,7 @@ export class AISettleObjective extends AIObjective {
 	}
 
 // SCOUT- Send fleet to scout nearby systems
+AI.constructor_registry.scout = ( ...params ) => new AIScoutObjective( params );
 export class AIScoutObjective extends AIObjective { 	
 	type = 'scout';
 	EvaluateFunc( app, civ ) { 
@@ -1945,6 +1968,7 @@ export class AIScoutObjective extends AIObjective {
 	}
 
 // ANOMALY RESEARCH - Create a fleet and research anomalies
+AI.constructor_registry.anom = ( ...params ) => new AIAnomExploreObjective( params );
 export class AIAnomExploreObjective extends AIObjective { 	
 	type = 'anom';
 	EvaluateFunc( app, civ ) { 
@@ -1952,6 +1976,7 @@ export class AIAnomExploreObjective extends AIObjective {
 	}
 
 // GREEN MITE BRAIN
+AI.constructor_registry.green_mite = ( ...params ) => new AIGreenMiteObjective( params );
 export class AIGreenMiteObjective extends AIObjective { 	
 	type = 'green_mite';
 	EvaluateFunc( app, civ ) { 
@@ -2049,6 +2074,7 @@ export class AIGreenMiteObjective extends AIObjective {
 	}
 
 // BLUE SPACE AMOEBA BRAIN
+AI.constructor_registry.blue_amoeba = ( ...params ) => new AIBlueAmoebaObjective( params );
 export class AIBlueAmoebaObjective extends AIObjective { 	
 	type = 'blue_amoeba';
 	EvaluateFunc( app, civ ) { 
@@ -2103,6 +2129,7 @@ export class AIBlueAmoebaObjective extends AIObjective {
 	}
 
 // GIANT SPACE AMOEBA BRAIN
+AI.constructor_registry.giant_amoeba = ( ...params ) => new AIGiantAmoebaObjective( params );
 export class AIGiantAmoebaObjective extends AIObjective { 	
 	type = 'giant_amoeba';
 	EvaluateFunc( app, civ ) { 
@@ -2134,6 +2161,7 @@ export class AIGiantAmoebaObjective extends AIObjective {
 	}
 
 // RED SPACE AMOEBA BRAIN
+AI.constructor_registry.red_amoeba = ( ...params ) => new AIRedAmoebaObjective( params );
 export class AIRedAmoebaObjective extends AIObjective { 	
 	type = 'red_amoeba';
 	EvaluateFunc( app, civ ) { 
@@ -2263,6 +2291,7 @@ export class AIRedAmoebaObjective extends AIObjective {
 	}
 
 // SHIP DESIGN - create new ship designs every so often
+AI.constructor_registry.shipdesign = ( ...params ) => new AIShipDesignObjective( params );
 export class AIShipDesignObjective extends AIObjective { 	
 	type = 'shipdesign';
 	EvaluateFunc( app, civ ) { 
